@@ -118,6 +118,36 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="mt-1.5" />
           </div>
 
+          <div>
+            <Label>Type of artwork</Label>
+            <Select value={artworkType} onValueChange={(v) => { setArtworkType(v); if (v !== "Sculpture") setSubCategory(""); }}>
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                {artworkTypes.map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {artworkType === "Sculpture" && (
+            <div>
+              <Label>Sculpture sub-category</Label>
+              <Select value={subCategory} onValueChange={setSubCategory}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select sub-category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sculptureSubCategories.map((s) => (
+                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="year">Date of creation</Label>
