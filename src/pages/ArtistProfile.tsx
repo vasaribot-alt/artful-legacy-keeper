@@ -10,7 +10,6 @@ import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail } from "lucide-react"
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
-import GalleryImport from "../components/GalleryImport";
 
 interface SocialLink {
   platform: string;
