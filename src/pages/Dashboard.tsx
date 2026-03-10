@@ -101,7 +101,7 @@ const Dashboard = () => {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">ArtVault</span>
+          <span className="text-lg font-semibold tracking-tight">Global Artist Registry</span>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{userName}</span>
             {globalArtistId && (
