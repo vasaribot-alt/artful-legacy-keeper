@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, X } from "lucide-react";
+import { Search, Plus, X, Loader2, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 interface GalleryRecord {
   id: string;
@@ -29,8 +30,8 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
   const [results, setResults] = useState<GalleryRecord[]>([]);
   const [searching, setSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [lookingUp, setLookingUp] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -67,15 +68,52 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
     return () => clearTimeout(timeout);
   }, [query]);
 
+  const lookupGalleryInfo = async (galleryName: string, city: string | null, country: string | null, index: number) => {
+    setLookingUp(index);
+    try {
+      const { data, error } = await supabase.functions.invoke("gallery-lookup", {
+        body: { gallery_name: galleryName, city, country },
+      });
+
+      if (error) {
+        toast.error("Could not look up gallery info");
+        return;
+      }
+
+      if (data?.website || data?.phone) {
+        const updated = [...galleries];
+        if (data.website && !updated[index].website) {
+          updated[index] = { ...updated[index], website: data.website };
+        }
+        if (data.phone && !updated[index].phone) {
+          updated[index] = { ...updated[index], phone: data.phone };
+        }
+        onGalleriesChange(updated);
+        toast.success("Gallery info found!");
+      } else {
+        toast.info("No contact info found for this gallery");
+      }
+    } catch {
+      toast.error("Failed to look up gallery info");
+    } finally {
+      setLookingUp(null);
+    }
+  };
+
   const addGalleryFromSearch = (gallery: GalleryRecord) => {
+    const newIndex = galleries.length;
     const newGallery: SelectedGallery = {
       name: gallery.name,
       phone: "",
       website: gallery.website || "",
     };
-    onGalleriesChange([...galleries, newGallery]);
+    const updated = [...galleries, newGallery];
+    onGalleriesChange(updated);
     setQuery("");
     setShowDropdown(false);
+
+    // Auto-lookup contact info
+    lookupGalleryInfo(gallery.name, gallery.city, gallery.country, newIndex);
   };
 
   const addCustomGallery = () => {
@@ -99,7 +137,6 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search galleries worldwide…"
@@ -146,10 +183,29 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
         {galleries.map((gallery, i) => (
           <div key={i} className="p-4 rounded-sm border border-border space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Gallery {i + 1}</span>
-              <Button variant="ghost" size="icon" onClick={() => removeGallery(i)}>
-                <X className="w-4 h-4 text-destructive" />
-              </Button>
+              <span className="text-sm font-medium text-muted-foreground">
+                Gallery {i + 1}
+                {lookingUp === i && (
+                  <span className="ml-2 inline-flex items-center gap-1 text-xs text-primary">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Finding contact info…
+                  </span>
+                )}
+              </span>
+              <div className="flex items-center gap-1">
+                {gallery.name && (!gallery.phone || !gallery.website) && lookingUp !== i && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => lookupGalleryInfo(gallery.name, null, null, i)}
+                    className="gap-1 text-xs h-7"
+                  >
+                    <Sparkles className="w-3 h-3" /> Find info
+                  </Button>
+                )}
+                <Button variant="ghost" size="icon" onClick={() => removeGallery(i)}>
+                  <X className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Input
