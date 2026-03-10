@@ -250,6 +250,36 @@ export type Database = {
           },
         ]
       }
+      galleries: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          established_year: number | null
+          id: string
+          name: string
+          website: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          established_year?: number | null
+          id?: string
+          name: string
+          website?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          established_year?: number | null
+          id?: string
+          name?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           biography: string | null
