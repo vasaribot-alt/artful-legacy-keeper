@@ -141,6 +141,14 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     if (error) {
       toast.error("Failed to add artwork");
     } else {
+      // Save new series to series_groups if not already there
+      if (series.trim() && !seriesOptions.includes(series.trim())) {
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (u) {
+          await supabase.from("series_groups").insert({ user_id: u.id, name: series.trim() }).select();
+          fetchSeriesOptions();
+        }
+      }
       toast.success("Artwork added");
       resetForm();
       onOpenChange(false);
