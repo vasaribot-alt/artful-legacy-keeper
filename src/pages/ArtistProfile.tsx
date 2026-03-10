@@ -66,6 +66,7 @@ const ArtistProfile = () => {
       }
 
       setProfileId(data.id);
+      setAvatarUrl((data as any).avatar_url || null);
       setFullName(data.full_name || "");
       setGlobalArtistId(data.global_artist_id);
       setBirthYear((data as any).birth_year?.toString() || "");
