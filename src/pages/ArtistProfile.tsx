@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail } from "lucide-react";
 import { toast } from "sonner";
+import CvManager from "@/components/CvManager";
 
 interface SocialLink {
   platform: string;
