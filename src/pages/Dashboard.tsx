@@ -17,6 +17,15 @@ interface Artwork {
   description: string | null;
   image_url: string | null;
   created_at: string;
+  support: string | null;
+  height: number | null;
+  width: number | null;
+  depth: number | null;
+  series: string | null;
+  is_unique: boolean;
+  price: number | null;
+  currency: string | null;
+  artwork_location: string | null;
 }
 
 const Dashboard = () => {
