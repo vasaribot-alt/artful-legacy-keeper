@@ -1,6 +1,7 @@
 interface Artwork {
   id: string;
   title: string;
+  artwork_type: string | null;
   medium: string | null;
   year: number | null;
   dimensions: string | null;
@@ -15,6 +16,7 @@ interface Artwork {
   price: number | null;
   currency: string | null;
   artwork_location: string | null;
+  sub_category: string | null;
 }
 
 const formatDimensions = (h: number | null, w: number | null, d: number | null) => {
@@ -43,7 +45,11 @@ export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
         )}
       </div>
       <h3 className="text-sm font-medium leading-tight">{artwork.title}</h3>
-      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
+        {artwork.artwork_type && (
+          <span>{artwork.artwork_type}{artwork.artwork_type === "Sculpture" && artwork.sub_category ? ` — ${artwork.sub_category}` : ""}</span>
+        )}
+        {artwork.artwork_type && artwork.year && <span>·</span>}
         {artwork.year && <span>{artwork.year}</span>}
         {artwork.year && artwork.medium && <span>·</span>}
         {artwork.medium && <span>{artwork.medium}</span>}

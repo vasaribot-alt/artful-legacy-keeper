@@ -1,0 +1,1 @@
+ALTER TABLE public.artworks ADD COLUMN artwork_type text DEFAULT NULL;

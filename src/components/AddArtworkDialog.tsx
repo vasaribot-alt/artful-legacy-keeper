@@ -28,9 +28,12 @@ interface Props {
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
+const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
+const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [title, setTitle] = useState("");
+  const [artworkType, setArtworkType] = useState("");
   const [medium, setMedium] = useState("");
   const [year, setYear] = useState("");
   const [description, setDescription] = useState("");
@@ -49,7 +52,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const resetForm = () => {
-    setTitle(""); setMedium(""); setYear(""); setDescription("");
+    setTitle(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
@@ -73,6 +76,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     const { error } = await supabase.from("artworks").insert({
       owner_id: user.id,
       title: title.trim(),
+      artwork_type: artworkType || null,
       medium: medium.trim() || null,
       year: year ? parseInt(year) : null,
       description: description.trim() || null,
@@ -114,6 +118,36 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="mt-1.5" />
           </div>
 
+          <div>
+            <Label>Type of artwork</Label>
+            <Select value={artworkType} onValueChange={(v) => { setArtworkType(v); if (v !== "Sculpture") setSubCategory(""); }}>
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                {artworkTypes.map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {artworkType === "Sculpture" && (
+            <div>
+              <Label>Sculpture sub-category</Label>
+              <Select value={subCategory} onValueChange={setSubCategory}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select sub-category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sculptureSubCategories.map((s) => (
+                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="year">Date of creation</Label>
@@ -148,10 +182,6 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="subCategory">Sub-category</Label>
-              <Input id="subCategory" value={subCategory} onChange={(e) => setSubCategory(e.target.value)} placeholder="e.g. Casted, Carved" className="mt-1.5" />
-            </div>
             <div>
               <Label htmlFor="signed">Signed</Label>
               <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" />

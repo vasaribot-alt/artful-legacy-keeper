@@ -11,6 +11,7 @@ import type { User } from "@supabase/supabase-js";
 interface Artwork {
   id: string;
   title: string;
+  artwork_type: string | null;
   medium: string | null;
   year: number | null;
   dimensions: string | null;
@@ -26,6 +27,7 @@ interface Artwork {
   price: number | null;
   currency: string | null;
   artwork_location: string | null;
+  sub_category: string | null;
 }
 
 const Dashboard = () => {

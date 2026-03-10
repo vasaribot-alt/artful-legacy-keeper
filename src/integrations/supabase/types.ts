@@ -17,6 +17,7 @@ export type Database = {
       artworks: {
         Row: {
           artwork_location: string | null
+          artwork_type: string | null
           catalogue_number: string | null
           created_at: string
           currency: string | null
@@ -44,6 +45,7 @@ export type Database = {
         }
         Insert: {
           artwork_location?: string | null
+          artwork_type?: string | null
           catalogue_number?: string | null
           created_at?: string
           currency?: string | null
@@ -71,6 +73,7 @@ export type Database = {
         }
         Update: {
           artwork_location?: string | null
+          artwork_type?: string | null
           catalogue_number?: string | null
           created_at?: string
           currency?: string | null
