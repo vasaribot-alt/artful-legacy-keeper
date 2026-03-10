@@ -100,8 +100,7 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
     }
   };
 
-  const addGalleryFromSearch = (gallery: GalleryRecord) => {
-    const newIndex = galleries.length;
+  const addGalleryFromSearch = async (gallery: GalleryRecord) => {
     const newGallery: SelectedGallery = {
       name: gallery.name,
       phone: "",
@@ -112,8 +111,37 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
     setQuery("");
     setShowDropdown(false);
 
-    // Auto-lookup contact info
-    lookupGalleryInfo(gallery.name, gallery.city, gallery.country, newIndex);
+    // Auto-lookup contact info directly (avoid stale closure)
+    const newIndex = updated.length - 1;
+    setLookingUp(newIndex);
+    try {
+      const { data, error } = await supabase.functions.invoke("gallery-lookup", {
+        body: { gallery_name: gallery.name, city: gallery.city, country: gallery.country },
+      });
+
+      if (error) {
+        console.error("Gallery lookup error:", error);
+        toast.error("Could not look up gallery info");
+        return;
+      }
+
+      if (data?.website || data?.phone) {
+        const finalGallery = { ...newGallery };
+        if (data.website) finalGallery.website = data.website;
+        if (data.phone) finalGallery.phone = data.phone;
+        const finalList = [...updated];
+        finalList[newIndex] = finalGallery;
+        onGalleriesChange(finalList);
+        toast.success("Gallery info found!");
+      } else {
+        toast.info("No contact info found for this gallery");
+      }
+    } catch (e) {
+      console.error("Gallery lookup exception:", e);
+      toast.error("Failed to look up gallery info");
+    } finally {
+      setLookingUp(null);
+    }
   };
 
   const addCustomGallery = () => {
