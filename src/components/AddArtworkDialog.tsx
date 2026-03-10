@@ -56,6 +56,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("EUR");
   const [artworkLocation, setArtworkLocation] = useState("");
+  const [editionCount, setEditionCount] = useState("");
+  const [artistProofs, setArtistProofs] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Series dropdown state
