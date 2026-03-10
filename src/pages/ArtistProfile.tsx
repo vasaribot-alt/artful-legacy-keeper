@@ -268,7 +268,7 @@ const ArtistProfile = () => {
         {/* CV */}
         <section className="space-y-4">
           <h2 className="text-2xl">CV</h2>
-          <Textarea value={cv} onChange={(e) => setCv(e.target.value)} placeholder="Education, exhibitions, awards, collections…" rows={10} />
+          {profileId && <CvManager profileId={profileId} />}
         </section>
 
         <Separator />
