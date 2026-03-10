@@ -231,7 +231,6 @@ const ArtistProfile = () => {
         <section className="space-y-6">
           <h2 className="text-2xl">Galleries</h2>
           <GallerySearch galleries={galleries} onGalleriesChange={setGalleries} />
-          <GalleryImport />
         </section>
 
         <Separator />
