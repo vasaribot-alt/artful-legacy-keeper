@@ -51,6 +51,7 @@ const ArtistProfile = () => {
     const loadProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { navigate("/login"); return; }
+      setUserId(session.user.id);
 
       const { data, error } = await supabase
         .from("profiles")
