@@ -76,6 +76,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     const { error } = await supabase.from("artworks").insert({
       owner_id: user.id,
       title: title.trim(),
+      artwork_type: artworkType || null,
       medium: medium.trim() || null,
       year: year ? parseInt(year) : null,
       description: description.trim() || null,
