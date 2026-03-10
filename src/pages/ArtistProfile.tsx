@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
@@ -27,6 +28,10 @@ const ArtistProfile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   // Profile fields
   const [fullName, setFullName] = useState("");
@@ -46,6 +51,7 @@ const ArtistProfile = () => {
     const loadProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { navigate("/login"); return; }
+      setUserId(session.user.id);
 
       const { data, error } = await supabase
         .from("profiles")
@@ -60,6 +66,7 @@ const ArtistProfile = () => {
       }
 
       setProfileId(data.id);
+      setAvatarUrl((data as any).avatar_url || null);
       setFullName(data.full_name || "");
       setGlobalArtistId(data.global_artist_id);
       setBirthYear((data as any).birth_year?.toString() || "");
@@ -103,6 +110,43 @@ const ArtistProfile = () => {
       toast.error("Failed to save profile");
     } else {
       toast.success("Profile saved");
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId || !profileId) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${userId}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("profile-photos")
+        .upload(path, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from("profile-photos")
+        .getPublicUrl(path);
+
+      const url = publicUrlData.publicUrl + "?t=" + Date.now();
+
+      await supabase.from("profiles").update({ avatar_url: url } as any).eq("id", profileId);
+      setAvatarUrl(url);
+      toast.success("Profile photo updated");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload photo");
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -158,6 +202,41 @@ const ArtistProfile = () => {
         {/* Basic Info */}
         <section className="space-y-6">
           <h2 className="text-2xl">Basic Information</h2>
+          
+          {/* Profile Photo */}
+          <div className="flex items-center gap-6">
+            <div className="relative group">
+              <Avatar className="w-24 h-24 border-2 border-border">
+                <AvatarImage src={avatarUrl || undefined} alt="Profile photo" />
+                <AvatarFallback className="text-2xl">
+                  {fullName ? fullName.charAt(0).toUpperCase() : "?"}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={uploadingAvatar}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                {uploadingAvatar ? (
+                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+                ) : (
+                  <Camera className="w-6 h-6 text-white" />
+                )}
+              </button>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Profile Photo</p>
+              <p className="text-xs text-muted-foreground">Click to upload or change</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <Label>Full Name</Label>
