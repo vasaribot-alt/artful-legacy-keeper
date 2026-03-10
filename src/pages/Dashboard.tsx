@@ -114,6 +114,9 @@ const Dashboard = () => {
             <span className="text-xs px-2 py-0.5 rounded-sm bg-secondary text-secondary-foreground uppercase tracking-wider">
               {userRole}
             </span>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/profile")} title="Artist Profile">
+              <UserIcon className="w-4 h-4" />
+            </Button>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="w-4 h-4" />
             </Button>
