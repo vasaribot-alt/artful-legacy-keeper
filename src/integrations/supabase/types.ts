@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       artworks: {
         Row: {
+          artist_proofs: number | null
           artwork_location: string | null
           artwork_type: string | null
           catalogue_number: string | null
@@ -24,6 +25,7 @@ export type Database = {
           depth: number | null
           description: string | null
           dimensions: string | null
+          edition_count: number | null
           exhibition_history: string | null
           height: number | null
           id: string
@@ -44,6 +46,7 @@ export type Database = {
           year: number | null
         }
         Insert: {
+          artist_proofs?: number | null
           artwork_location?: string | null
           artwork_type?: string | null
           catalogue_number?: string | null
@@ -52,6 +55,7 @@ export type Database = {
           depth?: number | null
           description?: string | null
           dimensions?: string | null
+          edition_count?: number | null
           exhibition_history?: string | null
           height?: number | null
           id?: string
@@ -72,6 +76,7 @@ export type Database = {
           year?: number | null
         }
         Update: {
+          artist_proofs?: number | null
           artwork_location?: string | null
           artwork_type?: string | null
           catalogue_number?: string | null
@@ -80,6 +85,7 @@ export type Database = {
           depth?: number | null
           description?: string | null
           dimensions?: string | null
+          edition_count?: number | null
           exhibition_history?: string | null
           height?: number | null
           id?: string
