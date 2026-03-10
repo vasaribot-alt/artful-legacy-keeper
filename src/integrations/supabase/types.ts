@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      artwork_images: {
+        Row: {
+          artwork_id: string
+          created_at: string
+          display_order: number
+          id: string
+          storage_path: string
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          storage_path: string
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_images_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artworks: {
         Row: {
           artist_proofs: number | null

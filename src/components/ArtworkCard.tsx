@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
 interface Artwork {
   id: string;
   title: string;
@@ -27,13 +30,37 @@ const formatDimensions = (h: number | null, w: number | null, d: number | null) 
 
 export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
   const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [imageCount, setImageCount] = useState(0);
+
+  useEffect(() => {
+    const fetchFirstImage = async () => {
+      const { data } = await supabase
+        .from("artwork_images")
+        .select("storage_path")
+        .eq("artwork_id", artwork.id)
+        .order("display_order")
+        .limit(5);
+
+      if (data && data.length > 0) {
+        setImageCount(data.length);
+        const { data: urlData } = supabase.storage
+          .from("artwork-images")
+          .getPublicUrl(data[0].storage_path);
+        if (urlData) setThumbnailUrl(urlData.publicUrl);
+      }
+    };
+    fetchFirstImage();
+  }, [artwork.id]);
+
+  const displayUrl = thumbnailUrl || artwork.image_url;
 
   return (
     <div className="group cursor-pointer">
-      <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
-        {artwork.image_url ? (
+      <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3 relative">
+        {displayUrl ? (
           <img
-            src={artwork.image_url}
+            src={displayUrl}
             alt={artwork.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
@@ -42,6 +69,11 @@ export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
             No image
           </div>
+        )}
+        {imageCount > 1 && (
+          <span className="absolute bottom-2 right-2 bg-background/80 text-foreground text-[10px] px-1.5 py-0.5 rounded-sm font-mono">
+            +{imageCount - 1}
+          </span>
         )}
       </div>
       <h3 className="text-sm font-medium leading-tight">{artwork.title}</h3>
