@@ -28,7 +28,10 @@ const formatDimensions = (h: number | null, w: number | null, d: number | null) 
   return parts.join(" × ") + " cm";
 };
 
+import { useNavigate } from "react-router-dom";
+
 export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
+  const navigate = useNavigate();
   const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [imageCount, setImageCount] = useState(0);
