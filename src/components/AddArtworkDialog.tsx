@@ -101,6 +101,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
+    setEditionCount(""); setArtistProofs("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
