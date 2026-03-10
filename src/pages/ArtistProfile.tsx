@@ -229,32 +229,8 @@ const ArtistProfile = () => {
 
         {/* Galleries */}
         <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl">Galleries</h2>
-            <Button variant="outline" size="sm" onClick={addGallery} className="gap-1">
-              <Plus className="w-3.5 h-3.5" /> Add
-            </Button>
-          </div>
-          {galleries.length === 0 && (
-            <p className="text-sm text-muted-foreground">No galleries added yet.</p>
-          )}
-          <div className="space-y-4">
-            {galleries.map((gallery, i) => (
-              <div key={i} className="p-4 rounded-sm border border-border space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="font-medium">Gallery {i + 1}</Label>
-                  <Button variant="ghost" size="icon" onClick={() => removeGallery(i)}>
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </Button>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <Input value={gallery.name} onChange={(e) => updateGallery(i, "name", e.target.value)} placeholder="Gallery name" />
-                  <Input value={gallery.phone} onChange={(e) => updateGallery(i, "phone", e.target.value)} placeholder="Phone" />
-                  <Input value={gallery.website} onChange={(e) => updateGallery(i, "website", e.target.value)} placeholder="Website URL" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-2xl">Galleries</h2>
+          <GallerySearch galleries={galleries} onGalleriesChange={setGalleries} />
         </section>
 
         <Separator />
