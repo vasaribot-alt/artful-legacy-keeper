@@ -52,7 +52,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [loading, setLoading] = useState(false);
 
   const resetForm = () => {
-    setTitle(""); setMedium(""); setYear(""); setDescription("");
+    setTitle(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
