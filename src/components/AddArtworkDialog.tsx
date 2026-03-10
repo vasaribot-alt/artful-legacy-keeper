@@ -183,10 +183,6 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="subCategory">Sub-category</Label>
-              <Input id="subCategory" value={subCategory} onChange={(e) => setSubCategory(e.target.value)} placeholder="e.g. Casted, Carved" className="mt-1.5" />
-            </div>
-            <div>
               <Label htmlFor="signed">Signed</Label>
               <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" />
             </div>
