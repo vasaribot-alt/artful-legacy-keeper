@@ -113,6 +113,43 @@ const ArtistProfile = () => {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId || !profileId) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${userId}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("profile-photos")
+        .upload(path, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from("profile-photos")
+        .getPublicUrl(path);
+
+      const url = publicUrlData.publicUrl + "?t=" + Date.now();
+
+      await supabase.from("profiles").update({ avatar_url: url } as any).eq("id", profileId);
+      setAvatarUrl(url);
+      toast.success("Profile photo updated");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload photo");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const addSocialLink = () => setSocialLinks([...socialLinks, { platform: "", url: "" }]);
   const removeSocialLink = (i: number) => setSocialLinks(socialLinks.filter((_, idx) => idx !== i));
   const updateSocialLink = (i: number, field: keyof SocialLink, value: string) => {
