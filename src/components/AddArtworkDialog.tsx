@@ -125,7 +125,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       description: description.trim() || null,
       is_unique: isUnique,
       series: series.trim() || null,
-      sub_category: subCategory.trim() || null,
+      sub_category: subCategory || null,
       support: support.trim() || null,
       signed: signed.trim() || null,
       height: height ? parseFloat(height) : null,
