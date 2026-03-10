@@ -28,9 +28,12 @@ interface Props {
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
+const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
+const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [title, setTitle] = useState("");
+  const [artworkType, setArtworkType] = useState("");
   const [medium, setMedium] = useState("");
   const [year, setYear] = useState("");
   const [description, setDescription] = useState("");
