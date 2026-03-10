@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,13 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -50,6 +57,42 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [currency, setCurrency] = useState("EUR");
   const [artworkLocation, setArtworkLocation] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Series dropdown state
+  const [seriesOptions, setSeriesOptions] = useState<string[]>([]);
+  const [seriesOpen, setSeriesOpen] = useState(false);
+  const [newSeriesInput, setNewSeriesInput] = useState("");
+
+  useEffect(() => {
+    if (open) fetchSeriesOptions();
+  }, [open]);
+
+  const fetchSeriesOptions = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("series_groups")
+      .select("name")
+      .eq("user_id", user.id)
+      .order("name");
+    if (data) setSeriesOptions(data.map((d) => d.name));
+  };
+
+  const addNewSeries = async () => {
+    const name = newSeriesInput.trim();
+    if (!name) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase.from("series_groups").insert({ user_id: user.id, name });
+    if (error) {
+      if (error.code === "23505") toast.error("Series already exists");
+      else toast.error("Failed to add series");
+      return;
+    }
+    setSeriesOptions((prev) => [...prev, name].sort());
+    setSeries(name);
+    setNewSeriesInput("");
+  };
 
   const resetForm = () => {
     setTitle(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
