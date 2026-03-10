@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,13 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -51,6 +58,42 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [artworkLocation, setArtworkLocation] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Series dropdown state
+  const [seriesOptions, setSeriesOptions] = useState<string[]>([]);
+  const [seriesOpen, setSeriesOpen] = useState(false);
+  const [newSeriesInput, setNewSeriesInput] = useState("");
+
+  useEffect(() => {
+    if (open) fetchSeriesOptions();
+  }, [open]);
+
+  const fetchSeriesOptions = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("series_groups")
+      .select("name")
+      .eq("user_id", user.id)
+      .order("name");
+    if (data) setSeriesOptions(data.map((d) => d.name));
+  };
+
+  const addNewSeries = async () => {
+    const name = newSeriesInput.trim();
+    if (!name) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { error } = await supabase.from("series_groups").insert({ user_id: user.id, name });
+    if (error) {
+      if (error.code === "23505") toast.error("Series already exists");
+      else toast.error("Failed to add series");
+      return;
+    }
+    setSeriesOptions((prev) => [...prev, name].sort());
+    setSeries(name);
+    setNewSeriesInput("");
+  };
+
   const resetForm = () => {
     setTitle(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
@@ -82,7 +125,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       description: description.trim() || null,
       is_unique: isUnique,
       series: series.trim() || null,
-      sub_category: subCategory.trim() || null,
+      sub_category: subCategory || null,
       support: support.trim() || null,
       signed: signed.trim() || null,
       height: height ? parseFloat(height) : null,
@@ -98,6 +141,14 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     if (error) {
       toast.error("Failed to add artwork");
     } else {
+      // Save new series to series_groups if not already there
+      if (series.trim() && !seriesOptions.includes(series.trim())) {
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (u) {
+          await supabase.from("series_groups").insert({ user_id: u.id, name: series.trim() }).select();
+          fetchSeriesOptions();
+        }
+      }
       toast.success("Artwork added");
       resetForm();
       onOpenChange(false);
@@ -154,8 +205,54 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
               <Input id="year" type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="e.g. 2024" className="mt-1.5" />
             </div>
             <div>
-              <Label htmlFor="series">Series / Group</Label>
-              <Input id="series" value={series} onChange={(e) => setSeries(e.target.value)} className="mt-1.5" />
+              <Label>Series / Group</Label>
+              <Popover open={seriesOpen} onOpenChange={setSeriesOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={seriesOpen}
+                    className="w-full justify-between mt-1.5 font-normal"
+                  >
+                    {series || "Select or add..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[240px] p-2" align="start">
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {seriesOptions.length === 0 && (
+                      <p className="text-xs text-muted-foreground px-2 py-1">No series yet</p>
+                    )}
+                    {seriesOptions.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className={cn(
+                          "flex items-center gap-2 w-full text-left text-sm px-2 py-1.5 rounded-sm hover:bg-accent",
+                          series === s && "bg-accent"
+                        )}
+                        onClick={() => { setSeries(s); setSeriesOpen(false); }}
+                      >
+                        <Check className={cn("h-3 w-3", series === s ? "opacity-100" : "opacity-0")} />
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                  <Separator className="my-2" />
+                  <div className="flex gap-1">
+                    <Input
+                      value={newSeriesInput}
+                      onChange={(e) => setNewSeriesInput(e.target.value)}
+                      placeholder="New series name"
+                      className="h-8 text-sm"
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addNewSeries(); } }}
+                    />
+                    <Button type="button" size="sm" variant="ghost" className="h-8 px-2" onClick={addNewSeries}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
