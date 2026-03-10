@@ -53,7 +53,17 @@ const Dashboard = () => {
   useEffect(() => {
     if (!user) return;
     fetchArtworks();
+    fetchProfile();
   }, [user]);
+
+  const fetchProfile = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("global_artist_id")
+      .eq("user_id", user!.id)
+      .single();
+    if (data) setGlobalArtistId(data.global_artist_id);
+  };
 
   const fetchArtworks = async () => {
     setLoading(true);
