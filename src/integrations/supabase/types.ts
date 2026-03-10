@@ -66,6 +66,7 @@ export type Database = {
         Row: {
           created_at: string
           full_name: string | null
+          global_artist_id: number
           id: string
           id_verified: boolean
           updated_at: string
@@ -74,6 +75,7 @@ export type Database = {
         Insert: {
           created_at?: string
           full_name?: string | null
+          global_artist_id?: number
           id?: string
           id_verified?: boolean
           updated_at?: string
@@ -82,6 +84,7 @@ export type Database = {
         Update: {
           created_at?: string
           full_name?: string | null
+          global_artist_id?: number
           id?: string
           id_verified?: boolean
           updated_at?: string

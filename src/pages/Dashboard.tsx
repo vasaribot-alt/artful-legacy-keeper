@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const userRole = user?.user_metadata?.role || "artist";
   const userName = user?.user_metadata?.full_name || "User";
   const idVerified = false; // Placeholder for ID verification status
@@ -52,7 +53,17 @@ const Dashboard = () => {
   useEffect(() => {
     if (!user) return;
     fetchArtworks();
+    fetchProfile();
   }, [user]);
+
+  const fetchProfile = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("global_artist_id")
+      .eq("user_id", user!.id)
+      .single();
+    if (data) setGlobalArtistId(data.global_artist_id);
+  };
 
   const fetchArtworks = async () => {
     setLoading(true);
@@ -84,6 +95,11 @@ const Dashboard = () => {
           <span className="text-lg font-semibold tracking-tight">ArtVault</span>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{userName}</span>
+            {globalArtistId && (
+              <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
+                ID {globalArtistId}
+              </span>
+            )}
             <span className="text-xs px-2 py-0.5 rounded-sm bg-secondary text-secondary-foreground uppercase tracking-wider">
               {userRole}
             </span>
