@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail } from "lucide-react";
 import { toast } from "sonner";
+import CvManager from "@/components/CvManager";
 
 interface SocialLink {
   platform: string;
@@ -268,7 +269,7 @@ const ArtistProfile = () => {
         {/* CV */}
         <section className="space-y-4">
           <h2 className="text-2xl">CV</h2>
-          <Textarea value={cv} onChange={(e) => setCv(e.target.value)} placeholder="Education, exhibitions, awards, collections…" rows={10} />
+          {profileId && <CvManager profileId={profileId} />}
         </section>
 
         <Separator />

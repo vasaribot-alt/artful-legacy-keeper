@@ -177,6 +177,79 @@ export type Database = {
         }
         Relationships: []
       }
+      cv_entries: {
+        Row: {
+          created_at: string
+          display_order: number
+          entry_text: string
+          id: string
+          profile_id: string
+          section: string
+          year: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          entry_text?: string
+          id?: string
+          profile_id: string
+          section?: string
+          year?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          entry_text?: string
+          id?: string
+          profile_id?: string
+          section?: string
+          year?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_entries_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cv_entry_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          cv_entry_id: string
+          display_order: number
+          id: string
+          storage_path: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          cv_entry_id: string
+          display_order?: number
+          id?: string
+          storage_path: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          cv_entry_id?: string
+          display_order?: number
+          id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_entry_images_cv_entry_id_fkey"
+            columns: ["cv_entry_id"]
+            isOneToOne: false
+            referencedRelation: "cv_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           biography: string | null
