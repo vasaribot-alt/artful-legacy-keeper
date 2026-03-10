@@ -205,8 +205,54 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
               <Input id="year" type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="e.g. 2024" className="mt-1.5" />
             </div>
             <div>
-              <Label htmlFor="series">Series / Group</Label>
-              <Input id="series" value={series} onChange={(e) => setSeries(e.target.value)} className="mt-1.5" />
+              <Label>Series / Group</Label>
+              <Popover open={seriesOpen} onOpenChange={setSeriesOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={seriesOpen}
+                    className="w-full justify-between mt-1.5 font-normal"
+                  >
+                    {series || "Select or add..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[240px] p-2" align="start">
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {seriesOptions.length === 0 && (
+                      <p className="text-xs text-muted-foreground px-2 py-1">No series yet</p>
+                    )}
+                    {seriesOptions.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        className={cn(
+                          "flex items-center gap-2 w-full text-left text-sm px-2 py-1.5 rounded-sm hover:bg-accent",
+                          series === s && "bg-accent"
+                        )}
+                        onClick={() => { setSeries(s); setSeriesOpen(false); }}
+                      >
+                        <Check className={cn("h-3 w-3", series === s ? "opacity-100" : "opacity-0")} />
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                  <Separator className="my-2" />
+                  <div className="flex gap-1">
+                    <Input
+                      value={newSeriesInput}
+                      onChange={(e) => setNewSeriesInput(e.target.value)}
+                      placeholder="New series name"
+                      className="h-8 text-sm"
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addNewSeries(); } }}
+                    />
+                    <Button type="button" size="sm" variant="ghost" className="h-8 px-2" onClick={addNewSeries}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
