@@ -95,6 +95,11 @@ const Dashboard = () => {
           <span className="text-lg font-semibold tracking-tight">ArtVault</span>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{userName}</span>
+            {globalArtistId && (
+              <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
+                ID {globalArtistId}
+              </span>
+            )}
             <span className="text-xs px-2 py-0.5 rounded-sm bg-secondary text-secondary-foreground uppercase tracking-wider">
               {userRole}
             </span>
