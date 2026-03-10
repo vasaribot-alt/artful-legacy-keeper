@@ -28,7 +28,10 @@ const formatDimensions = (h: number | null, w: number | null, d: number | null) 
   return parts.join(" × ") + " cm";
 };
 
+import { useNavigate } from "react-router-dom";
+
 export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
+  const navigate = useNavigate();
   const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [imageCount, setImageCount] = useState(0);
@@ -56,7 +59,7 @@ export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
   const displayUrl = thumbnailUrl || artwork.image_url;
 
   return (
-    <div className="group cursor-pointer">
+    <div className="group cursor-pointer" onClick={() => navigate(`/artwork/${artwork.id}`)}>
       <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3 relative">
         {displayUrl ? (
           <img
