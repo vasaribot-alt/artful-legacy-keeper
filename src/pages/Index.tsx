@@ -135,7 +135,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-muted-foreground">
-          <span>© 2026 Global Artist Registry</span>
+          <span>© 2026 Global Artist Registry Foundation</span>
           <span>Archival-grade art documentation</span>
         </div>
       </footer>

@@ -28,7 +28,7 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <Link to="/" className="text-lg font-semibold tracking-tight block mb-10">
-          Global Artist Registry
+          Global Artist Registry Foundation
         </Link>
         <h1 className="text-3xl mb-2">Sign in</h1>
         <p className="text-sm text-muted-foreground mb-8">
