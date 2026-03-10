@@ -14,16 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      artworks: {
+        Row: {
+          catalogue_number: string | null
+          created_at: string
+          description: string | null
+          dimensions: string | null
+          exhibition_history: string | null
+          id: string
+          image_url: string | null
+          medium: string | null
+          owner_id: string
+          provenance: string | null
+          title: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          catalogue_number?: string | null
+          created_at?: string
+          description?: string | null
+          dimensions?: string | null
+          exhibition_history?: string | null
+          id?: string
+          image_url?: string | null
+          medium?: string | null
+          owner_id: string
+          provenance?: string | null
+          title: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          catalogue_number?: string | null
+          created_at?: string
+          description?: string | null
+          dimensions?: string | null
+          exhibition_history?: string | null
+          id?: string
+          image_url?: string | null
+          medium?: string | null
+          owner_id?: string
+          provenance?: string | null
+          title?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          id_verified: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          id_verified?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          id_verified?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      registrar_access: {
+        Row: {
+          granted_at: string
+          id: string
+          owner_id: string
+          registrar_id: string
+        }
+        Insert: {
+          granted_at?: string
+          id?: string
+          owner_id: string
+          registrar_id: string
+        }
+        Update: {
+          granted_at?: string
+          id?: string
+          owner_id?: string
+          registrar_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "artist" | "collector" | "registrar"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +269,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["artist", "collector", "registrar"],
+    },
   },
 } as const
