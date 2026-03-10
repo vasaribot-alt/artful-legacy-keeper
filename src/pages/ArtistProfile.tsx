@@ -202,6 +202,41 @@ const ArtistProfile = () => {
         {/* Basic Info */}
         <section className="space-y-6">
           <h2 className="text-2xl">Basic Information</h2>
+          
+          {/* Profile Photo */}
+          <div className="flex items-center gap-6">
+            <div className="relative group">
+              <Avatar className="w-24 h-24 border-2 border-border">
+                <AvatarImage src={avatarUrl || undefined} alt="Profile photo" />
+                <AvatarFallback className="text-2xl">
+                  {fullName ? fullName.charAt(0).toUpperCase() : "?"}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={uploadingAvatar}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                {uploadingAvatar ? (
+                  <Loader2 className="w-6 h-6 text-white animate-spin" />
+                ) : (
+                  <Camera className="w-6 h-6 text-white" />
+                )}
+              </button>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Profile Photo</p>
+              <p className="text-xs text-muted-foreground">Click to upload or change</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <Label>Full Name</Label>
