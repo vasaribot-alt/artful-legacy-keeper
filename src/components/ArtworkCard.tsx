@@ -59,7 +59,7 @@ export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
   const displayUrl = thumbnailUrl || artwork.image_url;
 
   return (
-    <div className="group cursor-pointer">
+    <div className="group cursor-pointer" onClick={() => navigate(`/artwork/${artwork.id}`)}>
       <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3 relative">
         {displayUrl ? (
           <img
