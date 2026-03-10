@@ -179,31 +179,61 @@ export type Database = {
       }
       profiles: {
         Row: {
+          biography: string | null
+          birth_year: number | null
+          chronology: string | null
+          city: string | null
+          contacts: string | null
+          country: string | null
           created_at: string
+          cv: string | null
           full_name: string | null
+          galleries: Json | null
           global_artist_id: number
           id: string
           id_verified: boolean
+          social_media_links: Json | null
           updated_at: string
           user_id: string
+          website: string | null
         }
         Insert: {
+          biography?: string | null
+          birth_year?: number | null
+          chronology?: string | null
+          city?: string | null
+          contacts?: string | null
+          country?: string | null
           created_at?: string
+          cv?: string | null
           full_name?: string | null
+          galleries?: Json | null
           global_artist_id?: number
           id?: string
           id_verified?: boolean
+          social_media_links?: Json | null
           updated_at?: string
           user_id: string
+          website?: string | null
         }
         Update: {
+          biography?: string | null
+          birth_year?: number | null
+          chronology?: string | null
+          city?: string | null
+          contacts?: string | null
+          country?: string | null
           created_at?: string
+          cv?: string | null
           full_name?: string | null
+          galleries?: Json | null
           global_artist_id?: number
           id?: string
           id_verified?: boolean
+          social_media_links?: Json | null
           updated_at?: string
           user_id?: string
+          website?: string | null
         }
         Relationships: []
       }
