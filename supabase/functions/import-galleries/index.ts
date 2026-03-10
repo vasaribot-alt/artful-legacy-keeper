@@ -1,30 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import * as XLSX from "https://esm.sh/xlsx@0.18.5";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-function parseMarkdownRow(line: string): { name: string; website: string | null; year: number | null; country: string | null; city: string | null } | null {
-  // Format: |[Gallery Name](url)|year|Country|City|Rank|
-  const parts = line.split("|").filter(Boolean);
-  if (parts.length < 4) return null;
-
-  const nameField = parts[0].trim();
-  // Extract name from [Name](url) format
-  const nameMatch = nameField.match(/\[([^\]]+)\]\(([^)]+)\)/);
-  const name = nameMatch ? nameMatch[1] : nameField;
-  const website = nameMatch ? nameMatch[2] : null;
-
-  if (!name || name === "Gallery Name") return null;
-
-  const yearStr = parts[1]?.trim();
-  const year = yearStr ? parseInt(yearStr) : null;
-  const country = parts[2]?.trim() || null;
-  const city = parts[3]?.trim() || null;
-
-  return { name, website, year: (year && !isNaN(year)) ? year : null, country, city };
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -37,24 +17,34 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const body = await req.json();
-
     let galleries: { name: string; website: string | null; established_year: number | null; country: string | null; city: string | null }[] = [];
 
-    if (body.raw_text) {
-      // Parse markdown table text
-      const lines = body.raw_text.split("\n");
-      for (const line of lines) {
-        const parsed = parseMarkdownRow(line);
-        if (parsed) {
-          galleries.push({
-            name: parsed.name,
-            website: parsed.website,
-            established_year: parsed.year,
-            country: parsed.country,
-            city: parsed.city,
-          });
-        }
+    if (body.from_storage) {
+      // Download XLSX from storage and parse
+      const { data: fileData, error: dlError } = await supabase.storage
+        .from("artwork-documents")
+        .download("galleries-import/Galleries_world_wide.xlsx");
+
+      if (dlError || !fileData) {
+        return new Response(JSON.stringify({ error: "Failed to download file: " + (dlError?.message || "unknown") }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
+
+      const arrayBuffer = await fileData.arrayBuffer();
+      const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+      galleries = rows.map((row: any) => {
+        const name = row["Gallery Name"] || row["Name"] || "";
+        const country = row["Country"] || null;
+        const city = row["City"] || null;
+        const yearRaw = row["Establishe Year"] || row["Established Year"] || null;
+        const established_year = yearRaw ? parseInt(String(yearRaw)) : null;
+        return { name, country, city, established_year: (established_year && !isNaN(established_year)) ? established_year : null, website: null };
+      }).filter((g) => g.name);
     } else if (Array.isArray(body.galleries)) {
       galleries = body.galleries.map((g: any) => ({
         name: g.name,
