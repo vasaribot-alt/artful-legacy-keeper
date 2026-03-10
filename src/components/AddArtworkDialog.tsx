@@ -138,6 +138,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       price: price ? parseFloat(price) : null,
       currency: currency,
       artwork_location: artworkLocation.trim() || null,
+      edition_count: !isUnique && editionCount ? parseInt(editionCount) : null,
+      artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
     });
 
     setLoading(false);
