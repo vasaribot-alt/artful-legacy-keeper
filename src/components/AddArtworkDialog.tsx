@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, ImagePlus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -37,6 +37,11 @@ interface Props {
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
 const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
 const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
+
+interface ImagePreview {
+  file: File;
+  preview: string;
+}
 
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [title, setTitle] = useState("");
@@ -59,6 +64,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [editionCount, setEditionCount] = useState("");
   const [artistProofs, setArtistProofs] = useState("");
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<ImagePreview[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Series dropdown state
   const [seriesOptions, setSeriesOptions] = useState<string[]>([]);
@@ -68,6 +75,13 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   useEffect(() => {
     if (open) fetchSeriesOptions();
   }, [open]);
+
+  useEffect(() => {
+    // Cleanup previews on unmount
+    return () => {
+      images.forEach((img) => URL.revokeObjectURL(img.preview));
+    };
+  }, []);
 
   const fetchSeriesOptions = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -96,12 +110,60 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     setNewSeriesInput("");
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newImages = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setImages((prev) => [...prev, ...newImages]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => {
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
   const resetForm = () => {
     setTitle(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs("");
+    images.forEach((img) => URL.revokeObjectURL(img.preview));
+    setImages([]);
+  };
+
+  const uploadImages = async (userId: string, artworkId: string): Promise<boolean> => {
+    for (let i = 0; i < images.length; i++) {
+      const img = images[i];
+      const ext = img.file.name.split(".").pop() || "jpg";
+      const path = `${userId}/${artworkId}/${crypto.randomUUID()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("artwork-images")
+        .upload(path, img.file);
+
+      if (uploadError) {
+        toast.error(`Failed to upload image ${i + 1}`);
+        return false;
+      }
+
+      const { error: dbError } = await supabase.from("artwork_images").insert({
+        artwork_id: artworkId,
+        storage_path: path,
+        display_order: i,
+      });
+
+      if (dbError) {
+        toast.error(`Failed to save image record ${i + 1}`);
+        return false;
+      }
+    }
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,7 +181,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       return;
     }
 
-    const { error } = await supabase.from("artworks").insert({
+    const { data: artworkData, error } = await supabase.from("artworks").insert({
       owner_id: user.id,
       title: title.trim(),
       artwork_type: artworkType || null,
@@ -140,25 +202,34 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       artwork_location: artworkLocation.trim() || null,
       edition_count: !isUnique && editionCount ? parseInt(editionCount) : null,
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
-    });
+    }).select("id").single();
+
+    if (error || !artworkData) {
+      toast.error("Failed to add artwork");
+      setLoading(false);
+      return;
+    }
+
+    // Upload images
+    if (images.length > 0) {
+      const ok = await uploadImages(user.id, artworkData.id);
+      if (!ok) {
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Save new series
+    if (series.trim() && !seriesOptions.includes(series.trim())) {
+      await supabase.from("series_groups").insert({ user_id: user.id, name: series.trim() }).select();
+      fetchSeriesOptions();
+    }
 
     setLoading(false);
-    if (error) {
-      toast.error("Failed to add artwork");
-    } else {
-      // Save new series to series_groups if not already there
-      if (series.trim() && !seriesOptions.includes(series.trim())) {
-        const { data: { user: u } } = await supabase.auth.getUser();
-        if (u) {
-          await supabase.from("series_groups").insert({ user_id: u.id, name: series.trim() }).select();
-          fetchSeriesOptions();
-        }
-      }
-      toast.success("Artwork added");
-      resetForm();
-      onOpenChange(false);
-      onSuccess();
-    }
+    toast.success("Artwork added");
+    resetForm();
+    onOpenChange(false);
+    onSuccess();
   };
 
   return (
@@ -168,6 +239,43 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
           <DialogTitle>Add Artwork</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 mt-2">
+          {/* Images */}
+          <div>
+            <Label className="mb-1.5 block">Photos</Label>
+            <div className="flex flex-wrap gap-2">
+              {images.map((img, i) => (
+                <div key={i} className="relative w-20 h-20 rounded-sm overflow-hidden border border-border">
+                  <img src={img.preview} alt="" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute top-0.5 right-0.5 bg-background/80 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
+              >
+                <ImagePlus className="w-5 h-5 mb-0.5" />
+                <span className="text-[10px]">Add</span>
+              </button>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+          </div>
+
+          <Separator />
+
           {/* Core info */}
           <div>
             <Label htmlFor="title">Title *</Label>
