@@ -31,7 +31,7 @@ const Index = () => {
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">ArtVault</span>
+          <span className="text-lg font-semibold tracking-tight">Global Artist Registry</span>
           <div className="flex items-center gap-6">
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sign In
@@ -135,7 +135,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border">
         <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-muted-foreground">
-          <span>© 2026 ArtVault</span>
+          <span>© 2026 Global Artist Registry</span>
           <span>Archival-grade art documentation</span>
         </div>
       </footer>
