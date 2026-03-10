@@ -16,48 +16,84 @@ export type Database = {
     Tables: {
       artworks: {
         Row: {
+          artwork_location: string | null
           catalogue_number: string | null
           created_at: string
+          currency: string | null
+          depth: number | null
           description: string | null
           dimensions: string | null
           exhibition_history: string | null
+          height: number | null
           id: string
           image_url: string | null
+          is_unique: boolean
           medium: string | null
           owner_id: string
+          price: number | null
           provenance: string | null
+          series: string | null
+          signed: string | null
+          sub_category: string | null
+          support: string | null
           title: string
           updated_at: string
+          weight: number | null
+          width: number | null
           year: number | null
         }
         Insert: {
+          artwork_location?: string | null
           catalogue_number?: string | null
           created_at?: string
+          currency?: string | null
+          depth?: number | null
           description?: string | null
           dimensions?: string | null
           exhibition_history?: string | null
+          height?: number | null
           id?: string
           image_url?: string | null
+          is_unique?: boolean
           medium?: string | null
           owner_id: string
+          price?: number | null
           provenance?: string | null
+          series?: string | null
+          signed?: string | null
+          sub_category?: string | null
+          support?: string | null
           title: string
           updated_at?: string
+          weight?: number | null
+          width?: number | null
           year?: number | null
         }
         Update: {
+          artwork_location?: string | null
           catalogue_number?: string | null
           created_at?: string
+          currency?: string | null
+          depth?: number | null
           description?: string | null
           dimensions?: string | null
           exhibition_history?: string | null
+          height?: number | null
           id?: string
           image_url?: string | null
+          is_unique?: boolean
           medium?: string | null
           owner_id?: string
+          price?: number | null
           provenance?: string | null
+          series?: string | null
+          signed?: string | null
+          sub_category?: string | null
+          support?: string | null
           title?: string
           updated_at?: string
+          weight?: number | null
+          width?: number | null
           year?: number | null
         }
         Relationships: []
