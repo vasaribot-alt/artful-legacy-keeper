@@ -10,7 +10,6 @@ import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail } from "lucide-react"
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
-import GalleryImport from "../components/GalleryImport";
 
 interface SocialLink {
   platform: string;
@@ -232,7 +231,6 @@ const ArtistProfile = () => {
         <section className="space-y-6">
           <h2 className="text-2xl">Galleries</h2>
           <GallerySearch galleries={galleries} onGalleriesChange={setGalleries} />
-          <GalleryImport />
         </section>
 
         <Separator />
