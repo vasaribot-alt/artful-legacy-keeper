@@ -25,6 +25,7 @@ const Dashboard = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const userRole = user?.user_metadata?.role || "artist";
   const userName = user?.user_metadata?.full_name || "User";
   const idVerified = false; // Placeholder for ID verification status
