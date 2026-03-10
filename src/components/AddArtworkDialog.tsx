@@ -34,7 +34,14 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     }
 
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Not authenticated");
+      setLoading(false);
+      return;
+    }
     const { error } = await supabase.from("artworks").insert({
+      owner_id: user.id,
       title: title.trim(),
       medium: medium.trim() || null,
       year: year ? parseInt(year) : null,
