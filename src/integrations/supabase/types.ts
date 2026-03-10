@@ -282,6 +282,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           biography: string | null
           birth_year: number | null
           chronology: string | null
@@ -301,6 +302,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          avatar_url?: string | null
           biography?: string | null
           birth_year?: number | null
           chronology?: string | null
@@ -320,6 +322,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          avatar_url?: string | null
           biography?: string | null
           birth_year?: number | null
           chronology?: string | null
