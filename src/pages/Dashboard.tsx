@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog } from "@/components/AddArtworkDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
+import { ArtworkListItem } from "@/components/ArtworkListItem";
 import type { User } from "@supabase/supabase-js";
 
 interface Artwork {
