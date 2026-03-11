@@ -12,6 +12,7 @@ import ArtworkView from "./pages/ArtworkView";
 import ArtistProfile from "./pages/ArtistProfile";
 import ArtistProfileView from "./pages/ArtistProfileView";
 import ArtistCvView from "./pages/ArtistCvView";
+import CvEdit from "./pages/CvEdit";
 import ArtworksGalleryView from "./pages/ArtworksGalleryView";
 import Exhibitions from "./pages/Exhibitions";
 import Provenance from "./pages/Provenance";
@@ -32,7 +33,8 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<ArtistProfile />} />
           <Route path="/profile/view" element={<ArtistProfileView />} />
-          <Route path="/profile/cv" element={<ArtistCvView />} />
+          <Route path="/profile/cv/view" element={<ArtistCvView />} />
+          <Route path="/cv" element={<CvEdit />} />
           <Route path="/dashboard/view" element={<ArtworksGalleryView />} />
           <Route path="/artwork/:id" element={<ArtworkDetail />} />
           <Route path="/artwork/:id/view" element={<ArtworkView />} />

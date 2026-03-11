@@ -301,7 +301,7 @@ const ArtistProfileView = () => {
         {cvSections.length > 0 && (
           <section className="mb-16">
             <div
-              onClick={() => navigate("/profile/cv")}
+              onClick={() => navigate("/profile/cv/view")}
               className="flex items-center justify-between p-5 rounded-md border border-border hover:bg-muted/50 transition-colors cursor-pointer group"
             >
               <div>

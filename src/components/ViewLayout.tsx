@@ -10,7 +10,7 @@ interface ViewNavItem {
 const viewNavItems: ViewNavItem[] = [
   { label: "Profile", path: "/profile/view" },
   { label: "Artworks", path: "/dashboard/view" },
-  { label: "CV", path: "/profile/cv" },
+  { label: "CV", path: "/profile/cv/view" },
 ];
 
 interface ViewLayoutProps {
