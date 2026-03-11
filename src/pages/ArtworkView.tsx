@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ViewLayout } from "@/components/ViewLayout";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Pencil, ArrowLeft } from "lucide-react";
+import { AppLayout } from "@/components/AppLayout";
 
 interface ArtworkImage {
   id: string;
