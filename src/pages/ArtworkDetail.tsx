@@ -174,6 +174,8 @@ const ArtworkDetail = () => {
       artwork_location: artworkLocation.trim() || null,
       edition_count: !isUnique && editionCount ? parseInt(editionCount) : null,
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
+      exhibition_history: exhibitionHistory.trim() || null,
+      provenance: provenance.trim() || null,
     }).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
