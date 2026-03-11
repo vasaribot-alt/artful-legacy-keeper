@@ -402,10 +402,17 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               <Label>Unique work</Label>
               <p className="text-xs text-muted-foreground">Toggle off for editions</p>
             </div>
-            <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); } }} />
+            <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); setEditionNumber(""); } }} />
           </div>
 
-          {!isUnique && (
+          {!isUnique && isCollector && (
+            <div>
+              <Label htmlFor="editionNumber">Edition number</Label>
+              <Input id="editionNumber" value={editionNumber} onChange={(e) => setEditionNumber(e.target.value)} placeholder="e.g. 3/8" className="mt-1.5" />
+            </div>
+          )}
+
+          {!isUnique && !isCollector && (
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="editionCount">Number of editions</Label>
