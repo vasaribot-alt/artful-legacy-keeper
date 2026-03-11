@@ -197,22 +197,47 @@ const ArtistProfile = () => {
     );
   }
 
-  const headerActions = (
+  const profileViewData: ProfileViewData | null = globalArtistId ? {
+    full_name: fullName || null,
+    avatar_url: avatarUrl,
+    birth_year: birthYear ? parseInt(birthYear) : null,
+    city: city || null,
+    country: country || null,
+    studio_address: studioAddress || null,
+    phone_prefix: phonePrefix || null,
+    phone: phone || null,
+    email: email || null,
+    website: website || null,
+    social_media_links: socialLinks,
+    galleries: galleries,
+    biography: biography || null,
+    chronology: chronology || null,
+    global_artist_id: globalArtistId,
+  } : null;
+
+  const headerActions = editMode ? (
     <>
-      {globalArtistId && (
-        <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
-          ID {globalArtistId}
-        </span>
-      )}
-      <Button variant="outline" size="sm" onClick={() => navigate("/profile/view")} className="gap-1.5">
-        <Eye className="w-4 h-4" /> View
-      </Button>
       <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
         <Save className="w-4 h-4" />
         {saving ? "Saving…" : "Save"}
       </Button>
+      <Button variant="outline" size="sm" onClick={() => setEditMode(false)} className="gap-1.5">
+        <Eye className="w-4 h-4" /> Done
+      </Button>
     </>
+  ) : (
+    <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
+      <Pencil className="w-3.5 h-3.5" /> Edit
+    </Button>
   );
+
+  if (!editMode && profileViewData) {
+    return (
+      <AppLayout title="Artist Profile" headerActions={headerActions}>
+        <ProfilePresentationView profile={profileViewData} />
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout title="Artist Profile" headerActions={headerActions}>
