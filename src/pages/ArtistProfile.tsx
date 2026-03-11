@@ -303,8 +303,33 @@ const ArtistProfile = () => {
           <h2 className="text-2xl">Contacts & Web</h2>
           <div className="space-y-4">
             <div>
-              <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Contacts</Label>
-              <Textarea value={contacts} onChange={(e) => setContacts(e.target.value)} placeholder="Phone, email, address…" className="mt-1" rows={3} />
+              <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Phone</Label>
+              <div className="flex gap-2 mt-1">
+                <select
+                  value={phonePrefix}
+                  onChange={(e) => setPhonePrefix(e.target.value)}
+                  className="flex h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-[100px] shrink-0"
+                >
+                  <option value="">Prefix</option>
+                  {Object.entries(COUNTRY_PHONE_CODES)
+                    .sort((a, b) => a[0].localeCompare(b[0]))
+                    .map(([c, code]) => (
+                      <option key={c} value={code}>
+                        {code} {c}
+                      </option>
+                    ))}
+                </select>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Phone number"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Email</Label>
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="artist@example.com" className="mt-1" type="email" />
             </div>
             <div>
               <Label className="flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Website</Label>
