@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ArtworkDetail from "./pages/ArtworkDetail";
 import ArtistProfile from "./pages/ArtistProfile";
+import ArtistProfileView from "./pages/ArtistProfileView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
