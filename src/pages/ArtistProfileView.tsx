@@ -140,17 +140,21 @@ const ArtistProfileView = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading…</p>
-      </div>
+      <ViewLayout editPath="/profile">
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Loading…</p>
+        </div>
+      </ViewLayout>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Profile not found</p>
-      </div>
+      <ViewLayout editPath="/profile">
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Profile not found</p>
+        </div>
+      </ViewLayout>
     );
   }
 
