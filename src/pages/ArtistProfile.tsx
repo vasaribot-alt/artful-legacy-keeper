@@ -109,6 +109,11 @@ const ArtistProfile = () => {
       setBiography((data as any).biography || "");
       setCv((data as any).cv || "");
       setChronology((data as any).chronology || "");
+      // Auto-set phone prefix from country if not already set
+      if (!(data as any).phone_prefix && (data as any).country) {
+        const autoPrefix = getPhonePrefixForCountry((data as any).country);
+        if (autoPrefix) setPhonePrefix(autoPrefix);
+      }
       setLoading(false);
     };
     loadProfile();
