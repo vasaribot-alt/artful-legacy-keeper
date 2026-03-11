@@ -326,7 +326,7 @@ const ArtistProfileView = () => {
           </section>
         )}
       </main>
-    </div>
+    </ViewLayout>
   );
 };
 
