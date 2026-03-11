@@ -189,7 +189,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       return;
     }
 
-    const { data: artworkData, error } = await supabase.from("artworks").insert({
+    const insertData: Record<string, unknown> = {
       owner_id: user.id,
       title: title.trim(),
       artwork_type: artworkType || null,
@@ -212,7 +212,11 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
-    }).select("id").single();
+      artist_name: artistName.trim() || null,
+      edition_number: editionNumber.trim() || null,
+    };
+
+    const { data: artworkData, error } = await supabase.from("artworks").insert(insertData as any).select("id").single();
 
     if (error || !artworkData) {
       toast.error("Failed to add artwork");
