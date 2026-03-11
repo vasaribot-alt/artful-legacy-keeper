@@ -11,6 +11,7 @@ import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2 } fr
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
+import { getPhonePrefixForCountry, COUNTRY_PHONE_CODES } from "@/lib/phoneCountryCodes";
 
 interface SocialLink {
   platform: string;
@@ -62,7 +63,9 @@ const ArtistProfile = () => {
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [studioAddress, setStudioAddress] = useState("");
-  const [contacts, setContacts] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -97,13 +100,20 @@ const ArtistProfile = () => {
       setCity((data as any).city || "");
       setCountry((data as any).country || "");
       setStudioAddress((data as any).studio_address || "");
-      setContacts((data as any).contacts || "");
+      setPhonePrefix((data as any).phone_prefix || "");
+      setPhone((data as any).phone || "");
+      setEmail((data as any).email || "");
       setWebsite((data as any).website || "");
       setSocialLinks((data as any).social_media_links || []);
       setGalleries((data as any).galleries || []);
       setBiography((data as any).biography || "");
       setCv((data as any).cv || "");
       setChronology((data as any).chronology || "");
+      // Auto-set phone prefix from country if not already set
+      if (!(data as any).phone_prefix && (data as any).country) {
+        const autoPrefix = getPhonePrefixForCountry((data as any).country);
+        if (autoPrefix) setPhonePrefix(autoPrefix);
+      }
       setLoading(false);
     };
     loadProfile();
@@ -121,7 +131,9 @@ const ArtistProfile = () => {
         city: city || null,
         country: country || null,
         studio_address: studioAddress || null,
-        contacts: contacts || null,
+        phone_prefix: phonePrefix || null,
+        phone: phone || null,
+        email: email || null,
         website: website || null,
         social_media_links: socialLinks,
         galleries: galleries,
@@ -279,7 +291,11 @@ const ArtistProfile = () => {
             </div>
             <div>
               <Label>Country</Label>
-              <Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="e.g. Norway" className="mt-1" />
+              <Input value={country} onChange={(e) => {
+                setCountry(e.target.value);
+                const prefix = getPhonePrefixForCountry(e.target.value);
+                if (prefix) setPhonePrefix(prefix);
+              }} placeholder="e.g. Norway" className="mt-1" />
             </div>
             <div className="sm:col-span-2">
               <Label>Studio Address</Label>
@@ -295,8 +311,33 @@ const ArtistProfile = () => {
           <h2 className="text-2xl">Contacts & Web</h2>
           <div className="space-y-4">
             <div>
-              <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Contacts</Label>
-              <Textarea value={contacts} onChange={(e) => setContacts(e.target.value)} placeholder="Phone, email, address…" className="mt-1" rows={3} />
+              <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Phone</Label>
+              <div className="flex gap-2 mt-1">
+                <select
+                  value={phonePrefix}
+                  onChange={(e) => setPhonePrefix(e.target.value)}
+                  className="flex h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-[100px] shrink-0"
+                >
+                  <option value="">Prefix</option>
+                  {Object.entries(COUNTRY_PHONE_CODES)
+                    .sort((a, b) => a[0].localeCompare(b[0]))
+                    .map(([c, code]) => (
+                      <option key={c} value={code}>
+                        {code} {c}
+                      </option>
+                    ))}
+                </select>
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Phone number"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Email</Label>
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="artist@example.com" className="mt-1" type="email" />
             </div>
             <div>
               <Label className="flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Website</Label>
