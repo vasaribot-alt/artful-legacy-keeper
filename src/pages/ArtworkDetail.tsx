@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { ExhibitionPicker } from "@/components/ExhibitionPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,6 +69,7 @@ const ArtworkDetail = () => {
   const [artistProofs, setArtistProofs] = useState("");
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
+  const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
 
   // Images
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
@@ -118,6 +120,13 @@ const ArtworkDetail = () => {
     setArtistProofs(data.artist_proofs ? String(data.artist_proofs) : "");
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
+
+    // Load linked exhibition entries
+    const { data: exhLinks } = await supabase
+      .from("artwork_exhibitions")
+      .select("cv_entry_id")
+      .eq("artwork_id", id!);
+    if (exhLinks) setSelectedExhibitionIds(exhLinks.map((l: any) => l.cv_entry_id));
 
     // Load images
     const { data: imgs } = await supabase
@@ -225,6 +234,14 @@ const ArtworkDetail = () => {
         file_size: file.size,
         storage_path: path,
       });
+    }
+
+    // Sync exhibition links
+    await supabase.from("artwork_exhibitions").delete().eq("artwork_id", id!);
+    if (selectedExhibitionIds.length > 0) {
+      await supabase.from("artwork_exhibitions").insert(
+        selectedExhibitionIds.map((cv_entry_id) => ({ artwork_id: id!, cv_entry_id }))
+      );
     }
 
     toast.success("Artwork saved");
@@ -462,10 +479,10 @@ const ArtworkDetail = () => {
           <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5" />
         </div>
 
-        <div>
-          <Label htmlFor="exhibition">Exhibition History</Label>
-          <Textarea id="exhibition" value={exhibitionHistory} onChange={(e) => setExhibitionHistory(e.target.value)} placeholder="List exhibitions where this work has been shown…" rows={4} className="mt-1.5" />
-        </div>
+        <ExhibitionPicker
+          selectedIds={selectedExhibitionIds}
+          onSelectionChange={setSelectedExhibitionIds}
+        />
 
         <div>
           <Label htmlFor="provenance">Provenance</Label>

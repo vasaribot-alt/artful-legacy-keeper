@@ -52,6 +52,42 @@ export type Database = {
           },
         ]
       }
+      artwork_exhibitions: {
+        Row: {
+          artwork_id: string
+          created_at: string
+          cv_entry_id: string
+          id: string
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string
+          cv_entry_id: string
+          id?: string
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string
+          cv_entry_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_exhibitions_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artwork_exhibitions_cv_entry_id_fkey"
+            columns: ["cv_entry_id"]
+            isOneToOne: false
+            referencedRelation: "cv_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artwork_images: {
         Row: {
           artwork_id: string

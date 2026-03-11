@@ -27,6 +27,7 @@ import { Check, ChevronsUpDown, Plus, ImagePlus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ExhibitionPicker } from "@/components/ExhibitionPicker";
 
 interface Props {
   open: boolean;
@@ -46,6 +47,7 @@ interface ImagePreview {
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [title, setTitle] = useState("");
   const [exhibitionHistory, setExhibitionHistory] = useState("");
+  const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [provenance, setProvenance] = useState("");
   const [artworkType, setArtworkType] = useState("");
   const [medium, setMedium] = useState("");
@@ -131,7 +133,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
   const resetForm = () => {
     setTitle(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
-    setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
+    setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs("");
@@ -221,6 +223,13 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
         setLoading(false);
         return;
       }
+    }
+
+    // Link exhibition entries
+    if (selectedExhibitionIds.length > 0) {
+      await supabase.from("artwork_exhibitions").insert(
+        selectedExhibitionIds.map((cv_entry_id) => ({ artwork_id: artworkData.id, cv_entry_id }))
+      );
     }
 
     // Save new series
@@ -474,10 +483,10 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5" />
           </div>
 
-          <div>
-            <Label htmlFor="exhibition">Exhibition History</Label>
-            <Textarea id="exhibition" value={exhibitionHistory} onChange={(e) => setExhibitionHistory(e.target.value)} placeholder="List exhibitions where this work has been shown…" rows={3} className="mt-1.5" />
-          </div>
+          <ExhibitionPicker
+            selectedIds={selectedExhibitionIds}
+            onSelectionChange={setSelectedExhibitionIds}
+          />
 
           <div>
             <Label htmlFor="provenance">Provenance</Label>
