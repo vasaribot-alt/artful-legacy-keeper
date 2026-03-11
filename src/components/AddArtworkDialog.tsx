@@ -108,8 +108,35 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [newSeriesInput, setNewSeriesInput] = useState("");
 
   useEffect(() => {
-    if (open) fetchSeriesOptions();
-  }, [open]);
+    if (open) {
+      fetchSeriesOptions();
+      if (initialData) {
+        setTitle(initialData.title || "");
+        setArtistName(initialData.artistName || "");
+        setArtworkType(initialData.artworkType || "");
+        setMedium(initialData.medium || "");
+        setYear(initialData.year || "");
+        setDescription(initialData.description || "");
+        setIsUnique(initialData.isUnique ?? true);
+        setSeries(initialData.series || "");
+        setSubCategory(initialData.subCategory || "");
+        setSupport(initialData.support || "");
+        setSigned(initialData.signed || "");
+        setHeight(initialData.height || "");
+        setWidth(initialData.width || "");
+        setDepth(initialData.depth || "");
+        setWeight(initialData.weight || "");
+        setPrice(initialData.price || "");
+        setCurrency(initialData.currency || "EUR");
+        setArtworkLocation(initialData.artworkLocation || "");
+        setEditionCount(initialData.editionCount || "");
+        setArtistProofs(initialData.artistProofs || "");
+        setEditionNumber(initialData.editionNumber || "");
+        setExhibitionHistory(initialData.exhibitionHistory || "");
+        setProvenance(initialData.provenance || "");
+      }
+    }
+  }, [open, initialData]);
 
   useEffect(() => {
     // Cleanup previews on unmount
