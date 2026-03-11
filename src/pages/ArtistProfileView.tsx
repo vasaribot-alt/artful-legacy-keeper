@@ -318,44 +318,18 @@ const ArtistProfileView = () => {
         {/* CV */}
         {cvSections.length > 0 && (
           <section className="mb-16">
-            <h2 className="text-2xl mb-6">CV</h2>
-            <div className="space-y-8">
-              {cvSections.map((s, si) => (
-                <div key={si}>
-                  <h3 className="text-lg font-semibold mb-4 text-foreground/90">{s.section}</h3>
-                  <div className="space-y-3">
-                    {s.entries.map((entry, ei) => (
-                      <div key={ei} className="flex gap-4">
-                        {entry.year && (
-                          <span className="text-sm text-muted-foreground font-mono w-16 shrink-0 pt-0.5">
-                            {entry.year}
-                          </span>
-                        )}
-                        <div className="flex-1">
-                          <p className="text-sm text-foreground/80">{entry.entry_text}</p>
-                          {entry.images.length > 0 && (
-                            <div className="flex gap-2 mt-2 flex-wrap">
-                              {entry.images.map((img, ii) => {
-                                const { data } = supabase.storage
-                                  .from("cv-images")
-                                  .getPublicUrl(img.storage_path);
-                                return (
-                                  <img
-                                    key={ii}
-                                    src={data.publicUrl}
-                                    alt={img.caption || ""}
-                                    className="w-20 h-20 object-cover rounded border border-border"
-                                  />
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div
+              onClick={() => navigate("/profile/cv")}
+              className="flex items-center justify-between p-5 rounded-md border border-border hover:bg-muted/50 transition-colors cursor-pointer group"
+            >
+              <div>
+                <h2 className="text-xl mb-1">Curriculum Vitae</h2>
+                <p className="text-sm text-muted-foreground">
+                  {cvSections.length} section{cvSections.length !== 1 ? "s" : ""} ·{" "}
+                  {cvSections.reduce((sum, s) => sum + s.entries.length, 0)} entries
+                </p>
+              </div>
+              <ExternalLink className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
             </div>
           </section>
         )}
