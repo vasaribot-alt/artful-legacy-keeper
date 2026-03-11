@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Pencil, Eye } from "lucide-react";
+import { Plus, Trash2, Pencil, Eye, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 
@@ -13,6 +13,14 @@ interface SeriesGroup {
   created_at: string;
 }
 
+interface SeriesArtwork {
+  id: string;
+  title: string;
+  year: number | null;
+  medium: string | null;
+  imageUrl: string | null;
+}
+
 const Series = () => {
   const navigate = useNavigate();
   const [series, setSeries] = useState<SeriesGroup[]>([]);
@@ -20,6 +28,9 @@ const Series = () => {
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [expandedSeries, setExpandedSeries] = useState<string | null>(null);
+  const [seriesArtworks, setSeriesArtworks] = useState<Record<string, SeriesArtwork[]>>({});
+  const [loadingArtworks, setLoadingArtworks] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -39,6 +50,50 @@ const Series = () => {
     if (error) toast.error("Failed to load series");
     else setSeries(data || []);
     setLoading(false);
+  };
+
+  const fetchArtworksForSeries = async (seriesName: string) => {
+    if (seriesArtworks[seriesName]) return;
+    setLoadingArtworks(seriesName);
+    const { data, error } = await supabase
+      .from("artworks")
+      .select("id, title, year, medium")
+      .eq("series", seriesName)
+      .order("year", { ascending: false });
+    if (error) {
+      toast.error("Failed to load artworks");
+      setLoadingArtworks(null);
+      return;
+    }
+    const withImages: SeriesArtwork[] = await Promise.all(
+      (data || []).map(async (art) => {
+        const { data: imgs } = await supabase
+          .from("artwork_images")
+          .select("storage_path")
+          .eq("artwork_id", art.id)
+          .order("display_order")
+          .limit(1);
+        let imageUrl: string | null = null;
+        if (imgs && imgs.length > 0) {
+          const { data: urlData } = supabase.storage
+            .from("artwork-images")
+            .getPublicUrl(imgs[0].storage_path);
+          imageUrl = urlData.publicUrl;
+        }
+        return { ...art, imageUrl };
+      })
+    );
+    setSeriesArtworks((prev) => ({ ...prev, [seriesName]: withImages }));
+    setLoadingArtworks(null);
+  };
+
+  const toggleExpand = (seriesName: string) => {
+    if (expandedSeries === seriesName) {
+      setExpandedSeries(null);
+    } else {
+      setExpandedSeries(seriesName);
+      fetchArtworksForSeries(seriesName);
+    }
   };
 
   const handleAdd = async () => {
@@ -78,6 +133,51 @@ const Series = () => {
       <Pencil className="w-3.5 h-3.5" /> Edit
     </Button>
   );
+
+  const renderArtworksList = (seriesName: string) => {
+    if (loadingArtworks === seriesName) {
+      return (
+        <div className="pl-6 pt-2 space-y-2">
+          {[1, 2].map((i) => (
+            <div key={i} className="h-14 bg-secondary animate-pulse rounded-sm" />
+          ))}
+        </div>
+      );
+    }
+    const artworks = seriesArtworks[seriesName];
+    if (!artworks || artworks.length === 0) {
+      return (
+        <p className="pl-6 pt-2 text-xs text-muted-foreground">No artworks in this series.</p>
+      );
+    }
+    return (
+      <div className="pl-2 pt-2 space-y-1">
+        {artworks.map((art) => (
+          <div
+            key={art.id}
+            className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-secondary/50 transition-colors cursor-pointer"
+            onClick={() => navigate(`/artwork/${art.id}/view`)}
+          >
+            <div className="w-10 h-10 rounded-sm bg-secondary overflow-hidden shrink-0">
+              {art.imageUrl ? (
+                <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" loading="lazy" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[8px]">—</div>
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium italic truncate">{art.title}</p>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                {art.year && <span>{art.year}</span>}
+                {art.year && art.medium && <span>·</span>}
+                {art.medium && <span className="truncate">{art.medium}</span>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <AppLayout title="Series" headerActions={headerActions}>
@@ -129,8 +229,8 @@ const Series = () => {
           )}
         </div>
       ) : (
-        /* View mode – clean presentation */
-        <div className="max-w-xl mx-auto px-6 py-10">
+        /* View mode – expandable series with artworks */
+        <div className="max-w-2xl mx-auto px-6 py-10">
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
@@ -145,11 +245,29 @@ const Series = () => {
               </Button>
             </div>
           ) : (
-            <ul className="space-y-3">
+            <div className="space-y-1">
               {series.map((s) => (
-                <li key={s.id} className="text-sm font-medium">{s.name}</li>
+                <div key={s.id}>
+                  <button
+                    onClick={() => toggleExpand(s.name)}
+                    className="w-full flex items-center gap-2 px-3 py-3 rounded-sm hover:bg-secondary/50 transition-colors text-left"
+                  >
+                    {expandedSeries === s.name ? (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                    )}
+                    <span className="text-sm font-medium">{s.name}</span>
+                    {seriesArtworks[s.name] && (
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {seriesArtworks[s.name].length} work{seriesArtworks[s.name].length !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </button>
+                  {expandedSeries === s.name && renderArtworksList(s.name)}
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       )}
