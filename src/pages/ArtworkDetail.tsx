@@ -504,6 +504,11 @@ const ArtworkDetail = () => {
           onSelectionChange={setSelectedExhibitionIds}
         />
 
+        <CataloguePicker
+          selectedIds={selectedCatalogueIds}
+          onSelectionChange={setSelectedCatalogueIds}
+        />
+
         <div>
           <Label htmlFor="provenance">Provenance</Label>
           <Textarea id="provenance" value={provenance} onChange={(e) => setProvenance(e.target.value)} placeholder="Ownership history…" rows={3} className="mt-1.5" />
