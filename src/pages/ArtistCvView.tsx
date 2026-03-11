@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
+import { ViewLayout } from "@/components/ViewLayout";
 
 interface CvEntry {
   section: string;
