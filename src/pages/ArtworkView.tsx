@@ -78,11 +78,11 @@ const ArtworkView = () => {
 
   if (loading) {
     return (
-      <ViewLayout editPath={`/artwork/${id}`}>
+      <AppLayout title={artwork?.title || "Artwork"} headerActions={headerActions}>
         <div className="flex items-center justify-center py-20">
           <p className="text-muted-foreground">Loading...</p>
         </div>
-      </ViewLayout>
+      </AppLayout>
     );
   }
 
