@@ -133,6 +133,7 @@ export type Database = {
           dimensions: string | null
           edition_count: number | null
           exhibition_history: string | null
+          global_artwork_id: number
           height: number | null
           id: string
           image_url: string | null
@@ -163,6 +164,7 @@ export type Database = {
           dimensions?: string | null
           edition_count?: number | null
           exhibition_history?: string | null
+          global_artwork_id?: number
           height?: number | null
           id?: string
           image_url?: string | null
@@ -193,6 +195,7 @@ export type Database = {
           dimensions?: string | null
           edition_count?: number | null
           exhibition_history?: string | null
+          global_artwork_id?: number
           height?: number | null
           id?: string
           image_url?: string | null
