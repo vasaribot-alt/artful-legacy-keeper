@@ -297,6 +297,7 @@ export type Database = {
           id: string
           id_verified: boolean
           social_media_links: Json | null
+          studio_address: string | null
           updated_at: string
           user_id: string
           website: string | null
@@ -317,6 +318,7 @@ export type Database = {
           id?: string
           id_verified?: boolean
           social_media_links?: Json | null
+          studio_address?: string | null
           updated_at?: string
           user_id: string
           website?: string | null
@@ -337,6 +339,7 @@ export type Database = {
           id?: string
           id_verified?: boolean
           social_media_links?: Json | null
+          studio_address?: string | null
           updated_at?: string
           user_id?: string
           website?: string | null

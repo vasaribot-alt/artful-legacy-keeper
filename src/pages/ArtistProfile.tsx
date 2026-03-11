@@ -61,6 +61,7 @@ const ArtistProfile = () => {
   const [birthYear, setBirthYear] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
+  const [studioAddress, setStudioAddress] = useState("");
   const [contacts, setContacts] = useState("");
   const [website, setWebsite] = useState("");
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -95,6 +96,7 @@ const ArtistProfile = () => {
       setBirthYear((data as any).birth_year?.toString() || "");
       setCity((data as any).city || "");
       setCountry((data as any).country || "");
+      setStudioAddress((data as any).studio_address || "");
       setContacts((data as any).contacts || "");
       setWebsite((data as any).website || "");
       setSocialLinks((data as any).social_media_links || []);
@@ -118,6 +120,7 @@ const ArtistProfile = () => {
         birth_year: birthYear ? parseInt(birthYear) : null,
         city: city || null,
         country: country || null,
+        studio_address: studioAddress || null,
         contacts: contacts || null,
         website: website || null,
         social_media_links: socialLinks,
@@ -277,6 +280,10 @@ const ArtistProfile = () => {
             <div>
               <Label>Country</Label>
               <Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="e.g. Norway" className="mt-1" />
+            </div>
+            <div className="sm:col-span-2">
+              <Label>Studio Address</Label>
+              <Input value={studioAddress} onChange={(e) => setStudioAddress(e.target.value)} placeholder="e.g. Prinsens gate 2, 0152 Oslo" className="mt-1" />
             </div>
           </div>
         </section>
