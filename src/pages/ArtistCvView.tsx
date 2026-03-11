@@ -267,8 +267,8 @@ const ArtistCvView = () => {
             </div>
           </>
         )}
-      </main>
-    </div>
+      </div>
+    </ViewLayout>
   );
 };
 
