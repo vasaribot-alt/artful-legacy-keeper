@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
   Globe,
   Phone,
   Mail,
   MapPin,
-  Pencil,
   ExternalLink,
-  ArrowLeft,
   Building2,
 } from "lucide-react";
+import { ViewLayout } from "@/components/ViewLayout";
 
 interface SocialLink {
   platform: string;
