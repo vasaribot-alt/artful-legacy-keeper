@@ -12,6 +12,7 @@ import ArtworkView from "./pages/ArtworkView";
 import ArtistProfile from "./pages/ArtistProfile";
 import ArtistProfileView from "./pages/ArtistProfileView";
 import ArtistCvView from "./pages/ArtistCvView";
+import CvEdit from "./pages/CvEdit";
 import ArtworksGalleryView from "./pages/ArtworksGalleryView";
 import Exhibitions from "./pages/Exhibitions";
 import Provenance from "./pages/Provenance";
