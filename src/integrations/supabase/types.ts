@@ -122,6 +122,7 @@ export type Database = {
       }
       artworks: {
         Row: {
+          artist_name: string | null
           artist_proofs: number | null
           artwork_location: string | null
           artwork_type: string | null
@@ -132,6 +133,7 @@ export type Database = {
           description: string | null
           dimensions: string | null
           edition_count: number | null
+          edition_number: string | null
           exhibition_history: string | null
           global_artwork_id: number
           height: number | null
@@ -153,6 +155,7 @@ export type Database = {
           year: number | null
         }
         Insert: {
+          artist_name?: string | null
           artist_proofs?: number | null
           artwork_location?: string | null
           artwork_type?: string | null
@@ -163,6 +166,7 @@ export type Database = {
           description?: string | null
           dimensions?: string | null
           edition_count?: number | null
+          edition_number?: string | null
           exhibition_history?: string | null
           global_artwork_id?: number
           height?: number | null
@@ -184,6 +188,7 @@ export type Database = {
           year?: number | null
         }
         Update: {
+          artist_name?: string | null
           artist_proofs?: number | null
           artwork_location?: string | null
           artwork_type?: string | null
@@ -194,6 +199,7 @@ export type Database = {
           description?: string | null
           dimensions?: string | null
           edition_count?: number | null
+          edition_number?: string | null
           exhibition_history?: string | null
           global_artwork_id?: number
           height?: number | null
