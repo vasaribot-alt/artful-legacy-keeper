@@ -61,6 +61,7 @@ const ArtistProfile = () => {
   const [birthYear, setBirthYear] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
+  const [studioAddress, setStudioAddress] = useState("");
   const [contacts, setContacts] = useState("");
   const [website, setWebsite] = useState("");
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
