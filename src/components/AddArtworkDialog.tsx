@@ -29,11 +29,38 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
 
+export interface ArtworkDuplicateData {
+  title?: string;
+  artistName?: string;
+  artworkType?: string;
+  medium?: string;
+  year?: string;
+  description?: string;
+  isUnique?: boolean;
+  series?: string;
+  subCategory?: string;
+  support?: string;
+  signed?: string;
+  height?: string;
+  width?: string;
+  depth?: string;
+  weight?: string;
+  price?: string;
+  currency?: string;
+  artworkLocation?: string;
+  editionCount?: string;
+  artistProofs?: string;
+  editionNumber?: string;
+  exhibitionHistory?: string;
+  provenance?: string;
+}
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
   userRole?: string;
+  initialData?: ArtworkDuplicateData | null;
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
