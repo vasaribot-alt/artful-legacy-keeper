@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, Shield, User as UserIcon, LayoutGrid, List } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog } from "@/components/AddArtworkDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
+import { AppLayout } from "@/components/AppLayout";
 import type { User } from "@supabase/supabase-js";
 
 interface Artwork {
@@ -41,26 +42,17 @@ const Dashboard = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const userRole = user?.user_metadata?.role || "artist";
-  const userName = user?.user_metadata?.full_name || "User";
-  const idVerified = false; // Placeholder for ID verification status
+  const idVerified = false;
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate("/login");
-        return;
-      }
+      if (!session) { navigate("/login"); return; }
       setUser(session.user);
     });
-
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/login");
-        return;
-      }
+      if (!session) { navigate("/login"); return; }
       setUser(session.user);
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
 
@@ -85,7 +77,6 @@ const Dashboard = () => {
       .from("artworks")
       .select("*")
       .order("created_at", { ascending: false });
-
     if (error) {
       toast.error("Failed to load artworks");
     } else {
@@ -94,43 +85,37 @@ const Dashboard = () => {
     setLoading(false);
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
   if (!user) return null;
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">Global Artist Registry Foundation</span>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{userName}</span>
-            {globalArtistId && (
-              <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
-                ID {globalArtistId}
-              </span>
-            )}
-            <span className="text-xs px-2 py-0.5 rounded-sm bg-secondary text-secondary-foreground uppercase tracking-wider">
-              {userRole}
-            </span>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/profile")} title="Artist Profile">
-              <UserIcon className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </header>
+  const headerActions = (
+    <>
+      {globalArtistId && (
+        <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
+          ID {globalArtistId}
+        </span>
+      )}
+      <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
+        <ToggleGroupItem value="grid" aria-label="Grid view">
+          <LayoutGrid className="w-4 h-4" />
+        </ToggleGroupItem>
+        <ToggleGroupItem value="list" aria-label="List view">
+          <List className="w-4 h-4" />
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <Button onClick={() => setDialogOpen(true)} className="gap-2" size="sm">
+        <Plus className="w-4 h-4" /> Add Artwork
+      </Button>
+    </>
+  );
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
-        {/* ID Verification Banner */}
+  return (
+    <AppLayout
+      title={userRole === "artist" ? "Catalogue Raisonné" : userRole === "collector" ? "Collection" : "Managed Artworks"}
+      headerActions={headerActions}
+    >
+      <div className="max-w-6xl mx-auto px-6 py-8">
         {!idVerified && (
-          <div className="flex items-center gap-3 p-4 mb-8 rounded-sm border border-border bg-surface">
+          <div className="flex items-center gap-3 p-4 mb-8 rounded-sm border border-border bg-secondary">
             <Shield className="w-5 h-5 text-muted-foreground shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-medium">Identity verification required</p>
@@ -138,38 +123,16 @@ const Dashboard = () => {
                 Complete government-approved ID verification to add artworks to your database.
               </p>
             </div>
-            <Button size="sm" variant="outline" disabled>
-              Verify ID
-            </Button>
+            <Button size="sm" variant="outline" disabled>Verify ID</Button>
           </div>
         )}
 
-        {/* Title + Actions */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl">
-              {userRole === "artist" ? "Catalogue Raisonné" : userRole === "collector" ? "Collection" : "Managed Artworks"}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
-              <ToggleGroupItem value="grid" aria-label="Grid view">
-                <LayoutGrid className="w-4 h-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="list" aria-label="List view">
-                <List className="w-4 h-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
-            <Button onClick={() => setDialogOpen(true)} className="gap-2">
-              <Plus className="w-4 h-4" /> Add Artwork
-            </Button>
-          </div>
+        <div className="mb-6">
+          <p className="text-sm text-muted-foreground">
+            {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
+          </p>
         </div>
 
-        {/* Artworks */}
         {loading ? (
           viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -204,14 +167,14 @@ const Dashboard = () => {
             ))}
           </div>
         )}
-      </main>
+      </div>
 
       <AddArtworkDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSuccess={fetchArtworks}
       />
-    </div>
+    </AppLayout>
   );
 };
 

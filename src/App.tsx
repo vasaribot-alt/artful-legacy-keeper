@@ -8,10 +8,12 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ArtworkDetail from "./pages/ArtworkDetail";
+import ArtworkView from "./pages/ArtworkView";
 import ArtistProfile from "./pages/ArtistProfile";
 import ArtistProfileView from "./pages/ArtistProfileView";
 import ArtistCvView from "./pages/ArtistCvView";
-import ArtworkView from "./pages/ArtworkView";
+import Exhibitions from "./pages/Exhibitions";
+import Provenance from "./pages/Provenance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const App = () => (
           <Route path="/profile/cv" element={<ArtistCvView />} />
           <Route path="/artwork/:id" element={<ArtworkDetail />} />
           <Route path="/artwork/:id/view" element={<ArtworkView />} />
+          <Route path="/exhibitions" element={<Exhibitions />} />
+          <Route path="/provenance" element={<Provenance />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
