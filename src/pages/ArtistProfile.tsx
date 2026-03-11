@@ -313,12 +313,14 @@ const ArtistProfile = () => {
           )}
           <div className="space-y-3">
             {socialLinks.map((link, i) => (
-              <div key={i} className="flex gap-3 items-start">
-                <div className="w-40">
-                  <Input value={link.platform} onChange={(e) => updateSocialLink(i, "platform", e.target.value)} placeholder="Platform" />
-                </div>
+              <div key={i} className="flex gap-3 items-center">
+                {link.platform && (
+                  <span className="text-xs font-medium px-2 py-1 rounded bg-muted text-muted-foreground whitespace-nowrap min-w-[80px] text-center">
+                    {link.platform}
+                  </span>
+                )}
                 <div className="flex-1">
-                  <Input value={link.url} onChange={(e) => updateSocialLink(i, "url", e.target.value)} placeholder="https://…" />
+                  <Input value={link.url} onChange={(e) => updateSocialLinkUrl(i, e.target.value)} placeholder="Paste social media link…" />
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => removeSocialLink(i)} className="shrink-0">
                   <Trash2 className="w-4 h-4 text-destructive" />
