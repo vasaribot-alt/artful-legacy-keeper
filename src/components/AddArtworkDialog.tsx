@@ -311,7 +311,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Artwork</DialogTitle>
+          <DialogTitle>{initialData ? "Duplicate Artwork" : "Add Artwork"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 mt-2">
           {/* Images */}
