@@ -236,6 +236,14 @@ const ArtworkDetail = () => {
       });
     }
 
+    // Sync exhibition links
+    await supabase.from("artwork_exhibitions").delete().eq("artwork_id", id!);
+    if (selectedExhibitionIds.length > 0) {
+      await supabase.from("artwork_exhibitions").insert(
+        selectedExhibitionIds.map((cv_entry_id) => ({ artwork_id: id!, cv_entry_id }))
+      );
+    }
+
     toast.success("Artwork saved");
     setSaving(false);
     // Reload to refresh state
