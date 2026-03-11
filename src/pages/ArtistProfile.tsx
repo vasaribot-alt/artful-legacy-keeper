@@ -53,6 +53,7 @@ const ArtistProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
