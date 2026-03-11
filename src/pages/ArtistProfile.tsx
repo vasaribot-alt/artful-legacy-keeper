@@ -175,9 +175,10 @@ const ArtistProfile = () => {
 
   const addSocialLink = () => setSocialLinks([...socialLinks, { platform: "", url: "" }]);
   const removeSocialLink = (i: number) => setSocialLinks(socialLinks.filter((_, idx) => idx !== i));
-  const updateSocialLink = (i: number, field: keyof SocialLink, value: string) => {
+  const updateSocialLinkUrl = (i: number, url: string) => {
     const updated = [...socialLinks];
-    updated[i] = { ...updated[i], [field]: value };
+    const platform = detectPlatform(url);
+    updated[i] = { platform, url };
     setSocialLinks(updated);
   };
 
