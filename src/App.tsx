@@ -20,6 +20,7 @@ import Series from "./pages/Series";
 import Portfolios from "./pages/Portfolios";
 import PortfolioDetail from "./pages/PortfolioDetail";
 import PortfolioShared from "./pages/PortfolioShared";
+import Catalogues from "./pages/Catalogues";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
