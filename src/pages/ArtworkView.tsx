@@ -246,8 +246,8 @@ const ArtworkView = () => {
             )}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </ViewLayout>
   );
 };
 
