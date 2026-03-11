@@ -33,7 +33,7 @@ const formatDimensions = (h: number | null, w: number | null, d: number | null) 
 
 import { useNavigate } from "react-router-dom";
 
-export const ArtworkCard = ({ artwork }: { artwork: Artwork }) => {
+export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDuplicate?: (data: ArtworkDuplicateData) => void }) => {
   const navigate = useNavigate();
   const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
