@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
@@ -230,10 +230,15 @@ const ArtistProfile = () => {
               </span>
             )}
           </div>
-          <Button onClick={handleSave} disabled={saving} className="gap-2">
-            <Save className="w-4 h-4" />
-            {saving ? "Saving…" : "Save Profile"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate("/profile/view")} className="gap-1.5">
+              <Eye className="w-4 h-4" /> View
+            </Button>
+            <Button onClick={handleSave} disabled={saving} className="gap-2">
+              <Save className="w-4 h-4" />
+              {saving ? "Saving…" : "Save Profile"}
+            </Button>
+          </div>
         </div>
       </header>
 
