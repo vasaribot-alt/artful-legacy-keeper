@@ -101,7 +101,9 @@ const ArtistProfile = () => {
       setCity((data as any).city || "");
       setCountry((data as any).country || "");
       setStudioAddress((data as any).studio_address || "");
-      setContacts((data as any).contacts || "");
+      setPhonePrefix((data as any).phone_prefix || "");
+      setPhone((data as any).phone || "");
+      setEmail((data as any).email || "");
       setWebsite((data as any).website || "");
       setSocialLinks((data as any).social_media_links || []);
       setGalleries((data as any).galleries || []);
