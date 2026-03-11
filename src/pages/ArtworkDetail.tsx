@@ -253,6 +253,14 @@ const ArtworkDetail = () => {
       );
     }
 
+    // Sync catalogue links
+    await supabase.from("artwork_catalogues").delete().eq("artwork_id", id!);
+    if (selectedCatalogueIds.length > 0) {
+      await supabase.from("artwork_catalogues").insert(
+        selectedCatalogueIds.map((catalogue_id) => ({ artwork_id: id!, catalogue_id }))
+      );
+    }
+
     toast.success("Artwork saved");
     setSaving(false);
     // Reload to refresh state
