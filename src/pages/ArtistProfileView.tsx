@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import {
   Globe,
   Phone,
   Mail,
   MapPin,
-  Pencil,
   ExternalLink,
-  ArrowLeft,
   Building2,
 } from "lucide-react";
+import { ViewLayout } from "@/components/ViewLayout";
 
 interface SocialLink {
   platform: string;
@@ -143,17 +140,21 @@ const ArtistProfileView = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading…</p>
-      </div>
+      <ViewLayout editPath="/profile">
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Loading…</p>
+        </div>
+      </ViewLayout>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Profile not found</p>
-      </div>
+      <ViewLayout editPath="/profile">
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Profile not found</p>
+        </div>
+      </ViewLayout>
     );
   }
 
@@ -161,28 +162,9 @@ const ArtistProfileView = () => {
   const phoneDisplay = [profile.phone_prefix, profile.phone].filter(Boolean).join(" ");
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Floating action bar */}
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate("/dashboard")}
-          className="bg-background/80 backdrop-blur-sm border-border shadow-sm"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Dashboard
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => navigate("/profile")}
-          className="gap-1.5 shadow-sm"
-        >
-          <Pencil className="w-3.5 h-3.5" /> Edit Profile
-        </Button>
-      </div>
-
+    <ViewLayout editPath="/profile">
       {/* Hero section */}
-      <header className="pt-20 pb-16 px-6">
+      <header className="pt-16 pb-16 px-6">
         <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
           <Avatar className="w-32 h-32 border-4 border-border mb-8">
             <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || "Artist"} />
@@ -344,7 +326,7 @@ const ArtistProfileView = () => {
           </section>
         )}
       </main>
-    </div>
+    </ViewLayout>
   );
 };
 

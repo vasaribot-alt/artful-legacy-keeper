@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ViewLayout } from "@/components/ViewLayout";
 
 interface ArtworkImage {
   id: string;
@@ -77,9 +77,11 @@ const ArtworkView = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
+      <ViewLayout editPath={`/artwork/${id}`}>
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </ViewLayout>
     );
   }
 
@@ -89,21 +91,8 @@ const ArtworkView = () => {
   const hasMultipleImages = images.length > 1;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back
-          </Button>
-          <span className="flex-1" />
-          <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}`)}>
-            <Pencil className="w-3.5 h-3.5 mr-1.5" /> Edit
-          </Button>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-10">
+    <ViewLayout editPath={`/artwork/${id}`}>
+      <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Image section */}
           <div className="space-y-3">
@@ -257,8 +246,8 @@ const ArtworkView = () => {
             )}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </ViewLayout>
   );
 };
 

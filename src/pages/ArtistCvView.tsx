@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
+import { ViewLayout } from "@/components/ViewLayout";
 
 interface CvEntry {
   section: string;
@@ -180,41 +181,30 @@ const ArtistCvView = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading CV…</p>
-      </div>
+      <ViewLayout editPath="/profile">
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Loading CV…</p>
+        </div>
+      </ViewLayout>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-40">
-        <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/profile/view")}>
-              <ArrowLeft className="w-4 h-4 mr-1" /> Back
-            </Button>
-            <span className="text-sm text-muted-foreground">CV — {artistName}</span>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleDownloadPdf}
-            disabled={generating || cvSections.length === 0}
-            className="gap-1.5"
-          >
-            {generating ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4" />
-            )}
-            Download PDF
-          </Button>
-        </div>
-      </header>
+  const headerActions = (
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={handleDownloadPdf}
+      disabled={generating || cvSections.length === 0}
+      className="gap-1.5"
+    >
+      {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+      Download PDF
+    </Button>
+  );
 
-      <main className="max-w-3xl mx-auto px-6 py-12">
+  return (
+    <ViewLayout editPath="/profile">
+      <div className="max-w-3xl mx-auto px-6 py-12">
         {cvSections.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground">No CV entries yet.</p>
@@ -277,8 +267,8 @@ const ArtistCvView = () => {
             </div>
           </>
         )}
-      </main>
-    </div>
+      </div>
+    </ViewLayout>
   );
 };
 
