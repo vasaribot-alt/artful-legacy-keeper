@@ -230,10 +230,15 @@ const ArtistProfile = () => {
               </span>
             )}
           </div>
-          <Button onClick={handleSave} disabled={saving} className="gap-2">
-            <Save className="w-4 h-4" />
-            {saving ? "Saving…" : "Save Profile"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate("/profile/view")} className="gap-1.5">
+              <Eye className="w-4 h-4" /> View
+            </Button>
+            <Button onClick={handleSave} disabled={saving} className="gap-2">
+              <Save className="w-4 h-4" />
+              {saving ? "Saving…" : "Save Profile"}
+            </Button>
+          </div>
         </div>
       </header>
 
