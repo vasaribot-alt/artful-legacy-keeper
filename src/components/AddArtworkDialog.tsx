@@ -303,6 +303,13 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="mt-1.5" />
           </div>
 
+          {isCollector && (
+            <div>
+              <Label htmlFor="artistName">Artist name</Label>
+              <Input id="artistName" value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="e.g. Henry Moore" className="mt-1.5" />
+            </div>
+          )}
+
           <div>
             <Label>Type of artwork</Label>
             <Select value={artworkType} onValueChange={(v) => { setArtworkType(v); if (v !== "Sculpture") setSubCategory(""); }}>
