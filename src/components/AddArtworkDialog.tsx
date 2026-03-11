@@ -133,7 +133,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
   const resetForm = () => {
     setTitle(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
-    setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
+    setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs("");
