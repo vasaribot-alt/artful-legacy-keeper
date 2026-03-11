@@ -33,6 +33,7 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  userRole?: string;
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
@@ -44,8 +45,10 @@ interface ImagePreview {
   preview: string;
 }
 
-export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
+export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist" }: Props) => {
+  const isCollector = userRole === "collector";
   const [title, setTitle] = useState("");
+  const [artistName, setArtistName] = useState("");
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [provenance, setProvenance] = useState("");
@@ -67,6 +70,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [artworkLocation, setArtworkLocation] = useState("");
   const [editionCount, setEditionCount] = useState("");
   const [artistProofs, setArtistProofs] = useState("");
+  const [editionNumber, setEditionNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<ImagePreview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -132,11 +136,11 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   };
 
   const resetForm = () => {
-    setTitle(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
+    setTitle(""); setArtistName(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
-    setEditionCount(""); setArtistProofs("");
+    setEditionCount(""); setArtistProofs(""); setEditionNumber("");
     images.forEach((img) => URL.revokeObjectURL(img.preview));
     setImages([]);
   };
@@ -185,7 +189,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       return;
     }
 
-    const { data: artworkData, error } = await supabase.from("artworks").insert({
+    const insertData: Record<string, unknown> = {
       owner_id: user.id,
       title: title.trim(),
       artwork_type: artworkType || null,
@@ -208,7 +212,11 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
-    }).select("id").single();
+      artist_name: artistName.trim() || null,
+      edition_number: editionNumber.trim() || null,
+    };
+
+    const { data: artworkData, error } = await supabase.from("artworks").insert(insertData as any).select("id").single();
 
     if (error || !artworkData) {
       toast.error("Failed to add artwork");
@@ -294,6 +302,13 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             <Label htmlFor="title">Title *</Label>
             <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="mt-1.5" />
           </div>
+
+          {isCollector && (
+            <div>
+              <Label htmlFor="artistName">Artist name</Label>
+              <Input id="artistName" value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="e.g. Henry Moore" className="mt-1.5" />
+            </div>
+          )}
 
           <div>
             <Label>Type of artwork</Label>
@@ -387,10 +402,17 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
               <Label>Unique work</Label>
               <p className="text-xs text-muted-foreground">Toggle off for editions</p>
             </div>
-            <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); } }} />
+            <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); setEditionNumber(""); } }} />
           </div>
 
-          {!isUnique && (
+          {!isUnique && isCollector && (
+            <div>
+              <Label htmlFor="editionNumber">Edition number</Label>
+              <Input id="editionNumber" value={editionNumber} onChange={(e) => setEditionNumber(e.target.value)} placeholder="e.g. 3/8" className="mt-1.5" />
+            </div>
+          )}
+
+          {!isUnique && !isCollector && (
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="editionCount">Number of editions</Label>

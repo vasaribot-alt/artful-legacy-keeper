@@ -286,6 +286,7 @@ const Dashboard = () => {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSuccess={fetchArtworks}
+        userRole={userRole}
       />
     </AppLayout>
   );
