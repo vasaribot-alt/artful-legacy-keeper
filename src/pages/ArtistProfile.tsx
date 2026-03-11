@@ -196,9 +196,12 @@ const ArtistProfile = () => {
     setGalleries(updated);
   };
 
+  const isCollector = userRole === "collector";
+  const profileTitle = isCollector ? "Collector Profile" : "Artist Profile";
+
   if (loading) {
     return (
-      <AppLayout title="Artist Profile">
+      <AppLayout title={profileTitle}>
         <div className="flex items-center justify-center py-20">
           <p className="text-muted-foreground">Loading profile…</p>
         </div>
@@ -240,16 +243,79 @@ const ArtistProfile = () => {
     </Button>
   );
 
+  // Collector: simplified profile
+  if (isCollector) {
+    return (
+      <AppLayout title={profileTitle} headerActions={
+        <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
+          <Save className="w-4 h-4" />
+          {saving ? "Saving…" : "Save"}
+        </Button>
+      }>
+        <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
+          <section className="space-y-6">
+            <h2 className="text-2xl">Collector Information</h2>
+            <p className="text-sm text-muted-foreground">
+              Please enter your full name exactly as it appears on your passport or government-issued ID, as this will be used for identity verification.
+            </p>
+            <div>
+              <Label>Full Name (as in passport)</Label>
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Full legal name" className="mt-1" />
+            </div>
+          </section>
+
+          <Separator />
+
+          <section className="space-y-6">
+            <h2 className="text-2xl">Contact Details</h2>
+            <div className="space-y-4">
+              <div>
+                <Label className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Email</Label>
+                <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="collector@example.com" className="mt-1" type="email" />
+              </div>
+              <div>
+                <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Phone Number</Label>
+                <p className="text-xs text-muted-foreground mb-1">Used for 2-factor security verification</p>
+                <div className="flex gap-2">
+                  <select
+                    value={phonePrefix}
+                    onChange={(e) => setPhonePrefix(e.target.value)}
+                    className="flex h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-[100px] shrink-0"
+                  >
+                    <option value="">Prefix</option>
+                    {Object.entries(COUNTRY_PHONE_CODES)
+                      .sort((a, b) => a[0].localeCompare(b[0]))
+                      .map(([c, code]) => (
+                        <option key={c} value={code}>{code} {c}</option>
+                      ))}
+                  </select>
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone number" className="flex-1" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="pt-6">
+            <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
+              <Save className="w-4 h-4" />
+              {saving ? "Saving…" : "Save Profile"}
+            </Button>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
   if (!editMode && profileViewData) {
     return (
-      <AppLayout title="Artist Profile" headerActions={headerActions}>
+      <AppLayout title={profileTitle} headerActions={headerActions}>
         <ProfilePresentationView profile={profileViewData} />
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title="Artist Profile" headerActions={headerActions}>
+    <AppLayout title={profileTitle} headerActions={headerActions}>
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-10">
         {/* Basic Info */}
         <section className="space-y-6">
