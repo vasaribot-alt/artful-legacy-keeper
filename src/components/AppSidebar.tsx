@@ -2,6 +2,7 @@ import { User, Images, FileText, Calendar, ScrollText, LogOut } from "lucide-rea
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,21 +15,41 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-const navItems = [
-  { title: "Artist Profile", url: "/profile", icon: User },
+const getNavItems = (role: string | null) => [
+  { title: role === "collector" ? "Collector Profile" : "Artist Profile", url: "/profile", icon: User },
   { title: "Artworks", url: "/dashboard", icon: Images },
   { title: "CV", url: "/cv", icon: FileText },
   { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
   { title: "Provenance", url: "/provenance", icon: ScrollText },
 ];
 
+const getRegistryLabel = (role: string | null) =>
+  role === "collector" ? "Collectors Register" : "Artist Registry";
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (data) setUserRole(data.role);
+      }
+    };
+    fetchRole();
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
+  const navItems = getNavItems(userRole);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -42,7 +63,7 @@ export function AppSidebar() {
           <div className={`px-3 py-4 ${collapsed ? "text-center" : ""}`}>
             {!collapsed && (
               <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Artist Registry
+                {getRegistryLabel(userRole)}
               </span>
             )}
           </div>
