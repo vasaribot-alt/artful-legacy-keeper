@@ -17,6 +17,9 @@ import ArtworksGalleryView from "./pages/ArtworksGalleryView";
 import Exhibitions from "./pages/Exhibitions";
 import Provenance from "./pages/Provenance";
 import Series from "./pages/Series";
+import Portfolios from "./pages/Portfolios";
+import PortfolioDetail from "./pages/PortfolioDetail";
+import PortfolioShared from "./pages/PortfolioShared";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
