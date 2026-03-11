@@ -291,11 +291,14 @@ export type Database = {
           country: string | null
           created_at: string
           cv: string | null
+          email: string | null
           full_name: string | null
           galleries: Json | null
           global_artist_id: number
           id: string
           id_verified: boolean
+          phone: string | null
+          phone_prefix: string | null
           social_media_links: Json | null
           studio_address: string | null
           updated_at: string
@@ -312,11 +315,14 @@ export type Database = {
           country?: string | null
           created_at?: string
           cv?: string | null
+          email?: string | null
           full_name?: string | null
           galleries?: Json | null
           global_artist_id?: number
           id?: string
           id_verified?: boolean
+          phone?: string | null
+          phone_prefix?: string | null
           social_media_links?: Json | null
           studio_address?: string | null
           updated_at?: string
@@ -333,11 +339,14 @@ export type Database = {
           country?: string | null
           created_at?: string
           cv?: string | null
+          email?: string | null
           full_name?: string | null
           galleries?: Json | null
           global_artist_id?: number
           id?: string
           id_verified?: boolean
+          phone?: string | null
+          phone_prefix?: string | null
           social_media_links?: Json | null
           studio_address?: string | null
           updated_at?: string
