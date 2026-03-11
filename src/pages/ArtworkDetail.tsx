@@ -116,6 +116,8 @@ const ArtworkDetail = () => {
     setArtworkLocation(data.artwork_location || "");
     setEditionCount(data.edition_count ? String(data.edition_count) : "");
     setArtistProofs(data.artist_proofs ? String(data.artist_proofs) : "");
+    setExhibitionHistory(data.exhibition_history || "");
+    setProvenance(data.provenance || "");
 
     // Load images
     const { data: imgs } = await supabase
