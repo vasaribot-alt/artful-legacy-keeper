@@ -225,6 +225,13 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       }
     }
 
+    // Link exhibition entries
+    if (selectedExhibitionIds.length > 0) {
+      await supabase.from("artwork_exhibitions").insert(
+        selectedExhibitionIds.map((cv_entry_id) => ({ artwork_id: artworkData.id, cv_entry_id }))
+      );
+    }
+
     // Save new series
     if (series.trim() && !seriesOptions.includes(series.trim())) {
       await supabase.from("series_groups").insert({ user_id: user.id, name: series.trim() }).select();
