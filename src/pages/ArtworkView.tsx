@@ -74,6 +74,22 @@ const ArtworkView = () => {
       if (entries) setExhibitions(entries);
     }
 
+    // Load linked catalogues
+    const { data: catLinks } = await supabase
+      .from("artwork_catalogues")
+      .select("catalogue_id")
+      .eq("artwork_id", id!);
+
+    if (catLinks && catLinks.length > 0) {
+      const catIds = catLinks.map((l: any) => l.catalogue_id);
+      const { data: cats } = await supabase
+        .from("catalogues")
+        .select("*")
+        .in("id", catIds)
+        .order("publication_year", { ascending: false });
+      if (cats) setCatalogues(cats);
+    }
+
     setLoading(false);
   };
 
