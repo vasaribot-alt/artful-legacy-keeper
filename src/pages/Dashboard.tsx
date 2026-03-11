@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, Shield, User as UserIcon } from "lucide-react";
+import { Plus, LogOut, Shield, User as UserIcon, LayoutGrid, List } from "lucide-react";
 import { toast } from "sonner";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog } from "@/components/AddArtworkDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
+import { ArtworkListItem } from "@/components/ArtworkListItem";
 import type { User } from "@supabase/supabase-js";
 
 interface Artwork {
@@ -36,6 +38,7 @@ const Dashboard = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const userRole = user?.user_metadata?.role || "artist";
   const userName = user?.user_metadata?.full_name || "User";
@@ -151,18 +154,36 @@ const Dashboard = () => {
               {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)} className="gap-2">
-            <Plus className="w-4 h-4" /> Add Artwork
-          </Button>
+          <div className="flex items-center gap-3">
+            <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
+              <ToggleGroupItem value="grid" aria-label="Grid view">
+                <LayoutGrid className="w-4 h-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="list" aria-label="List view">
+                <List className="w-4 h-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <Button onClick={() => setDialogOpen(true)} className="gap-2">
+              <Plus className="w-4 h-4" /> Add Artwork
+            </Button>
+          </div>
         </div>
 
-        {/* Artworks Grid */}
+        {/* Artworks */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
-            ))}
-          </div>
+          viewMode === "grid" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-20 bg-secondary animate-pulse rounded-sm" />
+              ))}
+            </div>
+          )
         ) : artworks.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground mb-4">No artworks yet</p>
@@ -170,10 +191,16 @@ const Dashboard = () => {
               <Plus className="w-4 h-4" /> Add your first artwork
             </Button>
           </div>
-        ) : (
+        ) : viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {artworks.map((artwork) => (
               <ArtworkCard key={artwork.id} artwork={artwork} />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {artworks.map((artwork) => (
+              <ArtworkListItem key={artwork.id} artwork={artwork} />
             ))}
           </div>
         )}
