@@ -45,6 +45,9 @@ const App = () => (
           <Route path="/exhibitions" element={<Exhibitions />} />
           <Route path="/provenance" element={<Provenance />} />
           <Route path="/series" element={<Series />} />
+          <Route path="/portfolios" element={<Portfolios />} />
+          <Route path="/portfolio/:id" element={<PortfolioDetail />} />
+          <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
