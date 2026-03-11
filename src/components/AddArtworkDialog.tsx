@@ -47,6 +47,7 @@ interface ImagePreview {
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [title, setTitle] = useState("");
   const [exhibitionHistory, setExhibitionHistory] = useState("");
+  const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [provenance, setProvenance] = useState("");
   const [artworkType, setArtworkType] = useState("");
   const [medium, setMedium] = useState("");
