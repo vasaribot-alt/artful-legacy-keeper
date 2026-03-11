@@ -17,7 +17,7 @@ import {
 const navItems = [
   { title: "Artist Profile", url: "/profile", icon: User },
   { title: "Artworks", url: "/dashboard", icon: Images },
-  { title: "CV", url: "/profile/cv", icon: FileText },
+  { title: "CV", url: "/cv", icon: FileText },
   { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
   { title: "Provenance", url: "/provenance", icon: ScrollText },
 ];
