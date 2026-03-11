@@ -297,6 +297,9 @@ const ArtworkDetail = () => {
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
           </Button>
           <span className="text-sm text-muted-foreground flex-1 truncate">{title}</span>
+          <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
+            <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
+          </Button>
           <Button size="sm" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save"}
           </Button>
