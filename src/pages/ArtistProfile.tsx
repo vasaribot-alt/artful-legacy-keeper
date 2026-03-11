@@ -96,6 +96,7 @@ const ArtistProfile = () => {
       setBirthYear((data as any).birth_year?.toString() || "");
       setCity((data as any).city || "");
       setCountry((data as any).country || "");
+      setStudioAddress((data as any).studio_address || "");
       setContacts((data as any).contacts || "");
       setWebsite((data as any).website || "");
       setSocialLinks((data as any).social_media_links || []);
