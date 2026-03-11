@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN studio_address text DEFAULT NULL;
