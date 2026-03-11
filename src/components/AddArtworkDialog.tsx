@@ -474,6 +474,16 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5" />
           </div>
 
+          <div>
+            <Label htmlFor="exhibition">Exhibition History</Label>
+            <Textarea id="exhibition" value={exhibitionHistory} onChange={(e) => setExhibitionHistory(e.target.value)} placeholder="List exhibitions where this work has been shown…" rows={3} className="mt-1.5" />
+          </div>
+
+          <div>
+            <Label htmlFor="provenance">Provenance</Label>
+            <Textarea id="provenance" value={provenance} onChange={(e) => setProvenance(e.target.value)} placeholder="Ownership history…" rows={3} className="mt-1.5" />
+          </div>
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Adding..." : "Add Artwork"}
           </Button>
