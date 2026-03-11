@@ -153,9 +153,19 @@ const Dashboard = () => {
               {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)} className="gap-2">
-            <Plus className="w-4 h-4" /> Add Artwork
-          </Button>
+          <div className="flex items-center gap-3">
+            <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
+              <ToggleGroupItem value="grid" aria-label="Grid view">
+                <LayoutGrid className="w-4 h-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="list" aria-label="List view">
+                <List className="w-4 h-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <Button onClick={() => setDialogOpen(true)} className="gap-2">
+              <Plus className="w-4 h-4" /> Add Artwork
+            </Button>
+          </div>
         </div>
 
         {/* Artworks Grid */}
