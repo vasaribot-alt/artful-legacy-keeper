@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog } from "@/components/AddArtworkDialog";
@@ -33,13 +33,33 @@ interface Artwork {
   sub_category: string | null;
 }
 
+interface ArtworkWithImage {
+  id: string;
+  title: string;
+  artwork_type: string | null;
+  medium: string | null;
+  year: number | null;
+  height: number | null;
+  width: number | null;
+  depth: number | null;
+  imageUrl: string | null;
+}
+
+const formatDimensions = (h: number | null, w: number | null, d: number | null) => {
+  const parts = [h, w, d].filter((v) => v != null);
+  if (parts.length === 0) return null;
+  return parts.join(" × ") + " cm";
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [galleryArtworks, setGalleryArtworks] = useState<ArtworkWithImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [editMode, setEditMode] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const userRole = user?.user_metadata?.role || "artist";
   const idVerified = false;
@@ -81,13 +101,43 @@ const Dashboard = () => {
       toast.error("Failed to load artworks");
     } else {
       setArtworks(data || []);
+      // Build gallery view data with images
+      const withImages: ArtworkWithImage[] = await Promise.all(
+        (data || []).map(async (art) => {
+          const { data: imgs } = await supabase
+            .from("artwork_images")
+            .select("storage_path")
+            .eq("artwork_id", art.id)
+            .order("display_order")
+            .limit(1);
+          let imageUrl: string | null = null;
+          if (imgs && imgs.length > 0) {
+            const { data: urlData } = supabase.storage
+              .from("artwork-images")
+              .getPublicUrl(imgs[0].storage_path);
+            imageUrl = urlData.publicUrl;
+          }
+          return {
+            id: art.id,
+            title: art.title,
+            artwork_type: art.artwork_type,
+            medium: art.medium,
+            year: art.year,
+            height: art.height,
+            width: art.width,
+            depth: art.depth,
+            imageUrl,
+          };
+        })
+      );
+      setGalleryArtworks(withImages);
     }
     setLoading(false);
   };
 
   if (!user) return null;
 
-  const headerActions = (
+  const headerActions = editMode ? (
     <>
       {globalArtistId && (
         <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
@@ -105,7 +155,14 @@ const Dashboard = () => {
       <Button onClick={() => setDialogOpen(true)} className="gap-2" size="sm">
         <Plus className="w-4 h-4" /> Add Artwork
       </Button>
+      <Button variant="outline" size="sm" onClick={() => setEditMode(false)} className="gap-1.5">
+        <Eye className="w-4 h-4" /> Done
+      </Button>
     </>
+  ) : (
+    <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
+      <Pencil className="w-3.5 h-3.5" /> Edit
+    </Button>
   );
 
   return (
@@ -113,61 +170,117 @@ const Dashboard = () => {
       title={userRole === "artist" ? "Catalogue Raisonné" : userRole === "collector" ? "Collection" : "Managed Artworks"}
       headerActions={headerActions}
     >
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {!idVerified && (
-          <div className="flex items-center gap-3 p-4 mb-8 rounded-sm border border-border bg-secondary">
-            <Shield className="w-5 h-5 text-muted-foreground shrink-0" />
-            <div className="flex-1">
-              <p className="text-sm font-medium">Identity verification required</p>
-              <p className="text-xs text-muted-foreground">
-                Complete government-approved ID verification to add artworks to your database.
-              </p>
+      {editMode ? (
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          {!idVerified && (
+            <div className="flex items-center gap-3 p-4 mb-8 rounded-sm border border-border bg-secondary">
+              <Shield className="w-5 h-5 text-muted-foreground shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium">Identity verification required</p>
+                <p className="text-xs text-muted-foreground">
+                  Complete government-approved ID verification to add artworks to your database.
+                </p>
+              </div>
+              <Button size="sm" variant="outline" disabled>Verify ID</Button>
             </div>
-            <Button size="sm" variant="outline" disabled>Verify ID</Button>
+          )}
+
+          <div className="mb-6">
+            <p className="text-sm text-muted-foreground">
+              {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
+            </p>
           </div>
-        )}
 
-        <div className="mb-6">
-          <p className="text-sm text-muted-foreground">
-            {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
-          </p>
-        </div>
-
-        {loading ? (
-          viewMode === "grid" ? (
+          {loading ? (
+            viewMode === "grid" ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-20 bg-secondary animate-pulse rounded-sm" />
+                ))}
+              </div>
+            )
+          ) : artworks.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground mb-4">No artworks yet</p>
+              <Button variant="outline" onClick={() => setDialogOpen(true)} className="gap-2">
+                <Plus className="w-4 h-4" /> Add your first artwork
+              </Button>
+            </div>
+          ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {artworks.map((artwork) => (
+                <ArtworkCard key={artwork.id} artwork={artwork} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {artworks.map((artwork) => (
+                <ArtworkListItem key={artwork.id} artwork={artwork} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Gallery presentation view */
+        <div className="max-w-5xl mx-auto px-6 py-10">
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
               ))}
             </div>
+          ) : galleryArtworks.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground">No artworks yet.</p>
+              <Button variant="outline" size="sm" className="mt-4" onClick={() => setEditMode(true)}>
+                Add artworks
+              </Button>
+            </div>
           ) : (
-            <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 bg-secondary animate-pulse rounded-sm" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {galleryArtworks.map((art) => (
+                <div
+                  key={art.id}
+                  className="group cursor-pointer"
+                  onClick={() => navigate(`/artwork/${art.id}/view`)}
+                >
+                  <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
+                    {art.imageUrl ? (
+                      <img
+                        src={art.imageUrl}
+                        alt={art.title}
+                        className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                        No image
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-medium italic">{art.title}</h3>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                    {art.year && <span>{art.year}</span>}
+                    {art.year && art.medium && <span>·</span>}
+                    {art.medium && <span className="truncate">{art.medium}</span>}
+                  </div>
+                  {formatDimensions(art.height, art.width, art.depth) && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {formatDimensions(art.height, art.width, art.depth)}
+                    </p>
+                  )}
+                </div>
               ))}
             </div>
-          )
-        ) : artworks.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-muted-foreground mb-4">No artworks yet</p>
-            <Button variant="outline" onClick={() => setDialogOpen(true)} className="gap-2">
-              <Plus className="w-4 h-4" /> Add your first artwork
-            </Button>
-          </div>
-        ) : viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {artworks.map((artwork) => (
-              <ArtworkCard key={artwork.id} artwork={artwork} />
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-1">
-            {artworks.map((artwork) => (
-              <ArtworkListItem key={artwork.id} artwork={artwork} />
-            ))}
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <AddArtworkDialog
         open={dialogOpen}
