@@ -204,6 +204,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       artwork_location: artworkLocation.trim() || null,
       edition_count: !isUnique && editionCount ? parseInt(editionCount) : null,
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
+      exhibition_history: exhibitionHistory.trim() || null,
+      provenance: provenance.trim() || null,
     }).select("id").single();
 
     if (error || !artworkData) {
