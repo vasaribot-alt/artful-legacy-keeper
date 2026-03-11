@@ -22,6 +22,7 @@ const getNavItems = (role: string | null) => [
   ...(role !== "collector" ? [{ title: "Portfolios", url: "/portfolios", icon: Briefcase }] : []),
   { title: "CV", url: "/cv", icon: FileText },
   { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
+  { title: "Catalogues", url: "/catalogues", icon: BookOpen },
   { title: "Provenance", url: "/provenance", icon: ScrollText },
 ];
 
