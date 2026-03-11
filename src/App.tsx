@@ -16,6 +16,7 @@ import CvEdit from "./pages/CvEdit";
 import ArtworksGalleryView from "./pages/ArtworksGalleryView";
 import Exhibitions from "./pages/Exhibitions";
 import Provenance from "./pages/Provenance";
+import Series from "./pages/Series";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/artwork/:id/view" element={<ArtworkView />} />
           <Route path="/exhibitions" element={<Exhibitions />} />
           <Route path="/provenance" element={<Provenance />} />
+          <Route path="/series" element={<Series />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
