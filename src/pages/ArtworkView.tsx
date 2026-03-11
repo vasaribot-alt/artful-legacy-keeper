@@ -259,7 +259,7 @@ const ArtworkView = () => {
           </div>
         </div>
       </div>
-    </ViewLayout>
+    </AppLayout>
   );
 };
 
