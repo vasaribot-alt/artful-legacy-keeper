@@ -130,6 +130,13 @@ const ArtworkDetail = () => {
       .eq("artwork_id", id!);
     if (exhLinks) setSelectedExhibitionIds(exhLinks.map((l: any) => l.cv_entry_id));
 
+    // Load linked catalogues
+    const { data: catLinks } = await supabase
+      .from("artwork_catalogues")
+      .select("catalogue_id")
+      .eq("artwork_id", id!);
+    if (catLinks) setSelectedCatalogueIds(catLinks.map((l: any) => l.catalogue_id));
+
     // Load images
     const { data: imgs } = await supabase
       .from("artwork_images")
