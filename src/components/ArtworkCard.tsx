@@ -61,6 +61,28 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
 
   const displayUrl = thumbnailUrl || artwork.image_url;
 
+  const handleDuplicate = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!onDuplicate) return;
+    onDuplicate({
+      title: artwork.title + " (copy)",
+      artworkType: artwork.artwork_type || "",
+      medium: artwork.medium || "",
+      year: artwork.year ? String(artwork.year) : "",
+      description: artwork.description || "",
+      isUnique: artwork.is_unique,
+      series: artwork.series || "",
+      subCategory: artwork.sub_category || "",
+      support: artwork.support || "",
+      height: artwork.height ? String(artwork.height) : "",
+      width: artwork.width ? String(artwork.width) : "",
+      depth: artwork.depth ? String(artwork.depth) : "",
+      price: artwork.price ? String(artwork.price) : "",
+      currency: artwork.currency || "EUR",
+      artworkLocation: artwork.artwork_location || "",
+    });
+  };
+
   return (
     <div className="group cursor-pointer" onClick={() => navigate(`/artwork/${artwork.id}`)}>
       <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3 relative">
@@ -80,6 +102,17 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
           <span className="absolute bottom-2 right-2 bg-background/80 text-foreground text-[10px] px-1.5 py-0.5 rounded-sm font-mono">
             +{imageCount - 1}
           </span>
+        )}
+        {onDuplicate && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-2 right-2 h-7 w-7 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={handleDuplicate}
+            title="Duplicate artwork"
+          >
+            <Copy className="w-3.5 h-3.5" />
+          </Button>
         )}
       </div>
       <h3 className="text-sm font-medium leading-tight">{artwork.title}</h3>
