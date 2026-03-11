@@ -285,9 +285,10 @@ const Dashboard = () => {
 
       <AddArtworkDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(open) => { setDialogOpen(open); if (!open) setDuplicateData(null); }}
         onSuccess={fetchArtworks}
         userRole={userRole}
+        initialData={duplicateData}
       />
     </AppLayout>
   );
