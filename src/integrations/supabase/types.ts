@@ -325,6 +325,69 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_artworks: {
+        Row: {
+          artwork_id: string
+          created_at: string
+          display_order: number
+          id: string
+          portfolio_id: string
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          portfolio_id: string
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          portfolio_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_artworks_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_artworks_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolios: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          share_token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          share_token?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          share_token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
