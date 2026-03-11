@@ -7,12 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye } from "lucide-react";
+import { Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
 import { getPhonePrefixForCountry, COUNTRY_PHONE_CODES } from "@/lib/phoneCountryCodes";
 import { AppLayout } from "@/components/AppLayout";
+import { ProfilePresentationView, type ProfileViewData } from "@/components/ProfilePresentationView";
 
 interface SocialLink {
   platform: string;
@@ -52,6 +53,7 @@ const ArtistProfile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -195,22 +197,47 @@ const ArtistProfile = () => {
     );
   }
 
-  const headerActions = (
+  const profileViewData: ProfileViewData | null = globalArtistId ? {
+    full_name: fullName || null,
+    avatar_url: avatarUrl,
+    birth_year: birthYear ? parseInt(birthYear) : null,
+    city: city || null,
+    country: country || null,
+    studio_address: studioAddress || null,
+    phone_prefix: phonePrefix || null,
+    phone: phone || null,
+    email: email || null,
+    website: website || null,
+    social_media_links: socialLinks,
+    galleries: galleries,
+    biography: biography || null,
+    chronology: chronology || null,
+    global_artist_id: globalArtistId,
+  } : null;
+
+  const headerActions = editMode ? (
     <>
-      {globalArtistId && (
-        <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
-          ID {globalArtistId}
-        </span>
-      )}
-      <Button variant="outline" size="sm" onClick={() => navigate("/profile/view")} className="gap-1.5">
-        <Eye className="w-4 h-4" /> View
-      </Button>
       <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
         <Save className="w-4 h-4" />
         {saving ? "Saving…" : "Save"}
       </Button>
+      <Button variant="outline" size="sm" onClick={() => setEditMode(false)} className="gap-1.5">
+        <Eye className="w-4 h-4" /> Done
+      </Button>
     </>
+  ) : (
+    <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
+      <Pencil className="w-3.5 h-3.5" /> Edit
+    </Button>
   );
+
+  if (!editMode && profileViewData) {
+    return (
+      <AppLayout title="Artist Profile" headerActions={headerActions}>
+        <ProfilePresentationView profile={profileViewData} />
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout title="Artist Profile" headerActions={headerActions}>
