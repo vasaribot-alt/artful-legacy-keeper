@@ -83,6 +83,14 @@ const ArtistProfile = () => {
       if (!session) { navigate("/login"); return; }
       setUserId(session.user.id);
 
+      // Fetch user role
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      if (roleData) setUserRole(roleData.role);
+
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
