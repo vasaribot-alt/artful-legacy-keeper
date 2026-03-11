@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Shield, LayoutGrid, List, Pencil, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { AddArtworkDialog } from "@/components/AddArtworkDialog";
+import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
