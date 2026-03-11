@@ -45,6 +45,8 @@ interface ImagePreview {
 
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [title, setTitle] = useState("");
+  const [exhibitionHistory, setExhibitionHistory] = useState("");
+  const [provenance, setProvenance] = useState("");
   const [artworkType, setArtworkType] = useState("");
   const [medium, setMedium] = useState("");
   const [year, setYear] = useState("");
@@ -128,7 +130,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   };
 
   const resetForm = () => {
-    setTitle(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
+    setTitle(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport("");
     setSigned(""); setHeight(""); setWidth(""); setDepth("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
@@ -202,6 +204,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       artwork_location: artworkLocation.trim() || null,
       edition_count: !isUnique && editionCount ? parseInt(editionCount) : null,
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
+      exhibition_history: exhibitionHistory.trim() || null,
+      provenance: provenance.trim() || null,
     }).select("id").single();
 
     if (error || !artworkData) {
@@ -468,6 +472,16 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
           <div>
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5" />
+          </div>
+
+          <div>
+            <Label htmlFor="exhibition">Exhibition History</Label>
+            <Textarea id="exhibition" value={exhibitionHistory} onChange={(e) => setExhibitionHistory(e.target.value)} placeholder="List exhibitions where this work has been shown…" rows={3} className="mt-1.5" />
+          </div>
+
+          <div>
+            <Label htmlFor="provenance">Provenance</Label>
+            <Textarea id="provenance" value={provenance} onChange={(e) => setProvenance(e.target.value)} placeholder="Ownership history…" rows={3} className="mt-1.5" />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
