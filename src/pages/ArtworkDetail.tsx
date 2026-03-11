@@ -121,6 +121,13 @@ const ArtworkDetail = () => {
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
 
+    // Load linked exhibition entries
+    const { data: exhLinks } = await supabase
+      .from("artwork_exhibitions")
+      .select("cv_entry_id")
+      .eq("artwork_id", id!);
+    if (exhLinks) setSelectedExhibitionIds(exhLinks.map((l: any) => l.cv_entry_id));
+
     // Load images
     const { data: imgs } = await supabase
       .from("artwork_images")
