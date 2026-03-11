@@ -11,6 +11,7 @@ import ArtworkDetail from "./pages/ArtworkDetail";
 import ArtistProfile from "./pages/ArtistProfile";
 import ArtistProfileView from "./pages/ArtistProfileView";
 import ArtistCvView from "./pages/ArtistCvView";
+import ArtworkView from "./pages/ArtworkView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
