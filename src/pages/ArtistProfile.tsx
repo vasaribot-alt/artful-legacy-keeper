@@ -67,7 +67,6 @@ const ArtistProfile = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
-  const [website, setWebsite] = useState("");
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [biography, setBiography] = useState("");
