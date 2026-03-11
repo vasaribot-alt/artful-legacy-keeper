@@ -479,10 +479,10 @@ const ArtworkDetail = () => {
           <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1.5" />
         </div>
 
-        <div>
-          <Label htmlFor="exhibition">Exhibition History</Label>
-          <Textarea id="exhibition" value={exhibitionHistory} onChange={(e) => setExhibitionHistory(e.target.value)} placeholder="List exhibitions where this work has been shown…" rows={4} className="mt-1.5" />
-        </div>
+        <ExhibitionPicker
+          selectedIds={selectedExhibitionIds}
+          onSelectionChange={setSelectedExhibitionIds}
+        />
 
         <div>
           <Label htmlFor="provenance">Provenance</Label>
