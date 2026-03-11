@@ -141,7 +141,7 @@ const Dashboard = () => {
     <>
       {globalArtistId && (
         <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
-          ID {globalArtistId}
+          GAR-{String(globalArtistId).padStart(8, '0')}
         </span>
       )}
       <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">

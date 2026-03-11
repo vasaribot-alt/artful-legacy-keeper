@@ -184,7 +184,7 @@ const ArtistProfileView = () => {
           )}
 
           <span className="mt-4 text-xs px-3 py-1 rounded-sm bg-foreground text-background font-mono tracking-widest">
-            ID {profile.global_artist_id}
+            GAR-{String(profile.global_artist_id).padStart(8, '0')}
           </span>
         </div>
       </header>
