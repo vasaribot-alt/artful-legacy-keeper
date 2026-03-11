@@ -45,8 +45,10 @@ interface ImagePreview {
   preview: string;
 }
 
-export const AddArtworkDialog = ({ open, onOpenChange, onSuccess }: Props) => {
+export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist" }: Props) => {
+  const isCollector = userRole === "collector";
   const [title, setTitle] = useState("");
+  const [artistName, setArtistName] = useState("");
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [provenance, setProvenance] = useState("");
