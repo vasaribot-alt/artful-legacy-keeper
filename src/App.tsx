@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import ArtworkDetail from "./pages/ArtworkDetail";
 import ArtistProfile from "./pages/ArtistProfile";
 import ArtistProfileView from "./pages/ArtistProfileView";
+import ArtistCvView from "./pages/ArtistCvView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<ArtistProfile />} />
           <Route path="/profile/view" element={<ArtistProfileView />} />
+          <Route path="/profile/cv" element={<ArtistCvView />} />
           <Route path="/artwork/:id" element={<ArtworkDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
