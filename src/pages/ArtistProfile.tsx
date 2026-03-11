@@ -17,6 +17,29 @@ interface SocialLink {
   url: string;
 }
 
+const PLATFORM_PATTERNS: { pattern: RegExp; name: string }[] = [
+  { pattern: /instagram\.com/i, name: "Instagram" },
+  { pattern: /facebook\.com|fb\.com/i, name: "Facebook" },
+  { pattern: /twitter\.com|x\.com/i, name: "X (Twitter)" },
+  { pattern: /linkedin\.com/i, name: "LinkedIn" },
+  { pattern: /tiktok\.com/i, name: "TikTok" },
+  { pattern: /youtube\.com|youtu\.be/i, name: "YouTube" },
+  { pattern: /pinterest\.com/i, name: "Pinterest" },
+  { pattern: /behance\.net/i, name: "Behance" },
+  { pattern: /artsy\.net/i, name: "Artsy" },
+  { pattern: /tumblr\.com/i, name: "Tumblr" },
+  { pattern: /vimeo\.com/i, name: "Vimeo" },
+  { pattern: /threads\.net/i, name: "Threads" },
+  { pattern: /bluesky|bsky\.app/i, name: "Bluesky" },
+];
+
+const detectPlatform = (url: string): string => {
+  for (const { pattern, name } of PLATFORM_PATTERNS) {
+    if (pattern.test(url)) return name;
+  }
+  return "";
+};
+
 interface Gallery {
   name: string;
   phone: string;
