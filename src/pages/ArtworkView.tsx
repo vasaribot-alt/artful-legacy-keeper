@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ViewLayout } from "@/components/ViewLayout";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Pencil, ArrowLeft } from "lucide-react";
+import { AppLayout } from "@/components/AppLayout";
 
 interface ArtworkImage {
   id: string;
@@ -77,11 +78,11 @@ const ArtworkView = () => {
 
   if (loading) {
     return (
-      <ViewLayout editPath={`/artwork/${id}`}>
+      <AppLayout title="Artwork">
         <div className="flex items-center justify-center py-20">
           <p className="text-muted-foreground">Loading...</p>
         </div>
-      </ViewLayout>
+      </AppLayout>
     );
   }
 
@@ -90,8 +91,19 @@ const ArtworkView = () => {
   const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const hasMultipleImages = images.length > 1;
 
+  const headerActions = (
+    <>
+      <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
+        <ArrowLeft className="w-4 h-4 mr-1" /> Back
+      </Button>
+      <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}`)} className="gap-1.5">
+        <Pencil className="w-3.5 h-3.5" /> Edit
+      </Button>
+    </>
+  );
+
   return (
-    <ViewLayout editPath={`/artwork/${id}`}>
+    <AppLayout title={artwork.title} headerActions={headerActions}>
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Image section */}
@@ -247,7 +259,7 @@ const ArtworkView = () => {
           </div>
         </div>
       </div>
-    </ViewLayout>
+    </AppLayout>
   );
 };
 
