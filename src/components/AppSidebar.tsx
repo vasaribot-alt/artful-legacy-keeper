@@ -1,4 +1,4 @@
-import { User, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase } from "lucide-react";
+import { User, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,7 @@ const getNavItems = (role: string | null) => [
   ...(role !== "collector" ? [{ title: "Portfolios", url: "/portfolios", icon: Briefcase }] : []),
   { title: "CV", url: "/cv", icon: FileText },
   { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
+  { title: "Catalogues", url: "/catalogues", icon: BookOpen },
   { title: "Provenance", url: "/provenance", icon: ScrollText },
 ];
 

@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      artwork_catalogues: {
+        Row: {
+          artwork_id: string
+          catalogue_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          artwork_id: string
+          catalogue_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          artwork_id?: string
+          catalogue_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_catalogues_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artwork_catalogues_catalogue_id_fkey"
+            columns: ["catalogue_id"]
+            isOneToOne: false
+            referencedRelation: "catalogues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artwork_documents: {
         Row: {
           artwork_id: string
@@ -219,6 +255,39 @@ export type Database = {
           weight?: number | null
           width?: number | null
           year?: number | null
+        }
+        Relationships: []
+      }
+      catalogues: {
+        Row: {
+          authors: string | null
+          created_at: string
+          id: string
+          isbn: string | null
+          publication_year: number | null
+          publisher: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          authors?: string | null
+          created_at?: string
+          id?: string
+          isbn?: string | null
+          publication_year?: number | null
+          publisher?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          authors?: string | null
+          created_at?: string
+          id?: string
+          isbn?: string | null
+          publication_year?: number | null
+          publisher?: string | null
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -27,6 +27,7 @@ const ArtworkView = () => {
   const [images, setImages] = useState<ArtworkImage[]>([]);
   const [activeImage, setActiveImage] = useState(0);
   const [exhibitions, setExhibitions] = useState<any[]>([]);
+  const [catalogues, setCatalogues] = useState<any[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -71,6 +72,22 @@ const ArtworkView = () => {
         .in("id", ids)
         .order("year", { ascending: false });
       if (entries) setExhibitions(entries);
+    }
+
+    // Load linked catalogues
+    const { data: catLinks } = await supabase
+      .from("artwork_catalogues")
+      .select("catalogue_id")
+      .eq("artwork_id", id!);
+
+    if (catLinks && catLinks.length > 0) {
+      const catIds = catLinks.map((l: any) => l.catalogue_id);
+      const { data: cats } = await supabase
+        .from("catalogues")
+        .select("*")
+        .in("id", catIds)
+        .order("publication_year", { ascending: false });
+      if (cats) setCatalogues(cats);
     }
 
     setLoading(false);
@@ -258,6 +275,34 @@ const ArtworkView = () => {
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Provenance</p>
                   <p className="text-sm leading-relaxed whitespace-pre-line">{artwork.provenance}</p>
+                </div>
+              </>
+            )}
+
+            {catalogues.length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Catalogues</p>
+                  <ul className="space-y-2">
+                    {catalogues.map((cat: any) => (
+                      <li key={cat.id} className="text-sm">
+                        <span className="font-medium">{cat.title}</span>
+                        {cat.publication_year && (
+                          <span className="text-muted-foreground ml-1">({cat.publication_year})</span>
+                        )}
+                        {cat.publisher && (
+                          <span className="text-muted-foreground block text-xs">{cat.publisher}</span>
+                        )}
+                        {cat.authors && (
+                          <span className="text-muted-foreground block text-xs">{cat.authors}</span>
+                        )}
+                        {cat.isbn && (
+                          <span className="text-muted-foreground block text-xs font-mono">ISBN {cat.isbn}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </>
             )}

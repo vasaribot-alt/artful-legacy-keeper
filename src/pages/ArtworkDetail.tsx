@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
+import { CataloguePicker } from "@/components/CataloguePicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,6 +71,7 @@ const ArtworkDetail = () => {
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
+  const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
   // Images
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
@@ -127,6 +129,13 @@ const ArtworkDetail = () => {
       .select("cv_entry_id")
       .eq("artwork_id", id!);
     if (exhLinks) setSelectedExhibitionIds(exhLinks.map((l: any) => l.cv_entry_id));
+
+    // Load linked catalogues
+    const { data: catLinks } = await supabase
+      .from("artwork_catalogues")
+      .select("catalogue_id")
+      .eq("artwork_id", id!);
+    if (catLinks) setSelectedCatalogueIds(catLinks.map((l: any) => l.catalogue_id));
 
     // Load images
     const { data: imgs } = await supabase
@@ -241,6 +250,14 @@ const ArtworkDetail = () => {
     if (selectedExhibitionIds.length > 0) {
       await supabase.from("artwork_exhibitions").insert(
         selectedExhibitionIds.map((cv_entry_id) => ({ artwork_id: id!, cv_entry_id }))
+      );
+    }
+
+    // Sync catalogue links
+    await supabase.from("artwork_catalogues").delete().eq("artwork_id", id!);
+    if (selectedCatalogueIds.length > 0) {
+      await supabase.from("artwork_catalogues").insert(
+        selectedCatalogueIds.map((catalogue_id) => ({ artwork_id: id!, catalogue_id }))
       );
     }
 
@@ -485,6 +502,11 @@ const ArtworkDetail = () => {
         <ExhibitionPicker
           selectedIds={selectedExhibitionIds}
           onSelectionChange={setSelectedExhibitionIds}
+        />
+
+        <CataloguePicker
+          selectedIds={selectedCatalogueIds}
+          onSelectionChange={setSelectedCatalogueIds}
         />
 
         <div>

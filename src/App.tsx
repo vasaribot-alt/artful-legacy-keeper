@@ -20,6 +20,7 @@ import Series from "./pages/Series";
 import Portfolios from "./pages/Portfolios";
 import PortfolioDetail from "./pages/PortfolioDetail";
 import PortfolioShared from "./pages/PortfolioShared";
+import Catalogues from "./pages/Catalogues";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/artwork/:id/view" element={<ArtworkView />} />
           <Route path="/exhibitions" element={<Exhibitions />} />
           <Route path="/provenance" element={<Provenance />} />
+          <Route path="/catalogues" element={<Catalogues />} />
           <Route path="/series" element={<Series />} />
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
