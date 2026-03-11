@@ -41,6 +41,7 @@ const App = () => (
           <Route path="/artwork/:id/view" element={<ArtworkView />} />
           <Route path="/exhibitions" element={<Exhibitions />} />
           <Route path="/provenance" element={<Provenance />} />
+          <Route path="/series" element={<Series />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
