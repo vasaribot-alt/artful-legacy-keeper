@@ -58,6 +58,7 @@ const Dashboard = () => {
   const [galleryArtworks, setGalleryArtworks] = useState<ArtworkWithImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [duplicateData, setDuplicateData] = useState<ArtworkDuplicateData | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [editMode, setEditMode] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
