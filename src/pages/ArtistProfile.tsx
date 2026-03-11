@@ -120,6 +120,7 @@ const ArtistProfile = () => {
         birth_year: birthYear ? parseInt(birthYear) : null,
         city: city || null,
         country: country || null,
+        studio_address: studioAddress || null,
         contacts: contacts || null,
         website: website || null,
         social_media_links: socialLinks,
