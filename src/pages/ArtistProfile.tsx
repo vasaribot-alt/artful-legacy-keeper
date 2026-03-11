@@ -281,6 +281,10 @@ const ArtistProfile = () => {
               <Label>Country</Label>
               <Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="e.g. Norway" className="mt-1" />
             </div>
+            <div className="sm:col-span-2">
+              <Label>Studio Address</Label>
+              <Input value={studioAddress} onChange={(e) => setStudioAddress(e.target.value)} placeholder="e.g. Prinsens gate 2, 0152 Oslo" className="mt-1" />
+            </div>
           </div>
         </section>
 
