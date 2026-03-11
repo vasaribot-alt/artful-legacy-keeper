@@ -27,6 +27,7 @@ const ArtworkView = () => {
   const [images, setImages] = useState<ArtworkImage[]>([]);
   const [activeImage, setActiveImage] = useState(0);
   const [exhibitions, setExhibitions] = useState<any[]>([]);
+  const [catalogues, setCatalogues] = useState<any[]>([]);
 
   useEffect(() => {
     if (!id) return;
