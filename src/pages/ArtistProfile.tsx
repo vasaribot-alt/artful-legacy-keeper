@@ -7,11 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye } from "lucide-react";
+import { Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
 import { getPhonePrefixForCountry, COUNTRY_PHONE_CODES } from "@/lib/phoneCountryCodes";
+import { AppLayout } from "@/components/AppLayout";
 
 interface SocialLink {
   platform: string;
@@ -57,7 +58,6 @@ const ArtistProfile = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
-  // Profile fields
   const [fullName, setFullName] = useState("");
   const [birthYear, setBirthYear] = useState("");
   const [city, setCity] = useState("");
@@ -109,7 +109,6 @@ const ArtistProfile = () => {
       setBiography((data as any).biography || "");
       setCv((data as any).cv || "");
       setChronology((data as any).chronology || "");
-      // Auto-set phone prefix from country if not already set
       if (!(data as any).phone_prefix && (data as any).country) {
         const autoPrefix = getPhonePrefixForCountry((data as any).country);
         if (autoPrefix) setPhonePrefix(autoPrefix);
@@ -122,7 +121,6 @@ const ArtistProfile = () => {
   const handleSave = async () => {
     if (!profileId) return;
     setSaving(true);
-
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -142,41 +140,23 @@ const ArtistProfile = () => {
         chronology: chronology || null,
       } as any)
       .eq("id", profileId);
-
     setSaving(false);
-    if (error) {
-      toast.error("Failed to save profile");
-    } else {
-      toast.success("Profile saved");
-    }
+    if (error) { toast.error("Failed to save profile"); }
+    else { toast.success("Profile saved"); }
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId || !profileId) return;
-
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      return;
-    }
-
+    if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
     setUploadingAvatar(true);
     try {
       const ext = file.name.split(".").pop();
       const path = `${userId}/avatar.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("profile-photos")
-        .upload(path, file, { upsert: true });
-
+      const { error: uploadError } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: true });
       if (uploadError) throw uploadError;
-
-      const { data: publicUrlData } = supabase.storage
-        .from("profile-photos")
-        .getPublicUrl(path);
-
+      const { data: publicUrlData } = supabase.storage.from("profile-photos").getPublicUrl(path);
       const url = publicUrlData.publicUrl + "?t=" + Date.now();
-
       await supabase.from("profiles").update({ avatar_url: url } as any).eq("id", profileId);
       setAvatarUrl(url);
       toast.success("Profile photo updated");
@@ -207,47 +187,37 @@ const ArtistProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading profile…</p>
-      </div>
+      <AppLayout title="Artist Profile">
+        <div className="flex items-center justify-center py-20">
+          <p className="text-muted-foreground">Loading profile…</p>
+        </div>
+      </AppLayout>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="w-4 h-4 mr-1" /> Back
-            </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <h1 className="text-lg font-semibold">Artist Profile</h1>
-            {globalArtistId && (
-              <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
-                ID {globalArtistId}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate("/profile/view")} className="gap-1.5">
-              <Eye className="w-4 h-4" /> View
-            </Button>
-            <Button onClick={handleSave} disabled={saving} className="gap-2">
-              <Save className="w-4 h-4" />
-              {saving ? "Saving…" : "Save Profile"}
-            </Button>
-          </div>
-        </div>
-      </header>
+  const headerActions = (
+    <>
+      {globalArtistId && (
+        <span className="text-xs px-2 py-0.5 rounded-sm bg-foreground text-background font-mono tracking-wider">
+          ID {globalArtistId}
+        </span>
+      )}
+      <Button variant="outline" size="sm" onClick={() => navigate("/profile/view")} className="gap-1.5">
+        <Eye className="w-4 h-4" /> View
+      </Button>
+      <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
+        <Save className="w-4 h-4" />
+        {saving ? "Saving…" : "Save"}
+      </Button>
+    </>
+  );
 
-      <main className="max-w-4xl mx-auto px-6 py-10 space-y-10">
+  return (
+    <AppLayout title="Artist Profile" headerActions={headerActions}>
+      <div className="max-w-4xl mx-auto px-6 py-10 space-y-10">
         {/* Basic Info */}
         <section className="space-y-6">
           <h2 className="text-2xl">Basic Information</h2>
-          
-          {/* Profile Photo */}
           <div className="flex items-center gap-6">
             <div className="relative group">
               <Avatar className="w-24 h-24 border-2 border-border">
@@ -261,26 +231,15 @@ const ArtistProfile = () => {
                 disabled={uploadingAvatar}
                 className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
               >
-                {uploadingAvatar ? (
-                  <Loader2 className="w-6 h-6 text-white animate-spin" />
-                ) : (
-                  <Camera className="w-6 h-6 text-white" />
-                )}
+                {uploadingAvatar ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : <Camera className="w-6 h-6 text-white" />}
               </button>
-              <input
-                ref={avatarInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarUpload}
-              />
+              <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
             <div>
               <p className="text-sm font-medium">Profile Photo</p>
               <p className="text-xs text-muted-foreground">Click to upload or change</p>
             </div>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <Label>Full Name</Label>
@@ -311,7 +270,6 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        {/* Contacts & Web */}
         <section className="space-y-6">
           <h2 className="text-2xl">Contacts & Web</h2>
           <div className="space-y-4">
@@ -327,17 +285,10 @@ const ArtistProfile = () => {
                   {Object.entries(COUNTRY_PHONE_CODES)
                     .sort((a, b) => a[0].localeCompare(b[0]))
                     .map(([c, code]) => (
-                      <option key={c} value={code}>
-                        {code} {c}
-                      </option>
+                      <option key={c} value={code}>{code} {c}</option>
                     ))}
                 </select>
-                <Input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Phone number"
-                  className="flex-1"
-                />
+                <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone number" className="flex-1" />
               </div>
             </div>
             <div>
@@ -353,7 +304,6 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        {/* Social Media */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl">Social Media Links</h2>
@@ -385,7 +335,6 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        {/* Galleries */}
         <section className="space-y-6">
           <h2 className="text-2xl">Galleries</h2>
           <GallerySearch galleries={galleries} onGalleriesChange={setGalleries} />
@@ -393,7 +342,6 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        {/* Biography */}
         <section className="space-y-4">
           <h2 className="text-2xl">Biography</h2>
           <Textarea value={biography} onChange={(e) => setBiography(e.target.value)} placeholder="Write your biography…" rows={8} />
@@ -401,7 +349,6 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        {/* CV */}
         <section className="space-y-4">
           <h2 className="text-2xl">CV</h2>
           {profileId && <CvManager profileId={profileId} />}
@@ -409,21 +356,19 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        {/* Chronology */}
         <section className="space-y-4">
           <h2 className="text-2xl">Chronology</h2>
           <Textarea value={chronology} onChange={(e) => setChronology(e.target.value)} placeholder="Timeline of significant events…" rows={8} />
         </section>
 
-        {/* Bottom Save */}
         <div className="pt-6">
           <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
             <Save className="w-4 h-4" />
             {saving ? "Saving…" : "Save Profile"}
           </Button>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 
