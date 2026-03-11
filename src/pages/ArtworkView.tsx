@@ -165,7 +165,7 @@ const ArtworkView = () => {
               )}
               {artwork.global_artwork_id && (
                 <p className="text-xs text-muted-foreground font-mono mt-1.5">
-                  GAWID {artwork.global_artwork_id}
+                  GAWID-{artwork.global_artwork_id}
                 </p>
               )}
             </div>
