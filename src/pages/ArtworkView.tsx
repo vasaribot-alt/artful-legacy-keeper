@@ -163,6 +163,11 @@ const ArtworkView = () => {
               {artwork.year && (
                 <p className="text-muted-foreground mt-1">{artwork.year}</p>
               )}
+              {artwork.global_artwork_id && (
+                <p className="text-xs text-muted-foreground font-mono mt-1.5">
+                  GAWID {artwork.global_artwork_id}
+                </p>
+              )}
             </div>
 
             {/* Key details */}
