@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Shield, LayoutGrid, List, Pencil, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { AddArtworkDialog } from "@/components/AddArtworkDialog";
+import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
@@ -58,6 +58,7 @@ const Dashboard = () => {
   const [galleryArtworks, setGalleryArtworks] = useState<ArtworkWithImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [duplicateData, setDuplicateData] = useState<ArtworkDuplicateData | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [editMode, setEditMode] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
@@ -215,7 +216,7 @@ const Dashboard = () => {
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {artworks.map((artwork) => (
-                <ArtworkCard key={artwork.id} artwork={artwork} />
+                <ArtworkCard key={artwork.id} artwork={artwork} onDuplicate={(data) => { setDuplicateData(data); setDialogOpen(true); }} />
               ))}
             </div>
           ) : (
@@ -284,9 +285,10 @@ const Dashboard = () => {
 
       <AddArtworkDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(open) => { setDialogOpen(open); if (!open) setDuplicateData(null); }}
         onSuccess={fetchArtworks}
         userRole={userRole}
+        initialData={duplicateData}
       />
     </AppLayout>
   );

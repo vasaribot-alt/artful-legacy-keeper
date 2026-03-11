@@ -29,11 +29,38 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
 
+export interface ArtworkDuplicateData {
+  title?: string;
+  artistName?: string;
+  artworkType?: string;
+  medium?: string;
+  year?: string;
+  description?: string;
+  isUnique?: boolean;
+  series?: string;
+  subCategory?: string;
+  support?: string;
+  signed?: string;
+  height?: string;
+  width?: string;
+  depth?: string;
+  weight?: string;
+  price?: string;
+  currency?: string;
+  artworkLocation?: string;
+  editionCount?: string;
+  artistProofs?: string;
+  editionNumber?: string;
+  exhibitionHistory?: string;
+  provenance?: string;
+}
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
   userRole?: string;
+  initialData?: ArtworkDuplicateData | null;
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
@@ -45,7 +72,7 @@ interface ImagePreview {
   preview: string;
 }
 
-export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist" }: Props) => {
+export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist", initialData }: Props) => {
   const isCollector = userRole === "collector";
   const [title, setTitle] = useState("");
   const [artistName, setArtistName] = useState("");
@@ -81,8 +108,35 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [newSeriesInput, setNewSeriesInput] = useState("");
 
   useEffect(() => {
-    if (open) fetchSeriesOptions();
-  }, [open]);
+    if (open) {
+      fetchSeriesOptions();
+      if (initialData) {
+        setTitle(initialData.title || "");
+        setArtistName(initialData.artistName || "");
+        setArtworkType(initialData.artworkType || "");
+        setMedium(initialData.medium || "");
+        setYear(initialData.year || "");
+        setDescription(initialData.description || "");
+        setIsUnique(initialData.isUnique ?? true);
+        setSeries(initialData.series || "");
+        setSubCategory(initialData.subCategory || "");
+        setSupport(initialData.support || "");
+        setSigned(initialData.signed || "");
+        setHeight(initialData.height || "");
+        setWidth(initialData.width || "");
+        setDepth(initialData.depth || "");
+        setWeight(initialData.weight || "");
+        setPrice(initialData.price || "");
+        setCurrency(initialData.currency || "EUR");
+        setArtworkLocation(initialData.artworkLocation || "");
+        setEditionCount(initialData.editionCount || "");
+        setArtistProofs(initialData.artistProofs || "");
+        setEditionNumber(initialData.editionNumber || "");
+        setExhibitionHistory(initialData.exhibitionHistory || "");
+        setProvenance(initialData.provenance || "");
+      }
+    }
+  }, [open, initialData]);
 
   useEffect(() => {
     // Cleanup previews on unmount
@@ -257,7 +311,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Artwork</DialogTitle>
+          <DialogTitle>{initialData ? "Duplicate Artwork" : "Add Artwork"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-5 mt-2">
           {/* Images */}
