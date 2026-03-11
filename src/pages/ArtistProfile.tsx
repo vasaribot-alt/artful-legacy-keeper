@@ -291,7 +291,11 @@ const ArtistProfile = () => {
             </div>
             <div>
               <Label>Country</Label>
-              <Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="e.g. Norway" className="mt-1" />
+              <Input value={country} onChange={(e) => {
+                setCountry(e.target.value);
+                const prefix = getPhonePrefixForCountry(e.target.value);
+                if (prefix) setPhonePrefix(prefix);
+              }} placeholder="e.g. Norway" className="mt-1" />
             </div>
             <div className="sm:col-span-2">
               <Label>Studio Address</Label>
