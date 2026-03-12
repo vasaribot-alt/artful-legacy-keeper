@@ -4,18 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import { ViewLayout } from "@/components/ViewLayout";
-
-interface CvEntry {
-  section: string;
-  year: string;
-  entry_text: string;
-  images: { storage_path: string; caption: string | null }[];
-}
-
-interface CvSection {
-  section: string;
-  entries: CvEntry[];
-}
+import { buildCvSections, CvSection } from "@/hooks/use-cv-with-exhibitions";
 
 const ArtistCvView = () => {
   const navigate = useNavigate();
@@ -40,31 +29,8 @@ const ArtistCvView = () => {
 
       setArtistName(profile.full_name || "Artist");
 
-      const { data: entries } = await supabase
-        .from("cv_entries")
-        .select("*, cv_entry_images(*)")
-        .eq("profile_id", profile.id)
-        .order("display_order", { ascending: true });
-
-      if (entries && entries.length > 0) {
-        const sectionMap = new Map<string, CvEntry[]>();
-        for (const e of entries) {
-          const section = e.section || "Other";
-          if (!sectionMap.has(section)) sectionMap.set(section, []);
-          sectionMap.get(section)!.push({
-            section,
-            year: e.year || "",
-            entry_text: e.entry_text || "",
-            images: ((e as any).cv_entry_images || []).map((img: any) => ({
-              storage_path: img.storage_path,
-              caption: img.caption,
-            })),
-          });
-        }
-        setCvSections(
-          Array.from(sectionMap.entries()).map(([section, entries]) => ({ section, entries }))
-        );
-      }
+      const sections = await buildCvSections(profile.id, session.user.id);
+      setCvSections(sections);
 
       setLoading(false);
     };

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ImagePlus, X, FileUp } from "lucide-react";
+import { Plus, Pencil, Trash2, ImagePlus, X, FileUp, EyeOff, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -34,6 +34,7 @@ interface Exhibition {
   curator: string | null;
   artists: string | null;
   description: string | null;
+  hide_from_cv: boolean;
 }
 
 interface ExhibitionImage {
@@ -211,6 +212,16 @@ const Exhibitions = () => {
     loadExhibitions();
   };
 
+  const toggleCvVisibility = async (ex: Exhibition) => {
+    const { error } = await supabase
+      .from("exhibitions")
+      .update({ hide_from_cv: !ex.hide_from_cv })
+      .eq("id", ex.id);
+    if (error) { toast.error("Failed to update"); return; }
+    toast.success(ex.hide_from_cv ? "Now visible in CV" : "Hidden from CV");
+    loadExhibitions();
+  };
+
   const formatDateRange = (opening: string | null, closing: string | null) => {
     if (!opening && !closing) return null;
     const parts: string[] = [];
@@ -288,6 +299,15 @@ const Exhibitions = () => {
                       )}
                     </div>
                     <div className="flex gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title={ex.hide_from_cv ? "Hidden from CV" : "Visible in CV"}
+                        onClick={() => toggleCvVisibility(ex)}
+                      >
+                        {ex.hide_from_cv ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground" /> : <Eye className="w-3.5 h-3.5 text-muted-foreground" />}
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(ex)}>
                         <Pencil className="w-3.5 h-3.5" />
                       </Button>

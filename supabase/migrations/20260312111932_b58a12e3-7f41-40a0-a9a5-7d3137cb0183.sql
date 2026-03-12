@@ -1,0 +1,1 @@
+ALTER TABLE public.exhibitions ADD COLUMN hide_from_cv boolean NOT NULL DEFAULT false;
