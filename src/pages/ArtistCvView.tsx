@@ -29,31 +29,8 @@ const ArtistCvView = () => {
 
       setArtistName(profile.full_name || "Artist");
 
-      const { data: entries } = await supabase
-        .from("cv_entries")
-        .select("*, cv_entry_images(*)")
-        .eq("profile_id", profile.id)
-        .order("display_order", { ascending: true });
-
-      if (entries && entries.length > 0) {
-        const sectionMap = new Map<string, CvEntry[]>();
-        for (const e of entries) {
-          const section = e.section || "Other";
-          if (!sectionMap.has(section)) sectionMap.set(section, []);
-          sectionMap.get(section)!.push({
-            section,
-            year: e.year || "",
-            entry_text: e.entry_text || "",
-            images: ((e as any).cv_entry_images || []).map((img: any) => ({
-              storage_path: img.storage_path,
-              caption: img.caption,
-            })),
-          });
-        }
-        setCvSections(
-          Array.from(sectionMap.entries()).map(([section, entries]) => ({ section, entries }))
-        );
-      }
+      const sections = await buildCvSections(profile.id, session.user.id);
+      setCvSections(sections);
 
       setLoading(false);
     };
