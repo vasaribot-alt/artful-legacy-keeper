@@ -120,18 +120,20 @@ export const ExhibitionDocuments = ({ exhibitionId }: ExhibitionDocumentsProps) 
           ))}
         </div>
       )}
-      <label className="inline-flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-        <FileUp className="w-3.5 h-3.5" />
-        <span>{uploading ? "Uploading..." : "Add document"}</span>
-        <input
-          type="file"
-          multiple
-          accept=".pdf,.doc,.docx,.txt,.rtf,.xls,.xlsx,.csv"
-          className="hidden"
-          disabled={uploading}
-          onChange={(e) => e.target.files && handleUpload(e.target.files)}
-        />
-      </label>
+      <Button variant="outline" size="sm" asChild disabled={uploading} className="gap-1.5">
+        <label className="cursor-pointer">
+          <FileUp className="w-3.5 h-3.5" />
+          {uploading ? "Uploading..." : "Add Document"}
+          <input
+            type="file"
+            multiple
+            accept=".pdf,.doc,.docx,.txt,.rtf,.xls,.xlsx,.csv"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => e.target.files && handleUpload(e.target.files)}
+          />
+        </label>
+      </Button>
     </div>
   );
 };
