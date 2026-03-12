@@ -1,8 +1,9 @@
-import { User, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen } from "lucide-react";
+import { User, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, ChevronDown } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   Sidebar,
   SidebarContent,
@@ -14,8 +15,17 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const getNavItems = (role: string | null) => [
+type AppRole = "artist" | "collector" | "registrar";
+
+const getNavItems = (role: AppRole) => [
   { title: role === "collector" ? "Collector Profile" : "Artist Profile", url: "/profile", icon: User },
   { title: "Artworks", url: "/dashboard", icon: Images },
   ...(role !== "collector" ? [{ title: "Series", url: "/series", icon: Layers }] : []),
@@ -26,35 +36,75 @@ const getNavItems = (role: string | null) => [
   { title: "Provenance", url: "/provenance", icon: ScrollText },
 ];
 
-const getRegistryLabel = (role: string | null) =>
-  role === "collector" ? "Collectors Register" : "Artist Registry";
+const roleLabels: Record<AppRole, { nav: string; label: string }> = {
+  artist: { nav: "Artist Registry", label: "Artist" },
+  collector: { nav: "Collectors Register", label: "Collector" },
+  registrar: { nav: "Registrar", label: "Registrar" },
+};
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
   const navigate = useNavigate();
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [roles, setRoles] = useState<AppRole[]>([]);
+  const [activeRole, setActiveRole] = useState<AppRole>("artist");
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchRole = async () => {
+    const fetchRoles = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUserId(user.id);
         const { data } = await supabase
           .from("user_roles")
           .select("role")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (data) setUserRole(data.role);
+          .eq("user_id", user.id);
+        if (data && data.length > 0) {
+          const userRoles = data.map(d => d.role) as AppRole[];
+          setRoles(userRoles);
+          // Restore last active role from localStorage, or default to first
+          const saved = localStorage.getItem("activeRole") as AppRole | null;
+          if (saved && userRoles.includes(saved)) {
+            setActiveRole(saved);
+          } else {
+            setActiveRole(userRoles[0]);
+          }
+        }
       }
     };
-    fetchRole();
+    fetchRoles();
   }, []);
 
+  const switchRole = (role: AppRole) => {
+    setActiveRole(role);
+    localStorage.setItem("activeRole", role);
+    navigate("/dashboard");
+  };
+
+  const addCollectorRole = async () => {
+    if (!userId) return;
+    const { error } = await supabase
+      .from("user_roles")
+      .insert({ user_id: userId, role: "collector" as AppRole });
+    if (error) {
+      if (error.code === "23505") {
+        toast.info("You already have a collector account");
+      } else {
+        toast.error("Failed to add collector role");
+      }
+      return;
+    }
+    setRoles(prev => [...prev, "collector"]);
+    toast.success("Collector account added! You can now switch between roles.");
+  };
+
   const isActive = (path: string) => location.pathname === path;
-  const navItems = getNavItems(userRole);
+  const navItems = getNavItems(activeRole);
+  const canAddCollector = !roles.includes("collector") && roles.includes("artist");
 
   const handleSignOut = async () => {
+    localStorage.removeItem("activeRole");
     await supabase.auth.signOut();
     navigate("/");
   };
@@ -65,9 +115,31 @@ export function AppSidebar() {
         <SidebarGroup>
           <div className={`px-3 py-4 ${collapsed ? "text-center" : ""}`}>
             {!collapsed && (
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {getRegistryLabel(userRole)}
-              </span>
+              <div>
+                {roles.length > 1 ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors w-full">
+                      {roleLabels[activeRole].nav}
+                      <ChevronDown className="h-3 w-3" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      {roles.map(role => (
+                        <DropdownMenuItem
+                          key={role}
+                          onClick={() => switchRole(role)}
+                          className={activeRole === role ? "bg-accent font-medium" : ""}
+                        >
+                          {roleLabels[role].nav}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {roleLabels[activeRole].nav}
+                  </span>
+                )}
+              </div>
             )}
           </div>
           <SidebarGroupContent>
@@ -93,6 +165,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          {canAddCollector && (
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={addCollectorRole}>
+                <Plus className="mr-2 h-4 w-4" />
+                {!collapsed && <span>Add Collector Account</span>}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
