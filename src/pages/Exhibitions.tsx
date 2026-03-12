@@ -216,6 +216,11 @@ const Exhibitions = () => {
     loadExhibitions();
   };
 
+  const handleUpdateCaption = async (imageId: string, caption: string) => {
+    const trimmed = caption.trim() || null;
+    await supabase.from("exhibition_images").update({ caption: trimmed }).eq("id", imageId);
+  };
+
   const toggleCvVisibility = async (ex: Exhibition) => {
     const { error } = await supabase
       .from("exhibitions")
