@@ -407,6 +407,57 @@ const Exhibitions = () => {
         onOpenChange={setImportDialogOpen}
         onImported={loadExhibitions}
       />
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={() => setLightbox(null)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowLeft") setLightbox((prev) => prev && ({ ...prev, index: Math.max(0, prev.index - 1) }));
+            if (e.key === "ArrowRight") setLightbox((prev) => prev && ({ ...prev, index: Math.min(prev.images.length - 1, prev.index + 1) }));
+            if (e.key === "Escape") setLightbox(null);
+          }}
+          tabIndex={0}
+          ref={(el) => el?.focus()}
+        >
+          <img
+            src={lightbox.images[lightbox.index].publicUrl}
+            alt=""
+            className="max-h-[85vh] max-w-[85vw] object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {lightbox.index > 0 && (
+            <button
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 backdrop-blur-sm rounded-full p-2 transition-colors"
+              onClick={(e) => { e.stopPropagation(); setLightbox((prev) => prev && ({ ...prev, index: prev.index - 1 })); }}
+            >
+              <ChevronLeft className="w-6 h-6 text-white" />
+            </button>
+          )}
+
+          {lightbox.index < lightbox.images.length - 1 && (
+            <button
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/20 hover:bg-background/40 backdrop-blur-sm rounded-full p-2 transition-colors"
+              onClick={(e) => { e.stopPropagation(); setLightbox((prev) => prev && ({ ...prev, index: prev.index + 1 })); }}
+            >
+              <ChevronRight className="w-6 h-6 text-white" />
+            </button>
+          )}
+
+          <button
+            className="absolute top-4 right-4 bg-background/20 hover:bg-background/40 backdrop-blur-sm rounded-full p-2 transition-colors"
+            onClick={() => setLightbox(null)}
+          >
+            <X className="w-5 h-5 text-white" />
+          </button>
+
+          <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+            {lightbox.index + 1} / {lightbox.images.length}
+          </span>
+        </div>
+      )}
     </AppLayout>
   );
 };
