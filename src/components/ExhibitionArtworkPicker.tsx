@@ -156,8 +156,7 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
               className="h-8 text-sm"
             />
           </div>
-          <ScrollArea className="h-72">
-            <div className="p-2 space-y-0.5">
+          <div className="max-h-72 overflow-y-auto p-2 space-y-0.5">
             {filtered.length === 0 && (
               <p className="text-xs text-muted-foreground p-3 text-center">
                 {artworks.length === 0 ? "No artworks found. Add artworks first." : "No matches."}
@@ -185,8 +184,7 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
                 </div>
               </button>
             ))}
-            </div>
-          </ScrollArea>
+          </div>
         </PopoverContent>
       </Popover>
     </div>
