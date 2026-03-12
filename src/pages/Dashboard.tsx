@@ -295,6 +295,12 @@ const Dashboard = () => {
         userRole={userRole}
         initialData={duplicateData}
       />
+
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onOpenChange={setBulkImportOpen}
+        onSuccess={fetchArtworks}
+      />
     </AppLayout>
   );
 };
