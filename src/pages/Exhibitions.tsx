@@ -22,6 +22,7 @@ import { Plus, Pencil, Trash2, ImagePlus, X, FileUp, EyeOff, Eye, ChevronLeft, C
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ImportCvExhibitionsDialog } from "@/components/ImportCvExhibitionsDialog";
+import { ExhibitionArtworkPicker } from "@/components/ExhibitionArtworkPicker";
 
 interface Exhibition {
   id: string;
