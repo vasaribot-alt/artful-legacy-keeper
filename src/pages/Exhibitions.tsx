@@ -22,6 +22,7 @@ import { Plus, Pencil, Trash2, ImagePlus, X, FileUp, EyeOff, Eye, ChevronLeft, C
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ImportCvExhibitionsDialog } from "@/components/ImportCvExhibitionsDialog";
+import { ExhibitionArtworkPicker } from "@/components/ExhibitionArtworkPicker";
 
 interface Exhibition {
   id: string;
@@ -65,6 +66,8 @@ const Exhibitions = () => {
   const [curator, setCurator] = useState("");
   const [artists, setArtists] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedArtworkIds, setSelectedArtworkIds] = useState<string[]>([]);
+  const [exhibitionArtworks, setExhibitionArtworks] = useState<Record<string, { id: string; title: string; year: number | null }[]>>({});
 
   // Lightbox
   const [lightbox, setLightbox] = useState<{ images: ExhibitionImage[]; index: number } | null>(null);
@@ -90,9 +93,9 @@ const Exhibitions = () => {
 
     if (data) {
       setExhibitions(data as Exhibition[]);
-      // Load images for all exhibitions
       const ids = data.map((e: any) => e.id);
       if (ids.length > 0) {
+        // Load images
         const { data: imgs } = await supabase
           .from("exhibition_images")
           .select("*")
@@ -108,6 +111,19 @@ const Exhibitions = () => {
           });
           setImages(grouped);
         }
+        // Load linked artworks
+        const { data: links } = await supabase
+          .from("exhibition_artworks")
+          .select("exhibition_id, artwork_id, artworks(id, title, year)")
+          .in("exhibition_id", ids);
+        if (links) {
+          const grouped: Record<string, { id: string; title: string; year: number | null }[]> = {};
+          links.forEach((link: any) => {
+            if (!grouped[link.exhibition_id]) grouped[link.exhibition_id] = [];
+            if (link.artworks) grouped[link.exhibition_id].push(link.artworks);
+          });
+          setExhibitionArtworks(grouped);
+        }
       }
     }
     setLoading(false);
@@ -117,11 +133,12 @@ const Exhibitions = () => {
     setTitle(""); setExType("solo"); setOpeningDate(""); setClosingDate("");
     setVenue(""); setCity(""); setCountry(""); setCurator("");
     setArtists(""); setDescription(""); setEditingId(null);
+    setSelectedArtworkIds([]);
   };
 
   const openAdd = () => { resetForm(); setDialogOpen(true); };
 
-  const openEdit = (ex: Exhibition) => {
+  const openEdit = async (ex: Exhibition) => {
     setEditingId(ex.id);
     setTitle(ex.title);
     setExType(ex.exhibition_type);
@@ -133,6 +150,9 @@ const Exhibitions = () => {
     setCurator(ex.curator || "");
     setArtists(ex.artists || "");
     setDescription(ex.description || "");
+    // Load linked artwork ids
+    const linked = (exhibitionArtworks[ex.id] || []).map((a) => a.id);
+    setSelectedArtworkIds(linked);
     setDialogOpen(true);
   };
 
@@ -156,14 +176,30 @@ const Exhibitions = () => {
       user_id: user.id,
     };
 
+    let exhibitionId = editingId;
+
     if (editingId) {
       const { error } = await supabase.from("exhibitions").update(payload).eq("id", editingId);
       if (error) { toast.error("Failed to update"); setSaving(false); return; }
       toast.success("Exhibition updated");
     } else {
-      const { error } = await supabase.from("exhibitions").insert(payload);
-      if (error) { toast.error("Failed to create"); setSaving(false); return; }
+      const { data: inserted, error } = await supabase.from("exhibitions").insert(payload).select("id").single();
+      if (error || !inserted) { toast.error("Failed to create"); setSaving(false); return; }
+      exhibitionId = inserted.id;
       toast.success("Exhibition added");
+    }
+
+    // Sync artwork links
+    if (exhibitionId) {
+      await supabase.from("exhibition_artworks").delete().eq("exhibition_id", exhibitionId);
+      if (selectedArtworkIds.length > 0) {
+        await supabase.from("exhibition_artworks").insert(
+          selectedArtworkIds.map((artworkId) => ({
+            exhibition_id: exhibitionId!,
+            artwork_id: artworkId,
+          }))
+        );
+      }
     }
 
     setSaving(false);
@@ -327,6 +363,11 @@ const Exhibitions = () => {
                           {formatDateRange(ex.opening_date, ex.closing_date)}
                         </p>
                       )}
+                      {(exhibitionArtworks[ex.id] || []).length > 0 && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {(exhibitionArtworks[ex.id] || []).map((a) => `${a.title}${a.year ? ` (${a.year})` : ""}`).join(", ")}
+                        </p>
+                      )}
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <Button
@@ -409,6 +450,10 @@ const Exhibitions = () => {
                 <Input id="ex-artists" value={artists} onChange={(e) => setArtists(e.target.value)} placeholder="e.g. Artist A, Artist B" className="mt-1.5" />
               </div>
             )}
+            <ExhibitionArtworkPicker
+              selectedIds={selectedArtworkIds}
+              onSelectionChange={setSelectedArtworkIds}
+            />
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
               <Button onClick={handleSave} disabled={saving}>
