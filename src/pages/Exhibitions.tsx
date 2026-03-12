@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import { ImportCvExhibitionsDialog } from "@/components/ImportCvExhibitionsDialog";
 import { ExhibitionArtworkPicker } from "@/components/ExhibitionArtworkPicker";
 import { SortableExhibitionImageGrid } from "@/components/SortableExhibitionImageGrid";
+import { ExhibitionDocuments } from "@/components/ExhibitionDocuments";
 
 interface Exhibition {
   id: string;
@@ -364,6 +365,9 @@ const Exhibitions = () => {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Documents */}
+                  <ExhibitionDocuments exhibitionId={ex.id} />
                 </div>
               );
             })}
