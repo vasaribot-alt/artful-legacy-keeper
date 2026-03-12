@@ -176,14 +176,30 @@ const Exhibitions = () => {
       user_id: user.id,
     };
 
+    let exhibitionId = editingId;
+
     if (editingId) {
       const { error } = await supabase.from("exhibitions").update(payload).eq("id", editingId);
       if (error) { toast.error("Failed to update"); setSaving(false); return; }
       toast.success("Exhibition updated");
     } else {
-      const { error } = await supabase.from("exhibitions").insert(payload);
-      if (error) { toast.error("Failed to create"); setSaving(false); return; }
+      const { data: inserted, error } = await supabase.from("exhibitions").insert(payload).select("id").single();
+      if (error || !inserted) { toast.error("Failed to create"); setSaving(false); return; }
+      exhibitionId = inserted.id;
       toast.success("Exhibition added");
+    }
+
+    // Sync artwork links
+    if (exhibitionId) {
+      await supabase.from("exhibition_artworks").delete().eq("exhibition_id", exhibitionId);
+      if (selectedArtworkIds.length > 0) {
+        await supabase.from("exhibition_artworks").insert(
+          selectedArtworkIds.map((artworkId) => ({
+            exhibition_id: exhibitionId!,
+            artwork_id: artworkId,
+          }))
+        );
+      }
     }
 
     setSaving(false);
