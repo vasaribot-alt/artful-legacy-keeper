@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileSpreadsheet, Check, AlertCircle, X } from "lucide-react";
+import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -37,7 +37,13 @@ interface ParsedRow {
   selected: boolean;
 }
 
-// Maps spreadsheet columns to our fields
+interface ImportedArtwork {
+  id: string;
+  title: string;
+  imageFilename: string;
+  matched: boolean;
+}
+
 const COLUMN_MAP: Record<string, keyof Omit<ParsedRow, "selected">> = {
   "title": "title",
   "category": "artworkType",
@@ -84,13 +90,25 @@ function parseNumber(val: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
+/** Normalize filename for matching: strip path, lowercase, remove extension */
+function normalizeFilename(name: string): string {
+  return name.replace(/^.*[\\/]/, "").toLowerCase().replace(/\.[^.]+$/, "").trim();
+}
+
+type Step = "upload" | "preview" | "importing" | "images" | "uploading";
+
 export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
-  const [step, setStep] = useState<"upload" | "preview" | "importing">("upload");
+  const [step, setStep] = useState<Step>("upload");
   const [progress, setProgress] = useState(0);
   const [importedCount, setImportedCount] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
+  const [importedArtworks, setImportedArtworks] = useState<ImportedArtwork[]>([]);
+  const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  const [imageProgress, setImageProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const resetState = () => {
     setRows([]);
@@ -98,6 +116,9 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     setProgress(0);
     setImportedCount(0);
     setErrorCount(0);
+    setImportedArtworks([]);
+    setDroppedFiles([]);
+    setImageProgress(0);
   };
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,10 +131,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
       const ws = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 });
 
-      if (json.length < 2) {
-        toast.error("Spreadsheet appears empty");
-        return;
-      }
+      if (json.length < 2) { toast.error("Spreadsheet appears empty"); return; }
 
       const headers = (json[0] as string[]).map(String);
       const colMap = mapColumns(headers);
@@ -129,28 +147,14 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
         if (!row || row.length === 0) continue;
 
         const r: ParsedRow = {
-          title: "",
-          artworkType: "",
-          series: "",
-          year: null,
-          medium: "",
-          support: "",
-          height: null,
-          width: null,
-          depth: null,
-          signed: "",
-          location: "",
-          provenance: "",
-          exhibitionHistory: "",
-          description: "",
-          imageFilename: "",
-          selected: true,
+          title: "", artworkType: "", series: "", year: null, medium: "", support: "",
+          height: null, width: null, depth: null, signed: "", location: "", provenance: "",
+          exhibitionHistory: "", description: "", imageFilename: "", selected: true,
         };
 
         for (const [colIdx, field] of Object.entries(colMap)) {
           const val = row[Number(colIdx)];
           if (val == null || val === "") continue;
-
           if (field === "year" || field === "height" || field === "width" || field === "depth") {
             (r as any)[field] = parseNumber(val);
           } else {
@@ -161,10 +165,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
         if (r.title) parsed.push(r);
       }
 
-      if (parsed.length === 0) {
-        toast.error("No valid rows found");
-        return;
-      }
+      if (parsed.length === 0) { toast.error("No valid rows found"); return; }
 
       setRows(parsed);
       setStep("preview");
@@ -176,9 +177,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
   };
 
   const toggleRow = (index: number) => {
-    setRows((prev) =>
-      prev.map((r, i) => (i === index ? { ...r, selected: !r.selected } : r))
-    );
+    setRows((prev) => prev.map((r, i) => (i === index ? { ...r, selected: !r.selected } : r)));
   };
 
   const toggleAll = () => {
@@ -188,16 +187,10 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
   const handleImport = async () => {
     const selected = rows.filter((r) => r.selected);
-    if (selected.length === 0) {
-      toast.error("No rows selected");
-      return;
-    }
+    if (selected.length === 0) { toast.error("No rows selected"); return; }
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("Not authenticated");
-      return;
-    }
+    if (!user) { toast.error("Not authenticated"); return; }
 
     setStep("importing");
     setProgress(0);
@@ -206,8 +199,8 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
     let imported = 0;
     let errors = 0;
+    const results: ImportedArtwork[] = [];
 
-    // Also ensure series exist
     const uniqueSeries = [...new Set(selected.map((r) => r.series).filter(Boolean))];
     for (const name of uniqueSeries) {
       await supabase.from("series_groups").insert({ user_id: user.id, name }).select();
@@ -215,7 +208,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
     for (let i = 0; i < selected.length; i++) {
       const r = selected[i];
-      const { error } = await supabase.from("artworks").insert({
+      const { data: artworkData, error } = await supabase.from("artworks").insert({
         owner_id: user.id,
         title: r.title,
         artwork_type: r.artworkType || null,
@@ -231,18 +224,26 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
         provenance: r.provenance || null,
         exhibition_history: r.exhibitionHistory || null,
         description: r.description || null,
-      } as any);
+      } as any).select("id").single();
 
-      if (error) {
+      if (error || !artworkData) {
         errors++;
       } else {
         imported++;
+        results.push({
+          id: artworkData.id,
+          title: r.title,
+          imageFilename: r.imageFilename,
+          matched: false,
+        });
       }
 
       setProgress(((i + 1) / selected.length) * 100);
       setImportedCount(imported);
       setErrorCount(errors);
     }
+
+    setImportedArtworks(results);
 
     if (errors === 0) {
       toast.success(`Successfully imported ${imported} artworks`);
@@ -253,7 +254,82 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     onSuccess();
   };
 
+  // Image drag-drop handling
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+    if (files.length === 0) { toast.error("No image files found"); return; }
+    setDroppedFiles((prev) => [...prev, ...files]);
+  }, []);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith("image/"));
+    setDroppedFiles((prev) => [...prev, ...files]);
+    if (imageInputRef.current) imageInputRef.current.value = "";
+  };
+
+  // Match dropped files to artworks by filename
+  const getMatches = () => {
+    const matches: { file: File; artwork: ImportedArtwork }[] = [];
+    const unmatched: File[] = [];
+
+    for (const file of droppedFiles) {
+      const normFile = normalizeFilename(file.name);
+      const match = importedArtworks.find(
+        (a) => a.imageFilename && normalizeFilename(a.imageFilename) === normFile
+      );
+      if (match) {
+        matches.push({ file, artwork: match });
+      } else {
+        unmatched.push(file);
+      }
+    }
+    return { matches, unmatched };
+  };
+
+  const handleUploadImages = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error("Not authenticated"); return; }
+
+    const { matches } = getMatches();
+    if (matches.length === 0) { toast.error("No images matched to artworks"); return; }
+
+    setStep("uploading");
+    setImageProgress(0);
+
+    let uploaded = 0;
+    for (let i = 0; i < matches.length; i++) {
+      const { file, artwork } = matches[i];
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${user.id}/${artwork.id}/${crypto.randomUUID()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("artwork-images")
+        .upload(path, file);
+
+      if (!uploadError) {
+        await supabase.from("artwork_images").insert({
+          artwork_id: artwork.id,
+          storage_path: path,
+          display_order: 0,
+        });
+        uploaded++;
+        setImportedArtworks((prev) =>
+          prev.map((a) => (a.id === artwork.id ? { ...a, matched: true } : a))
+        );
+      }
+
+      setImageProgress(((i + 1) / matches.length) * 100);
+    }
+
+    toast.success(`Uploaded ${uploaded} images`);
+    onSuccess();
+  };
+
   const selectedCount = rows.filter((r) => r.selected).length;
+  const { matches, unmatched } = step === "images" || step === "uploading" ? getMatches() : { matches: [], unmatched: [] };
+  const hasImageFilenames = importedArtworks.some((a) => a.imageFilename);
 
   return (
     <Dialog open={open} onOpenChange={(o) => { onOpenChange(o); if (!o) resetState(); }}>
@@ -286,7 +362,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             <div className="text-xs text-muted-foreground mt-4 max-w-sm text-center">
               The spreadsheet should include a <strong>Title</strong> column. Other recognized columns: 
               Category/Type, Series, Year, Medium, Support, Height, Width, Depth, Signed, Location, 
-              Provenance, Exhibition History, Description/Notes.
+              Provenance, Exhibition History, Description/Notes, Image filename.
             </div>
           </div>
         )}
@@ -297,11 +373,9 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
               <p className="text-sm text-muted-foreground">
                 {selectedCount} of {rows.length} artworks selected for import
               </p>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={toggleAll}>
-                  {rows.every((r) => r.selected) ? "Deselect all" : "Select all"}
-                </Button>
-              </div>
+              <Button variant="ghost" size="sm" onClick={toggleAll}>
+                {rows.every((r) => r.selected) ? "Deselect all" : "Select all"}
+              </Button>
             </div>
 
             <div className="border border-border rounded-sm overflow-hidden">
@@ -346,7 +420,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             </div>
 
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => { resetState(); }}>Cancel</Button>
+              <Button variant="outline" onClick={resetState}>Cancel</Button>
               <Button onClick={handleImport} disabled={selectedCount === 0}>
                 Import {selectedCount} Artwork{selectedCount !== 1 ? "s" : ""}
               </Button>
@@ -372,6 +446,98 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
             )}
 
             {progress >= 100 && (
+              <div className="flex justify-end gap-2">
+                {hasImageFilenames && (
+                  <Button variant="outline" onClick={() => setStep("images")} className="gap-2">
+                    <ImagePlus className="w-4 h-4" /> Add Images
+                  </Button>
+                )}
+                <Button onClick={() => { resetState(); onOpenChange(false); }}>
+                  {hasImageFilenames ? "Skip" : "Done"}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {step === "images" && (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Drag-and-drop your artwork images below. They'll be matched to artworks by filename from your spreadsheet.
+            </p>
+
+            {/* Drop zone */}
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              onClick={() => imageInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-sm p-8 text-center cursor-pointer transition-colors ${
+                dragOver ? "border-primary bg-primary/5" : "border-border hover:border-foreground/40"
+              }`}
+            >
+              <ImagePlus className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-sm font-medium">Drop images here</p>
+              <p className="text-xs text-muted-foreground mt-1">or click to browse</p>
+            </div>
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageSelect}
+              className="hidden"
+            />
+
+            {/* Match results */}
+            {droppedFiles.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">
+                  {matches.length} matched · {unmatched.length} unmatched · {droppedFiles.length} total
+                </p>
+
+                <div className="border border-border rounded-sm max-h-[30vh] overflow-y-auto">
+                  {matches.map(({ file, artwork }, i) => (
+                    <div key={`m-${i}`} className="flex items-center gap-2 px-3 py-1.5 text-xs border-b border-border last:border-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="truncate flex-1">{file.name}</span>
+                      <span className="text-muted-foreground">→</span>
+                      <span className="font-medium truncate max-w-[200px]">{artwork.title}</span>
+                    </div>
+                  ))}
+                  {unmatched.map((file, i) => (
+                    <div key={`u-${i}`} className="flex items-center gap-2 px-3 py-1.5 text-xs border-b border-border last:border-0 opacity-50">
+                      <AlertCircle className="w-3.5 h-3.5 text-destructive shrink-0" />
+                      <span className="truncate flex-1">{file.name}</span>
+                      <span className="text-muted-foreground">No match</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => { resetState(); onOpenChange(false); }}>
+                Skip
+              </Button>
+              <Button onClick={handleUploadImages} disabled={matches.length === 0}>
+                Upload {matches.length} Image{matches.length !== 1 ? "s" : ""}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {step === "uploading" && (
+          <div className="py-8 space-y-6">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Uploading images…</span>
+                <span>{Math.round(imageProgress)}%</span>
+              </div>
+              <Progress value={imageProgress} className="h-2" />
+            </div>
+
+            {imageProgress >= 100 && (
               <div className="flex justify-end">
                 <Button onClick={() => { resetState(); onOpenChange(false); }}>
                   Done
