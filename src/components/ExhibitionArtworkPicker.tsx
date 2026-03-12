@@ -185,7 +185,8 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
                 </div>
               </button>
             ))}
-          </div>
+            </div>
+          </ScrollArea>
         </PopoverContent>
       </Popover>
     </div>
