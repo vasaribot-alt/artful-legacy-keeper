@@ -63,7 +63,8 @@ const Portfolios = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setAdding(false); return; }
 
-    const { error } = await supabase.from("portfolios").insert({ user_id: user.id, name } as any);
+    const activeRole = localStorage.getItem("activeRole") || "artist";
+    const { error } = await supabase.from("portfolios").insert({ user_id: user.id, name, role_context: activeRole } as any);
     if (error) { toast.error("Failed to create portfolio"); }
     else { toast.success("Portfolio created"); setNewName(""); fetchPortfolios(); }
     setAdding(false);
