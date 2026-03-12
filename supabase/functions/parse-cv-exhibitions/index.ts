@@ -56,7 +56,7 @@ Rules:
 Return ONLY a JSON array of objects with these fields:
 { "title": string, "exhibition_type": "solo"|"group", "venue": string|null, "city": string|null, "country": string|null, "curator": string|null, "year": string|null, "cv_entry_id": string }`;
 
-    const response = await fetch("https://api.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
