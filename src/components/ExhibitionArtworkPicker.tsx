@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type WheelEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Artwork {
   id: string;
@@ -89,6 +88,15 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
     );
   };
 
+  const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
+    const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (delta === 0) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.scrollTop += delta;
+  };
+
   const selectedArtworks = artworks.filter((a) => selectedIds.includes(a.id));
   const filtered = artworks.filter((a) =>
     a.title.toLowerCase().includes(search.toLowerCase())
@@ -156,7 +164,7 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
               className="h-8 text-sm"
             />
           </div>
-          <div className="max-h-72 overflow-y-auto p-2 space-y-0.5">
+          <div className="max-h-72 overflow-y-auto overscroll-contain p-2 space-y-0.5" onWheel={handleWheel}>
             {filtered.length === 0 && (
               <p className="text-xs text-muted-foreground p-3 text-center">
                 {artworks.length === 0 ? "No artworks found. Add artworks first." : "No matches."}
