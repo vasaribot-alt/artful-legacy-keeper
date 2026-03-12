@@ -5,18 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import CvManager from "@/components/CvManager";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, Pencil, Eye } from "lucide-react";
-
-interface CvEntry {
-  section: string;
-  year: string;
-  entry_text: string;
-  images: { storage_path: string; caption: string | null }[];
-}
-
-interface CvSection {
-  section: string;
-  entries: CvEntry[];
-}
+import { buildCvSections, CvSection } from "@/hooks/use-cv-with-exhibitions";
 
 const CvEdit = () => {
   const navigate = useNavigate();
