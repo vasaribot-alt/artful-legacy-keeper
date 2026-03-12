@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ImagePlus, X, FileUp } from "lucide-react";
+import { Plus, Pencil, Trash2, ImagePlus, X, FileUp, EyeOff, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
