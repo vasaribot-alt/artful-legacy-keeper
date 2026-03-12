@@ -243,6 +243,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       return;
     }
 
+    const activeRole = localStorage.getItem("activeRole") || "artist";
     const insertData: Record<string, unknown> = {
       owner_id: user.id,
       title: title.trim(),
@@ -268,6 +269,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       provenance: provenance.trim() || null,
       artist_name: artistName.trim() || null,
       edition_number: editionNumber.trim() || null,
+      role_context: activeRole,
     };
 
     const { data: artworkData, error } = await supabase.from("artworks").insert(insertData as any).select("id").single();

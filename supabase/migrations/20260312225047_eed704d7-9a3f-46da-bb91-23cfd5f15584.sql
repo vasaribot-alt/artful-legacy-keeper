@@ -1,0 +1,1 @@
+ALTER TABLE public.artworks ADD COLUMN role_context text NOT NULL DEFAULT 'artist';
