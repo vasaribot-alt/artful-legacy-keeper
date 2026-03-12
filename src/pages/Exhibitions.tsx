@@ -21,6 +21,7 @@ import {
 import { Plus, Pencil, Trash2, ImagePlus, X, FileUp, EyeOff, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { ImportCvExhibitionsDialog } from "@/components/ImportCvExhibitionsDialog";
 
 interface Exhibition {
   id: string;
