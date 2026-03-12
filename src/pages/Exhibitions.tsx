@@ -66,6 +66,9 @@ const Exhibitions = () => {
   const [artists, setArtists] = useState("");
   const [description, setDescription] = useState("");
 
+  // Lightbox
+  const [lightbox, setLightbox] = useState<{ images: ExhibitionImage[]; index: number } | null>(null);
+
   // Image upload
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [uploadingImages, setUploadingImages] = useState(false);
