@@ -127,16 +127,24 @@ export const ImportCvExhibitionsDialog = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const records = selected.map((ex) => ({
-        title: ex.title,
-        exhibition_type: ex.exhibition_type,
-        venue: ex.venue || null,
-        city: ex.city || null,
-        country: ex.country || null,
-        curator: ex.curator || null,
-        opening_date: ex.year ? `${ex.year}-01-01` : null,
-        user_id: user.id,
-      }));
+      const records = selected
+        .filter((ex) => ex.title) // skip entries with null/empty titles
+        .map((ex) => ({
+          title: ex.title,
+          exhibition_type: ex.exhibition_type,
+          venue: ex.venue || null,
+          city: ex.city || null,
+          country: ex.country || null,
+          curator: ex.curator || null,
+          opening_date: ex.year ? `${ex.year}-01-01` : null,
+          user_id: user.id,
+        }));
+
+      if (!records.length) {
+        toast.error("No valid exhibitions to import");
+        setStep("preview");
+        return;
+      }
 
       const { error } = await supabase.from("exhibitions").insert(records);
       if (error) throw error;
