@@ -265,9 +265,14 @@ const Exhibitions = () => {
                 <div key={ex.id} className="space-y-4">
                   {/* Image grid */}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {exImages.map((img) => (
+                    {exImages.map((img, imgIdx) => (
                       <div key={img.id} className="relative group aspect-[4/3] bg-secondary rounded-sm overflow-hidden">
-                        <img src={img.publicUrl} alt="" className="w-full h-full object-cover" />
+                        <img
+                          src={img.publicUrl}
+                          alt=""
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => setLightbox({ images: exImages, index: imgIdx })}
+                        />
                         <button
                           onClick={() => handleDeleteImage(img)}
                           className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
