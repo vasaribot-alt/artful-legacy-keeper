@@ -315,47 +315,15 @@ const Exhibitions = () => {
               return (
                 <div key={ex.id} className="space-y-4">
                   {/* Image grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {exImages.map((img, imgIdx) => (
-                      <div key={img.id} className="group/card space-y-1">
-                        <div className="relative group aspect-[4/3] bg-secondary rounded-sm overflow-hidden">
-                          <img
-                            src={img.publicUrl}
-                            alt={img.caption || ""}
-                            className="w-full h-full object-cover cursor-pointer"
-                            onClick={() => setLightbox({ images: exImages, index: imgIdx })}
-                          />
-                          <button
-                            onClick={() => handleDeleteImage(img)}
-                            className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                        <div className={img.caption ? "" : "opacity-0 group-hover/card:opacity-100 transition-opacity"}>
-                          <input
-                            type="text"
-                            placeholder="Photo credit / caption"
-                            defaultValue={img.caption || ""}
-                            onBlur={(e) => handleUpdateCaption(img.id, e.target.value)}
-                            className="w-full text-[11px] text-muted-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/50 px-0.5"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                    {/* Add image button */}
-                    <label className="aspect-[4/3] border-2 border-dashed border-border rounded-sm flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:border-foreground/40 transition-colors">
-                      <ImagePlus className="w-6 h-6 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">Add View</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => e.target.files && handleImageUpload(ex.id, e.target.files)}
-                      />
-                    </label>
-                  </div>
+                  <SortableExhibitionImageGrid
+                    exhibitionId={ex.id}
+                    images={exImages}
+                    onReorder={handleReorder}
+                    onDeleteImage={handleDeleteImage}
+                    onCaptionChange={handleUpdateCaption}
+                    onClickImage={(index) => setLightbox({ images: exImages, index })}
+                    onUpload={handleImageUpload}
+                  />
 
                   {/* Exhibition info */}
                   <div className="flex items-start gap-4">
