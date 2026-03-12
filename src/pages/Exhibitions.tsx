@@ -34,6 +34,7 @@ interface Exhibition {
   curator: string | null;
   artists: string | null;
   description: string | null;
+  hide_from_cv: boolean;
 }
 
 interface ExhibitionImage {
