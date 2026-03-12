@@ -4,18 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import { ViewLayout } from "@/components/ViewLayout";
-
-interface CvEntry {
-  section: string;
-  year: string;
-  entry_text: string;
-  images: { storage_path: string; caption: string | null }[];
-}
-
-interface CvSection {
-  section: string;
-  entries: CvEntry[];
-}
+import { buildCvSections, CvSection } from "@/hooks/use-cv-with-exhibitions";
 
 const ArtistCvView = () => {
   const navigate = useNavigate();
