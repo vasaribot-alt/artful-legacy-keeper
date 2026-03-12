@@ -363,6 +363,11 @@ const Exhibitions = () => {
                           {formatDateRange(ex.opening_date, ex.closing_date)}
                         </p>
                       )}
+                      {(exhibitionArtworks[ex.id] || []).length > 0 && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {(exhibitionArtworks[ex.id] || []).map((a) => `${a.title}${a.year ? ` (${a.year})` : ""}`).join(", ")}
+                        </p>
+                      )}
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <Button
