@@ -85,10 +85,12 @@ export const ImportCvExhibitionsDialog = ({
 
       if (error) throw error;
 
-      const parsed = (data.exhibitions || []).map((ex: ParsedExhibition) => ({
-        ...ex,
-        selected: true,
-      }));
+      const parsed = (data.exhibitions || [])
+        .filter((ex: ParsedExhibition) => ex.title) // skip entries without titles
+        .map((ex: ParsedExhibition) => ({
+          ...ex,
+          selected: true,
+        }));
 
       if (!parsed.length) {
         toast.info("Could not parse any exhibitions from CV entries");
