@@ -38,6 +38,7 @@ export const ImportCvExhibitionsDialog = ({
 }: ImportCvExhibitionsDialogProps) => {
   const [step, setStep] = useState<"idle" | "parsing" | "preview" | "importing">("idle");
   const [exhibitions, setExhibitions] = useState<ParsedExhibition[]>([]);
+  const [typeFilter, setTypeFilter] = useState<"all" | "solo" | "group">("all");
 
   const handleParse = async () => {
     setStep("parsing");
@@ -171,7 +172,12 @@ export const ImportCvExhibitionsDialog = ({
     onOpenChange(open);
   };
 
+  const filteredExhibitions = typeFilter === "all"
+    ? exhibitions
+    : exhibitions.filter((e) => e.exhibition_type === typeFilter);
   const selectedCount = exhibitions.filter((e) => e.selected).length;
+  const soloCount = exhibitions.filter((e) => e.exhibition_type === "solo").length;
+  const groupCount = exhibitions.filter((e) => e.exhibition_type === "group").length;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -201,47 +207,79 @@ export const ImportCvExhibitionsDialog = ({
 
         {step === "preview" && (
           <>
+            {/* Type filter tabs */}
+            <div className="flex gap-1 px-1 pb-2">
+              {(["all", "solo", "group"] as const).map((t) => {
+                const count = t === "all" ? exhibitions.length : t === "solo" ? soloCount : groupCount;
+                const isActive = typeFilter === t;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setTypeFilter(t)}
+                    className={`px-3 py-1.5 text-xs rounded-sm transition-colors ${
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {t === "all" ? "All" : t === "solo" ? "Solo" : "Group"} ({count})
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="flex items-center justify-between px-1 pb-2 border-b">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <Checkbox
-                  checked={selectedCount === exhibitions.length}
-                  onCheckedChange={(checked) => toggleAll(!!checked)}
+                  checked={filteredExhibitions.every((e) => e.selected)}
+                  onCheckedChange={(checked) => {
+                    // Toggle only filtered exhibitions
+                    const filteredIds = new Set(filteredExhibitions.map((_, i) =>
+                      exhibitions.indexOf(filteredExhibitions[i])
+                    ));
+                    setExhibitions((prev) =>
+                      prev.map((e, i) => filteredIds.has(i) ? { ...e, selected: !!checked } : e)
+                    );
+                  }}
                 />
-                Select all ({exhibitions.length})
+                Select all ({filteredExhibitions.length})
               </label>
               <span className="text-xs text-muted-foreground">
-                {selectedCount} selected
+                {selectedCount} selected total
               </span>
             </div>
 
             <ScrollArea className="flex-1 min-h-0 h-[50vh]">
               <div className="space-y-1 py-2">
-                {exhibitions.map((ex, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => toggleOne(i)}
-                    className="flex items-start gap-3 w-full text-left px-2 py-2.5 rounded-sm hover:bg-accent transition-colors"
-                  >
-                    <Checkbox
-                      checked={ex.selected}
-                      className="mt-0.5 shrink-0"
-                      tabIndex={-1}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium truncate">{ex.title}</span>
-                        <Badge variant="outline" className="text-[10px] shrink-0">
-                          {ex.exhibition_type}
-                        </Badge>
+                {filteredExhibitions.map((ex) => {
+                  const globalIndex = exhibitions.indexOf(ex);
+                  return (
+                    <button
+                      key={globalIndex}
+                      type="button"
+                      onClick={() => toggleOne(globalIndex)}
+                      className="flex items-start gap-3 w-full text-left px-2 py-2.5 rounded-sm hover:bg-accent transition-colors"
+                    >
+                      <Checkbox
+                        checked={ex.selected}
+                        className="mt-0.5 shrink-0"
+                        tabIndex={-1}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium truncate">{ex.title}</span>
+                          <Badge variant="outline" className="text-[10px] shrink-0">
+                            {ex.exhibition_type}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
+                          {ex.year && ` · ${ex.year}`}
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
-                        {ex.year && ` · ${ex.year}`}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </ScrollArea>
 
