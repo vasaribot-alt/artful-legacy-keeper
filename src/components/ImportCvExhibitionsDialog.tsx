@@ -260,25 +260,26 @@ export const ImportCvExhibitionsDialog = ({
                       onClick={() => toggleOne(globalIndex)}
                       className="flex items-start gap-3 w-full text-left px-2 py-2.5 rounded-sm hover:bg-accent transition-colors"
                     >
-                    <Checkbox
-                      checked={ex.selected}
-                      className="mt-0.5 shrink-0"
-                      tabIndex={-1}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium truncate">{ex.title}</span>
-                        <Badge variant="outline" className="text-[10px] shrink-0">
-                          {ex.exhibition_type}
-                        </Badge>
+                      <Checkbox
+                        checked={ex.selected}
+                        className="mt-0.5 shrink-0"
+                        tabIndex={-1}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium truncate">{ex.title}</span>
+                          <Badge variant="outline" className="text-[10px] shrink-0">
+                            {ex.exhibition_type}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
+                          {ex.year && ` · ${ex.year}`}
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
-                        {ex.year && ` · ${ex.year}`}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </ScrollArea>
 
