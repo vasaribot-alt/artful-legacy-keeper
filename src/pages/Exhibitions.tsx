@@ -232,9 +232,14 @@ const Exhibitions = () => {
   };
 
   const headerActions = (
-    <Button size="sm" onClick={openAdd} className="gap-1.5">
-      <Plus className="w-3.5 h-3.5" /> Add Exhibition
-    </Button>
+    <div className="flex gap-2">
+      <Button size="sm" variant="outline" onClick={() => setImportDialogOpen(true)} className="gap-1.5">
+        <FileUp className="w-3.5 h-3.5" /> Import from CV
+      </Button>
+      <Button size="sm" onClick={openAdd} className="gap-1.5">
+        <Plus className="w-3.5 h-3.5" /> Add Exhibition
+      </Button>
+    </div>
   );
 
   return (
