@@ -85,10 +85,12 @@ export const ImportCvExhibitionsDialog = ({
 
       if (error) throw error;
 
-      const parsed = (data.exhibitions || []).map((ex: ParsedExhibition) => ({
-        ...ex,
-        selected: true,
-      }));
+      const parsed = (data.exhibitions || [])
+        .filter((ex: ParsedExhibition) => ex.title) // skip entries without titles
+        .map((ex: ParsedExhibition) => ({
+          ...ex,
+          selected: true,
+        }));
 
       if (!parsed.length) {
         toast.info("Could not parse any exhibitions from CV entries");
@@ -127,16 +129,24 @@ export const ImportCvExhibitionsDialog = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const records = selected.map((ex) => ({
-        title: ex.title,
-        exhibition_type: ex.exhibition_type,
-        venue: ex.venue || null,
-        city: ex.city || null,
-        country: ex.country || null,
-        curator: ex.curator || null,
-        opening_date: ex.year ? `${ex.year}-01-01` : null,
-        user_id: user.id,
-      }));
+      const records = selected
+        .filter((ex) => ex.title) // skip entries with null/empty titles
+        .map((ex) => ({
+          title: ex.title,
+          exhibition_type: ex.exhibition_type,
+          venue: ex.venue || null,
+          city: ex.city || null,
+          country: ex.country || null,
+          curator: ex.curator || null,
+          opening_date: ex.year ? `${ex.year}-01-01` : null,
+          user_id: user.id,
+        }));
+
+      if (!records.length) {
+        toast.error("No valid exhibitions to import");
+        setStep("preview");
+        return;
+      }
 
       const { error } = await supabase.from("exhibitions").insert(records);
       if (error) throw error;
@@ -165,7 +175,7 @@ export const ImportCvExhibitionsDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle>Import Exhibitions from CV</DialogTitle>
         </DialogHeader>
@@ -204,7 +214,7 @@ export const ImportCvExhibitionsDialog = ({
               </span>
             </div>
 
-            <ScrollArea className="flex-1 min-h-0 max-h-[50vh]">
+            <ScrollArea className="flex-1 min-h-0 h-[50vh]">
               <div className="space-y-1 py-2">
                 {exhibitions.map((ex, i) => (
                   <button
