@@ -93,9 +93,9 @@ const Exhibitions = () => {
 
     if (data) {
       setExhibitions(data as Exhibition[]);
-      // Load images for all exhibitions
       const ids = data.map((e: any) => e.id);
       if (ids.length > 0) {
+        // Load images
         const { data: imgs } = await supabase
           .from("exhibition_images")
           .select("*")
@@ -110,6 +110,19 @@ const Exhibitions = () => {
             grouped[img.exhibition_id].push(withUrl);
           });
           setImages(grouped);
+        }
+        // Load linked artworks
+        const { data: links } = await supabase
+          .from("exhibition_artworks")
+          .select("exhibition_id, artwork_id, artworks(id, title, year)")
+          .in("exhibition_id", ids);
+        if (links) {
+          const grouped: Record<string, { id: string; title: string; year: number | null }[]> = {};
+          links.forEach((link: any) => {
+            if (!grouped[link.exhibition_id]) grouped[link.exhibition_id] = [];
+            if (link.artworks) grouped[link.exhibition_id].push(link.artworks);
+          });
+          setExhibitionArtworks(grouped);
         }
       }
     }
