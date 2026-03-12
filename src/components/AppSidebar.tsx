@@ -25,16 +25,25 @@ import {
 
 type AppRole = "artist" | "collector" | "registrar";
 
-const getNavItems = (role: AppRole) => [
-  { title: role === "collector" ? "Collector Profile" : "Artist Profile", url: "/profile", icon: User },
-  { title: "Artworks", url: "/dashboard", icon: Images },
-  ...(role !== "collector" ? [{ title: "Series", url: "/series", icon: Layers }] : []),
-  ...(role !== "collector" ? [{ title: "Portfolios", url: "/portfolios", icon: Briefcase }] : []),
-  { title: "CV", url: "/cv", icon: FileText },
-  { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
-  { title: "Catalogues", url: "/catalogues", icon: BookOpen },
-  { title: "Provenance", url: "/provenance", icon: ScrollText },
-];
+const getNavItems = (role: AppRole) => {
+  if (role === "collector") {
+    return [
+      { title: "Collector Profile", url: "/profile", icon: User },
+      { title: "Collection", url: "/dashboard", icon: Images },
+      { title: "Portfolios", url: "/portfolios", icon: Briefcase },
+    ];
+  }
+  return [
+    { title: "Artist Profile", url: "/profile", icon: User },
+    { title: "Artworks", url: "/dashboard", icon: Images },
+    { title: "Series", url: "/series", icon: Layers },
+    { title: "Portfolios", url: "/portfolios", icon: Briefcase },
+    { title: "CV", url: "/cv", icon: FileText },
+    { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
+    { title: "Catalogues", url: "/catalogues", icon: BookOpen },
+    { title: "Provenance", url: "/provenance", icon: ScrollText },
+  ];
+};
 
 const roleLabels: Record<AppRole, { nav: string; label: string }> = {
   artist: { nav: "Artist Registry", label: "Artist" },

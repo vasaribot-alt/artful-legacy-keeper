@@ -64,7 +64,7 @@ const Dashboard = () => {
   const [editMode, setEditMode] = useState(false);
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
-  const userRole = user?.user_metadata?.role || "artist";
+  const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
   const idVerified = false;
 
   useEffect(() => {
@@ -173,7 +173,7 @@ const Dashboard = () => {
 
   return (
     <AppLayout
-      title={userRole === "artist" ? "Catalogue Raisonné" : userRole === "collector" ? "Collection" : "Managed Artworks"}
+      title={activeRole === "artist" ? "Catalogue Raisonné" : activeRole === "collector" ? "Collection" : "Managed Artworks"}
       headerActions={headerActions}
     >
       {editMode ? (
@@ -292,7 +292,7 @@ const Dashboard = () => {
         open={dialogOpen}
         onOpenChange={(open) => { setDialogOpen(open); if (!open) setDuplicateData(null); }}
         onSuccess={fetchArtworks}
-        userRole={userRole}
+        userRole={activeRole}
         initialData={duplicateData}
       />
 
