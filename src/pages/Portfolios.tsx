@@ -33,9 +33,11 @@ const Portfolios = () => {
 
   const fetchPortfolios = async () => {
     setLoading(true);
+    const activeRole = localStorage.getItem("activeRole") || "artist";
     const { data, error } = await supabase
       .from("portfolios")
       .select("id, name, share_token, created_at")
+      .eq("role_context", activeRole)
       .order("created_at", { ascending: false });
 
     if (error) { toast.error("Failed to load portfolios"); setLoading(false); return; }
