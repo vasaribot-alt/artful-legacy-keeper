@@ -212,6 +212,16 @@ const Exhibitions = () => {
     loadExhibitions();
   };
 
+  const toggleCvVisibility = async (ex: Exhibition) => {
+    const { error } = await supabase
+      .from("exhibitions")
+      .update({ hide_from_cv: !ex.hide_from_cv })
+      .eq("id", ex.id);
+    if (error) { toast.error("Failed to update"); return; }
+    toast.success(ex.hide_from_cv ? "Now visible in CV" : "Hidden from CV");
+    loadExhibitions();
+  };
+
   const formatDateRange = (opening: string | null, closing: string | null) => {
     if (!opening && !closing) return null;
     const parts: string[] = [];
