@@ -38,6 +38,7 @@ export const ImportCvExhibitionsDialog = ({
 }: ImportCvExhibitionsDialogProps) => {
   const [step, setStep] = useState<"idle" | "parsing" | "preview" | "importing">("idle");
   const [exhibitions, setExhibitions] = useState<ParsedExhibition[]>([]);
+  const [typeFilter, setTypeFilter] = useState<"all" | "solo" | "group">("all");
 
   const handleParse = async () => {
     setStep("parsing");
