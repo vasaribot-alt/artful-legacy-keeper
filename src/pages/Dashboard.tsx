@@ -64,7 +64,7 @@ const Dashboard = () => {
   const [editMode, setEditMode] = useState(false);
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
-  const userRole = user?.user_metadata?.role || "artist";
+  const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
   const idVerified = false;
 
   useEffect(() => {
