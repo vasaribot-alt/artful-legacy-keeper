@@ -367,7 +367,10 @@ const Exhibitions = () => {
                   </div>
 
                   {/* Documents */}
-                  <ExhibitionDocuments exhibitionId={ex.id} />
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Documents</p>
+                    <ExhibitionDocuments exhibitionId={ex.id} />
+                  </div>
                 </div>
               );
             })}
@@ -435,6 +438,14 @@ const Exhibitions = () => {
               selectedIds={selectedArtworkIds}
               onSelectionChange={setSelectedArtworkIds}
             />
+            {editingId ? (
+              <div className="space-y-2">
+                <Label>Documents</Label>
+                <ExhibitionDocuments exhibitionId={editingId} />
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">Save exhibition first to add documents.</p>
+            )}
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
               <Button onClick={handleSave} disabled={saving}>
