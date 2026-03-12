@@ -271,7 +271,7 @@ const Exhibitions = () => {
                   {/* Image grid */}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {exImages.map((img, imgIdx) => (
-                      <div key={img.id} className="space-y-1">
+                      <div key={img.id} className="group/card space-y-1">
                         <div className="relative group aspect-[4/3] bg-secondary rounded-sm overflow-hidden">
                           <img
                             src={img.publicUrl}
@@ -286,13 +286,15 @@ const Exhibitions = () => {
                             <X className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                        <input
-                          type="text"
-                          placeholder="Photo credit / caption"
-                          defaultValue={img.caption || ""}
-                          onBlur={(e) => handleUpdateCaption(img.id, e.target.value)}
-                          className="w-full text-[11px] text-muted-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/50 px-0.5"
-                        />
+                        <div className={img.caption ? "" : "opacity-0 group-hover/card:opacity-100 transition-opacity"}>
+                          <input
+                            type="text"
+                            placeholder="Photo credit / caption"
+                            defaultValue={img.caption || ""}
+                            onBlur={(e) => handleUpdateCaption(img.id, e.target.value)}
+                            className="w-full text-[11px] text-muted-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/50 px-0.5"
+                          />
+                        </div>
                       </div>
                     ))}
                     {/* Add image button */}
