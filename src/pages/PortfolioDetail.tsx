@@ -105,9 +105,11 @@ const PortfolioDetail = () => {
   };
 
   const openPicker = async () => {
+    const activeRole = localStorage.getItem("activeRole") || "artist";
     const { data } = await supabase
       .from("artworks")
       .select("id, title, year, medium")
+      .eq("role_context", activeRole)
       .order("title");
     const existingIds = new Set(artworks.map((a) => a.artwork_id));
     setAvailable((data || []).filter((a) => !existingIds.has(a.id)));
