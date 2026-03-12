@@ -80,11 +80,12 @@ export const ExhibitionDocuments = ({ exhibitionId }: ExhibitionDocumentsProps) 
     loadDocs();
   };
 
-  const handleDownload = (doc: ExhibitionDoc) => {
-    const { data } = supabase.storage
+  const handleDownload = async (doc: ExhibitionDoc) => {
+    const { data, error } = await supabase.storage
       .from("exhibition-documents")
-      .getPublicUrl(doc.storage_path);
-    window.open(data.publicUrl, "_blank");
+      .createSignedUrl(doc.storage_path, 60);
+    if (error || !data?.signedUrl) { toast.error("Failed to generate download link"); return; }
+    window.open(data.signedUrl, "_blank");
   };
 
   return (
