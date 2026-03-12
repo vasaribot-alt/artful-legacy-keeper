@@ -212,7 +212,7 @@ export const ImportCvExhibitionsDialog = ({
               </span>
             </div>
 
-            <ScrollArea className="flex-1 min-h-0 max-h-[50vh]">
+            <ScrollArea className="flex-1 min-h-0 h-[50vh]">
               <div className="space-y-1 py-2">
                 {exhibitions.map((ex, i) => (
                   <button
