@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List, Pencil, Eye } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
+import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
@@ -61,6 +62,7 @@ const Dashboard = () => {
   const [duplicateData, setDuplicateData] = useState<ArtworkDuplicateData | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [editMode, setEditMode] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const userRole = user?.user_metadata?.role || "artist";
   const idVerified = false;
@@ -153,6 +155,9 @@ const Dashboard = () => {
           <List className="w-4 h-4" />
         </ToggleGroupItem>
       </ToggleGroup>
+      <Button variant="outline" onClick={() => setBulkImportOpen(true)} className="gap-2" size="sm">
+        <Upload className="w-4 h-4" /> Import
+      </Button>
       <Button onClick={() => setDialogOpen(true)} className="gap-2" size="sm">
         <Plus className="w-4 h-4" /> Add Artwork
       </Button>
@@ -289,6 +294,12 @@ const Dashboard = () => {
         onSuccess={fetchArtworks}
         userRole={userRole}
         initialData={duplicateData}
+      />
+
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onOpenChange={setBulkImportOpen}
+        onSuccess={fetchArtworks}
       />
     </AppLayout>
   );
