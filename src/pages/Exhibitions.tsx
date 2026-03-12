@@ -216,6 +216,11 @@ const Exhibitions = () => {
     loadExhibitions();
   };
 
+  const handleUpdateCaption = async (imageId: string, caption: string) => {
+    const trimmed = caption.trim() || null;
+    await supabase.from("exhibition_images").update({ caption: trimmed }).eq("id", imageId);
+  };
+
   const toggleCvVisibility = async (ex: Exhibition) => {
     const { error } = await supabase
       .from("exhibitions")
@@ -266,19 +271,28 @@ const Exhibitions = () => {
                   {/* Image grid */}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {exImages.map((img, imgIdx) => (
-                      <div key={img.id} className="relative group aspect-[4/3] bg-secondary rounded-sm overflow-hidden">
-                        <img
-                          src={img.publicUrl}
-                          alt=""
-                          className="w-full h-full object-cover cursor-pointer"
-                          onClick={() => setLightbox({ images: exImages, index: imgIdx })}
+                      <div key={img.id} className="space-y-1">
+                        <div className="relative group aspect-[4/3] bg-secondary rounded-sm overflow-hidden">
+                          <img
+                            src={img.publicUrl}
+                            alt={img.caption || ""}
+                            className="w-full h-full object-cover cursor-pointer"
+                            onClick={() => setLightbox({ images: exImages, index: imgIdx })}
+                          />
+                          <button
+                            onClick={() => handleDeleteImage(img)}
+                            className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Photo credit / caption"
+                          defaultValue={img.caption || ""}
+                          onBlur={(e) => handleUpdateCaption(img.id, e.target.value)}
+                          className="w-full text-[11px] text-muted-foreground bg-transparent border-none outline-none placeholder:text-muted-foreground/50 px-0.5"
                         />
-                        <button
-                          onClick={() => handleDeleteImage(img)}
-                          className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
                       </div>
                     ))}
                     {/* Add image button */}
@@ -453,9 +467,14 @@ const Exhibitions = () => {
             <X className="w-5 h-5 text-white" />
           </button>
 
-          <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
-            {lightbox.index + 1} / {lightbox.images.length}
-          </span>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center">
+            {lightbox.images[lightbox.index].caption && (
+              <p className="text-white/90 text-sm mb-1">{lightbox.images[lightbox.index].caption}</p>
+            )}
+            <span className="text-white/50 text-xs">
+              {lightbox.index + 1} / {lightbox.images.length}
+            </span>
+          </div>
         </div>
       )}
     </AppLayout>
