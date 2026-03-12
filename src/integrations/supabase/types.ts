@@ -20,18 +20,21 @@ export type Database = {
           catalogue_id: string
           created_at: string
           id: string
+          page_reference: string | null
         }
         Insert: {
           artwork_id: string
           catalogue_id: string
           created_at?: string
           id?: string
+          page_reference?: string | null
         }
         Update: {
           artwork_id?: string
           catalogue_id?: string
           created_at?: string
           id?: string
+          page_reference?: string | null
         }
         Relationships: [
           {
@@ -261,9 +264,12 @@ export type Database = {
       catalogues: {
         Row: {
           authors: string | null
+          cover_image_path: string | null
           created_at: string
           id: string
           isbn: string | null
+          language: string | null
+          page_count: number | null
           publication_year: number | null
           publisher: string | null
           title: string
@@ -271,9 +277,12 @@ export type Database = {
         }
         Insert: {
           authors?: string | null
+          cover_image_path?: string | null
           created_at?: string
           id?: string
           isbn?: string | null
+          language?: string | null
+          page_count?: number | null
           publication_year?: number | null
           publisher?: string | null
           title: string
@@ -281,9 +290,12 @@ export type Database = {
         }
         Update: {
           authors?: string | null
+          cover_image_path?: string | null
           created_at?: string
           id?: string
           isbn?: string | null
+          language?: string | null
+          page_count?: number | null
           publication_year?: number | null
           publisher?: string | null
           title?: string
@@ -363,6 +375,166 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      exhibition_artworks: {
+        Row: {
+          artwork_id: string
+          created_at: string
+          exhibition_id: string
+          id: string
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string
+          exhibition_id: string
+          id?: string
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string
+          exhibition_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exhibition_artworks_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exhibition_artworks_exhibition_id_fkey"
+            columns: ["exhibition_id"]
+            isOneToOne: false
+            referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exhibition_documents: {
+        Row: {
+          created_at: string
+          exhibition_id: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          exhibition_id: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          exhibition_id?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exhibition_documents_exhibition_id_fkey"
+            columns: ["exhibition_id"]
+            isOneToOne: false
+            referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exhibition_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          display_order: number
+          exhibition_id: string
+          id: string
+          storage_path: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number
+          exhibition_id: string
+          id?: string
+          storage_path: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number
+          exhibition_id?: string
+          id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exhibition_images_exhibition_id_fkey"
+            columns: ["exhibition_id"]
+            isOneToOne: false
+            referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exhibitions: {
+        Row: {
+          artists: string | null
+          city: string | null
+          closing_date: string | null
+          country: string | null
+          created_at: string
+          curator: string | null
+          description: string | null
+          exhibition_type: string
+          id: string
+          opening_date: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          venue: string | null
+        }
+        Insert: {
+          artists?: string | null
+          city?: string | null
+          closing_date?: string | null
+          country?: string | null
+          created_at?: string
+          curator?: string | null
+          description?: string | null
+          exhibition_type?: string
+          id?: string
+          opening_date?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          venue?: string | null
+        }
+        Update: {
+          artists?: string | null
+          city?: string | null
+          closing_date?: string | null
+          country?: string | null
+          created_at?: string
+          curator?: string | null
+          description?: string | null
+          exhibition_type?: string
+          id?: string
+          opening_date?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          venue?: string | null
+        }
+        Relationships: []
       }
       galleries: {
         Row: {
