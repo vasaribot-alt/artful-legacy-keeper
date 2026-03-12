@@ -6,6 +6,7 @@ import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload } from "lucide-reac
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
+import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
