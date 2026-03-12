@@ -62,6 +62,7 @@ const Dashboard = () => {
   const [duplicateData, setDuplicateData] = useState<ArtworkDuplicateData | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [editMode, setEditMode] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const userRole = user?.user_metadata?.role || "artist";
   const idVerified = false;
