@@ -183,6 +183,7 @@ export type Database = {
           owner_id: string
           price: number | null
           provenance: string | null
+          role_context: string
           series: string | null
           signed: string | null
           sub_category: string | null
@@ -216,6 +217,7 @@ export type Database = {
           owner_id: string
           price?: number | null
           provenance?: string | null
+          role_context?: string
           series?: string | null
           signed?: string | null
           sub_category?: string | null
@@ -249,6 +251,7 @@ export type Database = {
           owner_id?: string
           price?: number | null
           provenance?: string | null
+          role_context?: string
           series?: string | null
           signed?: string | null
           sub_category?: string | null
