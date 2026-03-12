@@ -173,7 +173,7 @@ const Dashboard = () => {
 
   return (
     <AppLayout
-      title={userRole === "artist" ? "Catalogue Raisonné" : userRole === "collector" ? "Collection" : "Managed Artworks"}
+      title={activeRole === "artist" ? "Catalogue Raisonné" : activeRole === "collector" ? "Collection" : "Managed Artworks"}
       headerActions={headerActions}
     >
       {editMode ? (
