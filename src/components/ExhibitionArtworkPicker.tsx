@@ -88,6 +88,15 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
     );
   };
 
+  const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
+    const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (delta === 0) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.scrollTop += delta;
+  };
+
   const selectedArtworks = artworks.filter((a) => selectedIds.includes(a.id));
   const filtered = artworks.filter((a) =>
     a.title.toLowerCase().includes(search.toLowerCase())
