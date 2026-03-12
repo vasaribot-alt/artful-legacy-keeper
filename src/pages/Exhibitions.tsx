@@ -289,6 +289,15 @@ const Exhibitions = () => {
                       )}
                     </div>
                     <div className="flex gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title={ex.hide_from_cv ? "Hidden from CV" : "Visible in CV"}
+                        onClick={() => toggleCvVisibility(ex)}
+                      >
+                        {ex.hide_from_cv ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground" /> : <Eye className="w-3.5 h-3.5 text-muted-foreground" />}
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(ex)}>
                         <Pencil className="w-3.5 h-3.5" />
                       </Button>
