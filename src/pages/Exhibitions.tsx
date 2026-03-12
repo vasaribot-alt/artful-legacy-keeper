@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ImportCvExhibitionsDialog } from "@/components/ImportCvExhibitionsDialog";
 import { ExhibitionArtworkPicker } from "@/components/ExhibitionArtworkPicker";
+import { SortableExhibitionImageGrid } from "@/components/SortableExhibitionImageGrid";
 
 interface Exhibition {
   id: string;
