@@ -467,9 +467,14 @@ const Exhibitions = () => {
             <X className="w-5 h-5 text-white" />
           </button>
 
-          <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
-            {lightbox.index + 1} / {lightbox.images.length}
-          </span>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center">
+            {lightbox.images[lightbox.index].caption && (
+              <p className="text-white/90 text-sm mb-1">{lightbox.images[lightbox.index].caption}</p>
+            )}
+            <span className="text-white/50 text-xs">
+              {lightbox.index + 1} / {lightbox.images.length}
+            </span>
+          </div>
         </div>
       )}
     </AppLayout>
