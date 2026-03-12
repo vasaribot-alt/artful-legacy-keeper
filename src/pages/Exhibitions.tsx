@@ -394,6 +394,11 @@ const Exhibitions = () => {
           </div>
         </DialogContent>
       </Dialog>
+      <ImportCvExhibitionsDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImported={loadExhibitions}
+      />
     </AppLayout>
   );
 };
