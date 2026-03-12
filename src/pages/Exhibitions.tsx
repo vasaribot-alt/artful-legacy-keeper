@@ -138,7 +138,7 @@ const Exhibitions = () => {
 
   const openAdd = () => { resetForm(); setDialogOpen(true); };
 
-  const openEdit = (ex: Exhibition) => {
+  const openEdit = async (ex: Exhibition) => {
     setEditingId(ex.id);
     setTitle(ex.title);
     setExType(ex.exhibition_type);
@@ -150,6 +150,9 @@ const Exhibitions = () => {
     setCurator(ex.curator || "");
     setArtists(ex.artists || "");
     setDescription(ex.description || "");
+    // Load linked artwork ids
+    const linked = (exhibitionArtworks[ex.id] || []).map((a) => a.id);
+    setSelectedArtworkIds(linked);
     setDialogOpen(true);
   };
 
