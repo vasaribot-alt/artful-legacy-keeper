@@ -1,1 +1,4 @@
 project_id = "ofqaxojjqryylcugegke"
+
+[functions.parse-cv-exhibitions]
+verify_jwt = false
