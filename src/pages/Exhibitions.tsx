@@ -365,6 +365,9 @@ const Exhibitions = () => {
                       </Button>
                     </div>
                   </div>
+
+                  {/* Documents */}
+                  <ExhibitionDocuments exhibitionId={ex.id} />
                 </div>
               );
             })}
