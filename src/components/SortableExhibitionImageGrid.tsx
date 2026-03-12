@@ -56,15 +56,9 @@ const SortableImage = ({ img, index, isMain, onDelete, onCaptionChange, onClickI
           src={img.publicUrl}
           alt={img.caption || ""}
           className="w-full h-full object-cover cursor-grab active:cursor-grabbing"
+          onClick={() => !isDragging && onClickImage(index)}
           {...attributes}
           {...listeners}
-        />
-        {/* Click overlay for lightbox - separate from drag handle */}
-        <button
-          className="absolute inset-0 z-[1]"
-          style={{ pointerEvents: "none" }}
-          onClick={() => onClickImage(index)}
-          tabIndex={-1}
         />
         {isMain && (
           <div className="absolute top-2 left-2 bg-primary/90 text-primary-foreground rounded-full p-1" title="Main image">
