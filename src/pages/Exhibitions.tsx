@@ -133,6 +133,7 @@ const Exhibitions = () => {
     setTitle(""); setExType("solo"); setOpeningDate(""); setClosingDate("");
     setVenue(""); setCity(""); setCountry(""); setCurator("");
     setArtists(""); setDescription(""); setEditingId(null);
+    setSelectedArtworkIds([]);
   };
 
   const openAdd = () => { resetForm(); setDialogOpen(true); };
