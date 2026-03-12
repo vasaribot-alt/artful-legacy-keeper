@@ -155,6 +155,9 @@ const Dashboard = () => {
           <List className="w-4 h-4" />
         </ToggleGroupItem>
       </ToggleGroup>
+      <Button variant="outline" onClick={() => setBulkImportOpen(true)} className="gap-2" size="sm">
+        <Upload className="w-4 h-4" /> Import
+      </Button>
       <Button onClick={() => setDialogOpen(true)} className="gap-2" size="sm">
         <Plus className="w-4 h-4" /> Add Artwork
       </Button>
