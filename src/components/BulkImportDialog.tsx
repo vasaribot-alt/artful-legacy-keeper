@@ -499,7 +499,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
                 <div className="border border-border rounded-sm max-h-[30vh] overflow-y-auto">
                   {matches.map(({ file, artwork }, i) => (
                     <div key={`m-${i}`} className="flex items-center gap-2 px-3 py-1.5 text-xs border-b border-border last:border-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
                       <span className="truncate flex-1">{file.name}</span>
                       <span className="text-muted-foreground">→</span>
                       <span className="font-medium truncate max-w-[200px]">{artwork.title}</span>
