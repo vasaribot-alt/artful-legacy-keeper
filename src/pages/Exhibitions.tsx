@@ -258,6 +258,15 @@ const Exhibitions = () => {
     await supabase.from("exhibition_images").update({ caption: trimmed }).eq("id", imageId);
   };
 
+  const handleReorder = async (exhibitionId: string, reorderedImages: ExhibitionImage[]) => {
+    // Update local state immediately
+    setImages((prev) => ({ ...prev, [exhibitionId]: reorderedImages }));
+    // Persist new order
+    for (let i = 0; i < reorderedImages.length; i++) {
+      await supabase.from("exhibition_images").update({ display_order: i }).eq("id", reorderedImages[i].id);
+    }
+  };
+
   const toggleCvVisibility = async (ex: Exhibition) => {
     const { error } = await supabase
       .from("exhibitions")
