@@ -616,6 +616,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          role_context: string
           share_token: string
           user_id: string
         }
@@ -623,6 +624,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          role_context?: string
           share_token?: string
           user_id: string
         }
@@ -630,6 +632,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          role_context?: string
           share_token?: string
           user_id?: string
         }

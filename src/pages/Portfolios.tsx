@@ -33,9 +33,11 @@ const Portfolios = () => {
 
   const fetchPortfolios = async () => {
     setLoading(true);
+    const activeRole = localStorage.getItem("activeRole") || "artist";
     const { data, error } = await supabase
       .from("portfolios")
       .select("id, name, share_token, created_at")
+      .eq("role_context", activeRole)
       .order("created_at", { ascending: false });
 
     if (error) { toast.error("Failed to load portfolios"); setLoading(false); return; }
@@ -61,7 +63,8 @@ const Portfolios = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setAdding(false); return; }
 
-    const { error } = await supabase.from("portfolios").insert({ user_id: user.id, name } as any);
+    const activeRole = localStorage.getItem("activeRole") || "artist";
+    const { error } = await supabase.from("portfolios").insert({ user_id: user.id, name, role_context: activeRole } as any);
     if (error) { toast.error("Failed to create portfolio"); }
     else { toast.success("Portfolio created"); setNewName(""); fetchPortfolios(); }
     setAdding(false);
