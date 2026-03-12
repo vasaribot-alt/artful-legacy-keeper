@@ -450,6 +450,10 @@ const Exhibitions = () => {
                 <Input id="ex-artists" value={artists} onChange={(e) => setArtists(e.target.value)} placeholder="e.g. Artist A, Artist B" className="mt-1.5" />
               </div>
             )}
+            <ExhibitionArtworkPicker
+              selectedIds={selectedArtworkIds}
+              onSelectionChange={setSelectedArtworkIds}
+            />
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
               <Button onClick={handleSave} disabled={saving}>
