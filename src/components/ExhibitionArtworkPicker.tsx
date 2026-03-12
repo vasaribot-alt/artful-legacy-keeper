@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Artwork {
   id: string;
@@ -142,7 +143,11 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[420px] p-0" align="start">
+        <PopoverContent
+          className="w-[420px] p-0"
+          align="start"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <div className="p-2 border-b">
             <Input
               placeholder="Search artworks..."
@@ -151,7 +156,8 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
               className="h-8 text-sm"
             />
           </div>
-          <div className="max-h-72 overflow-y-auto p-2 space-y-0.5">
+          <ScrollArea className="h-72">
+            <div className="p-2 space-y-0.5">
             {filtered.length === 0 && (
               <p className="text-xs text-muted-foreground p-3 text-center">
                 {artworks.length === 0 ? "No artworks found. Add artworks first." : "No matches."}
@@ -179,7 +185,8 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
                 </div>
               </button>
             ))}
-          </div>
+            </div>
+          </ScrollArea>
         </PopoverContent>
       </Popover>
     </div>
