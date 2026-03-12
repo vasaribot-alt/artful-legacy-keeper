@@ -164,7 +164,7 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
               className="h-8 text-sm"
             />
           </div>
-          <div className="max-h-72 overflow-y-auto p-2 space-y-0.5">
+          <div className="max-h-72 overflow-y-auto overscroll-contain p-2 space-y-0.5" onWheel={handleWheel}>
             {filtered.length === 0 && (
               <p className="text-xs text-muted-foreground p-3 text-center">
                 {artworks.length === 0 ? "No artworks found. Add artworks first." : "No matches."}
