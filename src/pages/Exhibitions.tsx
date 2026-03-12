@@ -53,7 +53,7 @@ const Exhibitions = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   // Form state
   const [title, setTitle] = useState("");
   const [exType, setExType] = useState("solo");
