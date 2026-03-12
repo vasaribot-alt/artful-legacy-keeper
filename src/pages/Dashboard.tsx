@@ -292,7 +292,7 @@ const Dashboard = () => {
         open={dialogOpen}
         onOpenChange={(open) => { setDialogOpen(open); if (!open) setDuplicateData(null); }}
         onSuccess={fetchArtworks}
-        userRole={userRole}
+        userRole={activeRole}
         initialData={duplicateData}
       />
 
