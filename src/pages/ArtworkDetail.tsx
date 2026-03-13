@@ -47,6 +47,7 @@ const ArtworkDetail = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [siblingIds, setSiblingIds] = useState<{ prev: string | null; next: string | null }>({ prev: null, next: null });
 
   // Form fields
   const [title, setTitle] = useState("");
@@ -84,6 +85,29 @@ const ArtworkDetail = () => {
   const [newDocuments, setNewDocuments] = useState<File[]>([]);
   const [deletedDocIds, setDeletedDocIds] = useState<string[]>([]);
   const docInputRef = useRef<HTMLInputElement>(null);
+
+  // Load sibling artwork IDs for prev/next navigation
+  useEffect(() => {
+    if (!id) return;
+    const loadSiblings = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const activeRole = localStorage.getItem("activeRole") || "artist";
+      const { data } = await supabase
+        .from("artworks")
+        .select("id")
+        .eq("owner_id", user.id)
+        .eq("role_context", activeRole)
+        .order("created_at", { ascending: false });
+      if (!data) return;
+      const idx = data.findIndex((a) => a.id === id);
+      setSiblingIds({
+        prev: idx > 0 ? data[idx - 1].id : null,
+        next: idx < data.length - 1 ? data[idx + 1].id : null,
+      });
+    };
+    loadSiblings();
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
