@@ -311,7 +311,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
     let uploaded = 0;
     for (let i = 0; i < matches.length; i++) {
-      const { file, artwork } = matches[i];
+      const { file, artwork, displayOrder } = matches[i];
       const ext = file.name.split(".").pop() || "jpg";
       const path = `${user.id}/${artwork.id}/${crypto.randomUUID()}.${ext}`;
 
@@ -323,7 +323,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
         await supabase.from("artwork_images").insert({
           artwork_id: artwork.id,
           storage_path: path,
-          display_order: 0,
+          display_order: displayOrder,
         });
         uploaded++;
         setImportedArtworks((prev) =>
