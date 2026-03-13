@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 interface Artwork {
   id: string;
@@ -57,13 +58,22 @@ export const ArtworkListItem = ({ artwork }: { artwork: Artwork }) => {
       className="flex items-center gap-4 p-3 rounded-sm border border-border hover:bg-accent/50 cursor-pointer transition-colors"
       onClick={() => navigate(`/artwork/${artwork.id}`)}
     >
-      <div className="w-14 h-14 bg-secondary rounded-sm overflow-hidden shrink-0">
-        {displayUrl ? (
-          <img src={displayUrl} alt={artwork.title} className="w-full h-full object-cover" loading="lazy" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[9px]">No img</div>
+      <HoverCard openDelay={200} closeDelay={100}>
+        <HoverCardTrigger asChild>
+          <div className="w-14 h-14 bg-secondary rounded-sm overflow-hidden shrink-0">
+            {displayUrl ? (
+              <img src={displayUrl} alt={artwork.title} className="w-full h-full object-cover" loading="lazy" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[9px]">No img</div>
+            )}
+          </div>
+        </HoverCardTrigger>
+        {displayUrl && (
+          <HoverCardContent side="right" align="start" className="w-72 p-1.5">
+            <img src={displayUrl} alt={artwork.title} className="w-full h-auto rounded-sm object-contain" />
+          </HoverCardContent>
         )}
-      </div>
+      </HoverCard>
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-medium truncate">{artwork.title}</h3>
         <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
