@@ -464,6 +464,16 @@ const ArtistProfile = () => {
           <Textarea value={chronology} onChange={(e) => setChronology(e.target.value)} placeholder="Timeline of significant events…" rows={8} />
         </section>
 
+        <Separator />
+
+        <section className="space-y-4">
+          <h2 className="text-2xl">Access Management</h2>
+          <p className="text-sm text-muted-foreground">
+            Grant registrars access to manage your catalogue raisonné on your behalf.
+          </p>
+          <ManageRegistrarAccess />
+        </section>
+
         <div className="pt-6">
           <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
             <Save className="w-4 h-4" />
