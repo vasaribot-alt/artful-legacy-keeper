@@ -65,6 +65,7 @@ const ArtistProfileView = () => {
   const [cvSections, setCvSections] = useState<
     { section: string; entries: { year: string; entry_text: string; images: { storage_path: string; caption: string | null }[] }[] }[]
   >([]);
+  const [foundingTier, setFoundingTier] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
