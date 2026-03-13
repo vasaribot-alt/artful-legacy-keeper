@@ -1,4 +1,4 @@
-import { User, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, ChevronDown } from "lucide-react";
+import { User, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, ChevronDown, Award, Key } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,9 +23,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type AppRole = "artist" | "collector" | "registrar";
+type AppRole = "artist" | "collector" | "registrar" | "foundation";
 
 const getNavItems = (role: AppRole) => {
+  if (role === "foundation") {
+    return [
+      { title: "Invite Codes", url: "/foundation", icon: Key },
+      { title: "Founding Artists", url: "/founding-artists", icon: Award },
+    ];
+  }
   if (role === "collector") {
     return [
       { title: "Collector Profile", url: "/profile", icon: User },
@@ -49,6 +55,7 @@ const roleLabels: Record<AppRole, { nav: string; label: string }> = {
   artist: { nav: "Artist Registry", label: "Artist" },
   collector: { nav: "Collectors Register", label: "Collector" },
   registrar: { nav: "Registrar", label: "Registrar" },
+  foundation: { nav: "Foundation", label: "Foundation" },
 };
 
 export function AppSidebar() {

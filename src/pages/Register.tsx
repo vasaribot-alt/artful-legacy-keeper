@@ -20,6 +20,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<Role>("artist");
+  const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -28,13 +29,36 @@ const Register = () => {
       toast.error("Password must be at least 6 characters");
       return;
     }
+
+    // Validate invite code if provided
+    if (inviteCode.trim()) {
+      const { data: codeData } = await supabase
+        .from("invite_codes")
+        .select("id, code, tier, used_by, is_active")
+        .eq("code", inviteCode.trim().toUpperCase())
+        .single();
+
+      if (!codeData) {
+        toast.error("Invalid invite code");
+        return;
+      }
+      if (!codeData.is_active) {
+        toast.error("This invite code is no longer active");
+        return;
+      }
+      if (codeData.used_by) {
+        toast.error("This invite code has already been used");
+        return;
+      }
+    }
+
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { full_name: fullName, role: selectedRole },
+        data: { full_name: fullName, role: selectedRole, invite_code: inviteCode.trim().toUpperCase() || undefined },
       },
     });
     setLoading(false);
@@ -113,6 +137,18 @@ const Register = () => {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Invite code */}
+          <div>
+            <Label htmlFor="inviteCode">Invite code <span className="text-muted-foreground font-normal">(optional)</span></Label>
+            <Input
+              id="inviteCode"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value)}
+              placeholder="e.g. FOUNDING-EST-A1B2"
+              className="mt-1.5 uppercase tracking-wider"
+            />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>

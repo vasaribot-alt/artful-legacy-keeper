@@ -21,6 +21,8 @@ import Portfolios from "./pages/Portfolios";
 import PortfolioDetail from "./pages/PortfolioDetail";
 import PortfolioShared from "./pages/PortfolioShared";
 import Catalogues from "./pages/Catalogues";
+import FoundingArtists from "./pages/FoundingArtists";
+import FoundationDashboard from "./pages/FoundationDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +52,8 @@ const App = () => (
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
+          <Route path="/founding-artists" element={<FoundingArtists />} />
+          <Route path="/foundation" element={<FoundationDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

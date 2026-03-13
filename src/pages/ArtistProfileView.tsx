@@ -11,6 +11,7 @@ import {
   Building2,
 } from "lucide-react";
 import { ViewLayout } from "@/components/ViewLayout";
+import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
 
 interface SocialLink {
   platform: string;
@@ -64,6 +65,7 @@ const ArtistProfileView = () => {
   const [cvSections, setCvSections] = useState<
     { section: string; entries: { year: string; entry_text: string; images: { storage_path: string; caption: string | null }[] }[] }[]
   >([]);
+  const [foundingTier, setFoundingTier] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -133,6 +135,14 @@ const ArtistProfileView = () => {
         );
       }
 
+      // Check founding artist status
+      const { data: foundingData } = await supabase
+        .from("founding_artists")
+        .select("tier")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      if (foundingData) setFoundingTier(foundingData.tier);
+
       setLoading(false);
     };
     load();
@@ -174,6 +184,7 @@ const ArtistProfileView = () => {
           </Avatar>
 
           <h1 className="text-4xl sm:text-5xl mb-3">{profile.full_name || "Untitled Artist"}</h1>
+          {foundingTier && <FoundingArtistBadge tier={foundingTier} className="mb-3" />}
 
           {(location || profile.birth_year) && (
             <p className="text-muted-foreground text-lg">
