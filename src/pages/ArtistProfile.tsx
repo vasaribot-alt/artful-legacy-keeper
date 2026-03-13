@@ -198,7 +198,8 @@ const ArtistProfile = () => {
   };
 
   const isCollector = userRole === "collector";
-  const profileTitle = isCollector ? "Collector Profile" : "Artist Profile";
+  const isRegistrar = userRole === "registrar";
+  const profileTitle = isRegistrar ? "Registrar Profile" : isCollector ? "Collector Profile" : "Artist Profile";
 
   if (loading) {
     return (
