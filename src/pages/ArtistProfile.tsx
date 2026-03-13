@@ -14,6 +14,7 @@ import GallerySearch from "../components/GallerySearch";
 import { getPhonePrefixForCountry, COUNTRY_PHONE_CODES } from "@/lib/phoneCountryCodes";
 import { AppLayout } from "@/components/AppLayout";
 import { ProfilePresentationView, type ProfileViewData } from "@/components/ProfilePresentationView";
+import { ManageRegistrarAccess } from "@/components/ManageRegistrarAccess";
 
 interface SocialLink {
   platform: string;
@@ -295,6 +296,16 @@ const ArtistProfile = () => {
             </div>
           </section>
 
+          <Separator />
+
+          <section className="space-y-4">
+            <h2 className="text-2xl">Access Management</h2>
+            <p className="text-sm text-muted-foreground">
+              Grant registrars access to manage your collection on your behalf.
+            </p>
+            <ManageRegistrarAccess />
+          </section>
+
           <div className="pt-6">
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
               <Save className="w-4 h-4" />
@@ -461,6 +472,16 @@ const ArtistProfile = () => {
         <section className="space-y-4">
           <h2 className="text-2xl">Chronology</h2>
           <Textarea value={chronology} onChange={(e) => setChronology(e.target.value)} placeholder="Timeline of significant events…" rows={8} />
+        </section>
+
+        <Separator />
+
+        <section className="space-y-4">
+          <h2 className="text-2xl">Access Management</h2>
+          <p className="text-sm text-muted-foreground">
+            Grant registrars access to manage your catalogue raisonné on your behalf.
+          </p>
+          <ManageRegistrarAccess />
         </section>
 
         <div className="pt-6">
