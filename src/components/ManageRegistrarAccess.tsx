@@ -71,14 +71,20 @@ export function ManageRegistrarAccess() {
     if (!inviteEmail.trim()) return;
     setInviting(true);
 
-    // Find registrar by email
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .eq("email", inviteEmail.trim().toLowerCase())
-      .single();
+    // Find registrar by email through secure backend lookup (bypasses profile RLS safely)
+    const normalizedEmail = inviteEmail.trim().toLowerCase();
+    const { data: registrarUserId, error: lookupError } = await (supabase as any).rpc(
+      "find_registrar_by_email",
+      { _email: normalizedEmail }
+    );
 
-    if (!profile) {
+    if (lookupError) {
+      toast.error("Could not validate registrar email");
+      setInviting(false);
+      return;
+    }
+
+    if (!registrarUserId) {
       toast.error("No registrar found with that email");
       setInviting(false);
       return;
@@ -91,7 +97,7 @@ export function ManageRegistrarAccess() {
       .from("registrar_access")
       .insert({
         owner_id: user.id,
-        registrar_id: profile.user_id,
+        registrar_id: registrarUserId,
         requested_by: "owner",
         status: "approved",
       });
