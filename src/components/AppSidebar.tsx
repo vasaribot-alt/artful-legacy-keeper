@@ -32,6 +32,11 @@ const getNavItems = (role: AppRole) => {
       { title: "Founding Artists", url: "/founding-artists", icon: Award },
     ];
   }
+  if (role === "registrar") {
+    return [
+      { title: "Clients", url: "/registrar", icon: Users },
+    ];
+  }
   if (role === "collector") {
     return [
       { title: "Collector Profile", url: "/profile", icon: User },
