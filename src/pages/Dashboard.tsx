@@ -269,10 +269,37 @@ const Dashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="space-y-1">
-              {artworks.map((artwork) => (
-                <ArtworkListItem key={artwork.id} artwork={artwork} />
-              ))}
+            <div>
+              <div className="flex items-center gap-3 mb-2 px-3 py-2">
+                <Checkbox
+                  checked={selectedIds.size === artworks.length && artworks.length > 0}
+                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all"}
+                </span>
+                {selectedIds.size > 0 && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="ml-auto gap-1.5"
+                    onClick={() => setDeleteConfirmOpen(true)}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete ({selectedIds.size})
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-1">
+                {artworks.map((artwork) => (
+                  <ArtworkListItem
+                    key={artwork.id}
+                    artwork={artwork}
+                    selectable
+                    selected={selectedIds.has(artwork.id)}
+                    onSelectChange={handleSelectChange}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
