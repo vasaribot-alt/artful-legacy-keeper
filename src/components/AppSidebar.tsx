@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type AppRole = "artist" | "collector" | "registrar";
+type AppRole = "artist" | "collector" | "registrar" | "foundation";
 
 const getNavItems = (role: AppRole) => {
   if (role === "foundation") {
