@@ -28,6 +28,12 @@ interface FoundingArtistRow {
   joined_at: string;
 }
 
+interface UserProfile {
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+}
+
 const tierLabels: Record<Tier, string> = {
   internationally_established: "Internationally Established",
   mid_career: "Mid-Career",
@@ -48,6 +54,7 @@ const FoundationDashboard = () => {
   const navigate = useNavigate();
   const [codes, setCodes] = useState<InviteCode[]>([]);
   const [artists, setArtists] = useState<FoundingArtistRow[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [newTier, setNewTier] = useState<Tier>("internationally_established");
   const [batchCount, setBatchCount] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -79,6 +86,25 @@ const FoundationDashboard = () => {
     ]);
     if (codesRes.data) setCodes(codesRes.data as InviteCode[]);
     if (artistsRes.data) setArtists(artistsRes.data);
+
+    // Fetch profiles for used codes
+    const usedUserIds = (codesRes.data as InviteCode[] || [])
+      .filter((c) => c.used_by)
+      .map((c) => c.used_by as string);
+
+    if (usedUserIds.length > 0) {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, email")
+        .in("user_id", usedUserIds);
+
+      if (profileData) {
+        const profileMap: Record<string, UserProfile> = {};
+        profileData.forEach((p) => { profileMap[p.user_id] = p; });
+        setProfiles(profileMap);
+      }
+    }
+
     setLoading(false);
   };
 
@@ -202,17 +228,25 @@ const FoundationDashboard = () => {
             <p className="text-sm text-muted-foreground">No artists have used an invite code yet.</p>
           ) : (
             <div className="border border-border rounded-sm divide-y divide-border">
-              {used.map((code) => (
-                <div key={code.id} className="flex items-center justify-between p-3">
-                  <div className="flex items-center gap-3">
-                    <code className="text-sm font-mono tracking-wider text-muted-foreground">{code.code}</code>
-                    <Badge variant="secondary" className="text-xs">{tierLabels[code.tier]}</Badge>
-                    <span className="text-xs text-muted-foreground">
-                      Used {code.used_at ? new Date(code.used_at).toLocaleDateString() : ""}
-                    </span>
+              {used.map((code) => {
+                const profile = code.used_by ? profiles[code.used_by] : null;
+                return (
+                  <div key={code.id} className="flex items-center justify-between p-3">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <code className="text-sm font-mono tracking-wider text-muted-foreground">{code.code}</code>
+                      <Badge variant="secondary" className="text-xs">{tierLabels[code.tier]}</Badge>
+                      {profile && (
+                        <span className="text-sm font-medium">
+                          {profile.full_name || "Unnamed"}{profile.email ? ` · ${profile.email}` : ""}
+                        </span>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        Used {code.used_at ? new Date(code.used_at).toLocaleDateString() : ""}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
