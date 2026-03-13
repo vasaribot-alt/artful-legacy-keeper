@@ -1,0 +1,1 @@
+DELETE FROM public.registrar_access WHERE id = '9fca110e-d547-46c7-8e7c-697942451a27';
