@@ -277,7 +277,7 @@ const RegistrarDashboard = () => {
                   <span className="text-xs text-muted-foreground">
                     {client.artwork_count} artwork{client.artwork_count !== 1 ? "s" : ""}
                   </span>
-                  <CheckCircle className="w-3 h-3 text-green-600" />
+                  <CheckCircle className="w-3 h-3 text-primary" />
                 </div>
               </button>
             ))}
