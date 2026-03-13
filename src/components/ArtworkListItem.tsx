@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Artwork {
   id: string;
@@ -27,7 +28,14 @@ const formatDimensions = (h: number | null, w: number | null, d: number | null) 
   return parts.join(" × ") + " cm";
 };
 
-export const ArtworkListItem = ({ artwork }: { artwork: Artwork }) => {
+interface ArtworkListItemProps {
+  artwork: Artwork;
+  selectable?: boolean;
+  selected?: boolean;
+  onSelectChange?: (id: string, checked: boolean) => void;
+}
+
+export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange }: ArtworkListItemProps) => {
   const navigate = useNavigate();
   const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
@@ -56,8 +64,22 @@ export const ArtworkListItem = ({ artwork }: { artwork: Artwork }) => {
   return (
     <div
       className="flex items-center gap-4 p-3 rounded-sm border border-border hover:bg-accent/50 cursor-pointer transition-colors"
-      onClick={() => navigate(`/artwork/${artwork.id}`)}
+      onClick={() => {
+        if (selectable && onSelectChange) {
+          onSelectChange(artwork.id, !selected);
+        } else {
+          navigate(`/artwork/${artwork.id}`);
+        }
+      }}
     >
+      {selectable && (
+        <Checkbox
+          checked={selected}
+          onCheckedChange={(checked) => onSelectChange?.(artwork.id, !!checked)}
+          onClick={(e) => e.stopPropagation()}
+          className="shrink-0"
+        />
+      )}
       <HoverCard openDelay={200} closeDelay={100}>
         <HoverCardTrigger asChild>
           <div className="w-14 h-14 bg-secondary rounded-sm overflow-hidden shrink-0">
