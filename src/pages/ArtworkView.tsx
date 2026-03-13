@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
@@ -28,6 +28,46 @@ const ArtworkView = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [exhibitions, setExhibitions] = useState<any[]>([]);
   const [catalogues, setCatalogues] = useState<any[]>([]);
+  const [siblingIds, setSiblingIds] = useState<{ prev: string | null; next: string | null }>({ prev: null, next: null });
+
+  // Load sibling artwork IDs for prev/next navigation
+  useEffect(() => {
+    if (!id) return;
+    const loadSiblings = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const activeRole = localStorage.getItem("activeRole") || "artist";
+      const { data } = await supabase
+        .from("artworks")
+        .select("id")
+        .eq("owner_id", user.id)
+        .eq("role_context", activeRole)
+        .order("created_at", { ascending: false });
+      if (!data) return;
+      const idx = data.findIndex((a) => a.id === id);
+      setSiblingIds({
+        prev: idx > 0 ? data[idx - 1].id : null,
+        next: idx < data.length - 1 ? data[idx + 1].id : null,
+      });
+    };
+    loadSiblings();
+  }, [id]);
+
+  // Keyboard shortcuts for prev/next navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (e.target as HTMLElement)?.isContentEditable) return;
+
+      if (e.key === "ArrowLeft" && siblingIds.prev) {
+        navigate(`/artwork/${siblingIds.prev}/view`);
+      } else if (e.key === "ArrowRight" && siblingIds.next) {
+        navigate(`/artwork/${siblingIds.next}/view`);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [siblingIds, navigate]);
 
   useEffect(() => {
     if (!id) return;
@@ -113,6 +153,28 @@ const ArtworkView = () => {
       <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </Button>
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          disabled={!siblingIds.prev}
+          onClick={() => siblingIds.prev && navigate(`/artwork/${siblingIds.prev}/view`)}
+          title="Previous artwork (←)"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          disabled={!siblingIds.next}
+          onClick={() => siblingIds.next && navigate(`/artwork/${siblingIds.next}/view`)}
+          title="Next artwork (→)"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
       <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}`)} className="gap-1.5">
         <Pencil className="w-3.5 h-3.5" /> Edit
       </Button>
