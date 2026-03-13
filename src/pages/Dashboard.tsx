@@ -256,7 +256,7 @@ const Dashboard = () => {
                 Add artworks
               </Button>
             </div>
-          ) : (
+          ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {galleryArtworks.map((art) => (
                 <div
@@ -290,6 +290,12 @@ const Dashboard = () => {
                     </p>
                   )}
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {artworks.map((artwork) => (
+                <ArtworkListItem key={artwork.id} artwork={artwork} />
               ))}
             </div>
           )}
