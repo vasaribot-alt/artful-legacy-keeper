@@ -203,9 +203,10 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId }: Pro
     let errors = 0;
     const results: ImportedArtwork[] = [];
 
+    const effectiveOwnerForSeries = ownerId || user.id;
     const uniqueSeries = [...new Set(selected.map((r) => r.series).filter(Boolean))];
     for (const name of uniqueSeries) {
-      await supabase.from("series_groups").insert({ user_id: user.id, name }).select();
+      await supabase.from("series_groups").insert({ user_id: effectiveOwnerForSeries, name }).select();
     }
 
     for (let i = 0; i < selected.length; i++) {

@@ -220,4 +220,14 @@ const RegistrarClientView = () => {
   );
 };
 
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onOpenChange={setBulkImportOpen}
+        onSuccess={fetchClientData}
+        ownerId={ownerId}
+      />
+    </AppLayout>
+  );
+};
+
 export default RegistrarClientView;
