@@ -153,6 +153,28 @@ const ArtworkView = () => {
       <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </Button>
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          disabled={!siblingIds.prev}
+          onClick={() => siblingIds.prev && navigate(`/artwork/${siblingIds.prev}/view`)}
+          title="Previous artwork (←)"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          disabled={!siblingIds.next}
+          onClick={() => siblingIds.next && navigate(`/artwork/${siblingIds.next}/view`)}
+          title="Next artwork (→)"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </Button>
+      </div>
       <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}`)} className="gap-1.5">
         <Pencil className="w-3.5 h-3.5" /> Edit
       </Button>
