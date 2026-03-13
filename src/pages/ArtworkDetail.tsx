@@ -109,6 +109,23 @@ const ArtworkDetail = () => {
     loadSiblings();
   }, [id]);
 
+  // Keyboard shortcuts for prev/next navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if user is typing in an input/textarea/select
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || (e.target as HTMLElement)?.isContentEditable) return;
+
+      if (e.key === "ArrowLeft" && siblingIds.prev) {
+        navigate(`/artwork/${siblingIds.prev}`);
+      } else if (e.key === "ArrowRight" && siblingIds.next) {
+        navigate(`/artwork/${siblingIds.next}`);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [siblingIds, navigate]);
+
   useEffect(() => {
     if (!id) return;
     loadArtwork();
