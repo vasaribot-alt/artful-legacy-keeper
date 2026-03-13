@@ -66,6 +66,9 @@ const Dashboard = () => {
   const [editMode, setEditMode] = useState(false);
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
   const idVerified = false;
 
