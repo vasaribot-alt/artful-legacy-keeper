@@ -374,6 +374,10 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
               The spreadsheet should include a <strong>Title</strong> column. Other recognized columns: 
               Category/Type, Series, Year, Medium, Support, Height, Width, Depth, Signed, Location, 
               Provenance, Exhibition History, Description/Notes, Image filename.
+              <br />
+              <span className="mt-1 inline-block">
+                For multiple images per artwork, separate filenames with <strong>;</strong> or <strong>,</strong> (e.g. "photo1.jpg; photo2.jpg; photo3.jpg").
+              </span>
             </div>
           </div>
         )}
