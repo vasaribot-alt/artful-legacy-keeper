@@ -141,6 +141,17 @@ const Dashboard = () => {
 
   if (!user) return null;
 
+  const viewToggle = (
+    <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
+      <ToggleGroupItem value="grid" aria-label="Grid view">
+        <LayoutGrid className="w-4 h-4" />
+      </ToggleGroupItem>
+      <ToggleGroupItem value="list" aria-label="List view">
+        <List className="w-4 h-4" />
+      </ToggleGroupItem>
+    </ToggleGroup>
+  );
+
   const headerActions = editMode ? (
     <>
       {globalArtistId && (
@@ -148,14 +159,7 @@ const Dashboard = () => {
           GAR-{String(globalArtistId).padStart(8, '0')}
         </span>
       )}
-      <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
-        <ToggleGroupItem value="grid" aria-label="Grid view">
-          <LayoutGrid className="w-4 h-4" />
-        </ToggleGroupItem>
-        <ToggleGroupItem value="list" aria-label="List view">
-          <List className="w-4 h-4" />
-        </ToggleGroupItem>
-      </ToggleGroup>
+      {viewToggle}
       <Button variant="outline" onClick={() => setBulkImportOpen(true)} className="gap-2" size="sm">
         <Upload className="w-4 h-4" /> Import
       </Button>
@@ -167,9 +171,12 @@ const Dashboard = () => {
       </Button>
     </>
   ) : (
-    <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
-      <Pencil className="w-3.5 h-3.5" /> Edit
-    </Button>
+    <>
+      {viewToggle}
+      <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
+        <Pencil className="w-3.5 h-3.5" /> Edit
+      </Button>
+    </>
   );
 
   return (
@@ -249,7 +256,7 @@ const Dashboard = () => {
                 Add artworks
               </Button>
             </div>
-          ) : (
+          ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {galleryArtworks.map((art) => (
                 <div
@@ -283,6 +290,12 @@ const Dashboard = () => {
                     </p>
                   )}
                 </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {artworks.map((artwork) => (
+                <ArtworkListItem key={artwork.id} artwork={artwork} />
               ))}
             </div>
           )}
