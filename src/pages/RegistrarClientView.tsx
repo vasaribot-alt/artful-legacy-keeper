@@ -100,9 +100,14 @@ const RegistrarClientView = () => {
     <AppLayout
       title={profile?.full_name || "Client"}
       headerActions={
-        <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5">
-          <ArrowLeft className="w-3.5 h-3.5" /> All Clients
-        </Button>
+        <>
+          <Button variant="outline" size="sm" onClick={() => setBulkImportOpen(true)} className="gap-2">
+            <Upload className="w-4 h-4" /> Import
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5">
+            <ArrowLeft className="w-3.5 h-3.5" /> All Clients
+          </Button>
+        </>
       }
     >
       <div className="max-w-6xl mx-auto px-6 py-8">
