@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Images, Calendar, BookOpen, ScrollText, Layers } from "lucide-react";
+import { ArrowLeft, Images, Calendar, BookOpen, Upload } from "lucide-react";
+import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ClientProfile {
