@@ -216,9 +216,6 @@ const RegistrarClientView = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </AppLayout>
-  );
-};
 
       <BulkImportDialog
         open={bulkImportOpen}
