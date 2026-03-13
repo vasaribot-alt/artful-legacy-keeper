@@ -32,6 +32,7 @@ const RegistrarClientView = () => {
   const [catalogues, setCatalogues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("artworks");
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
 
   useEffect(() => {
     if (!ownerId) return;
