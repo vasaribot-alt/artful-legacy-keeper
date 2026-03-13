@@ -337,6 +337,28 @@ const ArtworkDetail = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
           </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              disabled={!siblingIds.prev}
+              onClick={() => siblingIds.prev && navigate(`/artwork/${siblingIds.prev}`)}
+              title="Previous artwork"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              disabled={!siblingIds.next}
+              onClick={() => siblingIds.next && navigate(`/artwork/${siblingIds.next}`)}
+              title="Next artwork"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
           <span className="text-sm text-muted-foreground flex-1 truncate">{title}</span>
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
