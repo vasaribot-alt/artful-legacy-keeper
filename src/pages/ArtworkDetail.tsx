@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
