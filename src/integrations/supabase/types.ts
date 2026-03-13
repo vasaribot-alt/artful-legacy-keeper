@@ -542,6 +542,38 @@ export type Database = {
         }
         Relationships: []
       }
+      founding_artists: {
+        Row: {
+          id: string
+          invite_code_id: string | null
+          joined_at: string
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          invite_code_id?: string | null
+          joined_at?: string
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          invite_code_id?: string | null
+          joined_at?: string
+          tier?: Database["public"]["Enums"]["founding_artist_tier"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "founding_artists_invite_code_id_fkey"
+            columns: ["invite_code_id"]
+            isOneToOne: false
+            referencedRelation: "invite_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       galleries: {
         Row: {
           city: string | null
@@ -569,6 +601,39 @@ export type Database = {
           id?: string
           name?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      invite_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean
+          tier?: Database["public"]["Enums"]["founding_artist_tier"]
+          used_at?: string | null
+          used_by?: string | null
         }
         Relationships: []
       }
