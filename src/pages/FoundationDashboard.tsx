@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Copy, Plus, Trash2, Award } from "lucide-react";
+import { Copy, Plus, Trash2, Award, Download } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 
 type Tier = "internationally_established" | "mid_career" | "emerging";
@@ -142,6 +142,31 @@ const FoundationDashboard = () => {
     }
   };
 
+  const handleExportCsv = () => {
+    const rows = codes.map((c) => {
+      const profile = c.used_by ? profiles[c.used_by] : null;
+      return [
+        c.code,
+        tierLabels[c.tier],
+        c.is_active ? "Active" : "Inactive",
+        c.used_by ? "Used" : "Available",
+        profile?.full_name || "",
+        profile?.email || "",
+        c.used_at ? new Date(c.used_at).toLocaleDateString() : "",
+        new Date(c.created_at).toLocaleDateString(),
+      ].map((v) => `"${v}"`).join(",");
+    });
+    const csv = ["Code,Tier,Status,Usage,Artist Name,Artist Email,Used Date,Created Date", ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invite-codes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("CSV exported");
+  };
+
   if (!isFoundation || loading) return null;
 
   const unused = codes.filter((c) => !c.used_by && c.is_active);
@@ -158,6 +183,11 @@ const FoundationDashboard = () => {
           <p className="text-sm text-muted-foreground">
             Generate and manage invite codes for founding artists. {artists.length} artist(s) enrolled.
           </p>
+          {codes.length > 0 && (
+            <Button variant="outline" size="sm" className="mt-3" onClick={handleExportCsv}>
+              <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
+            </Button>
+          )}
         </div>
 
         {/* Generate codes */}
