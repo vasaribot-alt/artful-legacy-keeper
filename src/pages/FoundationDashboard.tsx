@@ -228,17 +228,25 @@ const FoundationDashboard = () => {
             <p className="text-sm text-muted-foreground">No artists have used an invite code yet.</p>
           ) : (
             <div className="border border-border rounded-sm divide-y divide-border">
-              {used.map((code) => (
-                <div key={code.id} className="flex items-center justify-between p-3">
-                  <div className="flex items-center gap-3">
-                    <code className="text-sm font-mono tracking-wider text-muted-foreground">{code.code}</code>
-                    <Badge variant="secondary" className="text-xs">{tierLabels[code.tier]}</Badge>
-                    <span className="text-xs text-muted-foreground">
-                      Used {code.used_at ? new Date(code.used_at).toLocaleDateString() : ""}
-                    </span>
+              {used.map((code) => {
+                const profile = code.used_by ? profiles[code.used_by] : null;
+                return (
+                  <div key={code.id} className="flex items-center justify-between p-3">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <code className="text-sm font-mono tracking-wider text-muted-foreground">{code.code}</code>
+                      <Badge variant="secondary" className="text-xs">{tierLabels[code.tier]}</Badge>
+                      {profile && (
+                        <span className="text-sm font-medium">
+                          {profile.full_name || "Unnamed"}{profile.email ? ` · ${profile.email}` : ""}
+                        </span>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        Used {code.used_at ? new Date(code.used_at).toLocaleDateString() : ""}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
