@@ -11,6 +11,7 @@ import {
   Building2,
 } from "lucide-react";
 import { ViewLayout } from "@/components/ViewLayout";
+import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
 
 interface SocialLink {
   platform: string;
