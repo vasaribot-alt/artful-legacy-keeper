@@ -144,6 +144,37 @@ const Dashboard = () => {
     setLoading(false);
   };
 
+  const handleSelectChange = (id: string, checked: boolean) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (checked) next.add(id); else next.delete(id);
+      return next;
+    });
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(artworks.map(a => a.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    setDeleting(true);
+    const ids = Array.from(selectedIds);
+    const { error } = await supabase.from("artworks").delete().in("id", ids);
+    if (error) {
+      toast.error("Failed to delete artworks");
+    } else {
+      toast.success(`Deleted ${ids.length} artwork${ids.length !== 1 ? "s" : ""}`);
+      setSelectedIds(new Set());
+      fetchArtworks();
+    }
+    setDeleting(false);
+    setDeleteConfirmOpen(false);
+  };
+
   if (!user) return null;
 
   const viewToggle = (
