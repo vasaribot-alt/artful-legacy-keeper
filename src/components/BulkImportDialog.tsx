@@ -99,7 +99,7 @@ function normalizeFilename(name: string): string {
 
 type Step = "upload" | "preview" | "importing" | "images" | "uploading";
 
-export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
+export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId }: Props) => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [step, setStep] = useState<Step>("upload");
   const [progress, setProgress] = useState(0);
