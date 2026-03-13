@@ -16,6 +16,8 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  /** When provided, artworks are inserted for this owner (registrar acting on behalf of client) */
+  ownerId?: string;
 }
 
 interface ParsedRow {
@@ -97,7 +99,7 @@ function normalizeFilename(name: string): string {
 
 type Step = "upload" | "preview" | "importing" | "images" | "uploading";
 
-export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
+export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId }: Props) => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [step, setStep] = useState<Step>("upload");
   const [progress, setProgress] = useState(0);
@@ -201,16 +203,18 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     let errors = 0;
     const results: ImportedArtwork[] = [];
 
+    const effectiveOwnerForSeries = ownerId || user.id;
     const uniqueSeries = [...new Set(selected.map((r) => r.series).filter(Boolean))];
     for (const name of uniqueSeries) {
-      await supabase.from("series_groups").insert({ user_id: user.id, name }).select();
+      await supabase.from("series_groups").insert({ user_id: effectiveOwnerForSeries, name }).select();
     }
 
     for (let i = 0; i < selected.length; i++) {
       const r = selected[i];
+      const effectiveOwnerId = ownerId || user.id;
       const activeRole = localStorage.getItem("activeRole") || "artist";
       const { data: artworkData, error } = await supabase.from("artworks").insert({
-        owner_id: user.id,
+        owner_id: effectiveOwnerId,
         title: r.title,
         artwork_type: r.artworkType || null,
         series: r.series || null,

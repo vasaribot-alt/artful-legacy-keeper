@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Images, Calendar, BookOpen, ScrollText, Layers } from "lucide-react";
+import { ArrowLeft, Images, Calendar, BookOpen, Upload } from "lucide-react";
+import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ClientProfile {
@@ -31,6 +32,7 @@ const RegistrarClientView = () => {
   const [catalogues, setCatalogues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("artworks");
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
 
   useEffect(() => {
     if (!ownerId) return;
@@ -98,9 +100,14 @@ const RegistrarClientView = () => {
     <AppLayout
       title={profile?.full_name || "Client"}
       headerActions={
-        <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5">
-          <ArrowLeft className="w-3.5 h-3.5" /> All Clients
-        </Button>
+        <>
+          <Button variant="outline" size="sm" onClick={() => setBulkImportOpen(true)} className="gap-2">
+            <Upload className="w-4 h-4" /> Import
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5">
+            <ArrowLeft className="w-3.5 h-3.5" /> All Clients
+          </Button>
+        </>
       }
     >
       <div className="max-w-6xl mx-auto px-6 py-8">
@@ -209,6 +216,13 @@ const RegistrarClientView = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onOpenChange={setBulkImportOpen}
+        onSuccess={fetchClientData}
+        ownerId={ownerId}
+      />
     </AppLayout>
   );
 };
