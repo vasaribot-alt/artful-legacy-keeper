@@ -86,6 +86,25 @@ const FoundationDashboard = () => {
     ]);
     if (codesRes.data) setCodes(codesRes.data as InviteCode[]);
     if (artistsRes.data) setArtists(artistsRes.data);
+
+    // Fetch profiles for used codes
+    const usedUserIds = (codesRes.data as InviteCode[] || [])
+      .filter((c) => c.used_by)
+      .map((c) => c.used_by as string);
+
+    if (usedUserIds.length > 0) {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, email")
+        .in("user_id", usedUserIds);
+
+      if (profileData) {
+        const profileMap: Record<string, UserProfile> = {};
+        profileData.forEach((p) => { profileMap[p.user_id] = p; });
+        setProfiles(profileMap);
+      }
+    }
+
     setLoading(false);
   };
 
