@@ -183,6 +183,11 @@ const FoundationDashboard = () => {
           <p className="text-sm text-muted-foreground">
             Generate and manage invite codes for founding artists. {artists.length} artist(s) enrolled.
           </p>
+          {codes.length > 0 && (
+            <Button variant="outline" size="sm" className="mt-3" onClick={handleExportCsv}>
+              <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
+            </Button>
+          )}
         </div>
 
         {/* Generate codes */}
