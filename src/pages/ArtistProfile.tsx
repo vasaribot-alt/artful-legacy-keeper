@@ -14,6 +14,7 @@ import GallerySearch from "../components/GallerySearch";
 import { getPhonePrefixForCountry, COUNTRY_PHONE_CODES } from "@/lib/phoneCountryCodes";
 import { AppLayout } from "@/components/AppLayout";
 import { ProfilePresentationView, type ProfileViewData } from "@/components/ProfilePresentationView";
+import { ManageRegistrarAccess } from "@/components/ManageRegistrarAccess";
 
 interface SocialLink {
   platform: string;
