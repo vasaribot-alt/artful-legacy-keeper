@@ -135,6 +135,14 @@ const ArtistProfileView = () => {
         );
       }
 
+      // Check founding artist status
+      const { data: foundingData } = await supabase
+        .from("founding_artists")
+        .select("tier")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      if (foundingData) setFoundingTier(foundingData.tier);
+
       setLoading(false);
     };
     load();
