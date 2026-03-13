@@ -210,9 +210,10 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId }: Pro
 
     for (let i = 0; i < selected.length; i++) {
       const r = selected[i];
+      const effectiveOwnerId = ownerId || user.id;
       const activeRole = localStorage.getItem("activeRole") || "artist";
       const { data: artworkData, error } = await supabase.from("artworks").insert({
-        owner_id: user.id,
+        owner_id: effectiveOwnerId,
         title: r.title,
         artwork_type: r.artworkType || null,
         series: r.series || null,
