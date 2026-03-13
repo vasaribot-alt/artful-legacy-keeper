@@ -34,6 +34,7 @@ const getNavItems = (role: AppRole) => {
   }
   if (role === "registrar") {
     return [
+      { title: "Profile", url: "/profile", icon: User },
       { title: "Clients", url: "/registrar", icon: Users },
     ];
   }
