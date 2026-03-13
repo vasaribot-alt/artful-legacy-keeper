@@ -318,7 +318,85 @@ const ArtistProfile = () => {
     );
   }
 
-  if (!editMode && profileViewData) {
+  // Registrar: simplified profile with name, email, photo
+  if (isRegistrar) {
+    return (
+      <AppLayout title={profileTitle} headerActions={
+        <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
+          <Save className="w-4 h-4" />
+          {saving ? "Saving…" : "Save"}
+        </Button>
+      }>
+        <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
+          <section className="space-y-6">
+            <h2 className="text-2xl">Registrar Information</h2>
+
+            {/* Avatar */}
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <Avatar className="w-24 h-24 border-2 border-border">
+                  <AvatarImage src={avatarUrl || undefined} alt="Profile photo" />
+                  <AvatarFallback className="text-2xl">
+                    {fullName ? fullName.charAt(0).toUpperCase() : "?"}
+                  </AvatarFallback>
+                </Avatar>
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  {uploadingAvatar ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : <Camera className="w-6 h-6 text-white" />}
+                </button>
+                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Profile Photo</p>
+                <p className="text-xs text-muted-foreground">Click to upload or change</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label>Full Name</Label>
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your name" className="mt-1" />
+              </div>
+              <div>
+                <Label className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Email</Label>
+                <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="registrar@example.com" className="mt-1" type="email" />
+              </div>
+              <div>
+                <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Phone</Label>
+                <div className="flex gap-2 mt-1">
+                  <select
+                    value={phonePrefix}
+                    onChange={(e) => setPhonePrefix(e.target.value)}
+                    className="flex h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-[100px] shrink-0"
+                  >
+                    <option value="">Prefix</option>
+                    {Object.entries(COUNTRY_PHONE_CODES)
+                      .sort((a, b) => a[0].localeCompare(b[0]))
+                      .map(([c, code]) => (
+                        <option key={c} value={code}>{code} {c}</option>
+                      ))}
+                  </select>
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone number" className="flex-1" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="pt-2">
+            <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
+              <Save className="w-4 h-4" />
+              {saving ? "Saving…" : "Save Profile"}
+            </Button>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+
     return (
       <AppLayout title={profileTitle} headerActions={headerActions}>
         <ProfilePresentationView profile={profileViewData} />
