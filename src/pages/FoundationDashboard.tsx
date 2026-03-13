@@ -54,6 +54,7 @@ const FoundationDashboard = () => {
   const navigate = useNavigate();
   const [codes, setCodes] = useState<InviteCode[]>([]);
   const [artists, setArtists] = useState<FoundingArtistRow[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [newTier, setNewTier] = useState<Tier>("internationally_established");
   const [batchCount, setBatchCount] = useState(1);
   const [loading, setLoading] = useState(true);
