@@ -23,6 +23,8 @@ import PortfolioShared from "./pages/PortfolioShared";
 import Catalogues from "./pages/Catalogues";
 import FoundingArtists from "./pages/FoundingArtists";
 import FoundationDashboard from "./pages/FoundationDashboard";
+import RegistrarDashboard from "./pages/RegistrarDashboard";
+import RegistrarClientView from "./pages/RegistrarClientView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
