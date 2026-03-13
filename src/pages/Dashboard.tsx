@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
@@ -10,6 +10,8 @@ import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { User } from "@supabase/supabase-js";
 
 interface Artwork {
@@ -64,6 +66,9 @@ const Dashboard = () => {
   const [editMode, setEditMode] = useState(false);
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
   const idVerified = false;
 
@@ -137,6 +142,37 @@ const Dashboard = () => {
       setGalleryArtworks(withImages);
     }
     setLoading(false);
+  };
+
+  const handleSelectChange = (id: string, checked: boolean) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (checked) next.add(id); else next.delete(id);
+      return next;
+    });
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(artworks.map(a => a.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    setDeleting(true);
+    const ids = Array.from(selectedIds);
+    const { error } = await supabase.from("artworks").delete().in("id", ids);
+    if (error) {
+      toast.error("Failed to delete artworks");
+    } else {
+      toast.success(`Deleted ${ids.length} artwork${ids.length !== 1 ? "s" : ""}`);
+      setSelectedIds(new Set());
+      fetchArtworks();
+    }
+    setDeleting(false);
+    setDeleteConfirmOpen(false);
   };
 
   if (!user) return null;
@@ -233,10 +269,37 @@ const Dashboard = () => {
               ))}
             </div>
           ) : (
-            <div className="space-y-1">
-              {artworks.map((artwork) => (
-                <ArtworkListItem key={artwork.id} artwork={artwork} />
-              ))}
+            <div>
+              <div className="flex items-center gap-3 mb-2 px-3 py-2">
+                <Checkbox
+                  checked={selectedIds.size === artworks.length && artworks.length > 0}
+                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                />
+                <span className="text-xs text-muted-foreground">
+                  {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all"}
+                </span>
+                {selectedIds.size > 0 && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="ml-auto gap-1.5"
+                    onClick={() => setDeleteConfirmOpen(true)}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete ({selectedIds.size})
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-1">
+                {artworks.map((artwork) => (
+                  <ArtworkListItem
+                    key={artwork.id}
+                    artwork={artwork}
+                    selectable
+                    selected={selectedIds.has(artwork.id)}
+                    onSelectChange={handleSelectChange}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -315,6 +378,23 @@ const Dashboard = () => {
         onOpenChange={setBulkImportOpen}
         onSuccess={fetchArtworks}
       />
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {selectedIds.size} artwork{selectedIds.size !== 1 ? "s" : ""}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. All associated images and documents will also be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkDelete} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? "Deleting…" : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 };
