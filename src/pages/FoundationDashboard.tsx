@@ -28,6 +28,12 @@ interface FoundingArtistRow {
   joined_at: string;
 }
 
+interface UserProfile {
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+}
+
 const tierLabels: Record<Tier, string> = {
   internationally_established: "Internationally Established",
   mid_career: "Mid-Career",
