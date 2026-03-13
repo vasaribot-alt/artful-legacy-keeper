@@ -139,6 +139,18 @@ const Register = () => {
             </div>
           </div>
 
+          {/* Invite code */}
+          <div>
+            <Label htmlFor="inviteCode">Invite code <span className="text-muted-foreground font-normal">(optional)</span></Label>
+            <Input
+              id="inviteCode"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value)}
+              placeholder="e.g. FOUNDING-EST-A1B2"
+              className="mt-1.5 uppercase tracking-wider"
+            />
+          </div>
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Creating..." : "Create Account"}
           </Button>
