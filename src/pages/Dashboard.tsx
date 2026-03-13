@@ -10,6 +10,8 @@ import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { User } from "@supabase/supabase-js";
 
 interface Artwork {
