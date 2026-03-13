@@ -52,6 +52,8 @@ const App = () => (
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
+          <Route path="/founding-artists" element={<FoundingArtists />} />
+          <Route path="/foundation" element={<FoundationDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

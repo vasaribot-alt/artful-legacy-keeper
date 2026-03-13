@@ -26,6 +26,12 @@ import {
 type AppRole = "artist" | "collector" | "registrar";
 
 const getNavItems = (role: AppRole) => {
+  if (role === "foundation") {
+    return [
+      { title: "Invite Codes", url: "/foundation", icon: Key },
+      { title: "Founding Artists", url: "/founding-artists", icon: Award },
+    ];
+  }
   if (role === "collector") {
     return [
       { title: "Collector Profile", url: "/profile", icon: User },
@@ -49,6 +55,7 @@ const roleLabels: Record<AppRole, { nav: string; label: string }> = {
   artist: { nav: "Artist Registry", label: "Artist" },
   collector: { nav: "Collectors Register", label: "Collector" },
   registrar: { nav: "Registrar", label: "Registrar" },
+  foundation: { nav: "Foundation", label: "Foundation" },
 };
 
 export function AppSidebar() {
