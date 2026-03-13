@@ -396,7 +396,7 @@ const ArtistProfile = () => {
     );
   }
 
-
+  if (!editMode && profileViewData) {
     return (
       <AppLayout title={profileTitle} headerActions={headerActions}>
         <ProfilePresentationView profile={profileViewData} />
