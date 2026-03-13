@@ -16,11 +16,15 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
       toast.error(error.message);
     } else {
+      // Redeem invite code on first login if applicable
+      if (data.user) {
+        await redeemInviteCodeIfNeeded(data.user.id);
+      }
       navigate("/dashboard");
     }
   };
