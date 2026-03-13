@@ -21,6 +21,8 @@ import Portfolios from "./pages/Portfolios";
 import PortfolioDetail from "./pages/PortfolioDetail";
 import PortfolioShared from "./pages/PortfolioShared";
 import Catalogues from "./pages/Catalogues";
+import FoundingArtists from "./pages/FoundingArtists";
+import FoundationDashboard from "./pages/FoundationDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
