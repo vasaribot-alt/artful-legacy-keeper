@@ -16,6 +16,8 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  /** When provided, artworks are inserted for this owner (registrar acting on behalf of client) */
+  ownerId?: string;
 }
 
 interface ParsedRow {
