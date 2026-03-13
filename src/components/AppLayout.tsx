@@ -13,7 +13,7 @@ export function AppLayout({ children, title, headerActions }: AppLayoutProps) {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center border-b border-border px-4 gap-3 shrink-0">
+          <header className="h-14 flex items-center border-b border-border px-4 gap-3 shrink-0 sticky top-0 z-30 bg-background">
             <SidebarTrigger />
             {title && (
               <h1 className="text-lg font-semibold truncate">{title}</h1>
