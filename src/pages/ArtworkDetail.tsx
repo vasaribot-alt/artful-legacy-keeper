@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
@@ -47,6 +47,7 @@ const ArtworkDetail = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [siblingIds, setSiblingIds] = useState<{ prev: string | null; next: string | null }>({ prev: null, next: null });
 
   // Form fields
   const [title, setTitle] = useState("");
@@ -84,6 +85,29 @@ const ArtworkDetail = () => {
   const [newDocuments, setNewDocuments] = useState<File[]>([]);
   const [deletedDocIds, setDeletedDocIds] = useState<string[]>([]);
   const docInputRef = useRef<HTMLInputElement>(null);
+
+  // Load sibling artwork IDs for prev/next navigation
+  useEffect(() => {
+    if (!id) return;
+    const loadSiblings = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const activeRole = localStorage.getItem("activeRole") || "artist";
+      const { data } = await supabase
+        .from("artworks")
+        .select("id")
+        .eq("owner_id", user.id)
+        .eq("role_context", activeRole)
+        .order("created_at", { ascending: false });
+      if (!data) return;
+      const idx = data.findIndex((a) => a.id === id);
+      setSiblingIds({
+        prev: idx > 0 ? data[idx - 1].id : null,
+        next: idx < data.length - 1 ? data[idx + 1].id : null,
+      });
+    };
+    loadSiblings();
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -313,6 +337,28 @@ const ArtworkDetail = () => {
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
           </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              disabled={!siblingIds.prev}
+              onClick={() => siblingIds.prev && navigate(`/artwork/${siblingIds.prev}`)}
+              title="Previous artwork"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              disabled={!siblingIds.next}
+              onClick={() => siblingIds.next && navigate(`/artwork/${siblingIds.next}`)}
+              title="Next artwork"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
           <span className="text-sm text-muted-foreground flex-1 truncate">{title}</span>
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
