@@ -184,6 +184,7 @@ const ArtistProfileView = () => {
           </Avatar>
 
           <h1 className="text-4xl sm:text-5xl mb-3">{profile.full_name || "Untitled Artist"}</h1>
+          {foundingTier && <FoundingArtistBadge tier={foundingTier} className="mb-3" />}
 
           {(location || profile.birth_year) && (
             <p className="text-muted-foreground text-lg">
