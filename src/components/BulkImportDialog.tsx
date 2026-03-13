@@ -271,21 +271,30 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
     if (imageInputRef.current) imageInputRef.current.value = "";
   };
 
-  // Match dropped files to artworks by filename
+  /** Split a cell value like "img1.jpg; img2.jpg, img3.jpg" into normalized names */
+  const parseImageFilenames = (raw: string): string[] => {
+    if (!raw) return [];
+    return raw.split(/[;,]/).map((s) => normalizeFilename(s.trim())).filter(Boolean);
+  };
+
+  // Match dropped files to artworks by filename (supports multiple filenames per artwork)
   const getMatches = () => {
-    const matches: { file: File; artwork: ImportedArtwork }[] = [];
+    const matches: { file: File; artwork: ImportedArtwork; displayOrder: number }[] = [];
     const unmatched: File[] = [];
 
     for (const file of droppedFiles) {
       const normFile = normalizeFilename(file.name);
-      const match = importedArtworks.find(
-        (a) => a.imageFilename && normalizeFilename(a.imageFilename) === normFile
-      );
-      if (match) {
-        matches.push({ file, artwork: match });
-      } else {
-        unmatched.push(file);
+      let matched = false;
+      for (const artwork of importedArtworks) {
+        const filenames = parseImageFilenames(artwork.imageFilename);
+        const idx = filenames.indexOf(normFile);
+        if (idx !== -1) {
+          matches.push({ file, artwork, displayOrder: idx });
+          matched = true;
+          break;
+        }
       }
+      if (!matched) unmatched.push(file);
     }
     return { matches, unmatched };
   };
@@ -302,7 +311,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
 
     let uploaded = 0;
     for (let i = 0; i < matches.length; i++) {
-      const { file, artwork } = matches[i];
+      const { file, artwork, displayOrder } = matches[i];
       const ext = file.name.split(".").pop() || "jpg";
       const path = `${user.id}/${artwork.id}/${crypto.randomUUID()}.${ext}`;
 
@@ -314,7 +323,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
         await supabase.from("artwork_images").insert({
           artwork_id: artwork.id,
           storage_path: path,
-          display_order: 0,
+          display_order: displayOrder,
         });
         uploaded++;
         setImportedArtworks((prev) =>
@@ -365,6 +374,10 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess }: Props) => {
               The spreadsheet should include a <strong>Title</strong> column. Other recognized columns: 
               Category/Type, Series, Year, Medium, Support, Height, Width, Depth, Signed, Location, 
               Provenance, Exhibition History, Description/Notes, Image filename.
+              <br />
+              <span className="mt-1 inline-block">
+                For multiple images per artwork, separate filenames with <strong>;</strong> or <strong>,</strong> (e.g. "photo1.jpg; photo2.jpg; photo3.jpg").
+              </span>
             </div>
           </div>
         )}
