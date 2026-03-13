@@ -782,20 +782,29 @@ export type Database = {
         Row: {
           granted_at: string
           id: string
+          message: string | null
           owner_id: string
           registrar_id: string
+          requested_by: string
+          status: string
         }
         Insert: {
           granted_at?: string
           id?: string
+          message?: string | null
           owner_id: string
           registrar_id: string
+          requested_by?: string
+          status?: string
         }
         Update: {
           granted_at?: string
           id?: string
+          message?: string | null
           owner_id?: string
           registrar_id?: string
+          requested_by?: string
+          status?: string
         }
         Relationships: []
       }
@@ -843,6 +852,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_registrar_access: {
+        Args: { _owner_id: string; _registrar_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -1,4 +1,4 @@
-import { User, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, ChevronDown, Award, Key } from "lucide-react";
+import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, ChevronDown, Award, Key } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +30,11 @@ const getNavItems = (role: AppRole) => {
     return [
       { title: "Invite Codes", url: "/foundation", icon: Key },
       { title: "Founding Artists", url: "/founding-artists", icon: Award },
+    ];
+  }
+  if (role === "registrar") {
+    return [
+      { title: "Clients", url: "/registrar", icon: Users },
     ];
   }
   if (role === "collector") {
@@ -95,7 +100,9 @@ export function AppSidebar() {
   const switchRole = (role: AppRole) => {
     setActiveRole(role);
     localStorage.setItem("activeRole", role);
-    navigate("/dashboard");
+    if (role === "registrar") navigate("/registrar");
+    else if (role === "foundation") navigate("/foundation");
+    else navigate("/dashboard");
   };
 
   const addCollectorRole = async () => {

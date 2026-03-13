@@ -23,6 +23,8 @@ import PortfolioShared from "./pages/PortfolioShared";
 import Catalogues from "./pages/Catalogues";
 import FoundingArtists from "./pages/FoundingArtists";
 import FoundationDashboard from "./pages/FoundationDashboard";
+import RegistrarDashboard from "./pages/RegistrarDashboard";
+import RegistrarClientView from "./pages/RegistrarClientView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +56,8 @@ const App = () => (
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
           <Route path="/founding-artists" element={<FoundingArtists />} />
           <Route path="/foundation" element={<FoundationDashboard />} />
+          <Route path="/registrar" element={<RegistrarDashboard />} />
+          <Route path="/registrar/client/:ownerId" element={<RegistrarClientView />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
