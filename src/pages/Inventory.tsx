@@ -5,7 +5,8 @@ import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { MapPin, CheckCircle, ShoppingBag } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MapPin, CheckCircle, ShoppingBag, Filter } from "lucide-react";
 
 interface ArtworkRow {
   id: string;
@@ -31,6 +32,7 @@ const Inventory = () => {
   const [artworks, setArtworks] = useState<ArtworkRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
+  const [statusFilter, setStatusFilter] = useState<"all" | "available" | "sold">("all");
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
@@ -75,7 +77,11 @@ const Inventory = () => {
     setLoading(false);
   };
 
-  const grouped = artworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
+  const filteredArtworks = statusFilter === "all"
+    ? artworks
+    : artworks.filter(a => (a.status || "available") === statusFilter);
+
+  const grouped = filteredArtworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
     const key = groupBy === "location"
       ? (art.artwork_location || "No location set")
       : (art.status || "available");
@@ -99,14 +105,27 @@ const Inventory = () => {
   const statusColor = (s: string) => s === "sold" ? "secondary" : "default";
 
   const headerActions = (
-    <ToggleGroup type="single" value={groupBy} onValueChange={(v) => v && setGroupBy(v as any)} size="sm">
-      <ToggleGroupItem value="location" aria-label="Group by location" className="gap-1.5">
-        <MapPin className="w-3.5 h-3.5" /> Location
-      </ToggleGroupItem>
-      <ToggleGroupItem value="status" aria-label="Group by status" className="gap-1.5">
-        <CheckCircle className="w-3.5 h-3.5" /> Status
-      </ToggleGroupItem>
-    </ToggleGroup>
+    <div className="flex items-center gap-3">
+      <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+        <SelectTrigger className="w-[130px] h-8 text-xs">
+          <Filter className="w-3.5 h-3.5 mr-1.5" />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All statuses</SelectItem>
+          <SelectItem value="available">Available</SelectItem>
+          <SelectItem value="sold">Sold</SelectItem>
+        </SelectContent>
+      </Select>
+      <ToggleGroup type="single" value={groupBy} onValueChange={(v) => v && setGroupBy(v as any)} size="sm">
+        <ToggleGroupItem value="location" aria-label="Group by location" className="gap-1.5">
+          <MapPin className="w-3.5 h-3.5" /> Location
+        </ToggleGroupItem>
+        <ToggleGroupItem value="status" aria-label="Group by status" className="gap-1.5">
+          <CheckCircle className="w-3.5 h-3.5" /> Status
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </div>
   );
 
   return (
