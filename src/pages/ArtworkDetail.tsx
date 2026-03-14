@@ -57,6 +57,8 @@ const ArtworkDetail = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const originalValuesRef = useRef<Record<string, any>>({});
   const [siblingIds, setSiblingIds] = useState<{ prev: string | null; next: string | null }>({ prev: null, next: null });
 
   // Form fields
@@ -147,6 +149,31 @@ const ArtworkDetail = () => {
     };
   }, [id]);
 
+  // Track unsaved changes
+  useEffect(() => {
+    if (loading) return;
+    const o = originalValuesRef.current;
+    const changed =
+      title !== o.title || artworkType !== o.artworkType || medium !== o.medium ||
+      year !== o.year || description !== o.description || isUnique !== o.isUnique ||
+      series !== o.series || subCategory !== o.subCategory || support !== o.support ||
+      signed !== o.signed || height !== o.height || width !== o.width ||
+      depth !== o.depth || weight !== o.weight || price !== o.price ||
+      currency !== o.currency || artworkLocation !== o.artworkLocation ||
+      editionCount !== o.editionCount || artistProofs !== o.artistProofs ||
+      exhibitionHistory !== o.exhibitionHistory || provenance !== o.provenance ||
+      status !== o.status || buyerName !== o.buyerName ||
+      (soldDate ? soldDate.toISOString() : "") !== o.soldDate ||
+      selectedExhibitionIds.sort().join(",") !== o.selectedExhibitionIds ||
+      selectedCatalogueIds.sort().join(",") !== o.selectedCatalogueIds ||
+      newImages.length > 0 || deletedImageIds.length > 0 ||
+      newDocuments.length > 0 || deletedDocIds.length > 0;
+    setHasUnsavedChanges(changed);
+  }, [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
+    signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
+    artistProofs, exhibitionHistory, provenance, status, buyerName, soldDate,
+    selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, newDocuments, deletedDocIds, loading]);
+
   const loadArtwork = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
@@ -217,6 +244,26 @@ const ArtworkDetail = () => {
       .order("created_at");
 
     if (docs) setDocuments(docs as ArtworkDocument[]);
+
+    // Store original values for dirty tracking
+    originalValuesRef.current = {
+      title: data.title, artworkType: data.artwork_type || "", medium: data.medium || "",
+      year: data.year ? String(data.year) : "", description: data.description || "",
+      isUnique: data.is_unique, series: data.series || "", subCategory: data.sub_category || "",
+      support: data.support || "", signed: data.signed || "",
+      height: data.height ? String(data.height) : "", width: data.width ? String(data.width) : "",
+      depth: data.depth ? String(data.depth) : "", weight: data.weight ? String(data.weight) : "",
+      price: data.price ? String(data.price) : "", currency: data.currency || "EUR",
+      artworkLocation: data.artwork_location || "",
+      editionCount: data.edition_count ? String(data.edition_count) : "",
+      artistProofs: data.artist_proofs ? String(data.artist_proofs) : "",
+      exhibitionHistory: data.exhibition_history || "", provenance: data.provenance || "",
+      status: (data as any).status || "available", buyerName: (data as any).buyer_name || "",
+      soldDate: (data as any).sold_date ? new Date((data as any).sold_date).toISOString() : "",
+      selectedExhibitionIds: exhLinks ? exhLinks.map((l: any) => l.cv_entry_id).sort().join(",") : "",
+      selectedCatalogueIds: catLinks ? catLinks.map((l: any) => l.catalogue_id).sort().join(",") : "",
+    };
+    setHasUnsavedChanges(false);
 
     setLoading(false);
   };
@@ -415,8 +462,15 @@ const ArtworkDetail = () => {
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save"}
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className={cn(
+              hasUnsavedChanges && !saving && !justSaved && "bg-highlight hover:bg-highlight/90 text-highlight-foreground"
+            )}
+          >
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : hasUnsavedChanges ? "Save •" : "Save"}
           </Button>
         </div>
       </header>
@@ -743,8 +797,14 @@ const ArtworkDetail = () => {
         <Separator />
 
         <div className="flex justify-end pb-8">
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save Changes"}
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className={cn(
+              hasUnsavedChanges && !saving && !justSaved && "bg-highlight hover:bg-highlight/90 text-highlight-foreground"
+            )}
+          >
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : hasUnsavedChanges ? "Save Changes •" : "Save Changes"}
           </Button>
         </div>
       </main>
