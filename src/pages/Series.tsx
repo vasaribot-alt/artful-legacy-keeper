@@ -137,9 +137,13 @@ const Series = () => {
   const renderArtworksList = (seriesName: string) => {
     if (loadingArtworks === seriesName) {
       return (
-        <div className="pl-6 pt-2 space-y-2">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-14 bg-secondary animate-pulse rounded-sm" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 pt-4 pb-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
+              <div className="h-4 w-3/4 bg-secondary animate-pulse rounded-sm" />
+              <div className="h-3 w-1/2 bg-secondary animate-pulse rounded-sm" />
+            </div>
           ))}
         </div>
       );
@@ -147,31 +151,36 @@ const Series = () => {
     const artworks = seriesArtworks[seriesName];
     if (!artworks || artworks.length === 0) {
       return (
-        <p className="pl-6 pt-2 text-xs text-muted-foreground">No artworks in this series.</p>
+        <p className="pt-4 pb-2 text-xs text-muted-foreground">No artworks in this series.</p>
       );
     }
     return (
-      <div className="pl-2 pt-2 space-y-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 pt-4 pb-2">
         {artworks.map((art) => (
           <div
             key={art.id}
-            className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-secondary/50 transition-colors cursor-pointer"
+            className="group cursor-pointer"
             onClick={() => navigate(`/artwork/${art.id}/view`)}
           >
-            <div className="w-10 h-10 rounded-sm bg-secondary overflow-hidden shrink-0">
+            <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-2">
               {art.imageUrl ? (
-                <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" loading="lazy" />
+                <img
+                  src={art.imageUrl}
+                  alt={art.title}
+                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  loading="lazy"
+                />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[8px]">—</div>
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                  No image
+                </div>
               )}
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-medium italic truncate">{art.title}</p>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                {art.year && <span>{art.year}</span>}
-                {art.year && art.medium && <span>·</span>}
-                {art.medium && <span className="truncate">{art.medium}</span>}
-              </div>
+            <h4 className="text-sm font-medium italic truncate">{art.title}</h4>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+              {art.year && <span>{art.year}</span>}
+              {art.year && art.medium && <span>·</span>}
+              {art.medium && <span className="truncate">{art.medium}</span>}
             </div>
           </div>
         ))}
@@ -230,7 +239,7 @@ const Series = () => {
         </div>
       ) : (
         /* View mode – expandable series with artworks */
-        <div className="max-w-2xl mx-auto px-6 py-10">
+        <div className="max-w-5xl mx-auto px-6 py-10">
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
