@@ -159,6 +159,41 @@ export type Database = {
           },
         ]
       }
+      artwork_location_history: {
+        Row: {
+          artwork_id: string
+          created_at: string
+          id: string
+          location: string
+          moved_date: string | null
+          notes: string | null
+        }
+        Insert: {
+          artwork_id: string
+          created_at?: string
+          id?: string
+          location: string
+          moved_date?: string | null
+          notes?: string | null
+        }
+        Update: {
+          artwork_id?: string
+          created_at?: string
+          id?: string
+          location?: string
+          moved_date?: string | null
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_location_history_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artworks: {
         Row: {
           artist_name: string | null
@@ -186,6 +221,7 @@ export type Database = {
           role_context: string
           series: string | null
           signed: string | null
+          status: string
           sub_category: string | null
           support: string | null
           title: string
@@ -220,6 +256,7 @@ export type Database = {
           role_context?: string
           series?: string | null
           signed?: string | null
+          status?: string
           sub_category?: string | null
           support?: string | null
           title: string
@@ -254,6 +291,7 @@ export type Database = {
           role_context?: string
           series?: string | null
           signed?: string | null
+          status?: string
           sub_category?: string | null
           support?: string | null
           title?: string
