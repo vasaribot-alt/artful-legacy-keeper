@@ -797,8 +797,14 @@ const ArtworkDetail = () => {
         <Separator />
 
         <div className="flex justify-end pb-8">
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save Changes"}
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className={cn(
+              hasUnsavedChanges && !saving && !justSaved && "bg-amber-600 hover:bg-amber-700 text-white"
+            )}
+          >
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : hasUnsavedChanges ? "Save Changes •" : "Save Changes"}
           </Button>
         </div>
       </main>
