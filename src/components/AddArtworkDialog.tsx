@@ -560,18 +560,43 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           </div>
 
           {status === "sold" && (
-            <div>
-              <Label htmlFor="buyerName">Buyer</Label>
-              <Input
-                id="buyerName"
-                value={buyerName}
-                onChange={(e) => setBuyerName(e.target.value)}
-                placeholder="Buyer name (leave empty for Unknown buyer)"
-                className="mt-1.5"
-              />
-              {!buyerName.trim() && (
-                <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
-              )}
+            <div className="space-y-3">
+              <div>
+                <Label>Sale date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn("w-full justify-start text-left font-normal mt-1.5", !soldDate && "text-muted-foreground")}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {soldDate ? format(soldDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={soldDate}
+                      onSelect={setSoldDate}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label htmlFor="buyerName">Buyer</Label>
+                <Input
+                  id="buyerName"
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  placeholder="Buyer name (leave empty for Unknown buyer)"
+                  className="mt-1.5"
+                />
+                {!buyerName.trim() && (
+                  <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
+                )}
+              </div>
             </div>
           )}
 
