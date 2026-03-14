@@ -181,6 +181,7 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
       }
 
       setSections(newSections);
+      markDirty();
       toast.success("CV parsed successfully! Review and save.");
     } catch (err: any) {
       console.error(err);
