@@ -52,6 +52,7 @@ interface ExhibitionImage {
 const Exhibitions = () => {
   const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
   const [images, setImages] = useState<Record<string, ExhibitionImage[]>>({});
+  const [typeFilter, setTypeFilter] = useState<"all" | "solo" | "group">("all");
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -287,6 +288,28 @@ const Exhibitions = () => {
 
   const headerActions = (
     <div className="flex gap-2">
+      <div className="flex border border-border rounded-md overflow-hidden mr-2">
+        <button
+          onClick={() => setTypeFilter("solo")}
+          className={`px-4 py-1.5 text-sm font-medium transition-colors ${
+            typeFilter === "solo"
+              ? "bg-foreground text-background"
+              : "bg-background text-foreground hover:bg-muted"
+          }`}
+        >
+          Solo exhibitions
+        </button>
+        <button
+          onClick={() => setTypeFilter("group")}
+          className={`px-4 py-1.5 text-sm font-medium transition-colors border-l border-border ${
+            typeFilter === "group"
+              ? "bg-foreground text-background"
+              : "bg-background text-foreground hover:bg-muted"
+          }`}
+        >
+          Group exhibitions
+        </button>
+      </div>
       <Button size="sm" variant="outline" onClick={() => setImportDialogOpen(true)} className="gap-1.5">
         <FileUp className="w-3.5 h-3.5" /> Import from CV
       </Button>
@@ -296,21 +319,31 @@ const Exhibitions = () => {
     </div>
   );
 
+  const filteredExhibitions = typeFilter === "all"
+    ? exhibitions
+    : exhibitions.filter((ex) => ex.exhibition_type === typeFilter);
+
   return (
     <AppLayout title="Exhibitions" headerActions={headerActions}>
       <div className="max-w-5xl mx-auto px-6 py-10">
         {loading ? (
           <p className="text-muted-foreground text-center py-20">Loading...</p>
-        ) : exhibitions.length === 0 ? (
+        ) : filteredExhibitions.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">No exhibitions yet.</p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Track your exhibitions, link artworks, and manage show history.
+            <p className="text-muted-foreground">
+              {exhibitions.length === 0
+                ? "No exhibitions yet."
+                : `No ${typeFilter} exhibitions found.`}
             </p>
+            {exhibitions.length === 0 && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Track your exhibitions, link artworks, and manage show history.
+              </p>
+            )}
           </div>
         ) : (
           <div className="space-y-10">
-            {exhibitions.map((ex) => {
+            {filteredExhibitions.map((ex) => {
               const exImages = images[ex.id] || [];
               return (
                 <div key={ex.id} className="space-y-4">
