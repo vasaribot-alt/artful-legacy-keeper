@@ -326,7 +326,7 @@ const Dashboard = () => {
             <div>
               <div className="flex items-center gap-3 mb-2 px-3 py-2 sticky top-0 z-10 bg-background border-b border-border">
                 <Checkbox
-                  checked={selectedIds.size === artworks.length && artworks.length > 0}
+                  checked={selectedIds.size === filteredArtworks.length && filteredArtworks.length > 0}
                   onCheckedChange={(checked) => handleSelectAll(!!checked)}
                 />
                 <span className="text-xs text-muted-foreground">
