@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, CheckCircle, ShoppingBag, Filter } from "lucide-react";
+import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown } from "lucide-react";
 
 interface ArtworkRow {
   id: string;
