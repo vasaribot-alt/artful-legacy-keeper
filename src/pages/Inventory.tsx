@@ -188,6 +188,11 @@ const Inventory = () => {
                         </div>
                       </div>
                       <div className="hidden sm:flex items-center gap-2 shrink-0">
+                        {formatDimensions(art.height, art.width, art.depth) && (
+                          <span className="text-xs text-muted-foreground">
+                            {formatDimensions(art.height, art.width, art.depth)}
+                          </span>
+                        )}
                         {groupBy === "location" && (
                           <Badge variant={statusColor(art.status || "available")} className="text-[10px]">
                             {statusLabel(art.status || "available")}
@@ -195,11 +200,6 @@ const Inventory = () => {
                         )}
                         {groupBy === "status" && art.artwork_location && (
                           <span className="text-xs text-muted-foreground">📍 {art.artwork_location}</span>
-                        )}
-                        {formatDimensions(art.height, art.width, art.depth) && (
-                          <span className="text-xs text-muted-foreground">
-                            {formatDimensions(art.height, art.width, art.depth)}
-                          </span>
                         )}
                       </div>
                     </div>
