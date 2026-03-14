@@ -23,6 +23,7 @@ interface ParsedExhibition {
   year: string | null;
   cv_entry_id: string;
   selected?: boolean;
+  alreadyImported?: boolean;
 }
 
 interface ImportCvExhibitionsDialogProps {
@@ -86,12 +87,30 @@ export const ImportCvExhibitionsDialog = ({
 
       if (error) throw error;
 
+      // Fetch existing exhibitions to detect duplicates
+      const { data: existingExhibitions } = await supabase
+        .from("exhibitions")
+        .select("title, venue, opening_date, exhibition_type")
+        .eq("user_id", user.id);
+
+      const existingKeys = new Set(
+        (existingExhibitions || []).map((ex) => {
+          const year = ex.opening_date ? ex.opening_date.substring(0, 4) : "";
+          return `${ex.title?.toLowerCase().trim()}|${ex.venue?.toLowerCase().trim() || ""}|${year}`;
+        })
+      );
+
       const parsed = (data.exhibitions || [])
-        .filter((ex: ParsedExhibition) => ex.title) // skip entries without titles
-        .map((ex: ParsedExhibition) => ({
-          ...ex,
-          selected: true,
-        }));
+        .filter((ex: ParsedExhibition) => ex.title)
+        .map((ex: ParsedExhibition) => {
+          const key = `${ex.title.toLowerCase().trim()}|${(ex.venue || "").toLowerCase().trim()}|${ex.year || ""}`;
+          const alreadyExists = existingKeys.has(key);
+          return {
+            ...ex,
+            selected: !alreadyExists,
+            alreadyImported: alreadyExists,
+          };
+        });
 
       if (!parsed.length) {
         toast.info("Could not parse any exhibitions from CV entries");
@@ -109,17 +128,17 @@ export const ImportCvExhibitionsDialog = ({
   };
 
   const toggleAll = (checked: boolean) => {
-    setExhibitions((prev) => prev.map((e) => ({ ...e, selected: checked })));
+    setExhibitions((prev) => prev.map((e) => e.alreadyImported ? e : { ...e, selected: checked }));
   };
 
   const toggleOne = (index: number) => {
     setExhibitions((prev) =>
-      prev.map((e, i) => (i === index ? { ...e, selected: !e.selected } : e))
+      prev.map((e, i) => (i === index && !e.alreadyImported ? { ...e, selected: !e.selected } : e))
     );
   };
 
   const handleImport = async () => {
-    const selected = exhibitions.filter((e) => e.selected);
+    const selected = exhibitions.filter((e) => e.selected && !e.alreadyImported);
     if (!selected.length) {
       toast.error("No exhibitions selected");
       return;
@@ -175,7 +194,8 @@ export const ImportCvExhibitionsDialog = ({
   const filteredExhibitions = typeFilter === "all"
     ? exhibitions
     : exhibitions.filter((e) => e.exhibition_type === typeFilter);
-  const selectedCount = exhibitions.filter((e) => e.selected).length;
+  const selectedCount = exhibitions.filter((e) => e.selected && !e.alreadyImported).length;
+  const alreadyImportedCount = exhibitions.filter((e) => e.alreadyImported).length;
   const soloCount = exhibitions.filter((e) => e.exhibition_type === "solo").length;
   const groupCount = exhibitions.filter((e) => e.exhibition_type === "group").length;
 
@@ -231,21 +251,20 @@ export const ImportCvExhibitionsDialog = ({
             <div className="flex items-center justify-between px-1 pb-2 border-b">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <Checkbox
-                  checked={filteredExhibitions.every((e) => e.selected)}
+                  checked={filteredExhibitions.filter(e => !e.alreadyImported).every((e) => e.selected)}
                   onCheckedChange={(checked) => {
-                    // Toggle only filtered exhibitions
                     const filteredIds = new Set(filteredExhibitions.map((_, i) =>
                       exhibitions.indexOf(filteredExhibitions[i])
                     ));
                     setExhibitions((prev) =>
-                      prev.map((e, i) => filteredIds.has(i) ? { ...e, selected: !!checked } : e)
+                      prev.map((e, i) => filteredIds.has(i) && !e.alreadyImported ? { ...e, selected: !!checked } : e)
                     );
                   }}
                 />
-                Select all ({filteredExhibitions.length})
+                Select all ({filteredExhibitions.filter(e => !e.alreadyImported).length})
               </label>
               <span className="text-xs text-muted-foreground">
-                {selectedCount} selected total
+                {selectedCount} selected{alreadyImportedCount > 0 && ` · ${alreadyImportedCount} already imported`}
               </span>
             </div>
 
@@ -258,10 +277,14 @@ export const ImportCvExhibitionsDialog = ({
                       key={globalIndex}
                       type="button"
                       onClick={() => toggleOne(globalIndex)}
-                      className="flex items-start gap-3 w-full text-left px-2 py-2.5 rounded-sm hover:bg-accent transition-colors"
+                      disabled={ex.alreadyImported}
+                      className={`flex items-start gap-3 w-full text-left px-2 py-2.5 rounded-sm transition-colors ${
+                        ex.alreadyImported ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"
+                      }`}
                     >
                       <Checkbox
                         checked={ex.selected}
+                        disabled={ex.alreadyImported}
                         className="mt-0.5 shrink-0"
                         tabIndex={-1}
                       />
@@ -271,6 +294,9 @@ export const ImportCvExhibitionsDialog = ({
                           <Badge variant="outline" className="text-[10px] shrink-0">
                             {ex.exhibition_type}
                           </Badge>
+                          {ex.alreadyImported && (
+                            <span className="text-[10px] text-muted-foreground italic shrink-0">already imported</span>
+                          )}
                         </div>
                         <p className="text-xs text-muted-foreground truncate">
                           {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
