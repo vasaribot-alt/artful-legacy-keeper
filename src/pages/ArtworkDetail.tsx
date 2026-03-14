@@ -82,6 +82,7 @@ const ArtworkDetail = () => {
   const [provenance, setProvenance] = useState("");
   const [status, setStatus] = useState("available");
   const [buyerName, setBuyerName] = useState("");
+  const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
