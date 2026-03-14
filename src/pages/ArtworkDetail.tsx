@@ -242,7 +242,8 @@ const ArtworkDetail = () => {
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
-    }).eq("id", id!);
+      status,
+    } as any).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
 
