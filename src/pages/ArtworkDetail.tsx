@@ -579,7 +579,13 @@ const ArtworkDetail = () => {
             <Label>Status</Label>
             <p className="text-xs text-muted-foreground">Mark this work as available or sold</p>
           </div>
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status} onValueChange={(val) => {
+              setStatus(val);
+              if (val === "available") {
+                setBuyerName("");
+                setSoldDate(undefined);
+              }
+            }}>
             <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               {artworkStatuses.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
