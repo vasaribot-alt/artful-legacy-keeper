@@ -105,14 +105,27 @@ const Inventory = () => {
   const statusColor = (s: string) => s === "sold" ? "secondary" : "default";
 
   const headerActions = (
-    <ToggleGroup type="single" value={groupBy} onValueChange={(v) => v && setGroupBy(v as any)} size="sm">
-      <ToggleGroupItem value="location" aria-label="Group by location" className="gap-1.5">
-        <MapPin className="w-3.5 h-3.5" /> Location
-      </ToggleGroupItem>
-      <ToggleGroupItem value="status" aria-label="Group by status" className="gap-1.5">
-        <CheckCircle className="w-3.5 h-3.5" /> Status
-      </ToggleGroupItem>
-    </ToggleGroup>
+    <div className="flex items-center gap-3">
+      <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+        <SelectTrigger className="w-[130px] h-8 text-xs">
+          <Filter className="w-3.5 h-3.5 mr-1.5" />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All statuses</SelectItem>
+          <SelectItem value="available">Available</SelectItem>
+          <SelectItem value="sold">Sold</SelectItem>
+        </SelectContent>
+      </Select>
+      <ToggleGroup type="single" value={groupBy} onValueChange={(v) => v && setGroupBy(v as any)} size="sm">
+        <ToggleGroupItem value="location" aria-label="Group by location" className="gap-1.5">
+          <MapPin className="w-3.5 h-3.5" /> Location
+        </ToggleGroupItem>
+        <ToggleGroupItem value="status" aria-label="Group by status" className="gap-1.5">
+          <CheckCircle className="w-3.5 h-3.5" /> Status
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </div>
   );
 
   return (
