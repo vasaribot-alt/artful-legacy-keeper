@@ -114,6 +114,17 @@ const Inventory = () => {
 
   const headerActions = (
     <div className="flex items-center gap-3">
+      <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+        <SelectTrigger className="w-[140px] h-8 text-xs">
+          <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="title">Sort by title</SelectItem>
+          <SelectItem value="year">Sort by year</SelectItem>
+          <SelectItem value="date_added">Date added</SelectItem>
+        </SelectContent>
+      </Select>
       <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
         <SelectTrigger className="w-[130px] h-8 text-xs">
           <Filter className="w-3.5 h-3.5 mr-1.5" />
