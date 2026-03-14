@@ -328,12 +328,18 @@ const Exhibitions = () => {
       <div className="max-w-5xl mx-auto px-6 py-10">
         {loading ? (
           <p className="text-muted-foreground text-center py-20">Loading...</p>
-        ) : exhibitions.length === 0 ? (
+        ) : filteredExhibitions.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">No exhibitions yet.</p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Track your exhibitions, link artworks, and manage show history.
+            <p className="text-muted-foreground">
+              {exhibitions.length === 0
+                ? "No exhibitions yet."
+                : `No ${typeFilter} exhibitions found.`}
             </p>
+            {exhibitions.length === 0 && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Track your exhibitions, link artworks, and manage show history.
+              </p>
+            )}
           </div>
         ) : (
           <div className="space-y-10">
