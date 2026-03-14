@@ -17,10 +17,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, CalendarIcon } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
+import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
