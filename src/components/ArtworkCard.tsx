@@ -139,6 +139,11 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
       {artwork.artwork_location && (
         <p className="text-xs text-muted-foreground mt-0.5">📍 {artwork.artwork_location}</p>
       )}
+      {artwork.status === "sold" && (
+        <span className="inline-block mt-1 text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-secondary text-muted-foreground font-medium">
+          Sold
+        </span>
+      )}
     </div>
   );
 };

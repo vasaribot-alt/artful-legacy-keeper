@@ -106,9 +106,14 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
           {!artwork.is_unique && <><span>·</span><span className="uppercase tracking-wider text-[10px]">Edition</span></>}
         </div>
       </div>
-      <div className="hidden sm:flex flex-col items-end text-xs text-muted-foreground shrink-0">
+      <div className="hidden sm:flex flex-col items-end text-xs text-muted-foreground shrink-0 gap-0.5">
         {dims && <span>{dims}</span>}
         {artwork.artwork_location && <span>📍 {artwork.artwork_location}</span>}
+        {artwork.status === "sold" && (
+          <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-secondary font-medium">
+            Sold
+          </span>
+        )}
       </div>
     </div>
   );

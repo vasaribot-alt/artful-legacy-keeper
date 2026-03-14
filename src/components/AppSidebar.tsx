@@ -42,6 +42,7 @@ const getNavItems = (role: AppRole) => {
     return [
       { title: "Collector Profile", url: "/profile", icon: User },
       { title: "Collection", url: "/dashboard", icon: Images },
+      { title: "Inventory", url: "/inventory", icon: Warehouse },
       { title: "Portfolios", url: "/portfolios", icon: Briefcase },
     ];
   }
@@ -49,6 +50,7 @@ const getNavItems = (role: AppRole) => {
     { title: "Artist Profile", url: "/profile", icon: User },
     { title: "Artworks", url: "/dashboard", icon: Images },
     { title: "Series", url: "/series", icon: Layers },
+    { title: "Inventory", url: "/inventory", icon: Warehouse },
     { title: "Portfolios", url: "/portfolios", icon: Briefcase },
     { title: "CV", url: "/cv", icon: FileText },
     { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
