@@ -45,12 +45,25 @@ interface CvManagerProps {
   onDirtyChange?: (dirty: boolean) => void;
 }
 
-const CvManager = ({ profileId }: CvManagerProps) => {
+const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
   const [sections, setSections] = useState<CvSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [parsing, setParsing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const markDirty = () => {
+    if (!isDirty) {
+      setIsDirty(true);
+      onDirtyChange?.(true);
+    }
+  };
+
+  const markClean = () => {
+    setIsDirty(false);
+    onDirtyChange?.(false);
+  };
 
   useEffect(() => {
     loadEntries();
