@@ -34,6 +34,7 @@ const Inventory = () => {
   const [loading, setLoading] = useState(true);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
   const [statusFilter, setStatusFilter] = useState<"all" | "available" | "sold">("all");
+  const [sortBy, setSortBy] = useState<"title" | "year" | "date_added">("title");
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
