@@ -416,7 +416,7 @@ const ArtworkDetail = () => {
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
           </Button>
           <Button size="sm" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save"}
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save"}
           </Button>
         </div>
       </header>
