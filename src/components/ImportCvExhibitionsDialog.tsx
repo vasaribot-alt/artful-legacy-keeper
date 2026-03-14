@@ -23,6 +23,7 @@ interface ParsedExhibition {
   year: string | null;
   cv_entry_id: string;
   selected?: boolean;
+  alreadyImported?: boolean;
 }
 
 interface ImportCvExhibitionsDialogProps {
