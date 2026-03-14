@@ -149,6 +149,31 @@ const ArtworkDetail = () => {
     };
   }, [id]);
 
+  // Track unsaved changes
+  useEffect(() => {
+    if (loading) return;
+    const o = originalValuesRef.current;
+    const changed =
+      title !== o.title || artworkType !== o.artworkType || medium !== o.medium ||
+      year !== o.year || description !== o.description || isUnique !== o.isUnique ||
+      series !== o.series || subCategory !== o.subCategory || support !== o.support ||
+      signed !== o.signed || height !== o.height || width !== o.width ||
+      depth !== o.depth || weight !== o.weight || price !== o.price ||
+      currency !== o.currency || artworkLocation !== o.artworkLocation ||
+      editionCount !== o.editionCount || artistProofs !== o.artistProofs ||
+      exhibitionHistory !== o.exhibitionHistory || provenance !== o.provenance ||
+      status !== o.status || buyerName !== o.buyerName ||
+      (soldDate ? soldDate.toISOString() : "") !== o.soldDate ||
+      selectedExhibitionIds.sort().join(",") !== o.selectedExhibitionIds ||
+      selectedCatalogueIds.sort().join(",") !== o.selectedCatalogueIds ||
+      newImages.length > 0 || deletedImageIds.length > 0 ||
+      newDocuments.length > 0 || deletedDocIds.length > 0;
+    setHasUnsavedChanges(changed);
+  }, [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
+    signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
+    artistProofs, exhibitionHistory, provenance, status, buyerName, soldDate,
+    selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, newDocuments, deletedDocIds, loading]);
+
   const loadArtwork = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
