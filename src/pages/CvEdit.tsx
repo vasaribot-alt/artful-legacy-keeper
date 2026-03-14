@@ -15,6 +15,7 @@ const CvEdit = () => {
   const [cvSections, setCvSections] = useState<CvSection[]>([]);
   const [editMode, setEditMode] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [cvDirty, setCvDirty] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   const loadData = async () => {
