@@ -277,6 +277,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       role_context: activeRole,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
+      sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
     };
 
     const { data: artworkData, error } = await supabase.from("artworks").insert(insertData as any).select("id").single();
