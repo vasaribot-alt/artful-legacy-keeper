@@ -252,6 +252,7 @@ const ArtworkDetail = () => {
       provenance: provenance.trim() || null,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
+      sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
     } as any).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
