@@ -77,7 +77,11 @@ const Inventory = () => {
     setLoading(false);
   };
 
-  const grouped = artworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
+  const filteredArtworks = statusFilter === "all"
+    ? artworks
+    : artworks.filter(a => (a.status || "available") === statusFilter);
+
+  const grouped = filteredArtworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
     const key = groupBy === "location"
       ? (art.artwork_location || "No location set")
       : (art.status || "available");
