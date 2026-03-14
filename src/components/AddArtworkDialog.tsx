@@ -23,12 +23,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Plus, ImagePlus, X, CalendarIcon } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, ImagePlus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
-import { Calendar } from "@/components/ui/calendar";
+import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { format } from "date-fns";
 
 export interface ArtworkDuplicateData {
@@ -561,32 +561,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
           {status === "sold" && (
             <div className="space-y-3">
-              <div>
-                <Label>Sale date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn("w-full justify-start text-left font-normal mt-1.5", !soldDate && "text-muted-foreground")}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {soldDate ? format(soldDate, "PPP") : "Pick a date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={soldDate}
-                      onSelect={setSoldDate}
-                      initialFocus
-                      captionLayout="dropdown-buttons"
-                      fromYear={1950}
-                      toYear={new Date().getFullYear()}
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+              <SaleDatePicker date={soldDate} onDateChange={setSoldDate} />
               <div>
                 <Label htmlFor="buyerName">Buyer</Label>
                 <Input
