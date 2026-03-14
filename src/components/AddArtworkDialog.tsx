@@ -23,11 +23,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Plus, ImagePlus, X } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, ImagePlus, X, CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 export interface ArtworkDuplicateData {
   title?: string;
@@ -101,6 +103,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("available");
   const [buyerName, setBuyerName] = useState("");
+  const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
   const [images, setImages] = useState<ImagePreview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -194,7 +197,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const resetForm = () => {
     setTitle(""); setArtistName(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
-    setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available"); setBuyerName("");
+    setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available"); setBuyerName(""); setSoldDate(undefined);
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs(""); setEditionNumber("");
     images.forEach((img) => URL.revokeObjectURL(img.preview));
@@ -274,6 +277,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       role_context: activeRole,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
+      sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
     };
 
     const { data: artworkData, error } = await supabase.from("artworks").insert(insertData as any).select("id").single();
@@ -556,18 +560,43 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           </div>
 
           {status === "sold" && (
-            <div>
-              <Label htmlFor="buyerName">Buyer</Label>
-              <Input
-                id="buyerName"
-                value={buyerName}
-                onChange={(e) => setBuyerName(e.target.value)}
-                placeholder="Buyer name (leave empty for Unknown buyer)"
-                className="mt-1.5"
-              />
-              {!buyerName.trim() && (
-                <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
-              )}
+            <div className="space-y-3">
+              <div>
+                <Label>Sale date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn("w-full justify-start text-left font-normal mt-1.5", !soldDate && "text-muted-foreground")}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {soldDate ? format(soldDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={soldDate}
+                      onSelect={setSoldDate}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label htmlFor="buyerName">Buyer</Label>
+                <Input
+                  id="buyerName"
+                  value={buyerName}
+                  onChange={(e) => setBuyerName(e.target.value)}
+                  placeholder="Buyer name (leave empty for Unknown buyer)"
+                  className="mt-1.5"
+                />
+                {!buyerName.trim() && (
+                  <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
+                )}
+              </div>
             </div>
           )}
 

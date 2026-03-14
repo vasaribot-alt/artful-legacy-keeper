@@ -1,0 +1,1 @@
+ALTER TABLE public.artworks ADD COLUMN sold_date date DEFAULT NULL;

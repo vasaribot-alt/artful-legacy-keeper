@@ -222,6 +222,7 @@ export type Database = {
           role_context: string
           series: string | null
           signed: string | null
+          sold_date: string | null
           status: string
           sub_category: string | null
           support: string | null
@@ -258,6 +259,7 @@ export type Database = {
           role_context?: string
           series?: string | null
           signed?: string | null
+          sold_date?: string | null
           status?: string
           sub_category?: string | null
           support?: string | null
@@ -294,6 +296,7 @@ export type Database = {
           role_context?: string
           series?: string | null
           signed?: string | null
+          sold_date?: string | null
           status?: string
           sub_category?: string | null
           support?: string | null

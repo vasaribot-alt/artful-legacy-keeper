@@ -16,9 +16,13 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
 const artworkStatuses = [
@@ -78,6 +82,7 @@ const ArtworkDetail = () => {
   const [provenance, setProvenance] = useState("");
   const [status, setStatus] = useState("available");
   const [buyerName, setBuyerName] = useState("");
+  const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
@@ -172,6 +177,7 @@ const ArtworkDetail = () => {
     setProvenance(data.provenance || "");
     setStatus((data as any).status || "available");
     setBuyerName((data as any).buyer_name || "");
+    setSoldDate((data as any).sold_date ? new Date((data as any).sold_date) : undefined);
 
     // Load linked exhibition entries
     const { data: exhLinks } = await supabase
@@ -246,6 +252,7 @@ const ArtworkDetail = () => {
       provenance: provenance.trim() || null,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
+      sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
     } as any).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
@@ -567,18 +574,43 @@ const ArtworkDetail = () => {
         </div>
 
         {status === "sold" && (
-          <div>
-            <Label htmlFor="buyerName">Buyer</Label>
-            <Input
-              id="buyerName"
-              value={buyerName}
-              onChange={(e) => setBuyerName(e.target.value)}
-              placeholder="Buyer name (leave empty for Unknown buyer)"
-              className="mt-1.5"
-            />
-            {!buyerName.trim() && (
-              <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
-            )}
+          <div className="space-y-3">
+            <div>
+              <Label>Sale date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn("w-full justify-start text-left font-normal mt-1.5", !soldDate && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {soldDate ? format(soldDate, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={soldDate}
+                    onSelect={setSoldDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label htmlFor="buyerName">Buyer</Label>
+              <Input
+                id="buyerName"
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+                placeholder="Buyer name (leave empty for Unknown buyer)"
+                className="mt-1.5"
+              />
+              {!buyerName.trim() && (
+                <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
+              )}
+            </div>
           </div>
         )}
 
