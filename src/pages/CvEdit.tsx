@@ -130,7 +130,7 @@ const CvEdit = () => {
     <AppLayout title="CV" headerActions={headerActions}>
       <div className="max-w-3xl mx-auto px-6 py-10">
         {editMode && profileId ? (
-          <CvManager profileId={profileId} />
+          <CvManager profileId={profileId} onDirtyChange={setCvDirty} />
         ) : cvSections.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground">No CV entries yet.</p>
