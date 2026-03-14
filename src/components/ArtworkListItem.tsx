@@ -21,6 +21,7 @@ interface Artwork {
   artwork_location: string | null;
   sub_category: string | null;
   status?: string;
+  buyer_name?: string | null;
 }
 
 const formatDimensions = (h: number | null, w: number | null, d: number | null) => {
