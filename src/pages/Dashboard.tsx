@@ -366,7 +366,7 @@ const Dashboard = () => {
                 <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
               ))}
             </div>
-          ) : galleryArtworks.length === 0 ? (
+          ) : filteredGalleryArtworks.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground">No artworks yet.</p>
               <Button variant="outline" size="sm" className="mt-4" onClick={() => setEditMode(true)}>
@@ -375,7 +375,7 @@ const Dashboard = () => {
             </div>
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {galleryArtworks.map((art) => (
+              {filteredGalleryArtworks.map((art) => (
                 <div
                   key={art.id}
                   className="group cursor-pointer"
