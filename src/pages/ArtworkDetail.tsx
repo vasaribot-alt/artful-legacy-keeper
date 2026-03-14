@@ -77,6 +77,7 @@ const ArtworkDetail = () => {
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
   const [status, setStatus] = useState("available");
+  const [buyerName, setBuyerName] = useState("");
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
