@@ -744,7 +744,7 @@ const ArtworkDetail = () => {
 
         <div className="flex justify-end pb-8">
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save Changes"}
           </Button>
         </div>
       </main>
