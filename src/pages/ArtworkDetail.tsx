@@ -177,6 +177,7 @@ const ArtworkDetail = () => {
     setProvenance(data.provenance || "");
     setStatus((data as any).status || "available");
     setBuyerName((data as any).buyer_name || "");
+    setSoldDate((data as any).sold_date ? new Date((data as any).sold_date) : undefined);
 
     // Load linked exhibition entries
     const { data: exhLinks } = await supabase
