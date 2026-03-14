@@ -128,12 +128,12 @@ export const ImportCvExhibitionsDialog = ({
   };
 
   const toggleAll = (checked: boolean) => {
-    setExhibitions((prev) => prev.map((e) => ({ ...e, selected: checked })));
+    setExhibitions((prev) => prev.map((e) => e.alreadyImported ? e : { ...e, selected: checked }));
   };
 
   const toggleOne = (index: number) => {
     setExhibitions((prev) =>
-      prev.map((e, i) => (i === index ? { ...e, selected: !e.selected } : e))
+      prev.map((e, i) => (i === index && !e.alreadyImported ? { ...e, selected: !e.selected } : e))
     );
   };
 
