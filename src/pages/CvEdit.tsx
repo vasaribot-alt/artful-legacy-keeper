@@ -85,8 +85,13 @@ const CvEdit = () => {
   };
 
   const handleExitEdit = () => {
+    if (cvDirty) {
+      const confirmed = window.confirm("You have unsaved changes. Are you sure you want to exit without saving?");
+      if (!confirmed) return;
+    }
+    setCvDirty(false);
     setEditMode(false);
-    loadData(); // Refresh CV data after editing
+    loadData();
   };
 
   if (loading) {
