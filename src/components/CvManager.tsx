@@ -42,6 +42,7 @@ interface CvSection {
 
 interface CvManagerProps {
   profileId: string;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 const CvManager = ({ profileId }: CvManagerProps) => {
