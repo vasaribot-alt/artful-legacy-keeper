@@ -52,6 +52,7 @@ interface ExhibitionImage {
 const Exhibitions = () => {
   const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
   const [images, setImages] = useState<Record<string, ExhibitionImage[]>>({});
+  const [typeFilter, setTypeFilter] = useState<"all" | "solo" | "group">("all");
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
