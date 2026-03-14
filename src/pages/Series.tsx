@@ -60,7 +60,7 @@ const Series = () => {
     setLoadingArtworks(seriesName);
     const { data, error } = await supabase
       .from("artworks")
-      .select("id, title, year, medium")
+      .select("id, title, year, medium, height, width, depth")
       .eq("series", seriesName)
       .order("year", { ascending: false });
     if (error) {
