@@ -185,6 +185,12 @@ const Series = () => {
               {art.year && art.medium && <span>·</span>}
               {art.medium && <span className="truncate">{art.medium}</span>}
             </div>
+            {(() => {
+              const parts = [art.height, art.width, art.depth].filter((v) => v != null);
+              return parts.length > 0 ? (
+                <p className="text-xs text-muted-foreground mt-0.5">{parts.join(" × ")} cm</p>
+              ) : null;
+            })()}
           </div>
         ))}
       </div>
