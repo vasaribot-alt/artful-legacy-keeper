@@ -462,8 +462,15 @@ const ArtworkDetail = () => {
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save"}
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className={cn(
+              hasUnsavedChanges && !saving && !justSaved && "bg-amber-600 hover:bg-amber-700 text-white"
+            )}
+          >
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : hasUnsavedChanges ? "Save •" : "Save"}
           </Button>
         </div>
       </header>
