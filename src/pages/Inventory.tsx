@@ -81,10 +81,16 @@ const Inventory = () => {
     setLoading(false);
   };
 
+  const searchLower = searchQuery.toLowerCase().trim();
   const filteredArtworks = (statusFilter === "all"
     ? artworks
     : artworks.filter(a => (a.status || "available") === statusFilter)
-  ).sort((a, b) => {
+  ).filter(a => {
+    if (!searchLower) return true;
+    return (a.title || "").toLowerCase().includes(searchLower)
+      || (a.medium || "").toLowerCase().includes(searchLower)
+      || (a.artwork_location || "").toLowerCase().includes(searchLower);
+  }).sort((a, b) => {
     if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
     if (sortBy === "year") return (b.year || 0) - (a.year || 0);
     if (sortBy === "date_added") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
