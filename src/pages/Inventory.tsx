@@ -79,9 +79,15 @@ const Inventory = () => {
     setLoading(false);
   };
 
-  const filteredArtworks = statusFilter === "all"
+  const filteredArtworks = (statusFilter === "all"
     ? artworks
-    : artworks.filter(a => (a.status || "available") === statusFilter);
+    : artworks.filter(a => (a.status || "available") === statusFilter)
+  ).sort((a, b) => {
+    if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
+    if (sortBy === "year") return (b.year || 0) - (a.year || 0);
+    if (sortBy === "date_added") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    return 0;
+  });
 
   const grouped = filteredArtworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
     const key = groupBy === "location"
