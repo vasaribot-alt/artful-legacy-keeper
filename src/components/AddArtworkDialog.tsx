@@ -99,6 +99,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [artistProofs, setArtistProofs] = useState("");
   const [editionNumber, setEditionNumber] = useState("");
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("available");
   const [images, setImages] = useState<ImagePreview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
