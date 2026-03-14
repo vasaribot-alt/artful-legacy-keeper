@@ -239,18 +239,20 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
 
   const addSection = () => {
     setSections([...sections, { name: "New Section", entries: [], collapsed: false }]);
+    markDirty();
   };
 
   const removeSection = (si: number) => {
     setSections(sections.filter((_, i) => i !== si));
+    markDirty();
   };
 
   const updateSectionName = (si: number, name: string) => {
     const updated = [...sections];
     updated[si] = { ...updated[si], name };
-    // Update section name in all entries too
     updated[si].entries = updated[si].entries.map(e => ({ ...e, section: name }));
     setSections(updated);
+    markDirty();
   };
 
   const toggleSection = (si: number) => {
@@ -271,18 +273,21 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
       images: [],
     });
     setSections(updated);
+    markDirty();
   };
 
   const removeEntry = (si: number, ei: number) => {
     const updated = [...sections];
     updated[si].entries = updated[si].entries.filter((_, i) => i !== ei);
     setSections(updated);
+    markDirty();
   };
 
   const updateEntry = (si: number, ei: number, field: "year" | "entry_text", value: string) => {
     const updated = [...sections];
     updated[si].entries[ei] = { ...updated[si].entries[ei], [field]: value };
     setSections(updated);
+    markDirty();
   };
 
   const handleImageUpload = async (si: number, ei: number, files: FileList) => {
@@ -306,6 +311,7 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
       });
     }
     setSections(updated);
+    markDirty();
     toast.success("Images uploaded");
   };
 
@@ -320,6 +326,7 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
     }
     updated[si].entries[ei].images = updated[si].entries[ei].images!.filter((_, i) => i !== ii);
     setSections(updated);
+    markDirty();
   };
 
   const getImageUrl = (path: string) => {
