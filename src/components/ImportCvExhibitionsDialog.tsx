@@ -86,12 +86,30 @@ export const ImportCvExhibitionsDialog = ({
 
       if (error) throw error;
 
+      // Fetch existing exhibitions to detect duplicates
+      const { data: existingExhibitions } = await supabase
+        .from("exhibitions")
+        .select("title, venue, opening_date, exhibition_type")
+        .eq("user_id", user.id);
+
+      const existingKeys = new Set(
+        (existingExhibitions || []).map((ex) => {
+          const year = ex.opening_date ? ex.opening_date.substring(0, 4) : "";
+          return `${ex.title?.toLowerCase().trim()}|${ex.venue?.toLowerCase().trim() || ""}|${year}`;
+        })
+      );
+
       const parsed = (data.exhibitions || [])
-        .filter((ex: ParsedExhibition) => ex.title) // skip entries without titles
-        .map((ex: ParsedExhibition) => ({
-          ...ex,
-          selected: true,
-        }));
+        .filter((ex: ParsedExhibition) => ex.title)
+        .map((ex: ParsedExhibition) => {
+          const key = `${ex.title.toLowerCase().trim()}|${(ex.venue || "").toLowerCase().trim()}|${ex.year || ""}`;
+          const alreadyExists = existingKeys.has(key);
+          return {
+            ...ex,
+            selected: !alreadyExists,
+            alreadyImported: alreadyExists,
+          };
+        });
 
       if (!parsed.length) {
         toast.info("Could not parse any exhibitions from CV entries");
