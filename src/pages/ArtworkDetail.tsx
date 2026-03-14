@@ -18,8 +18,13 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { LocationHistoryManager } from "@/components/LocationHistoryManager";
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
+const artworkStatuses = [
+  { value: "available", label: "Available" },
+  { value: "sold", label: "Sold" },
+];
 const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
 const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
