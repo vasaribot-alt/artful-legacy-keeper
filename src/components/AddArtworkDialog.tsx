@@ -99,6 +99,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [artistProofs, setArtistProofs] = useState("");
   const [editionNumber, setEditionNumber] = useState("");
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("available");
   const [images, setImages] = useState<ImagePreview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -192,7 +193,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const resetForm = () => {
     setTitle(""); setArtistName(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
-    setSigned(""); setHeight(""); setWidth(""); setDepth("");
+    setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs(""); setEditionNumber("");
     images.forEach((img) => URL.revokeObjectURL(img.preview));
@@ -270,6 +271,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       artist_name: artistName.trim() || null,
       edition_number: editionNumber.trim() || null,
       role_context: activeRole,
+      status,
     };
 
     const { data: artworkData, error } = await supabase.from("artworks").insert(insertData as any).select("id").single();
@@ -532,6 +534,23 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               <Label htmlFor="location">Location</Label>
               <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Status */}
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Status</Label>
+              <p className="text-xs text-muted-foreground">Available or sold</p>
+            </div>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="sold">Sold</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Separator />

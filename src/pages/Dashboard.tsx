@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2 } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
@@ -12,6 +12,7 @@ import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { User } from "@supabase/supabase-js";
 
 interface Artwork {
@@ -34,6 +35,7 @@ interface Artwork {
   currency: string | null;
   artwork_location: string | null;
   sub_category: string | null;
+  status: string;
 }
 
 interface ArtworkWithImage {
@@ -69,6 +71,8 @@ const Dashboard = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [locationFilter, setLocationFilter] = useState<string>("all");
   const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
   const idVerified = false;
 
@@ -177,6 +181,30 @@ const Dashboard = () => {
 
   if (!user) return null;
 
+  // Derive unique locations for filter
+  const uniqueLocations = [...new Set(artworks.map(a => a.artwork_location).filter(Boolean))] as string[];
+
+  // Apply filters
+  const filteredArtworks = artworks.filter(a => {
+    if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
+    if (locationFilter !== "all") {
+      if (locationFilter === "none" && a.artwork_location) return false;
+      if (locationFilter !== "none" && a.artwork_location !== locationFilter) return false;
+    }
+    return true;
+  });
+
+  const filteredGalleryArtworks = galleryArtworks.filter(a => {
+    const full = artworks.find(aw => aw.id === a.id);
+    if (!full) return true;
+    if (statusFilter !== "all" && (full.status || "available") !== statusFilter) return false;
+    if (locationFilter !== "all") {
+      if (locationFilter === "none" && full.artwork_location) return false;
+      if (locationFilter !== "none" && full.artwork_location !== locationFilter) return false;
+    }
+    return true;
+  });
+
   const viewToggle = (
     <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
       <ToggleGroupItem value="grid" aria-label="Grid view">
@@ -235,10 +263,36 @@ const Dashboard = () => {
             </div>
           )}
 
-          <div className="mb-6">
+          <div className="mb-6 flex items-center gap-4 flex-wrap">
             <p className="text-sm text-muted-foreground">
-              {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
+              {filteredArtworks.length} artwork{filteredArtworks.length !== 1 ? "s" : ""}
+              {(statusFilter !== "all" || locationFilter !== "all") && ` (filtered from ${artworks.length})`}
             </p>
+            <div className="flex items-center gap-2 ml-auto">
+              <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-8 w-[120px] text-xs">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All status</SelectItem>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="sold">Sold</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={locationFilter} onValueChange={setLocationFilter}>
+                <SelectTrigger className="h-8 w-[160px] text-xs">
+                  <SelectValue placeholder="Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All locations</SelectItem>
+                  <SelectItem value="none">No location</SelectItem>
+                  {uniqueLocations.map(loc => (
+                    <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {loading ? (
@@ -264,7 +318,7 @@ const Dashboard = () => {
             </div>
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {artworks.map((artwork) => (
+              {filteredArtworks.map((artwork) => (
                 <ArtworkCard key={artwork.id} artwork={artwork} onDuplicate={(data) => { setDuplicateData(data); setDialogOpen(true); }} />
               ))}
             </div>
@@ -272,7 +326,7 @@ const Dashboard = () => {
             <div>
               <div className="flex items-center gap-3 mb-2 px-3 py-2 sticky top-0 z-10 bg-background border-b border-border">
                 <Checkbox
-                  checked={selectedIds.size === artworks.length && artworks.length > 0}
+                  checked={selectedIds.size === filteredArtworks.length && filteredArtworks.length > 0}
                   onCheckedChange={(checked) => handleSelectAll(!!checked)}
                 />
                 <span className="text-xs text-muted-foreground">
@@ -290,7 +344,7 @@ const Dashboard = () => {
                 )}
               </div>
               <div className="space-y-1">
-                {artworks.map((artwork) => (
+                {filteredArtworks.map((artwork) => (
                   <ArtworkListItem
                     key={artwork.id}
                     artwork={artwork}
@@ -312,7 +366,7 @@ const Dashboard = () => {
                 <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
               ))}
             </div>
-          ) : galleryArtworks.length === 0 ? (
+          ) : filteredGalleryArtworks.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground">No artworks yet.</p>
               <Button variant="outline" size="sm" className="mt-4" onClick={() => setEditMode(true)}>
@@ -321,7 +375,7 @@ const Dashboard = () => {
             </div>
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {galleryArtworks.map((art) => (
+              {filteredGalleryArtworks.map((art) => (
                 <div
                   key={art.id}
                   className="group cursor-pointer"

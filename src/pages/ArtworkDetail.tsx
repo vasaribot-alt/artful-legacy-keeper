@@ -18,8 +18,13 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { LocationHistoryManager } from "@/components/LocationHistoryManager";
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
+const artworkStatuses = [
+  { value: "available", label: "Available" },
+  { value: "sold", label: "Sold" },
+];
 const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
 const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
@@ -71,6 +76,7 @@ const ArtworkDetail = () => {
   const [artistProofs, setArtistProofs] = useState("");
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
+  const [status, setStatus] = useState("available");
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
@@ -163,6 +169,7 @@ const ArtworkDetail = () => {
     setArtistProofs(data.artist_proofs ? String(data.artist_proofs) : "");
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
+    setStatus((data as any).status || "available");
 
     // Load linked exhibition entries
     const { data: exhLinks } = await supabase
@@ -235,7 +242,8 @@ const ArtworkDetail = () => {
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
-    }).eq("id", id!);
+      status,
+    } as any).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
 
@@ -534,10 +542,35 @@ const ArtworkDetail = () => {
             <Input id="weight" type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} className="mt-1.5" />
           </div>
           <div>
-            <Label htmlFor="location">Location</Label>
+            <Label htmlFor="location">Current Location</Label>
             <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
           </div>
         </div>
+
+        <Separator />
+
+        {/* Status */}
+        <div className="flex items-center justify-between">
+          <div>
+            <Label>Status</Label>
+            <p className="text-xs text-muted-foreground">Mark this work as available or sold</p>
+          </div>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {artworkStatuses.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Location History */}
+        {id && (
+          <LocationHistoryManager
+            artworkId={id}
+            currentLocation={artworkLocation}
+            onLocationChange={(loc) => setArtworkLocation(loc)}
+          />
+        )}
 
         <Separator />
 

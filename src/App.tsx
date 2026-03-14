@@ -27,6 +27,7 @@ import FoundingArtists from "./pages/FoundingArtists";
 import FoundationDashboard from "./pages/FoundationDashboard";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
+import Inventory from "./pages/Inventory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
           <Route path="/provenance" element={<Provenance />} />
           <Route path="/catalogues" element={<Catalogues />} />
           <Route path="/series" element={<Series />} />
+          <Route path="/inventory" element={<Inventory />} />
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
