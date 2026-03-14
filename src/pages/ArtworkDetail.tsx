@@ -337,6 +337,8 @@ const ArtworkDetail = () => {
 
     toast.success("Artwork saved");
     setSaving(false);
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 2000);
     // Reload to refresh state
     setDeletedImageIds([]);
     setDeletedDocIds([]);
