@@ -112,7 +112,7 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
         {artwork.artwork_location && <span>📍 {artwork.artwork_location}</span>}
         {artwork.status === "sold" && (
           <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-secondary font-medium">
-            Sold
+            Sold — {artwork.buyer_name || "Unknown buyer"}
           </span>
         )}
       </div>
