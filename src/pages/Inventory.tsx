@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown } from "lucide-react";
+import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search } from "lucide-react";
 
 interface ArtworkRow {
   id: string;
