@@ -138,7 +138,7 @@ export const ImportCvExhibitionsDialog = ({
   };
 
   const handleImport = async () => {
-    const selected = exhibitions.filter((e) => e.selected);
+    const selected = exhibitions.filter((e) => e.selected && !e.alreadyImported);
     if (!selected.length) {
       toast.error("No exhibitions selected");
       return;
