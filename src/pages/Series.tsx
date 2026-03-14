@@ -18,6 +18,9 @@ interface SeriesArtwork {
   title: string;
   year: number | null;
   medium: string | null;
+  height: number | null;
+  width: number | null;
+  depth: number | null;
   imageUrl: string | null;
 }
 
@@ -57,7 +60,7 @@ const Series = () => {
     setLoadingArtworks(seriesName);
     const { data, error } = await supabase
       .from("artworks")
-      .select("id, title, year, medium")
+      .select("id, title, year, medium, height, width, depth")
       .eq("series", seriesName)
       .order("year", { ascending: false });
     if (error) {
@@ -182,6 +185,12 @@ const Series = () => {
               {art.year && art.medium && <span>·</span>}
               {art.medium && <span className="truncate">{art.medium}</span>}
             </div>
+            {(() => {
+              const parts = [art.height, art.width, art.depth].filter((v) => v != null);
+              return parts.length > 0 ? (
+                <p className="text-xs text-muted-foreground mt-0.5">{parts.join(" × ")} cm</p>
+              ) : null;
+            })()}
           </div>
         ))}
       </div>
