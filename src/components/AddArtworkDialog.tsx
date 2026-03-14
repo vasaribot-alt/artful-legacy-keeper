@@ -553,6 +553,22 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             </Select>
           </div>
 
+          {status === "sold" && (
+            <div>
+              <Label htmlFor="buyerName">Buyer</Label>
+              <Input
+                id="buyerName"
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+                placeholder="Buyer name (leave empty for Unknown buyer)"
+                className="mt-1.5"
+              />
+              {!buyerName.trim() && (
+                <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
+              )}
+            </div>
+          )}
+
           <Separator />
 
           {/* Price */}
