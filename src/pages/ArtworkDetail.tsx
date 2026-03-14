@@ -245,7 +245,9 @@ const ArtworkDetail = () => {
       weight: weight ? parseFloat(weight) : null,
       price: price ? parseFloat(price) : null,
       currency,
-      artwork_location: artworkLocation.trim() || null,
+      artwork_location: status === "sold"
+        ? (buyerName.trim() || "Unknown buyer")
+        : artworkLocation.trim() || null,
       edition_count: !isUnique && editionCount ? parseInt(editionCount) : null,
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       exhibition_history: exhibitionHistory.trim() || null,
@@ -256,6 +258,18 @@ const ArtworkDetail = () => {
     } as any).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
+
+    // When sold, auto-add a location history entry for the buyer
+    if (status === "sold") {
+      const buyerLocation = buyerName.trim() || "Unknown buyer";
+      setArtworkLocation(buyerLocation);
+      await supabase.from("artwork_location_history").insert({
+        artwork_id: id!,
+        location: buyerLocation,
+        moved_date: soldDate ? format(soldDate, "yyyy-MM-dd") : null,
+        notes: "Sold",
+      });
+    }
 
     // Delete removed images
     for (const imgId of deletedImageIds) {
