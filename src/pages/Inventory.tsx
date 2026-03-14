@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown } from "lucide-react";
+import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search } from "lucide-react";
 
 interface ArtworkRow {
   id: string;
@@ -35,6 +36,7 @@ const Inventory = () => {
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
   const [statusFilter, setStatusFilter] = useState<"all" | "available" | "sold">("all");
   const [sortBy, setSortBy] = useState<"title" | "year" | "date_added">("title");
+  const [searchQuery, setSearchQuery] = useState("");
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
@@ -79,10 +81,16 @@ const Inventory = () => {
     setLoading(false);
   };
 
+  const searchLower = searchQuery.toLowerCase().trim();
   const filteredArtworks = (statusFilter === "all"
     ? artworks
     : artworks.filter(a => (a.status || "available") === statusFilter)
-  ).sort((a, b) => {
+  ).filter(a => {
+    if (!searchLower) return true;
+    return (a.title || "").toLowerCase().includes(searchLower)
+      || (a.medium || "").toLowerCase().includes(searchLower)
+      || (a.artwork_location || "").toLowerCase().includes(searchLower);
+  }).sort((a, b) => {
     if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
     if (sortBy === "year") return (b.year || 0) - (a.year || 0);
     if (sortBy === "date_added") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -165,6 +173,17 @@ const Inventory = () => {
           </div>
         ) : (
           <div className="space-y-8">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by title, medium, or location…"
+                className="pl-9"
+              />
+            </div>
+
             {/* Summary */}
             <div className="flex gap-6 text-sm">
               <div className="flex items-center gap-2">
