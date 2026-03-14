@@ -343,7 +343,7 @@ const Exhibitions = () => {
           </div>
         ) : (
           <div className="space-y-10">
-            {exhibitions.map((ex) => {
+            {filteredExhibitions.map((ex) => {
               const exImages = images[ex.id] || [];
               return (
                 <div key={ex.id} className="space-y-4">
