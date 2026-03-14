@@ -344,7 +344,7 @@ const Dashboard = () => {
                 )}
               </div>
               <div className="space-y-1">
-                {artworks.map((artwork) => (
+                {filteredArtworks.map((artwork) => (
                   <ArtworkListItem
                     key={artwork.id}
                     artwork={artwork}
