@@ -35,6 +35,7 @@ interface Artwork {
   currency: string | null;
   artwork_location: string | null;
   sub_category: string | null;
+  status: string;
 }
 
 interface ArtworkWithImage {
