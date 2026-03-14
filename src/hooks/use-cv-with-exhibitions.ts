@@ -96,6 +96,15 @@ export async function buildCvSections(profileId: string, userId: string): Promis
 
   return Array.from(sectionMap.entries()).map(([section, entries]) => ({
     section,
-    entries,
+    entries: entries.sort((a, b) => {
+      // Sort by year descending (newest first); empty years go last
+      const ya = a.year || "";
+      const yb = b.year || "";
+      if (!ya && !yb) return 0;
+      if (!ya) return 1;
+      if (!yb) return -1;
+      // Compare as strings to handle ranges like "2005-2010"
+      return yb.localeCompare(ya);
+    }),
   }));
 }
