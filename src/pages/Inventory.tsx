@@ -173,6 +173,17 @@ const Inventory = () => {
           </div>
         ) : (
           <div className="space-y-8">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by title, medium, or location…"
+                className="pl-9"
+              />
+            </div>
+
             {/* Summary */}
             <div className="flex gap-6 text-sm">
               <div className="flex items-center gap-2">
