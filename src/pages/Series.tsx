@@ -239,7 +239,7 @@ const Series = () => {
         </div>
       ) : (
         /* View mode – expandable series with artworks */
-        <div className="max-w-2xl mx-auto px-6 py-10">
+        <div className="max-w-5xl mx-auto px-6 py-10">
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
