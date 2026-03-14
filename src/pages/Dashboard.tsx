@@ -71,6 +71,8 @@ const Dashboard = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [locationFilter, setLocationFilter] = useState<string>("all");
   const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
   const idVerified = false;
 
