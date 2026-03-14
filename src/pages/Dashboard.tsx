@@ -12,6 +12,7 @@ import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { User } from "@supabase/supabase-js";
 
 interface Artwork {
