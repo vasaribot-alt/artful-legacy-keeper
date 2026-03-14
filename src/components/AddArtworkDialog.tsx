@@ -23,12 +23,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Plus, ImagePlus, X, CalendarIcon } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, ImagePlus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
-import { Calendar } from "@/components/ui/calendar";
+import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { format } from "date-fns";
 
 export interface ArtworkDuplicateData {
