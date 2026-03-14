@@ -56,6 +56,7 @@ const ArtworkDetail = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const [siblingIds, setSiblingIds] = useState<{ prev: string | null; next: string | null }>({ prev: null, next: null });
 
   // Form fields
@@ -336,6 +337,8 @@ const ArtworkDetail = () => {
 
     toast.success("Artwork saved");
     setSaving(false);
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 2000);
     // Reload to refresh state
     setDeletedImageIds([]);
     setDeletedDocIds([]);
@@ -413,7 +416,7 @@ const ArtworkDetail = () => {
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
           </Button>
           <Button size="sm" onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save"}
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save"}
           </Button>
         </div>
       </header>
@@ -741,7 +744,7 @@ const ArtworkDetail = () => {
 
         <div className="flex justify-end pb-8">
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "Saving..." : justSaved ? "Saved ✓" : "Save Changes"}
           </Button>
         </div>
       </main>
