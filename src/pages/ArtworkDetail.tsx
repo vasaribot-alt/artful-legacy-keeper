@@ -77,6 +77,7 @@ const ArtworkDetail = () => {
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
   const [status, setStatus] = useState("available");
+  const [buyerName, setBuyerName] = useState("");
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
@@ -170,6 +171,7 @@ const ArtworkDetail = () => {
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
     setStatus((data as any).status || "available");
+    setBuyerName((data as any).buyer_name || "");
 
     // Load linked exhibition entries
     const { data: exhLinks } = await supabase
@@ -243,6 +245,7 @@ const ArtworkDetail = () => {
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
       status,
+      buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
     } as any).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
@@ -562,6 +565,22 @@ const ArtworkDetail = () => {
             </SelectContent>
           </Select>
         </div>
+
+        {status === "sold" && (
+          <div>
+            <Label htmlFor="buyerName">Buyer</Label>
+            <Input
+              id="buyerName"
+              value={buyerName}
+              onChange={(e) => setBuyerName(e.target.value)}
+              placeholder="Buyer name (leave empty for Unknown buyer)"
+              className="mt-1.5"
+            />
+            {!buyerName.trim() && (
+              <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
+            )}
+          </div>
+        )}
 
         {/* Location History */}
         {id && (

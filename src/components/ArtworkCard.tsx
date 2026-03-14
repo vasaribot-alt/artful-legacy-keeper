@@ -24,6 +24,7 @@ interface Artwork {
   artwork_location: string | null;
   sub_category: string | null;
   status?: string;
+  buyer_name?: string | null;
 }
 
 const formatDimensions = (h: number | null, w: number | null, d: number | null) => {
@@ -141,7 +142,7 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
       )}
       {artwork.status === "sold" && (
         <span className="inline-block mt-1 text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-secondary text-muted-foreground font-medium">
-          Sold
+          Sold — {artwork.buyer_name || "Unknown buyer"}
         </span>
       )}
     </div>

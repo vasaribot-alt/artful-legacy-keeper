@@ -1,0 +1,1 @@
+ALTER TABLE public.artworks ADD COLUMN buyer_name text DEFAULT NULL;

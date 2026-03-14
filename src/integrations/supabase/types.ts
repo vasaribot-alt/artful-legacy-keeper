@@ -200,6 +200,7 @@ export type Database = {
           artist_proofs: number | null
           artwork_location: string | null
           artwork_type: string | null
+          buyer_name: string | null
           catalogue_number: string | null
           created_at: string
           currency: string | null
@@ -235,6 +236,7 @@ export type Database = {
           artist_proofs?: number | null
           artwork_location?: string | null
           artwork_type?: string | null
+          buyer_name?: string | null
           catalogue_number?: string | null
           created_at?: string
           currency?: string | null
@@ -270,6 +272,7 @@ export type Database = {
           artist_proofs?: number | null
           artwork_location?: string | null
           artwork_type?: string | null
+          buyer_name?: string | null
           catalogue_number?: string | null
           created_at?: string
           currency?: string | null

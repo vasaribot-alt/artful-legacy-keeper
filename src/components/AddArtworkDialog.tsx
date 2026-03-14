@@ -100,6 +100,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [editionNumber, setEditionNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("available");
+  const [buyerName, setBuyerName] = useState("");
   const [images, setImages] = useState<ImagePreview[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -193,7 +194,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const resetForm = () => {
     setTitle(""); setArtistName(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
-    setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available");
+    setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available"); setBuyerName("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs(""); setEditionNumber("");
     images.forEach((img) => URL.revokeObjectURL(img.preview));
@@ -272,6 +273,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       edition_number: editionNumber.trim() || null,
       role_context: activeRole,
       status,
+      buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
     };
 
     const { data: artworkData, error } = await supabase.from("artworks").insert(insertData as any).select("id").single();
@@ -552,6 +554,22 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               </SelectContent>
             </Select>
           </div>
+
+          {status === "sold" && (
+            <div>
+              <Label htmlFor="buyerName">Buyer</Label>
+              <Input
+                id="buyerName"
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+                placeholder="Buyer name (leave empty for Unknown buyer)"
+                className="mt-1.5"
+              />
+              {!buyerName.trim() && (
+                <p className="text-xs text-muted-foreground mt-1">Will display as "Unknown buyer"</p>
+              )}
+            </div>
+          )}
 
           <Separator />
 
