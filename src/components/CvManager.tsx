@@ -228,6 +228,7 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
       }
 
       toast.success("CV saved");
+      markClean();
       await loadEntries();
     } catch (err: any) {
       console.error(err);
