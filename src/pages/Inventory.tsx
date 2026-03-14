@@ -19,6 +19,7 @@ interface ArtworkRow {
   height: number | null;
   width: number | null;
   depth: number | null;
+  created_at: string;
 }
 
 const formatDimensions = (h: number | null, w: number | null, d: number | null) => {
