@@ -245,6 +245,7 @@ const ArtworkDetail = () => {
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
       status,
+      buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
     } as any).eq("id", id!);
 
     if (error) { toast.error("Failed to save"); setSaving(false); return; }
