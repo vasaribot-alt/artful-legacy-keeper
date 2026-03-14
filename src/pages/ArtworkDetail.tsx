@@ -220,6 +220,26 @@ const ArtworkDetail = () => {
 
     if (docs) setDocuments(docs as ArtworkDocument[]);
 
+    // Store original values for dirty tracking
+    originalValuesRef.current = {
+      title: data.title, artworkType: data.artwork_type || "", medium: data.medium || "",
+      year: data.year ? String(data.year) : "", description: data.description || "",
+      isUnique: data.is_unique, series: data.series || "", subCategory: data.sub_category || "",
+      support: data.support || "", signed: data.signed || "",
+      height: data.height ? String(data.height) : "", width: data.width ? String(data.width) : "",
+      depth: data.depth ? String(data.depth) : "", weight: data.weight ? String(data.weight) : "",
+      price: data.price ? String(data.price) : "", currency: data.currency || "EUR",
+      artworkLocation: data.artwork_location || "",
+      editionCount: data.edition_count ? String(data.edition_count) : "",
+      artistProofs: data.artist_proofs ? String(data.artist_proofs) : "",
+      exhibitionHistory: data.exhibition_history || "", provenance: data.provenance || "",
+      status: (data as any).status || "available", buyerName: (data as any).buyer_name || "",
+      soldDate: (data as any).sold_date ? new Date((data as any).sold_date).toISOString() : "",
+      selectedExhibitionIds: exhLinks ? exhLinks.map((l: any) => l.cv_entry_id).sort().join(",") : "",
+      selectedCatalogueIds: catLinks ? catLinks.map((l: any) => l.catalogue_id).sort().join(",") : "",
+    };
+    setHasUnsavedChanges(false);
+
     setLoading(false);
   };
 
