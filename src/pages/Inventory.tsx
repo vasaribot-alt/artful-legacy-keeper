@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, CheckCircle, ShoppingBag, Filter } from "lucide-react";
+import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown } from "lucide-react";
 
 interface ArtworkRow {
   id: string;
@@ -19,6 +19,7 @@ interface ArtworkRow {
   height: number | null;
   width: number | null;
   depth: number | null;
+  created_at: string;
 }
 
 const formatDimensions = (h: number | null, w: number | null, d: number | null) => {
@@ -33,6 +34,7 @@ const Inventory = () => {
   const [loading, setLoading] = useState(true);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
   const [statusFilter, setStatusFilter] = useState<"all" | "available" | "sold">("all");
+  const [sortBy, setSortBy] = useState<"title" | "year" | "date_added">("title");
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
@@ -47,7 +49,7 @@ const Inventory = () => {
 
     const { data } = await supabase
       .from("artworks")
-      .select("id, title, artwork_type, medium, year, artwork_location, status, height, width, depth")
+      .select("id, title, artwork_type, medium, year, artwork_location, status, height, width, depth, created_at")
       .eq("owner_id", user.id)
       .eq("role_context", activeRole)
       .order("title");
@@ -77,9 +79,15 @@ const Inventory = () => {
     setLoading(false);
   };
 
-  const filteredArtworks = statusFilter === "all"
+  const filteredArtworks = (statusFilter === "all"
     ? artworks
-    : artworks.filter(a => (a.status || "available") === statusFilter);
+    : artworks.filter(a => (a.status || "available") === statusFilter)
+  ).sort((a, b) => {
+    if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
+    if (sortBy === "year") return (b.year || 0) - (a.year || 0);
+    if (sortBy === "date_added") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    return 0;
+  });
 
   const grouped = filteredArtworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
     const key = groupBy === "location"
@@ -106,6 +114,17 @@ const Inventory = () => {
 
   const headerActions = (
     <div className="flex items-center gap-3">
+      <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+        <SelectTrigger className="w-[140px] h-8 text-xs">
+          <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="title">Sort by title</SelectItem>
+          <SelectItem value="year">Sort by year</SelectItem>
+          <SelectItem value="date_added">Date added</SelectItem>
+        </SelectContent>
+      </Select>
       <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
         <SelectTrigger className="w-[130px] h-8 text-xs">
           <Filter className="w-3.5 h-3.5 mr-1.5" />
