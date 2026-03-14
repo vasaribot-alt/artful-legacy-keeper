@@ -579,6 +579,9 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
                       selected={soldDate}
                       onSelect={setSoldDate}
                       initialFocus
+                      captionLayout="dropdown-buttons"
+                      fromYear={1950}
+                      toYear={new Date().getFullYear()}
                       className={cn("p-3 pointer-events-auto")}
                     />
                   </PopoverContent>
