@@ -801,7 +801,7 @@ const ArtworkDetail = () => {
             onClick={handleSave}
             disabled={saving}
             className={cn(
-              hasUnsavedChanges && !saving && !justSaved && "bg-amber-600 hover:bg-amber-700 text-white"
+              hasUnsavedChanges && !saving && !justSaved && "bg-highlight hover:bg-highlight/90 text-highlight-foreground"
             )}
           >
             {saving ? "Saving..." : justSaved ? "Saved ✓" : hasUnsavedChanges ? "Save Changes •" : "Save Changes"}
