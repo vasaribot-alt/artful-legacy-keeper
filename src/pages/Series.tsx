@@ -18,6 +18,9 @@ interface SeriesArtwork {
   title: string;
   year: number | null;
   medium: string | null;
+  height: number | null;
+  width: number | null;
+  depth: number | null;
   imageUrl: string | null;
 }
 
