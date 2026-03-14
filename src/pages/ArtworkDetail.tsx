@@ -169,6 +169,7 @@ const ArtworkDetail = () => {
     setArtistProofs(data.artist_proofs ? String(data.artist_proofs) : "");
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
+    setStatus((data as any).status || "available");
 
     // Load linked exhibition entries
     const { data: exhLinks } = await supabase
