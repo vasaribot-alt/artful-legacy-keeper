@@ -27,6 +27,7 @@ import FoundingArtists from "./pages/FoundingArtists";
 import FoundationDashboard from "./pages/FoundationDashboard";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
+import Inventory from "./pages/Inventory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
