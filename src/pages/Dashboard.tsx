@@ -181,6 +181,30 @@ const Dashboard = () => {
 
   if (!user) return null;
 
+  // Derive unique locations for filter
+  const uniqueLocations = [...new Set(artworks.map(a => a.artwork_location).filter(Boolean))] as string[];
+
+  // Apply filters
+  const filteredArtworks = artworks.filter(a => {
+    if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
+    if (locationFilter !== "all") {
+      if (locationFilter === "none" && a.artwork_location) return false;
+      if (locationFilter !== "none" && a.artwork_location !== locationFilter) return false;
+    }
+    return true;
+  });
+
+  const filteredGalleryArtworks = galleryArtworks.filter(a => {
+    const full = artworks.find(aw => aw.id === a.id);
+    if (!full) return true;
+    if (statusFilter !== "all" && (full.status || "available") !== statusFilter) return false;
+    if (locationFilter !== "all") {
+      if (locationFilter === "none" && full.artwork_location) return false;
+      if (locationFilter !== "none" && full.artwork_location !== locationFilter) return false;
+    }
+    return true;
+  });
+
   const viewToggle = (
     <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "list")} size="sm">
       <ToggleGroupItem value="grid" aria-label="Grid view">
