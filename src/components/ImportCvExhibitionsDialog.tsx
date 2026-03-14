@@ -194,7 +194,8 @@ export const ImportCvExhibitionsDialog = ({
   const filteredExhibitions = typeFilter === "all"
     ? exhibitions
     : exhibitions.filter((e) => e.exhibition_type === typeFilter);
-  const selectedCount = exhibitions.filter((e) => e.selected).length;
+  const selectedCount = exhibitions.filter((e) => e.selected && !e.alreadyImported).length;
+  const alreadyImportedCount = exhibitions.filter((e) => e.alreadyImported).length;
   const soloCount = exhibitions.filter((e) => e.exhibition_type === "solo").length;
   const groupCount = exhibitions.filter((e) => e.exhibition_type === "group").length;
 
