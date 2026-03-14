@@ -538,6 +538,23 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
           <Separator />
 
+          {/* Status */}
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>Status</Label>
+              <p className="text-xs text-muted-foreground">Available or sold</p>
+            </div>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="sold">Sold</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator />
+
           {/* Price */}
           <div>
             <Label className="mb-1.5 block">Price</Label>
