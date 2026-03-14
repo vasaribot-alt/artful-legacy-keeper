@@ -263,10 +263,36 @@ const Dashboard = () => {
             </div>
           )}
 
-          <div className="mb-6">
+          <div className="mb-6 flex items-center gap-4 flex-wrap">
             <p className="text-sm text-muted-foreground">
-              {artworks.length} artwork{artworks.length !== 1 ? "s" : ""} documented
+              {filteredArtworks.length} artwork{filteredArtworks.length !== 1 ? "s" : ""}
+              {(statusFilter !== "all" || locationFilter !== "all") && ` (filtered from ${artworks.length})`}
             </p>
+            <div className="flex items-center gap-2 ml-auto">
+              <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-8 w-[120px] text-xs">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All status</SelectItem>
+                  <SelectItem value="available">Available</SelectItem>
+                  <SelectItem value="sold">Sold</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={locationFilter} onValueChange={setLocationFilter}>
+                <SelectTrigger className="h-8 w-[160px] text-xs">
+                  <SelectValue placeholder="Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All locations</SelectItem>
+                  <SelectItem value="none">No location</SelectItem>
+                  {uniqueLocations.map(loc => (
+                    <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {loading ? (
