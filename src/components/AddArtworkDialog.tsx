@@ -194,7 +194,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const resetForm = () => {
     setTitle(""); setArtistName(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
     setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
-    setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available");
+    setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available"); setBuyerName("");
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs(""); setEditionNumber("");
     images.forEach((img) => URL.revokeObjectURL(img.preview));
