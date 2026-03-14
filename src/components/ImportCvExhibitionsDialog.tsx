@@ -251,21 +251,20 @@ export const ImportCvExhibitionsDialog = ({
             <div className="flex items-center justify-between px-1 pb-2 border-b">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <Checkbox
-                  checked={filteredExhibitions.every((e) => e.selected)}
+                  checked={filteredExhibitions.filter(e => !e.alreadyImported).every((e) => e.selected)}
                   onCheckedChange={(checked) => {
-                    // Toggle only filtered exhibitions
                     const filteredIds = new Set(filteredExhibitions.map((_, i) =>
                       exhibitions.indexOf(filteredExhibitions[i])
                     ));
                     setExhibitions((prev) =>
-                      prev.map((e, i) => filteredIds.has(i) ? { ...e, selected: !!checked } : e)
+                      prev.map((e, i) => filteredIds.has(i) && !e.alreadyImported ? { ...e, selected: !!checked } : e)
                     );
                   }}
                 />
-                Select all ({filteredExhibitions.length})
+                Select all ({filteredExhibitions.filter(e => !e.alreadyImported).length})
               </label>
               <span className="text-xs text-muted-foreground">
-                {selectedCount} selected total
+                {selectedCount} selected{alreadyImportedCount > 0 && ` · ${alreadyImportedCount} already imported`}
               </span>
             </div>
 
@@ -278,10 +277,14 @@ export const ImportCvExhibitionsDialog = ({
                       key={globalIndex}
                       type="button"
                       onClick={() => toggleOne(globalIndex)}
-                      className="flex items-start gap-3 w-full text-left px-2 py-2.5 rounded-sm hover:bg-accent transition-colors"
+                      disabled={ex.alreadyImported}
+                      className={`flex items-start gap-3 w-full text-left px-2 py-2.5 rounded-sm transition-colors ${
+                        ex.alreadyImported ? "opacity-50 cursor-not-allowed" : "hover:bg-accent"
+                      }`}
                     >
                       <Checkbox
                         checked={ex.selected}
+                        disabled={ex.alreadyImported}
                         className="mt-0.5 shrink-0"
                         tabIndex={-1}
                       />
@@ -291,6 +294,9 @@ export const ImportCvExhibitionsDialog = ({
                           <Badge variant="outline" className="text-[10px] shrink-0">
                             {ex.exhibition_type}
                           </Badge>
+                          {ex.alreadyImported && (
+                            <span className="text-[10px] text-muted-foreground italic shrink-0">already imported</span>
+                          )}
                         </div>
                         <p className="text-xs text-muted-foreground truncate">
                           {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
