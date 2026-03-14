@@ -49,7 +49,7 @@ const Inventory = () => {
 
     const { data } = await supabase
       .from("artworks")
-      .select("id, title, artwork_type, medium, year, artwork_location, status, height, width, depth")
+      .select("id, title, artwork_type, medium, year, artwork_location, status, height, width, depth, created_at")
       .eq("owner_id", user.id)
       .eq("role_context", activeRole)
       .order("title");
