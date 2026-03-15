@@ -1,0 +1,1 @@
+ALTER TABLE public.exhibitions ADD COLUMN exhibition_text text DEFAULT NULL;

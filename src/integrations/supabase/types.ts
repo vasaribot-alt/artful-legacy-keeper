@@ -541,6 +541,7 @@ export type Database = {
           created_at: string
           curator: string | null
           description: string | null
+          exhibition_text: string | null
           exhibition_type: string
           hide_from_cv: boolean
           id: string
@@ -558,6 +559,7 @@ export type Database = {
           created_at?: string
           curator?: string | null
           description?: string | null
+          exhibition_text?: string | null
           exhibition_type?: string
           hide_from_cv?: boolean
           id?: string
@@ -575,6 +577,7 @@ export type Database = {
           created_at?: string
           curator?: string | null
           description?: string | null
+          exhibition_text?: string | null
           exhibition_type?: string
           hide_from_cv?: boolean
           id?: string
