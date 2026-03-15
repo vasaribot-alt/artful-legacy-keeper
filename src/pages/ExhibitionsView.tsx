@@ -47,7 +47,7 @@ const ExhibitionsView = () => {
 
       const { data: exs } = await supabase
         .from("exhibitions")
-        .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, description, curator, artists")
+        .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, description, curator, artists, exhibition_text")
         .eq("user_id", session.user.id)
         .order("opening_date", { ascending: false });
 
