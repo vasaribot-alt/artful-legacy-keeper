@@ -65,11 +65,12 @@ const FoundationDashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { navigate("/login"); return; }
 
-      const { data: roles } = await supabase
+      const { data: roles, error: rolesError } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id);
 
+      console.log("Foundation check - user:", user.id, "roles:", roles, "error:", rolesError);
       const hasFoundation = roles?.some((r) => r.role === "foundation");
       if (!hasFoundation) { navigate("/dashboard"); return; }
       setIsFoundation(true);
