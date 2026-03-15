@@ -135,7 +135,7 @@ const Exhibitions = () => {
   const resetForm = () => {
     setTitle(""); setExType("solo"); setOpeningDate(""); setClosingDate("");
     setVenue(""); setCity(""); setCountry(""); setCurator("");
-    setArtists(""); setDescription(""); setEditingId(null);
+    setArtists(""); setDescription(""); setExhibitionText(""); setEditingId(null);
     setSelectedArtworkIds([]);
   };
 
