@@ -199,6 +199,16 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
+          {roles.includes("foundation") && activeRole !== "foundation" && (
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActive("/foundation")}>
+                <NavLink to="/foundation" end className="hover:bg-accent/50" activeClassName="bg-accent text-accent-foreground font-medium">
+                  <Award className="mr-2 h-4 w-4" />
+                  {!collapsed && <span>Foundation</span>}
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
