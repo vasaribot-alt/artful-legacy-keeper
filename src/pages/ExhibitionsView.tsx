@@ -261,7 +261,6 @@ const ExhibitionsView = () => {
               )}
             </div>
 
-            {/* Description */}
             {selectedExhibition.description && (
               <p className="text-sm text-muted-foreground max-w-2xl mx-auto text-center mb-10 leading-relaxed">
                 {selectedExhibition.description}
