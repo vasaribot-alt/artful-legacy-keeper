@@ -16,6 +16,7 @@ interface ExhibitionWithImage {
   description: string | null;
   curator: string | null;
   artists: string | null;
+  exhibition_text: string | null;
   mainImageUrl: string | null;
 }
 
@@ -46,7 +47,7 @@ const ExhibitionsView = () => {
 
       const { data: exs } = await supabase
         .from("exhibitions")
-        .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, description, curator, artists")
+        .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, description, curator, artists, exhibition_text")
         .eq("user_id", session.user.id)
         .order("opening_date", { ascending: false });
 
@@ -260,7 +261,6 @@ const ExhibitionsView = () => {
               )}
             </div>
 
-            {/* Description */}
             {selectedExhibition.description && (
               <p className="text-sm text-muted-foreground max-w-2xl mx-auto text-center mb-10 leading-relaxed">
                 {selectedExhibition.description}
@@ -294,6 +294,16 @@ const ExhibitionsView = () => {
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Exhibition text */}
+            {selectedExhibition.exhibition_text && (
+              <div className="max-w-2xl mx-auto mt-12 space-y-4">
+                <h2 className="font-semibold text-sm">Exhibition text</h2>
+                <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {selectedExhibition.exhibition_text}
+                </div>
               </div>
             )}
           </div>

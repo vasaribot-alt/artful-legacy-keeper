@@ -69,6 +69,7 @@ const Exhibitions = () => {
   const [curator, setCurator] = useState("");
   const [artists, setArtists] = useState("");
   const [description, setDescription] = useState("");
+  const [exhibitionText, setExhibitionText] = useState("");
   const [selectedArtworkIds, setSelectedArtworkIds] = useState<string[]>([]);
   const [exhibitionArtworks, setExhibitionArtworks] = useState<Record<string, { id: string; title: string; year: number | null }[]>>({});
 
@@ -134,7 +135,7 @@ const Exhibitions = () => {
   const resetForm = () => {
     setTitle(""); setExType("solo"); setOpeningDate(""); setClosingDate("");
     setVenue(""); setCity(""); setCountry(""); setCurator("");
-    setArtists(""); setDescription(""); setEditingId(null);
+    setArtists(""); setDescription(""); setExhibitionText(""); setEditingId(null);
     setSelectedArtworkIds([]);
   };
 
@@ -152,6 +153,7 @@ const Exhibitions = () => {
     setCurator(ex.curator || "");
     setArtists(ex.artists || "");
     setDescription(ex.description || "");
+    setExhibitionText((ex as any).exhibition_text || "");
     // Load linked artwork ids
     const linked = (exhibitionArtworks[ex.id] || []).map((a) => a.id);
     setSelectedArtworkIds(linked);
@@ -175,6 +177,7 @@ const Exhibitions = () => {
       curator: curator.trim() || null,
       artists: artists.trim() || null,
       description: description.trim() || null,
+      exhibition_text: exhibitionText.trim() || null,
       user_id: user.id,
     };
 
@@ -467,6 +470,16 @@ const Exhibitions = () => {
                 <Input id="ex-artists" value={artists} onChange={(e) => setArtists(e.target.value)} placeholder="e.g. Artist A, Artist B" className="mt-1.5" />
               </div>
             )}
+            <div>
+              <Label htmlFor="ex-text">Exhibition Text</Label>
+              <Textarea
+                id="ex-text"
+                value={exhibitionText}
+                onChange={(e) => setExhibitionText(e.target.value)}
+                placeholder="Press release, curator statement, or catalogue text..."
+                className="mt-1.5 min-h-[120px]"
+              />
+            </div>
             <ExhibitionArtworkPicker
               selectedIds={selectedArtworkIds}
               onSelectionChange={setSelectedArtworkIds}
