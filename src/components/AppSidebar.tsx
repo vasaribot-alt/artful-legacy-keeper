@@ -192,20 +192,20 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {canAddCollector && (
+          {canManageCollector && (
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={addCollectorRole}>
+              <SidebarMenuButton onClick={!hasCollector ? addCollectorRole : undefined} disabled={hasCollector}>
                 <Plus className="mr-2 h-4 w-4" />
-                {!collapsed && <span>Add Collector Account</span>}
+                {!collapsed && <span>{hasCollector ? "Collector Account Added" : "Add Collector Account"}</span>}
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
-          {roles.includes("foundation") && activeRole !== "foundation" && (
+          {activeRole !== "foundation" && (
             <SidebarMenuItem>
               <SidebarMenuButton asChild isActive={isActive("/foundation")}>
                 <NavLink to="/foundation" end className="hover:bg-accent/50" activeClassName="bg-accent text-accent-foreground font-medium">
                   <Award className="mr-2 h-4 w-4" />
-                  {!collapsed && <span>Foundation</span>}
+                  {!collapsed && <span>Foundation Dashboard</span>}
                 </NavLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
