@@ -296,6 +296,16 @@ const ExhibitionsView = () => {
                 ))}
               </div>
             )}
+
+            {/* Exhibition text */}
+            {selectedExhibition.exhibition_text && (
+              <div className="max-w-2xl mx-auto mt-12 space-y-4">
+                <h2 className="font-semibold text-sm">Exhibition text</h2>
+                <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {selectedExhibition.exhibition_text}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
