@@ -153,6 +153,7 @@ const Exhibitions = () => {
     setCurator(ex.curator || "");
     setArtists(ex.artists || "");
     setDescription(ex.description || "");
+    setExhibitionText((ex as any).exhibition_text || "");
     // Load linked artwork ids
     const linked = (exhibitionArtworks[ex.id] || []).map((a) => a.id);
     setSelectedArtworkIds(linked);
