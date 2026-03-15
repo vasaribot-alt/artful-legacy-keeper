@@ -17,6 +17,7 @@ import ArtistCvView from "./pages/ArtistCvView";
 import CvEdit from "./pages/CvEdit";
 import ArtworksGalleryView from "./pages/ArtworksGalleryView";
 import Exhibitions from "./pages/Exhibitions";
+import ExhibitionsView from "./pages/ExhibitionsView";
 import Provenance from "./pages/Provenance";
 import Series from "./pages/Series";
 import Portfolios from "./pages/Portfolios";
@@ -53,6 +54,7 @@ const App = () => (
           <Route path="/artwork/:id" element={<ArtworkDetail />} />
           <Route path="/artwork/:id/view" element={<ArtworkView />} />
           <Route path="/exhibitions" element={<Exhibitions />} />
+          <Route path="/exhibitions/view" element={<ExhibitionsView />} />
           <Route path="/provenance" element={<Provenance />} />
           <Route path="/catalogues" element={<Catalogues />} />
           <Route path="/series" element={<Series />} />
