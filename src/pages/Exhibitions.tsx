@@ -69,6 +69,7 @@ const Exhibitions = () => {
   const [curator, setCurator] = useState("");
   const [artists, setArtists] = useState("");
   const [description, setDescription] = useState("");
+  const [exhibitionText, setExhibitionText] = useState("");
   const [selectedArtworkIds, setSelectedArtworkIds] = useState<string[]>([]);
   const [exhibitionArtworks, setExhibitionArtworks] = useState<Record<string, { id: string; title: string; year: number | null }[]>>({});
 
