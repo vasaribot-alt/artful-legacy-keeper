@@ -177,6 +177,7 @@ const Exhibitions = () => {
       curator: curator.trim() || null,
       artists: artists.trim() || null,
       description: description.trim() || null,
+      exhibition_text: exhibitionText.trim() || null,
       user_id: user.id,
     };
 
