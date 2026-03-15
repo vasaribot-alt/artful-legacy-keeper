@@ -16,6 +16,7 @@ interface ExhibitionWithImage {
   description: string | null;
   curator: string | null;
   artists: string | null;
+  exhibition_text: string | null;
   mainImageUrl: string | null;
 }
 
