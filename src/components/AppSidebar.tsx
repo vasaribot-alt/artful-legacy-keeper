@@ -127,7 +127,8 @@ export function AppSidebar() {
 
   const isActive = (path: string) => location.pathname === path;
   const navItems = getNavItems(activeRole);
-  const canAddCollector = !roles.includes("collector") && roles.includes("artist");
+  const hasCollector = roles.includes("collector");
+  const canManageCollector = roles.includes("artist");
 
   const handleSignOut = async () => {
     localStorage.removeItem("activeRole");
