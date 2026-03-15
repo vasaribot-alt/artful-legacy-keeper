@@ -470,6 +470,16 @@ const Exhibitions = () => {
                 <Input id="ex-artists" value={artists} onChange={(e) => setArtists(e.target.value)} placeholder="e.g. Artist A, Artist B" className="mt-1.5" />
               </div>
             )}
+            <div>
+              <Label htmlFor="ex-text">Exhibition Text</Label>
+              <Textarea
+                id="ex-text"
+                value={exhibitionText}
+                onChange={(e) => setExhibitionText(e.target.value)}
+                placeholder="Press release, curator statement, or catalogue text..."
+                className="mt-1.5 min-h-[120px]"
+              />
+            </div>
             <ExhibitionArtworkPicker
               selectedIds={selectedArtworkIds}
               onSelectionChange={setSelectedArtworkIds}
