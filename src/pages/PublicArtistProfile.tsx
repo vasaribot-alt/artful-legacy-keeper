@@ -84,7 +84,7 @@ const PublicArtistProfile = () => {
 
   // Navigation state
   const [openSection, setOpenSection] = useState<string | null>(null);
-  const [exhibitionFilter, setExhibitionFilter] = useState<"all" | "solo" | "group">("all");
+  const [exhibitionFilter, setExhibitionFilter] = useState<"solo" | "group">("solo");
   const [openSeries, setOpenSeries] = useState<string | null>(null);
 
   useEffect(() => {
