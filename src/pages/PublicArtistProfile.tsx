@@ -473,12 +473,14 @@ const PublicArtistProfile = () => {
                       return (
                         <div key={group.series}>
                           <button
+                            ref={(el) => { if (el) el.dataset.series = group.series; }}
                             onClick={(e) => {
+                              const el = e.currentTarget;
                               setOpenSeries(isOpen ? null : group.series);
                               if (!isOpen) {
-                                setTimeout(() => {
-                                  (e.currentTarget as HTMLElement)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                                }, 50);
+                                requestAnimationFrame(() => {
+                                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                                });
                               }
                             }}
                             className="w-full flex items-center gap-4 p-4 rounded-md hover:bg-muted/50 transition-colors text-left"
