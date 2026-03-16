@@ -255,9 +255,7 @@ const PublicArtistProfile = () => {
     return getArtworkThumb(group.items[0]);
   };
 
-  const filteredExhibitions = exhibitionFilter === "all"
-    ? exhibitions
-    : exhibitions.filter(ex => ex.exhibition_type === exhibitionFilter);
+  const filteredExhibitions = exhibitions.filter(ex => ex.exhibition_type === exhibitionFilter);
 
   const soloCount = exhibitions.filter(e => e.exhibition_type === "solo").length;
   const groupCount = exhibitions.filter(e => e.exhibition_type === "group").length;
