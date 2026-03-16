@@ -133,7 +133,9 @@ const PublicArtistProfile = () => {
   }, [id]);
 
   const avatarSrc = profile?.avatar_url
-    ? supabase.storage.from("profile-photos").getPublicUrl(profile.avatar_url).data.publicUrl
+    ? profile.avatar_url.startsWith("http")
+      ? profile.avatar_url
+      : supabase.storage.from("profile-photos").getPublicUrl(profile.avatar_url).data.publicUrl
     : undefined;
 
   const location = profile ? [profile.city, profile.country].filter(Boolean).join(", ") : "";
