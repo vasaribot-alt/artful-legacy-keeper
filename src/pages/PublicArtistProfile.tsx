@@ -11,18 +11,13 @@ import {
   Building2,
   Phone,
   ArrowLeft,
+  Calendar,
+  Layers,
+  Image as ImageIcon,
 } from "lucide-react";
 
-interface SocialLink {
-  platform: string;
-  url: string;
-}
-
-interface Gallery {
-  name: string;
-  phone: string;
-  website: string;
-}
+interface SocialLink { platform: string; url: string; }
+interface Gallery { name: string; phone: string; website: string; }
 
 interface ProfileData {
   user_id: string;
@@ -44,6 +39,34 @@ interface ProfileData {
   profile_id: string;
 }
 
+interface Exhibition {
+  id: string;
+  title: string;
+  venue: string | null;
+  city: string | null;
+  country: string | null;
+  opening_date: string | null;
+  closing_date: string | null;
+  exhibition_type: string;
+  curator: string | null;
+  description: string | null;
+  images: { storage_path: string; caption: string | null }[];
+}
+
+interface ArtworkPublic {
+  id: string;
+  title: string;
+  year: number | null;
+  medium: string | null;
+  dimensions: string | null;
+  height: number | null;
+  width: number | null;
+  depth: number | null;
+  series: string | null;
+  image_url: string | null;
+  images: { storage_path: string; display_order: number }[];
+}
+
 const PublicArtistProfile = () => {
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
@@ -52,15 +75,16 @@ const PublicArtistProfile = () => {
   const [cvSections, setCvSections] = useState<
     { section: string; entries: { year: string; entry_text: string }[] }[]
   >([]);
+  const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
+  const [artworks, setArtworks] = useState<ArtworkPublic[]>([]);
+  const [seriesGroups, setSeriesGroups] = useState<string[]>([]);
 
   useEffect(() => {
     const load = async () => {
       if (!id) return;
 
-      // Try to find profile by global_artist_id (numeric) or user_id (uuid)
       const isNumeric = /^\d+$/.test(id);
       let query = supabase.from("profiles").select("*");
-
       if (isNumeric) {
         query = query.eq("global_artist_id", parseInt(id));
       } else {
@@ -68,64 +92,98 @@ const PublicArtistProfile = () => {
       }
 
       const { data, error } = await query.single();
+      if (error || !data) { setLoading(false); return; }
 
-      if (error || !data) {
-        setLoading(false);
-        return;
-      }
+      const userId = data.user_id;
 
       setProfile({
-        user_id: data.user_id,
+        user_id: userId,
         full_name: data.full_name,
-        avatar_url: (data as any).avatar_url,
-        birth_year: (data as any).birth_year,
-        city: (data as any).city,
-        country: (data as any).country,
-        studio_address: (data as any).studio_address,
-        phone_prefix: (data as any).phone_prefix,
-        phone: (data as any).phone,
-        email: (data as any).email,
-        website: (data as any).website,
-        social_media_links: (data as any).social_media_links || [],
-        galleries: (data as any).galleries || [],
-        biography: (data as any).biography,
-        chronology: (data as any).chronology,
+        avatar_url: data.avatar_url,
+        birth_year: data.birth_year,
+        city: data.city,
+        country: data.country,
+        studio_address: data.studio_address,
+        phone_prefix: data.phone_prefix,
+        phone: data.phone,
+        email: data.email,
+        website: data.website,
+        social_media_links: (data.social_media_links as any) || [],
+        galleries: (data.galleries as any) || [],
+        biography: data.biography,
+        chronology: data.chronology,
         global_artist_id: data.global_artist_id,
         profile_id: data.id,
       });
 
-      // Load CV entries
-      const { data: entries } = await supabase
-        .from("cv_entries")
-        .select("section, year, entry_text")
-        .eq("profile_id", data.id)
-        .order("display_order", { ascending: true });
+      // Load all data in parallel
+      const [cvRes, foundingRes, exhibitionsRes, artworksRes, seriesRes] = await Promise.all([
+        supabase.from("cv_entries").select("section, year, entry_text")
+          .eq("profile_id", data.id).order("display_order", { ascending: true }),
+        supabase.from("founding_artists").select("tier")
+          .eq("user_id", userId).maybeSingle(),
+        supabase.from("exhibitions").select("id, title, venue, city, country, opening_date, closing_date, exhibition_type, curator, description")
+          .eq("user_id", userId).eq("hide_from_cv", false).order("opening_date", { ascending: false }),
+        supabase.from("artworks").select("id, title, year, medium, dimensions, height, width, depth, series, image_url")
+          .eq("owner_id", userId).order("year", { ascending: false }),
+        supabase.from("series_groups").select("name")
+          .eq("user_id", userId).order("name"),
+      ]);
 
-      if (entries && entries.length > 0) {
+      // CV
+      if (cvRes.data && cvRes.data.length > 0) {
         const sectionMap = new Map<string, { year: string; entry_text: string }[]>();
-        for (const e of entries) {
+        for (const e of cvRes.data) {
           const section = e.section || "Other";
           if (!sectionMap.has(section)) sectionMap.set(section, []);
-          sectionMap.get(section)!.push({
-            year: e.year || "",
-            entry_text: e.entry_text || "",
-          });
+          sectionMap.get(section)!.push({ year: e.year || "", entry_text: e.entry_text || "" });
         }
-        setCvSections(
-          Array.from(sectionMap.entries()).map(([section, entries]) => ({
-            section,
-            entries,
-          }))
-        );
+        setCvSections(Array.from(sectionMap.entries()).map(([section, entries]) => ({ section, entries })));
       }
 
-      // Check founding artist status
-      const { data: foundingData } = await supabase
-        .from("founding_artists")
-        .select("tier")
-        .eq("user_id", data.user_id)
-        .maybeSingle();
-      if (foundingData) setFoundingTier(foundingData.tier);
+      if (foundingRes.data) setFoundingTier(foundingRes.data.tier);
+
+      // Exhibitions with images
+      if (exhibitionsRes.data && exhibitionsRes.data.length > 0) {
+        const exIds = exhibitionsRes.data.map(e => e.id);
+        const { data: exImages } = await supabase.from("exhibition_images")
+          .select("exhibition_id, storage_path, caption")
+          .in("exhibition_id", exIds)
+          .order("display_order", { ascending: true });
+
+        const imageMap = new Map<string, { storage_path: string; caption: string | null }[]>();
+        for (const img of exImages || []) {
+          if (!imageMap.has(img.exhibition_id)) imageMap.set(img.exhibition_id, []);
+          imageMap.get(img.exhibition_id)!.push({ storage_path: img.storage_path, caption: img.caption });
+        }
+
+        setExhibitions(exhibitionsRes.data.map(ex => ({
+          ...ex,
+          images: imageMap.get(ex.id) || [],
+        })));
+      }
+
+      // Artworks with images
+      if (artworksRes.data && artworksRes.data.length > 0) {
+        const awIds = artworksRes.data.map(a => a.id);
+        const { data: awImages } = await supabase.from("artwork_images")
+          .select("artwork_id, storage_path, display_order")
+          .in("artwork_id", awIds)
+          .order("display_order", { ascending: true });
+
+        const imgMap = new Map<string, { storage_path: string; display_order: number }[]>();
+        for (const img of awImages || []) {
+          if (!imgMap.has(img.artwork_id)) imgMap.set(img.artwork_id, []);
+          imgMap.get(img.artwork_id)!.push({ storage_path: img.storage_path, display_order: img.display_order });
+        }
+
+        setArtworks(artworksRes.data.map(aw => ({
+          ...aw,
+          images: imgMap.get(aw.id) || [],
+        })));
+      }
+
+      if (seriesRes.data) setSeriesGroups(seriesRes.data.map(s => s.name));
 
       setLoading(false);
     };
@@ -139,7 +197,54 @@ const PublicArtistProfile = () => {
     : undefined;
 
   const location = profile ? [profile.city, profile.country].filter(Boolean).join(", ") : "";
-  const phoneDisplay = profile ? [profile.phone_prefix, profile.phone].filter(Boolean).join(" ") : "";
+
+  const getArtworkThumb = (aw: ArtworkPublic) => {
+    if (aw.images.length > 0) {
+      return supabase.storage.from("artwork-images").getPublicUrl(aw.images[0].storage_path).data.publicUrl;
+    }
+    if (aw.image_url) return aw.image_url;
+    return null;
+  };
+
+  const getExhibitionThumb = (ex: Exhibition) => {
+    if (ex.images.length > 0) {
+      return supabase.storage.from("exhibition-images").getPublicUrl(ex.images[0].storage_path).data.publicUrl;
+    }
+    return null;
+  };
+
+  const formatDimensions = (aw: ArtworkPublic) => {
+    if (aw.dimensions) return aw.dimensions;
+    const parts = [aw.height, aw.width, aw.depth].filter(Boolean);
+    return parts.length > 0 ? parts.join(" × ") + " cm" : null;
+  };
+
+  const formatExDate = (d: string | null) => {
+    if (!d) return null;
+    return new Date(d).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  };
+
+  // Group artworks by series
+  const artworksBySeries = (() => {
+    const grouped: { series: string; items: ArtworkPublic[] }[] = [];
+    const seriesMap = new Map<string, ArtworkPublic[]>();
+    const unsorted: ArtworkPublic[] = [];
+
+    for (const aw of artworks) {
+      if (aw.series && seriesGroups.includes(aw.series)) {
+        if (!seriesMap.has(aw.series)) seriesMap.set(aw.series, []);
+        seriesMap.get(aw.series)!.push(aw);
+      } else {
+        unsorted.push(aw);
+      }
+    }
+
+    for (const s of seriesGroups) {
+      if (seriesMap.has(s)) grouped.push({ series: s, items: seriesMap.get(s)! });
+    }
+    if (unsorted.length > 0) grouped.push({ series: "Other Works", items: unsorted });
+    return grouped;
+  })();
 
   return (
     <div className="min-h-screen bg-background">
@@ -200,27 +305,19 @@ const PublicArtistProfile = () => {
             </div>
           </header>
 
-          <main className="max-w-3xl mx-auto px-6 pb-20">
+          <main className="max-w-4xl mx-auto px-6 pb-20">
             {/* Contact */}
             {(profile.email || profile.website || profile.studio_address) && (
-              <section className="mb-16">
+              <section className="mb-16 max-w-3xl mx-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {profile.email && (
-                    <a
-                      href={`mailto:${profile.email}`}
-                      className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors"
-                    >
+                    <a href={`mailto:${profile.email}`} className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors">
                       <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span className="text-sm">{profile.email}</span>
                     </a>
                   )}
                   {profile.website && (
-                    <a
-                      href={profile.website.startsWith("http") ? profile.website : `https://${profile.website}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors"
-                    >
+                    <a href={profile.website.startsWith("http") ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors">
                       <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span className="text-sm truncate">{profile.website.replace(/^https?:\/\//, "")}</span>
                       <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0 ml-auto" />
@@ -238,16 +335,10 @@ const PublicArtistProfile = () => {
 
             {/* Social links */}
             {profile.social_media_links.length > 0 && (
-              <section className="mb-16">
+              <section className="mb-16 max-w-3xl mx-auto">
                 <div className="flex flex-wrap gap-2 justify-center">
                   {profile.social_media_links.map((link, i) => (
-                    <a
-                      key={i}
-                      href={link.url.startsWith("http") ? link.url : `https://${link.url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm hover:bg-muted transition-colors"
-                    >
+                    <a key={i} href={link.url.startsWith("http") ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border text-sm hover:bg-muted transition-colors">
                       {link.platform || "Link"}
                       <ExternalLink className="w-3 h-3 text-muted-foreground" />
                     </a>
@@ -258,7 +349,7 @@ const PublicArtistProfile = () => {
 
             {/* Biography */}
             {profile.biography && (
-              <section className="mb-16">
+              <section className="mb-16 max-w-3xl mx-auto">
                 <h2 className="text-2xl mb-6">Biography</h2>
                 <div className="text-foreground/80 leading-relaxed whitespace-pre-line text-[15px]">
                   {profile.biography}
@@ -266,9 +357,90 @@ const PublicArtistProfile = () => {
               </section>
             )}
 
+            {/* Artworks by Series */}
+            {artworks.length > 0 && (
+              <section className="mb-16">
+                <h2 className="text-2xl mb-8 flex items-center gap-3">
+                  <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                  Selected Works
+                </h2>
+                {artworksBySeries.map((group) => (
+                  <div key={group.series} className="mb-10">
+                    {artworksBySeries.length > 1 && (
+                      <h3 className="text-sm uppercase tracking-[0.15em] text-muted-foreground mb-4 flex items-center gap-2">
+                        <Layers className="w-3.5 h-3.5" />
+                        {group.series}
+                      </h3>
+                    )}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {group.items.map((aw) => {
+                        const thumb = getArtworkThumb(aw);
+                        const dims = formatDimensions(aw);
+                        return (
+                          <div key={aw.id} className="group">
+                            <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
+                              {thumb ? (
+                                <img src={thumb} alt={aw.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <ImageIcon className="w-8 h-8 text-muted-foreground/40" />
+                                </div>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium truncate">{aw.title}</p>
+                            {aw.year && <p className="text-xs text-muted-foreground">{aw.year}</p>}
+                            {aw.medium && <p className="text-xs text-muted-foreground truncate">{aw.medium}</p>}
+                            {dims && <p className="text-xs text-muted-foreground">{dims}</p>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </section>
+            )}
+
+            {/* Exhibitions */}
+            {exhibitions.length > 0 && (
+              <section className="mb-16">
+                <h2 className="text-2xl mb-8 flex items-center gap-3">
+                  <Calendar className="w-6 h-6 text-muted-foreground" />
+                  Exhibitions
+                </h2>
+                <div className="space-y-6">
+                  {exhibitions.map((ex) => {
+                    const thumb = getExhibitionThumb(ex);
+                    const dateStr = [formatExDate(ex.opening_date), formatExDate(ex.closing_date)].filter(Boolean).join(" – ");
+                    const loc = [ex.venue, ex.city, ex.country].filter(Boolean).join(", ");
+                    return (
+                      <div key={ex.id} className="flex gap-5 p-5 rounded-md border border-border hover:bg-muted/30 transition-colors">
+                        {thumb && (
+                          <div className="w-24 h-24 rounded-md overflow-hidden shrink-0 bg-muted">
+                            <img src={thumb} alt={ex.title} className="w-full h-full object-cover" loading="lazy" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-medium">{ex.title}</h3>
+                            <span className="text-xs px-2 py-0.5 rounded-full border border-border text-muted-foreground shrink-0 capitalize">
+                              {ex.exhibition_type}
+                            </span>
+                          </div>
+                          {loc && <p className="text-sm text-muted-foreground mt-1">{loc}</p>}
+                          {dateStr && <p className="text-xs text-muted-foreground mt-1">{dateStr}</p>}
+                          {ex.curator && <p className="text-xs text-muted-foreground mt-1">Curated by {ex.curator}</p>}
+                          {ex.description && <p className="text-sm text-foreground/70 mt-2 line-clamp-2">{ex.description}</p>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
             {/* Galleries */}
             {profile.galleries.length > 0 && (
-              <section className="mb-16">
+              <section className="mb-16 max-w-3xl mx-auto">
                 <h2 className="text-2xl mb-6">Gallery Representation</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {profile.galleries.map((g, i) => (
@@ -283,12 +455,7 @@ const PublicArtistProfile = () => {
                         </p>
                       )}
                       {g.website && (
-                        <a
-                          href={g.website.startsWith("http") ? g.website : `https://${g.website}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-muted-foreground flex items-center gap-2 hover:text-foreground transition-colors"
-                        >
+                        <a href={g.website.startsWith("http") ? g.website : `https://${g.website}`} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground flex items-center gap-2 hover:text-foreground transition-colors">
                           <Globe className="w-3 h-3" />
                           {g.website.replace(/^https?:\/\//, "")}
                           <ExternalLink className="w-3 h-3" />
@@ -302,7 +469,7 @@ const PublicArtistProfile = () => {
 
             {/* CV */}
             {cvSections.length > 0 && (
-              <section className="mb-16">
+              <section className="mb-16 max-w-3xl mx-auto">
                 <h2 className="text-2xl mb-8">Curriculum Vitae</h2>
                 <div className="space-y-10">
                   {cvSections.map((section) => (
@@ -314,9 +481,7 @@ const PublicArtistProfile = () => {
                         {section.entries.map((entry, i) => (
                           <div key={i} className="flex gap-4 text-sm">
                             {entry.year && (
-                              <span className="text-muted-foreground font-mono w-12 shrink-0">
-                                {entry.year}
-                              </span>
+                              <span className="text-muted-foreground font-mono w-12 shrink-0">{entry.year}</span>
                             )}
                             <span className="text-foreground/80">{entry.entry_text}</span>
                           </div>
@@ -330,7 +495,7 @@ const PublicArtistProfile = () => {
 
             {/* Chronology */}
             {profile.chronology && (
-              <section className="mb-16">
+              <section className="mb-16 max-w-3xl mx-auto">
                 <h2 className="text-2xl mb-6">Chronology</h2>
                 <div className="text-foreground/80 leading-relaxed whitespace-pre-line text-[15px]">
                   {profile.chronology}
