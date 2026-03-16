@@ -84,7 +84,7 @@ const PublicArtistProfile = () => {
 
   // Navigation state
   const [openSection, setOpenSection] = useState<string | null>(null);
-  const [exhibitionFilter, setExhibitionFilter] = useState<"all" | "solo" | "group">("all");
+  const [exhibitionFilter, setExhibitionFilter] = useState<"solo" | "group">("solo");
   const [openSeries, setOpenSeries] = useState<string | null>(null);
 
   useEffect(() => {
@@ -255,9 +255,7 @@ const PublicArtistProfile = () => {
     return getArtworkThumb(group.items[0]);
   };
 
-  const filteredExhibitions = exhibitionFilter === "all"
-    ? exhibitions
-    : exhibitions.filter(ex => ex.exhibition_type === exhibitionFilter);
+  const filteredExhibitions = exhibitions.filter(ex => ex.exhibition_type === exhibitionFilter);
 
   const soloCount = exhibitions.filter(e => e.exhibition_type === "solo").length;
   const groupCount = exhibitions.filter(e => e.exhibition_type === "group").length;
@@ -409,224 +407,201 @@ const PublicArtistProfile = () => {
               </section>
             )}
 
-            {/* === Collapsible Sections === */}
+            {/* === Navigation Cards === */}
             {hasNavSections && (
-              <div className="space-y-3 max-w-3xl mx-auto">
-                {/* Selected Works / Series */}
-                {hasArtworks && (
-                  <div className="border border-border rounded-lg overflow-hidden">
+              <div className="max-w-3xl mx-auto">
+                {/* Horizontal card navigation */}
+                <div className="grid grid-cols-3 gap-3 mb-8">
+                  {hasArtworks && (
                     <button
                       onClick={() => toggleSection("works")}
-                      className="w-full flex items-center gap-3 p-5 hover:bg-muted/30 transition-colors text-left"
+                      className={`p-5 rounded-md border text-center transition-colors ${
+                        openSection === "works"
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border hover:bg-muted/50"
+                      }`}
                     >
-                      <ImageIcon className="w-5 h-5 text-muted-foreground shrink-0" />
-                      <span className="text-lg font-medium flex-1">Selected Works</span>
-                      <span className="text-sm text-muted-foreground mr-2">{artworks.length} works</span>
-                      {openSection === "works" ? (
-                        <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0" />
-                      ) : (
-                        <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                      )}
+                      <p className="font-medium text-sm sm:text-base">Artworks series</p>
+                      <p className={`text-xs mt-1 ${openSection === "works" ? "text-background/70" : "text-muted-foreground"}`}>
+                        {artworks.length} works
+                      </p>
                     </button>
-
-                    {openSection === "works" && (
-                      <div className="border-t border-border p-5">
-                        <div className="space-y-1">
-                          {artworksBySeries.map((group) => {
-                            const thumb = getSeriesThumb(group.series);
-                            const isOpen = openSeries === group.series;
-                            return (
-                              <div key={group.series}>
-                                <button
-                                  onClick={() => setOpenSeries(isOpen ? null : group.series)}
-                                  className="w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted/50 transition-colors text-left"
-                                >
-                                  <div className="w-12 h-12 rounded-md overflow-hidden bg-muted shrink-0">
-                                    {thumb ? (
-                                      <img src={thumb} alt={group.series} className="w-full h-full object-cover" />
-                                    ) : (
-                                      <div className="w-full h-full flex items-center justify-center">
-                                        <Layers className="w-4 h-4 text-muted-foreground/40" />
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-sm">{group.series}</p>
-                                    <p className="text-xs text-muted-foreground">{group.items.length} work{group.items.length !== 1 ? "s" : ""}</p>
-                                  </div>
-                                  {isOpen ? (
-                                    <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
-                                  ) : (
-                                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                                  )}
-                                </button>
-
-                                {isOpen && (
-                                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-3 ml-3 mb-4">
-                                    {group.items.map((aw) => {
-                                      const awThumb = getArtworkThumb(aw);
-                                      const dims = formatDimensions(aw);
-                                      return (
-                                        <div key={aw.id} className="group">
-                                          <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
-                                            {awThumb ? (
-                                              <img src={awThumb} alt={aw.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                                            ) : (
-                                              <div className="w-full h-full flex items-center justify-center">
-                                                <ImageIcon className="w-8 h-8 text-muted-foreground/40" />
-                                              </div>
-                                            )}
-                                          </div>
-                                          <p className="text-sm font-medium truncate">{aw.title}</p>
-                                          {aw.year && <p className="text-xs text-muted-foreground">{aw.year}</p>}
-                                          {aw.medium && <p className="text-xs text-muted-foreground truncate">{aw.medium}</p>}
-                                          {dims && <p className="text-xs text-muted-foreground">{dims}</p>}
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Exhibitions */}
-                {hasExhibitions && (
-                  <div className="border border-border rounded-lg overflow-hidden">
+                  )}
+                  {hasExhibitions && (
                     <button
-                      onClick={() => toggleSection("exhibitions")}
-                      className="w-full flex items-center gap-3 p-5 hover:bg-muted/30 transition-colors text-left"
+                      onClick={() => {
+                        toggleSection("exhibitions");
+                        if (openSection !== "exhibitions") {
+                          setExhibitionFilter(soloCount > 0 ? "solo" : "group");
+                        }
+                      }}
+                      className={`p-5 rounded-md border text-center transition-colors ${
+                        openSection === "exhibitions"
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border hover:bg-muted/50"
+                      }`}
                     >
-                      <Calendar className="w-5 h-5 text-muted-foreground shrink-0" />
-                      <span className="text-lg font-medium flex-1">Exhibitions</span>
-                      <span className="text-sm text-muted-foreground mr-2">{exhibitions.length} shows</span>
-                      {openSection === "exhibitions" ? (
-                        <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0" />
-                      ) : (
-                        <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                      )}
+                      <p className="font-medium text-sm sm:text-base">Exhibitions</p>
+                      <p className={`text-xs mt-1 ${openSection === "exhibitions" ? "text-background/70" : "text-muted-foreground"}`}>
+                        {exhibitions.length} shows
+                      </p>
                     </button>
-
-                    {openSection === "exhibitions" && (
-                      <div className="border-t border-border p-5">
-                        <div className="flex items-center gap-2 mb-6">
-                          <button
-                            onClick={() => setExhibitionFilter("all")}
-                            className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
-                              exhibitionFilter === "all"
-                                ? "bg-foreground text-background border-foreground"
-                                : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                            }`}
-                          >
-                            All ({exhibitions.length})
-                          </button>
-                          {soloCount > 0 && (
-                            <button
-                              onClick={() => setExhibitionFilter("solo")}
-                              className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
-                                exhibitionFilter === "solo"
-                                  ? "bg-foreground text-background border-foreground"
-                                  : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                              }`}
-                            >
-                              Solo ({soloCount})
-                            </button>
-                          )}
-                          {groupCount > 0 && (
-                            <button
-                              onClick={() => setExhibitionFilter("group")}
-                              className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
-                                exhibitionFilter === "group"
-                                  ? "bg-foreground text-background border-foreground"
-                                  : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                              }`}
-                            >
-                              Group ({groupCount})
-                            </button>
-                          )}
-                        </div>
-
-                        <div className="space-y-4">
-                          {filteredExhibitions.map((ex) => {
-                            const thumb = getExhibitionThumb(ex);
-                            const dateStr = [formatExDate(ex.opening_date), formatExDate(ex.closing_date)].filter(Boolean).join(" – ");
-                            const loc = [ex.venue, ex.city, ex.country].filter(Boolean).join(", ");
-                            return (
-                              <div key={ex.id} className="flex gap-4 p-4 rounded-md border border-border hover:bg-muted/30 transition-colors">
-                                {thumb && (
-                                  <div className="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-muted">
-                                    <img src={thumb} alt={ex.title} className="w-full h-full object-cover" loading="lazy" />
-                                  </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-start justify-between gap-2">
-                                    <h3 className="font-medium text-sm">{ex.title}</h3>
-                                    <span className="text-xs px-2 py-0.5 rounded-full border border-border text-muted-foreground shrink-0 capitalize">
-                                      {ex.exhibition_type}
-                                    </span>
-                                  </div>
-                                  {loc && <p className="text-sm text-muted-foreground mt-0.5">{loc}</p>}
-                                  {dateStr && <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>}
-                                  {ex.curator && <p className="text-xs text-muted-foreground mt-0.5">Curated by {ex.curator}</p>}
-                                  {ex.description && <p className="text-xs text-foreground/70 mt-1 line-clamp-2">{ex.description}</p>}
-                                </div>
-                              </div>
-                            );
-                          })}
-                          {filteredExhibitions.length === 0 && (
-                            <p className="text-sm text-muted-foreground text-center py-4">No {exhibitionFilter} exhibitions</p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* CV */}
-                {hasCv && (
-                  <div className="border border-border rounded-lg overflow-hidden">
+                  )}
+                  {hasCv && (
                     <button
                       onClick={() => toggleSection("cv")}
-                      className="w-full flex items-center gap-3 p-5 hover:bg-muted/30 transition-colors text-left"
+                      className={`p-5 rounded-md border text-center transition-colors ${
+                        openSection === "cv"
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border hover:bg-muted/50"
+                      }`}
                     >
-                      <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
-                      <span className="text-lg font-medium flex-1">Curriculum Vitae</span>
-                      <span className="text-sm text-muted-foreground mr-2">{cvSections.length} sections</span>
-                      {openSection === "cv" ? (
-                        <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0" />
-                      ) : (
-                        <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
-                      )}
+                      <p className="font-medium text-sm sm:text-base">Curriculum Vitae</p>
+                      <p className={`text-xs mt-1 ${openSection === "cv" ? "text-background/70" : "text-muted-foreground"}`}>
+                        {cvSections.length} sections
+                      </p>
                     </button>
+                  )}
+                </div>
 
-                    {openSection === "cv" && (
-                      <div className="border-t border-border p-5">
-                        <div className="space-y-10">
-                          {cvSections.map((section) => (
-                            <div key={section.section}>
-                              <h3 className="text-sm uppercase tracking-[0.15em] text-muted-foreground mb-4">
-                                {section.section}
-                              </h3>
-                              <div className="space-y-2">
-                                {section.entries.map((entry, i) => (
-                                  <div key={i} className="flex gap-4 text-sm">
-                                    {entry.year && (
-                                      <span className="text-muted-foreground font-mono w-12 shrink-0">{entry.year}</span>
-                                    )}
-                                    <span className="text-foreground/80">{entry.entry_text}</span>
+                {/* Section content */}
+                {openSection === "works" && (
+                  <div className="space-y-1">
+                    {artworksBySeries.map((group) => {
+                      const thumb = getSeriesThumb(group.series);
+                      const isOpen = openSeries === group.series;
+                      return (
+                        <div key={group.series}>
+                          <button
+                            onClick={() => setOpenSeries(isOpen ? null : group.series)}
+                            className="w-full flex items-center gap-4 p-4 rounded-md hover:bg-muted/50 transition-colors text-left"
+                          >
+                            <ChevronRight className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform ${isOpen ? "rotate-90" : ""}`} />
+                            <span className="font-medium flex-1">{group.series}</span>
+                            <div className="w-16 h-16 rounded-md overflow-hidden bg-muted shrink-0">
+                              {thumb ? (
+                                <img src={thumb} alt={group.series} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Layers className="w-4 h-4 text-muted-foreground/40" />
+                                </div>
+                              )}
+                            </div>
+                          </button>
+
+                          {isOpen && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-3 ml-8 mb-4">
+                              {group.items.map((aw) => {
+                                const awThumb = getArtworkThumb(aw);
+                                const dims = formatDimensions(aw);
+                                return (
+                                  <div key={aw.id} className="group">
+                                    <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
+                                      {awThumb ? (
+                                        <img src={awThumb} alt={aw.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                      ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                          <ImageIcon className="w-8 h-8 text-muted-foreground/40" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <p className="text-sm font-medium truncate">{aw.title}</p>
+                                    {aw.year && <p className="text-xs text-muted-foreground">{aw.year}</p>}
+                                    {aw.medium && <p className="text-xs text-muted-foreground truncate">{aw.medium}</p>}
+                                    {dims && <p className="text-xs text-muted-foreground">{dims}</p>}
                                   </div>
-                                ))}
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {openSection === "exhibitions" && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-6">
+                      {soloCount > 0 && (
+                        <button
+                          onClick={() => setExhibitionFilter("solo")}
+                          className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                            exhibitionFilter === "solo"
+                              ? "bg-foreground text-background border-foreground"
+                              : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          Solo ({soloCount})
+                        </button>
+                      )}
+                      {groupCount > 0 && (
+                        <button
+                          onClick={() => setExhibitionFilter("group")}
+                          className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                            exhibitionFilter === "group"
+                              ? "bg-foreground text-background border-foreground"
+                              : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          Group ({groupCount})
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      {filteredExhibitions.map((ex) => {
+                        const thumb = getExhibitionThumb(ex);
+                        const dateStr = [formatExDate(ex.opening_date), formatExDate(ex.closing_date)].filter(Boolean).join(" – ");
+                        const loc = [ex.venue, ex.city, ex.country].filter(Boolean).join(", ");
+                        return (
+                          <div key={ex.id} className="flex gap-4 p-4 rounded-md border border-border hover:bg-muted/30 transition-colors">
+                            {thumb && (
+                              <div className="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-muted">
+                                <img src={thumb} alt={ex.title} className="w-full h-full object-cover" loading="lazy" />
                               </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <h3 className="font-medium text-sm">{ex.title}</h3>
+                                <span className="text-xs px-2 py-0.5 rounded-full border border-border text-muted-foreground shrink-0 capitalize">
+                                  {ex.exhibition_type}
+                                </span>
+                              </div>
+                              {loc && <p className="text-sm text-muted-foreground mt-0.5">{loc}</p>}
+                              {dateStr && <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>}
+                              {ex.curator && <p className="text-xs text-muted-foreground mt-0.5">Curated by {ex.curator}</p>}
+                              {ex.description && <p className="text-xs text-foreground/70 mt-1 line-clamp-2">{ex.description}</p>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {filteredExhibitions.length === 0 && (
+                        <p className="text-sm text-muted-foreground text-center py-4">No {exhibitionFilter} exhibitions</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {openSection === "cv" && (
+                  <div className="space-y-10">
+                    {cvSections.map((section) => (
+                      <div key={section.section}>
+                        <h3 className="text-sm uppercase tracking-[0.15em] text-muted-foreground mb-4">
+                          {section.section}
+                        </h3>
+                        <div className="space-y-2">
+                          {section.entries.map((entry, i) => (
+                            <div key={i} className="flex gap-4 text-sm">
+                              {entry.year && (
+                                <span className="text-muted-foreground font-mono w-12 shrink-0">{entry.year}</span>
+                              )}
+                              <span className="text-foreground/80">{entry.entry_text}</span>
                             </div>
                           ))}
                         </div>
                       </div>
-                    )}
+                    ))}
                   </div>
                 )}
               </div>
