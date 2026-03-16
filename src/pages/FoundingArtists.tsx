@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Award } from "lucide-react";
+import { Award, ArrowRight } from "lucide-react";
 
 interface FoundingArtist {
   user_id: string;
@@ -115,16 +114,20 @@ const FoundingArtists = () => {
                       const location = [artist.profile?.city, artist.profile?.country].filter(Boolean).join(", ");
 
                       return (
-                        <div key={artist.user_id} className="text-center">
-                          <Avatar className="h-24 w-24 mx-auto mb-3">
+                        <Link
+                          key={artist.user_id}
+                          to={`/artist/${artist.user_id}`}
+                          className="text-center group"
+                        >
+                          <Avatar className="h-24 w-24 mx-auto mb-3 ring-2 ring-transparent group-hover:ring-foreground/20 transition-all">
                             {avatarSrc && <AvatarImage src={avatarSrc} alt={artist.profile?.full_name || ""} />}
                             <AvatarFallback className="text-lg bg-secondary text-secondary-foreground">
                               {initials}
                             </AvatarFallback>
                           </Avatar>
-                          <p className="font-medium text-sm">{artist.profile?.full_name || "Artist"}</p>
+                          <p className="font-medium text-sm group-hover:text-foreground/80 transition-colors">{artist.profile?.full_name || "Artist"}</p>
                           {location && <p className="text-xs text-muted-foreground mt-0.5">{location}</p>}
-                        </div>
+                        </Link>
                       );
                     })}
                   </div>
