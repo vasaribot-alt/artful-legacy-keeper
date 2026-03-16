@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
 
 const features = [
