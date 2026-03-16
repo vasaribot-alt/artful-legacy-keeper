@@ -1,0 +1,1 @@
+UPDATE founding_artists SET user_id = '0bce329f-8b9d-4ea2-8f67-e9f860676254' WHERE user_id = '6bf68089-7fb5-4bbd-a815-367a7050679f'
