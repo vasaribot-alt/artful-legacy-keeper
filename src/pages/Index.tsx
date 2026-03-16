@@ -147,7 +147,9 @@ const Index = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
               {featuredArtists.slice(0, 8).map((artist) => {
                 const avatarSrc = artist.avatar_url
-                  ? supabase.storage.from("profile-photos").getPublicUrl(artist.avatar_url).data.publicUrl
+                  ? artist.avatar_url.startsWith("http")
+                    ? artist.avatar_url
+                    : supabase.storage.from("profile-photos").getPublicUrl(artist.avatar_url).data.publicUrl
                   : undefined;
                 const location = [artist.city, artist.country].filter(Boolean).join(", ");
                 return (

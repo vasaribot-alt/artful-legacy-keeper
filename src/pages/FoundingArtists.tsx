@@ -109,7 +109,9 @@ const FoundingArtists = () => {
                         .join("")
                         .slice(0, 2) || "?";
                       const avatarSrc = artist.profile?.avatar_url
-                        ? supabase.storage.from("profile-photos").getPublicUrl(artist.profile.avatar_url).data.publicUrl
+                        ? artist.profile.avatar_url.startsWith("http")
+                          ? artist.profile.avatar_url
+                          : supabase.storage.from("profile-photos").getPublicUrl(artist.profile.avatar_url).data.publicUrl
                         : undefined;
                       const location = [artist.profile?.city, artist.profile?.country].filter(Boolean).join(", ");
 
