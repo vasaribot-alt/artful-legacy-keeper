@@ -28,7 +28,39 @@ const features = [
   },
 ];
 
+interface FeaturedArtist {
+  user_id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  city: string | null;
+  country: string | null;
+}
+
 const Index = () => {
+  const [featuredArtists, setFeaturedArtists] = useState<FeaturedArtist[]>([]);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      const { data: foundingData } = await supabase
+        .from("founding_artists")
+        .select("user_id")
+        .limit(8);
+
+      if (foundingData && foundingData.length > 0) {
+        const userIds = foundingData.map((f) => f.user_id);
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name, avatar_url, city, country")
+          .in("user_id", userIds);
+
+        if (profiles) {
+          setFeaturedArtists(profiles);
+        }
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
