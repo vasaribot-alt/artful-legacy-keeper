@@ -25,6 +25,7 @@ import PortfolioDetail from "./pages/PortfolioDetail";
 import PortfolioShared from "./pages/PortfolioShared";
 import Catalogues from "./pages/Catalogues";
 import FoundingArtists from "./pages/FoundingArtists";
+import PublicArtistProfile from "./pages/PublicArtistProfile";
 import FoundationDashboard from "./pages/FoundationDashboard";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
