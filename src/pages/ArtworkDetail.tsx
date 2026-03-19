@@ -589,6 +589,14 @@ const ArtworkDetail = () => {
           </div>
         )}
 
+        {/* Photography multi-size editions */}
+        {artworkType === "Photography" && !isUnique && id && globalArtworkId > 0 && (
+          <>
+            <Separator />
+            <PhotographySizesManager artworkId={id} globalArtworkId={globalArtworkId} />
+          </>
+        )}
+
         <Separator />
 
         {/* Materials */}
