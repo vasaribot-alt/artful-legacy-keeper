@@ -88,6 +88,7 @@ const ArtworkDetail = () => {
   const [buyerName, setBuyerName] = useState("");
   const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
+  const [globalArtworkId, setGlobalArtworkId] = useState<number>(0);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
   // Images
