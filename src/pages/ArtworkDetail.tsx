@@ -185,6 +185,7 @@ const ArtworkDetail = () => {
     if (error || !data) { toast.error("Artwork not found"); navigate("/dashboard"); return; }
 
     setTitle(data.title);
+    setGlobalArtworkId(data.global_artwork_id);
     setArtworkType(data.artwork_type || "");
     setMedium(data.medium || "");
     setYear(data.year ? String(data.year) : "");
