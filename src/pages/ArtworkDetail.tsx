@@ -571,26 +571,8 @@ const ArtworkDetail = () => {
           <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); } }} />
         </div>
 
-        {!isUnique && artworkType !== "Photography" && (
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="editionCount">Number of editions</Label>
-              <Input id="editionCount" type="number" min="1" value={editionCount} onChange={(e) => setEditionCount(e.target.value)} placeholder="e.g. 8" className="mt-1.5" />
-            </div>
-            <div>
-              <Label>Artist Proofs (AP)</Label>
-              <Select value={artistProofs} onValueChange={setArtistProofs}>
-                <SelectTrigger className="mt-1.5"><SelectValue placeholder="None" /></SelectTrigger>
-                <SelectContent>
-                  {[1, 2, 3, 4, 5].map((n) => <SelectItem key={n} value={String(n)}>{n} AP</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        )}
-
-        {/* Photography multi-size editions */}
-        {artworkType === "Photography" && !isUnique && id && globalArtworkId > 0 && (
+        {/* Multi-size editions for all non-unique works */}
+        {!isUnique && id && globalArtworkId > 0 && (
           <>
             <Separator />
             <PhotographySizesManager artworkId={id} globalArtworkId={globalArtworkId} />
