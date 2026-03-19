@@ -527,15 +527,17 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
           <Separator />
 
-          {/* Dimensions */}
-          <div>
-            <Label className="mb-1.5 block">Dimensions (cm)</Label>
-            <div className="grid grid-cols-3 gap-3">
-              <Input type="number" step="0.1" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="Height" />
-              <Input type="number" step="0.1" value={width} onChange={(e) => setWidth(e.target.value)} placeholder="Width" />
-              <Input type="number" step="0.1" value={depth} onChange={(e) => setDepth(e.target.value)} placeholder="Depth" />
+          {/* Dimensions - hidden for Photography editions (managed per-size) */}
+          {!(artworkType === "Photography" && !isUnique) && (
+            <div>
+              <Label className="mb-1.5 block">Dimensions (cm)</Label>
+              <div className="grid grid-cols-3 gap-3">
+                <Input type="number" step="0.1" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="Height" />
+                <Input type="number" step="0.1" value={width} onChange={(e) => setWidth(e.target.value)} placeholder="Width" />
+                <Input type="number" step="0.1" value={depth} onChange={(e) => setDepth(e.target.value)} placeholder="Depth" />
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
