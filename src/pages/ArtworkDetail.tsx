@@ -600,8 +600,8 @@ const ArtworkDetail = () => {
 
         <Separator />
 
-        {/* Dimensions - hidden for Photography editions (managed per-size) */}
-        {!(artworkType === "Photography" && !isUnique) && (
+        {/* Dimensions - hidden for edition works (managed per-size) */}
+        {isUnique && (
           <>
             <div>
               <Label className="mb-1.5 block">Dimensions (cm)</Label>
@@ -625,7 +625,7 @@ const ArtworkDetail = () => {
           </>
         )}
 
-        {artworkType === "Photography" && !isUnique && (
+        {!isUnique && (
           <div className="grid grid-cols-1">
             <div>
               <Label htmlFor="location">Current Location</Label>
