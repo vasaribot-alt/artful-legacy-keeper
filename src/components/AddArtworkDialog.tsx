@@ -476,29 +476,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             </div>
           )}
 
-          {!isUnique && !isCollector && artworkType !== "Photography" && (
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="editionCount">Number of editions</Label>
-                <Input id="editionCount" type="number" min="1" value={editionCount} onChange={(e) => setEditionCount(e.target.value)} placeholder="e.g. 8" className="mt-1.5" />
-              </div>
-              <div>
-                <Label>Artist Proofs (AP)</Label>
-                <Select value={artistProofs} onValueChange={setArtistProofs}>
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder="None" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <SelectItem key={n} value={String(n)}>{n} AP</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
-
-          {!isUnique && !isCollector && artworkType === "Photography" && (
+          {!isUnique && !isCollector && (
             <p className="text-sm text-muted-foreground py-2 text-center border border-dashed border-border rounded-sm">
               Sizes and editions are managed on the artwork detail page after creation.
             </p>
@@ -527,8 +505,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
           <Separator />
 
-          {/* Dimensions - hidden for Photography editions (managed per-size) */}
-          {!(artworkType === "Photography" && !isUnique) && (
+          {/* Dimensions - hidden for edition works (managed per-size) */}
+          {isUnique && (
             <div>
               <Label className="mb-1.5 block">Dimensions (cm)</Label>
               <div className="grid grid-cols-3 gap-3">

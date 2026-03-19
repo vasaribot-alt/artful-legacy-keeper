@@ -238,7 +238,7 @@ export const PhotographySizesManager = ({ artworkId, globalArtworkId }: Props) =
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <Label className="text-base font-medium">Photography Sizes & Editions</Label>
+          <Label className="text-base font-medium">Sizes & Editions</Label>
           <p className="text-xs text-muted-foreground mt-0.5">
             Each size has its own dimensions, edition count, and price. Every edition gets a unique registration number.
           </p>
