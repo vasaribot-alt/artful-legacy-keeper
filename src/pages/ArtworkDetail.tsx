@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
+import { PhotographySizesManager } from "@/components/PhotographySizesManager";
 import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -87,6 +88,7 @@ const ArtworkDetail = () => {
   const [buyerName, setBuyerName] = useState("");
   const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
+  const [globalArtworkId, setGlobalArtworkId] = useState<number>(0);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
 
   // Images
@@ -183,6 +185,7 @@ const ArtworkDetail = () => {
     if (error || !data) { toast.error("Artwork not found"); navigate("/dashboard"); return; }
 
     setTitle(data.title);
+    setGlobalArtworkId(data.global_artwork_id);
     setArtworkType(data.artwork_type || "");
     setMedium(data.medium || "");
     setYear(data.year ? String(data.year) : "");
@@ -584,6 +587,14 @@ const ArtworkDetail = () => {
               </Select>
             </div>
           </div>
+        )}
+
+        {/* Photography multi-size editions */}
+        {artworkType === "Photography" && !isUnique && id && globalArtworkId > 0 && (
+          <>
+            <Separator />
+            <PhotographySizesManager artworkId={id} globalArtworkId={globalArtworkId} />
+          </>
         )}
 
         <Separator />

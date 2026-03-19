@@ -194,6 +194,53 @@ export type Database = {
           },
         ]
       }
+      artwork_sizes: {
+        Row: {
+          artist_proofs: number
+          artwork_id: string
+          created_at: string
+          currency: string | null
+          edition_count: number
+          height: number | null
+          id: string
+          price: number | null
+          size_label: string
+          width: number | null
+        }
+        Insert: {
+          artist_proofs?: number
+          artwork_id: string
+          created_at?: string
+          currency?: string | null
+          edition_count?: number
+          height?: number | null
+          id?: string
+          price?: number | null
+          size_label: string
+          width?: number | null
+        }
+        Update: {
+          artist_proofs?: number
+          artwork_id?: string
+          created_at?: string
+          currency?: string | null
+          edition_count?: number
+          height?: number | null
+          id?: string
+          price?: number | null
+          size_label?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_sizes_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artworks: {
         Row: {
           artist_name: string | null
@@ -419,6 +466,56 @@ export type Database = {
             columns: ["cv_entry_id"]
             isOneToOne: false
             referencedRelation: "cv_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      edition_items: {
+        Row: {
+          artwork_location: string | null
+          artwork_size_id: string
+          buyer_name: string | null
+          created_at: string
+          edition_label: string
+          id: string
+          is_ap: boolean
+          provenance: string | null
+          sold_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          artwork_location?: string | null
+          artwork_size_id: string
+          buyer_name?: string | null
+          created_at?: string
+          edition_label: string
+          id?: string
+          is_ap?: boolean
+          provenance?: string | null
+          sold_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          artwork_location?: string | null
+          artwork_size_id?: string
+          buyer_name?: string | null
+          created_at?: string
+          edition_label?: string
+          id?: string
+          is_ap?: boolean
+          provenance?: string | null
+          sold_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "edition_items_artwork_size_id_fkey"
+            columns: ["artwork_size_id"]
+            isOneToOne: false
+            referencedRelation: "artwork_sizes"
             referencedColumns: ["id"]
           },
         ]
