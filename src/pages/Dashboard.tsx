@@ -108,6 +108,7 @@ const Dashboard = () => {
     const { data, error } = await supabase
       .from("artworks")
       .select("*")
+      .eq("owner_id", user!.id)
       .eq("role_context", activeRole)
       .order("created_at", { ascending: false });
     if (error) {
