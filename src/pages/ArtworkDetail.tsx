@@ -571,7 +571,7 @@ const ArtworkDetail = () => {
           <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); } }} />
         </div>
 
-        {!isUnique && (
+        {!isUnique && artworkType !== "Photography" && (
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="editionCount">Number of editions</Label>
@@ -618,26 +618,39 @@ const ArtworkDetail = () => {
 
         <Separator />
 
-        {/* Dimensions */}
-        <div>
-          <Label className="mb-1.5 block">Dimensions (cm)</Label>
-          <div className="grid grid-cols-3 gap-3">
-            <Input type="number" step="0.1" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="Height" />
-            <Input type="number" step="0.1" value={width} onChange={(e) => setWidth(e.target.value)} placeholder="Width" />
-            <Input type="number" step="0.1" value={depth} onChange={(e) => setDepth(e.target.value)} placeholder="Depth" />
-          </div>
-        </div>
+        {/* Dimensions - hidden for Photography editions (managed per-size) */}
+        {!(artworkType === "Photography" && !isUnique) && (
+          <>
+            <div>
+              <Label className="mb-1.5 block">Dimensions (cm)</Label>
+              <div className="grid grid-cols-3 gap-3">
+                <Input type="number" step="0.1" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="Height" />
+                <Input type="number" step="0.1" value={width} onChange={(e) => setWidth(e.target.value)} placeholder="Width" />
+                <Input type="number" step="0.1" value={depth} onChange={(e) => setDepth(e.target.value)} placeholder="Depth" />
+              </div>
+            </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label htmlFor="weight">Weight (kg)</Label>
-            <Input id="weight" type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} className="mt-1.5" />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="weight">Weight (kg)</Label>
+                <Input id="weight" type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} className="mt-1.5" />
+              </div>
+              <div>
+                <Label htmlFor="location">Current Location</Label>
+                <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
+              </div>
+            </div>
+          </>
+        )}
+
+        {artworkType === "Photography" && !isUnique && (
+          <div className="grid grid-cols-1">
+            <div>
+              <Label htmlFor="location">Current Location</Label>
+              <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="location">Current Location</Label>
-            <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
-          </div>
-        </div>
+        )}
 
         <Separator />
 
