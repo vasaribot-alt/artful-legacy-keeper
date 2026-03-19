@@ -505,8 +505,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
           <Separator />
 
-          {/* Dimensions - hidden for Photography editions (managed per-size) */}
-          {!(artworkType === "Photography" && !isUnique) && (
+          {/* Dimensions - hidden for edition works (managed per-size) */}
+          {isUnique && (
             <div>
               <Label className="mb-1.5 block">Dimensions (cm)</Label>
               <div className="grid grid-cols-3 gap-3">
