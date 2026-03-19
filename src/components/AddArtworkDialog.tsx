@@ -476,7 +476,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             </div>
           )}
 
-          {!isUnique && !isCollector && (
+          {!isUnique && !isCollector && artworkType !== "Photography" && (
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="editionCount">Number of editions</Label>
@@ -496,6 +496,12 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
                 </Select>
               </div>
             </div>
+          )}
+
+          {!isUnique && !isCollector && artworkType === "Photography" && (
+            <p className="text-sm text-muted-foreground py-2 text-center border border-dashed border-border rounded-sm">
+              Sizes and editions are managed on the artwork detail page after creation.
+            </p>
           )}
 
           <Separator />

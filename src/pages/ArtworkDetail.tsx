@@ -571,7 +571,7 @@ const ArtworkDetail = () => {
           <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); } }} />
         </div>
 
-        {!isUnique && (
+        {!isUnique && artworkType !== "Photography" && (
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="editionCount">Number of editions</Label>
