@@ -61,6 +61,7 @@ const ArtistProfile = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [idVerified, setIdVerified] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [birthYear, setBirthYear] = useState("");
