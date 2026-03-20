@@ -499,7 +499,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="signed">Signed</Label>
-              <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" />
+              <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" autoComplete="off" />
             </div>
           </div>
 
