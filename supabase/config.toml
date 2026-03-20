@@ -2,3 +2,9 @@ project_id = "ofqaxojjqryylcugegke"
 
 [functions.parse-cv-exhibitions]
 verify_jwt = false
+
+[functions.veriff-session]
+verify_jwt = false
+
+[functions.veriff-webhook]
+verify_jwt = false
