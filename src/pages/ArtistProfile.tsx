@@ -234,6 +234,7 @@ const ArtistProfile = () => {
     biography: biography || null,
     chronology: chronology || null,
     global_artist_id: globalArtistId,
+    id_verified: idVerified,
   } : null;
 
   const headerActions = editMode ? (
