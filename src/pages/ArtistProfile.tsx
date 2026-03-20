@@ -111,6 +111,7 @@ const ArtistProfile = () => {
       }
 
       setProfileId(data.id);
+      setIdVerified(data.id_verified || false);
       setAvatarUrl((data as any).avatar_url || null);
       setFullName(data.full_name || "");
       setGlobalArtistId(data.global_artist_id);
