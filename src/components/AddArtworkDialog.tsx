@@ -488,7 +488,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="medium">Medium</Label>
-              <Input id="medium" value={medium} onChange={(e) => setMedium(e.target.value)} placeholder="e.g. Oil on canvas" className="mt-1.5" />
+              <Input id="medium" value={medium} onChange={(e) => setMedium(e.target.value)} placeholder="e.g. Oil on canvas" className="mt-1.5" autoComplete="off" />
             </div>
             <div>
               <Label htmlFor="support">Support</Label>
