@@ -595,7 +595,7 @@ const ArtworkDetail = () => {
 
         <div>
           <Label htmlFor="signed">Signed</Label>
-          <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" />
+          <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" autoComplete="off" />
         </div>
 
         <Separator />
