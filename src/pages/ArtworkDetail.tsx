@@ -629,7 +629,7 @@ const ArtworkDetail = () => {
           <div className="grid grid-cols-1">
             <div>
               <Label htmlFor="location">Current Location</Label>
-              <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
+              <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" autoComplete="off" />
             </div>
           </div>
         )}

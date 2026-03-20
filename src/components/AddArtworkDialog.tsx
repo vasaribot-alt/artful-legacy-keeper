@@ -524,7 +524,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             </div>
             <div>
               <Label htmlFor="location">Location</Label>
-              <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
+              <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" autoComplete="off" />
             </div>
           </div>
 
