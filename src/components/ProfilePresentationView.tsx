@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
-  Globe, Phone, Mail, MapPin, ExternalLink, Building2,
+  Globe, Phone, Mail, MapPin, ExternalLink, Building2, ShieldCheck, Loader2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface SocialLink {
   platform: string;
@@ -31,12 +35,32 @@ export interface ProfileViewData {
   biography: string | null;
   chronology: string | null;
   global_artist_id: number;
+  id_verified: boolean;
 }
 
 export function ProfilePresentationView({ profile }: { profile: ProfileViewData }) {
   const navigate = useNavigate();
+  const [startingVerification, setStartingVerification] = useState(false);
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const phoneDisplay = [profile.phone_prefix, profile.phone].filter(Boolean).join(" ");
+
+  const handleVerifyId = async () => {
+    setStartingVerification(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("veriff-session");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        toast.error("Could not start verification session");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to start ID verification");
+    } finally {
+      setStartingVerification(false);
+    }
+  };
 
   return (
     <>
@@ -62,6 +86,31 @@ export function ProfilePresentationView({ profile }: { profile: ProfileViewData 
           <span className="mt-4 text-xs px-3 py-1 rounded-sm bg-foreground text-background font-mono tracking-widest">
             GAR-{String(profile.global_artist_id).padStart(8, '0')}
           </span>
+
+          {/* ID Verification status */}
+          <div className="mt-6">
+            {profile.id_verified ? (
+              <span className="inline-flex items-center gap-1.5 text-sm text-emerald-600 font-medium">
+                <ShieldCheck className="w-4 h-4" />
+                Identity Verified
+              </span>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleVerifyId}
+                disabled={startingVerification}
+                className="gap-1.5"
+              >
+                {startingVerification ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                )}
+                {startingVerification ? "Starting…" : "Verify Identity"}
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
