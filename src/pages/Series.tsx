@@ -46,9 +46,12 @@ const Series = () => {
 
   const fetchSeries = async () => {
     setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
     const { data, error } = await supabase
       .from("series_groups")
       .select("*")
+      .eq("user_id", user.id)
       .order("name");
     if (error) toast.error("Failed to load series");
     else setSeries(data || []);
