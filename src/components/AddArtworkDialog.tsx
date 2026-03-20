@@ -488,18 +488,18 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="medium">Medium</Label>
-              <Input id="medium" value={medium} onChange={(e) => setMedium(e.target.value)} placeholder="e.g. Oil on canvas" className="mt-1.5" />
+              <Input id="medium" value={medium} onChange={(e) => setMedium(e.target.value)} placeholder="e.g. Oil on canvas" className="mt-1.5" autoComplete="off" />
             </div>
             <div>
               <Label htmlFor="support">Support</Label>
-              <Input id="support" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="e.g. Linen" className="mt-1.5" />
+              <Input id="support" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="e.g. Linen" className="mt-1.5" autoComplete="off" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="signed">Signed</Label>
-              <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" />
+              <Input id="signed" value={signed} onChange={(e) => setSigned(e.target.value)} placeholder="e.g. Signed verso" className="mt-1.5" autoComplete="off" />
             </div>
           </div>
 
@@ -524,7 +524,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             </div>
             <div>
               <Label htmlFor="location">Location</Label>
-              <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" />
+              <Input id="location" value={artworkLocation} onChange={(e) => setArtworkLocation(e.target.value)} placeholder="e.g. Studio, Storage" className="mt-1.5" autoComplete="off" />
             </div>
           </div>
 
