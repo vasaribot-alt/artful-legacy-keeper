@@ -559,7 +559,7 @@ const ArtworkDetail = () => {
           </div>
           <div>
             <Label htmlFor="series">Series / Group</Label>
-            <Input id="series" value={series} onChange={(e) => setSeries(e.target.value)} className="mt-1.5" />
+            <Input id="series" value={series} onChange={(e) => setSeries(e.target.value)} className="mt-1.5" autoComplete="off" />
           </div>
         </div>
 
