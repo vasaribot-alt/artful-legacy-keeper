@@ -61,6 +61,7 @@ const ArtistProfile = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [idVerified, setIdVerified] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [birthYear, setBirthYear] = useState("");
@@ -110,6 +111,7 @@ const ArtistProfile = () => {
       }
 
       setProfileId(data.id);
+      setIdVerified(data.id_verified || false);
       setAvatarUrl((data as any).avatar_url || null);
       setFullName(data.full_name || "");
       setGlobalArtistId(data.global_artist_id);
@@ -232,6 +234,7 @@ const ArtistProfile = () => {
     biography: biography || null,
     chronology: chronology || null,
     global_artist_id: globalArtistId,
+    id_verified: idVerified,
   } : null;
 
   const headerActions = editMode ? (
