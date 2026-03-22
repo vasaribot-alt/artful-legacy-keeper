@@ -295,6 +295,9 @@ const FoundationDashboard = () => {
           <ArtistInviteUpload />
         </section>
 
+        {/* Registered Users */}
+        <RegisteredUsersOverview />
+
         {/* Donor Management */}
         <DonorManager />
       </div>
