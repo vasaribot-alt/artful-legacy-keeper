@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      artist_invites: {
+        Row: {
+          added_by: string
+          artist_name: string
+          birth_year: number | null
+          city: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          id: string
+          invite_code_id: string | null
+          notes: string | null
+          status: string
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
+        }
+        Insert: {
+          added_by: string
+          artist_name: string
+          birth_year?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          invite_code_id?: string | null
+          notes?: string | null
+          status?: string
+          tier?: Database["public"]["Enums"]["founding_artist_tier"]
+        }
+        Update: {
+          added_by?: string
+          artist_name?: string
+          birth_year?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          invite_code_id?: string | null
+          notes?: string | null
+          status?: string
+          tier?: Database["public"]["Enums"]["founding_artist_tier"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artist_invites_invite_code_id_fkey"
+            columns: ["invite_code_id"]
+            isOneToOne: false
+            referencedRelation: "invite_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artwork_catalogues: {
         Row: {
           artwork_id: string
