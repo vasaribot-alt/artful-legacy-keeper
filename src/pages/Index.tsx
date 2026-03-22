@@ -71,6 +71,9 @@ const Index = () => {
             <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Founding Artists
             </Link>
+            <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Supporters
+            </Link>
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sign In
             </Link>
