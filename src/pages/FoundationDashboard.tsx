@@ -11,6 +11,7 @@ import { Copy, Plus, Trash2, Award, Download } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import DonorManager from "@/components/DonorManager";
 import ArtistInviteUpload from "@/components/ArtistInviteUpload";
+import RegisteredUsersOverview from "@/components/RegisteredUsersOverview";
 
 type Tier = "internationally_established" | "mid_career" | "emerging";
 
@@ -293,6 +294,9 @@ const FoundationDashboard = () => {
           </p>
           <ArtistInviteUpload />
         </section>
+
+        {/* Registered Users */}
+        <RegisteredUsersOverview />
 
         {/* Donor Management */}
         <DonorManager />
