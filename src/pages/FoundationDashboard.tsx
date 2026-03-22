@@ -283,6 +283,17 @@ const FoundationDashboard = () => {
           )}
         </section>
 
+        {/* Artist Invite Tracker */}
+        <section>
+          <div className="flex items-center gap-3 mb-1">
+            <h2 className="text-xl font-semibold">Artist Outreach Tracker</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-6">
+            Track invited artists, upload lists, and manage invite codes.
+          </p>
+          <ArtistInviteUpload />
+        </section>
+
         {/* Donor Management */}
         <DonorManager />
       </div>
