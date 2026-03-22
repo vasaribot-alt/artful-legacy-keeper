@@ -27,6 +27,7 @@ import Catalogues from "./pages/Catalogues";
 import FoundingArtists from "./pages/FoundingArtists";
 import PublicArtistProfile from "./pages/PublicArtistProfile";
 import FoundationDashboard from "./pages/FoundationDashboard";
+import Donors from "./pages/Donors";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
