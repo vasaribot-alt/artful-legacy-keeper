@@ -42,4 +42,10 @@ export async function redeemInviteCodeIfNeeded(userId: string) {
       tier: codeData.tier,
       invite_code_id: codeData.id,
     });
+
+  // Update artist_invites status to 'registered' if tracked
+  await supabase
+    .from("artist_invites")
+    .update({ status: "registered" })
+    .eq("invite_code_id", codeData.id);
 }
