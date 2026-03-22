@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Copy, Plus, Trash2, Award, Download } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import DonorManager from "@/components/DonorManager";
+import ArtistInviteUpload from "@/components/ArtistInviteUpload";
 
 type Tier = "internationally_established" | "mid_career" | "emerging";
 
@@ -280,6 +281,17 @@ const FoundationDashboard = () => {
               })}
             </div>
           )}
+        </section>
+
+        {/* Artist Invite Tracker */}
+        <section>
+          <div className="flex items-center gap-3 mb-1">
+            <h2 className="text-xl font-semibold">Artist Outreach Tracker</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-6">
+            Track invited artists, upload lists, and manage invite codes.
+          </p>
+          <ArtistInviteUpload />
         </section>
 
         {/* Donor Management */}
