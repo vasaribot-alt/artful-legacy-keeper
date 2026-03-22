@@ -281,6 +281,9 @@ const FoundationDashboard = () => {
             </div>
           )}
         </section>
+
+        {/* Donor Management */}
+        <DonorManager />
       </div>
     </AppLayout>
   );
