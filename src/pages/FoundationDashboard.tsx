@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Copy, Plus, Trash2, Award, Download } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import DonorManager from "@/components/DonorManager";
 
 type Tier = "internationally_established" | "mid_career" | "emerging";
 
