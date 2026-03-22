@@ -27,6 +27,7 @@ import Catalogues from "./pages/Catalogues";
 import FoundingArtists from "./pages/FoundingArtists";
 import PublicArtistProfile from "./pages/PublicArtistProfile";
 import FoundationDashboard from "./pages/FoundationDashboard";
+import Donors from "./pages/Donors";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
@@ -66,6 +67,7 @@ const App = () => (
           <Route path="/founding-artists" element={<FoundingArtists />} />
           <Route path="/artist/:id" element={<PublicArtistProfile />} />
           <Route path="/foundation" element={<FoundationDashboard />} />
+          <Route path="/donors" element={<Donors />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId" element={<RegistrarClientView />} />
           <Route path="*" element={<NotFound />} />

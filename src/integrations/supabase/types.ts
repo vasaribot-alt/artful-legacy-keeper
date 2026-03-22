@@ -470,6 +470,39 @@ export type Database = {
           },
         ]
       }
+      donors: {
+        Row: {
+          added_by: string
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          is_public: boolean
+          message: string | null
+          tier: Database["public"]["Enums"]["donor_tier"]
+        }
+        Insert: {
+          added_by: string
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_public?: boolean
+          message?: string | null
+          tier?: Database["public"]["Enums"]["donor_tier"]
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_public?: boolean
+          message?: string | null
+          tier?: Database["public"]["Enums"]["donor_tier"]
+        }
+        Relationships: []
+      }
       edition_items: {
         Row: {
           artwork_location: string | null
@@ -1011,6 +1044,7 @@ export type Database = {
     }
     Enums: {
       app_role: "artist" | "collector" | "registrar" | "foundation"
+      donor_tier: "platinum" | "gold" | "silver" | "bronze"
       founding_artist_tier:
         | "internationally_established"
         | "mid_career"
@@ -1143,6 +1177,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["artist", "collector", "registrar", "foundation"],
+      donor_tier: ["platinum", "gold", "silver", "bronze"],
       founding_artist_tier: [
         "internationally_established",
         "mid_career",
