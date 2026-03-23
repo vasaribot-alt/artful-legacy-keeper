@@ -97,10 +97,13 @@ const Dashboard = () => {
   const fetchProfile = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("global_artist_id")
+      .select("global_artist_id, id_verified")
       .eq("user_id", user!.id)
       .single();
-    if (data) setGlobalArtistId(data.global_artist_id);
+    if (data) {
+      setGlobalArtistId(data.global_artist_id);
+      setIdVerified(data.id_verified || false);
+    }
   };
 
   const fetchArtworks = async () => {
