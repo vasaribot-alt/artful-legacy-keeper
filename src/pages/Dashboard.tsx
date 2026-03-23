@@ -74,7 +74,7 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
-  const idVerified = false;
+  const [idVerified, setIdVerified] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
