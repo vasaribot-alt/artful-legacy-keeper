@@ -56,6 +56,41 @@ const formatDimensions = (h: number | null, w: number | null, d: number | null) 
   return parts.join(" × ") + " cm";
 };
 
+function VerifyIdBanner({ onVerified }: { onVerified: () => void }) {
+  const [starting, setStarting] = useState(false);
+  const handleVerify = async () => {
+    setStarting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("veriff-session");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        toast.error("Could not start verification session");
+      }
+    } catch {
+      toast.error("Failed to start ID verification");
+    } finally {
+      setStarting(false);
+    }
+  };
+  return (
+    <div className="flex items-center gap-3 p-4 mb-8 rounded-sm border border-border bg-secondary">
+      <Shield className="w-5 h-5 text-muted-foreground shrink-0" />
+      <div className="flex-1">
+        <p className="text-sm font-medium">Identity verification required</p>
+        <p className="text-xs text-muted-foreground">
+          Complete government-approved ID verification to add artworks to your database.
+        </p>
+      </div>
+      <Button size="sm" variant="outline" onClick={handleVerify} disabled={starting} className="gap-1.5">
+        {starting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+        {starting ? "Starting…" : "Verify ID"}
+      </Button>
+    </div>
+  );
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
