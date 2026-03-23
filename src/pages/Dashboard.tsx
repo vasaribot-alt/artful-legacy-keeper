@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter, ShieldCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
@@ -56,6 +56,41 @@ const formatDimensions = (h: number | null, w: number | null, d: number | null) 
   return parts.join(" × ") + " cm";
 };
 
+function VerifyIdBanner({ onVerified }: { onVerified: () => void }) {
+  const [starting, setStarting] = useState(false);
+  const handleVerify = async () => {
+    setStarting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("veriff-session");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        toast.error("Could not start verification session");
+      }
+    } catch {
+      toast.error("Failed to start ID verification");
+    } finally {
+      setStarting(false);
+    }
+  };
+  return (
+    <div className="flex items-center gap-3 p-4 mb-8 rounded-sm border border-border bg-secondary">
+      <Shield className="w-5 h-5 text-muted-foreground shrink-0" />
+      <div className="flex-1">
+        <p className="text-sm font-medium">Identity verification required</p>
+        <p className="text-xs text-muted-foreground">
+          Complete government-approved ID verification to add artworks to your database.
+        </p>
+      </div>
+      <Button size="sm" variant="outline" onClick={handleVerify} disabled={starting} className="gap-1.5">
+        {starting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+        {starting ? "Starting…" : "Verify ID"}
+      </Button>
+    </div>
+  );
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -74,7 +109,7 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
-  const idVerified = false;
+  const [idVerified, setIdVerified] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -97,10 +132,13 @@ const Dashboard = () => {
   const fetchProfile = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("global_artist_id")
+      .select("global_artist_id, id_verified")
       .eq("user_id", user!.id)
       .single();
-    if (data) setGlobalArtistId(data.global_artist_id);
+    if (data) {
+      setGlobalArtistId(data.global_artist_id);
+      setIdVerified(data.id_verified || false);
+    }
   };
 
   const fetchArtworks = async () => {
@@ -252,16 +290,7 @@ const Dashboard = () => {
       {editMode ? (
         <div className="max-w-6xl mx-auto px-6 py-8">
           {!idVerified && (
-            <div className="flex items-center gap-3 p-4 mb-8 rounded-sm border border-border bg-secondary">
-              <Shield className="w-5 h-5 text-muted-foreground shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">Identity verification required</p>
-                <p className="text-xs text-muted-foreground">
-                  Complete government-approved ID verification to add artworks to your database.
-                </p>
-              </div>
-              <Button size="sm" variant="outline" disabled>Verify ID</Button>
-            </div>
+            <VerifyIdBanner onVerified={() => { setIdVerified(true); fetchProfile(); }} />
           )}
 
           <div className="mb-6 flex items-center gap-4 flex-wrap">
