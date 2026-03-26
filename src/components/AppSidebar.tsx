@@ -164,6 +164,12 @@ export function AppSidebar() {
             })}
           </div>
           {!collapsed && <div className="mx-3 mb-2 h-px bg-border" />}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                    <NavLink
                       to={item.url}
                       end
                       className="hover:bg-accent/50"
