@@ -108,27 +108,29 @@ export function AppSidebar() {
     else navigate("/dashboard");
   };
 
-  const addCollectorRole = async () => {
+  const addRole = async (newRole: AppRole, label: string) => {
     if (!userId) return;
     const { error } = await supabase
       .from("user_roles")
-      .insert({ user_id: userId, role: "collector" as AppRole });
+      .insert({ user_id: userId, role: newRole });
     if (error) {
       if (error.code === "23505") {
-        toast.info("You already have a collector account");
+        toast.info(`You already have a ${label.toLowerCase()} account`);
       } else {
-        toast.error("Failed to add collector role");
+        toast.error(`Failed to add ${label.toLowerCase()} role`);
       }
       return;
     }
-    setRoles(prev => [...prev, "collector"]);
-    toast.success("Collector account added! You can now switch between roles.");
+    setRoles(prev => [...prev, newRole]);
+    toast.success(`${label} account added! You can now switch between roles.`);
   };
 
   const isActive = (path: string) => location.pathname === path;
   const navItems = getNavItems(activeRole);
   const hasCollector = roles.includes("collector");
-  const canManageCollector = roles.includes("artist");
+  const hasArtist = roles.includes("artist");
+  const canAddCollector = roles.includes("artist") && !hasCollector;
+  const canAddArtist = !hasArtist;
 
   const handleSignOut = async () => {
     localStorage.removeItem("activeRole");
