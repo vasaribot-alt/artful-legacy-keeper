@@ -143,41 +143,27 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <div className={`px-3 py-4 ${collapsed ? "text-center" : ""}`}>
-            {!collapsed && (
-              <div>
-                {roles.length > 1 ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors w-full">
-                      {roleLabels[activeRole].nav}
-                      <ChevronDown className="h-3 w-3" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                      {roles.map(role => (
-                        <DropdownMenuItem
-                          key={role}
-                          onSelect={() => switchRole(role)}
-                          className={activeRole === role ? "bg-accent font-medium" : ""}
-                        >
-                          {roleLabels[role].nav}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {roleLabels[activeRole].nav}
-                  </span>
-                )}
-              </div>
-            )}
+          <div className={`px-2 py-3 ${collapsed ? "flex flex-col items-center gap-1" : "flex flex-col gap-1"}`}>
+            {roles.map(role => {
+              const RoleIcon = roleIcons[role];
+              const isRoleActive = activeRole === role;
+              return (
+                <button
+                  key={role}
+                  onClick={() => switchRole(role)}
+                  className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors w-full text-left ${
+                    isRoleActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                >
+                  <RoleIcon className="h-4 w-4 shrink-0" />
+                  {!collapsed && <span>{roleLabels[role].nav}</span>}
+                </button>
+              );
+            })}
           </div>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink
+          {!collapsed && <div className="mx-3 mb-2 h-px bg-border" />}
                       to={item.url}
                       end
                       className="hover:bg-accent/50"
