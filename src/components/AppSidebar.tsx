@@ -52,6 +52,13 @@ const getNavItems = (role: AppRole) => {
   ];
 };
 
+const roleIcons: Record<AppRole, typeof User> = {
+  artist: Palette,
+  collector: Archive,
+  registrar: Users,
+  foundation: Award,
+};
+
 const roleLabels: Record<AppRole, { nav: string; label: string }> = {
   artist: { nav: "Artist Registry", label: "Artist" },
   collector: { nav: "Collectors Register", label: "Collector" },
