@@ -194,11 +194,19 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {canManageCollector && (
+          {canAddArtist && (
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={!hasCollector ? addCollectorRole : undefined} disabled={hasCollector}>
+              <SidebarMenuButton onClick={() => addRole("artist", "Artist")}>
                 <Plus className="mr-2 h-4 w-4" />
-                {!collapsed && <span>{hasCollector ? "Collector Account Added" : "Add Collector Account"}</span>}
+                {!collapsed && <span>Add Artist Account</span>}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+          {canAddCollector && (
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => addRole("collector", "Collector")}>
+                <Plus className="mr-2 h-4 w-4" />
+                {!collapsed && <span>Add Collector Account</span>}
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
