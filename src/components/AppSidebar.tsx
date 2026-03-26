@@ -1,4 +1,4 @@
-import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, ChevronDown, Award, Warehouse } from "lucide-react";
+import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,13 +15,6 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 type AppRole = "artist" | "collector" | "registrar" | "foundation";
 
