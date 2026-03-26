@@ -156,7 +156,7 @@ export function AppSidebar() {
                       {roles.map(role => (
                         <DropdownMenuItem
                           key={role}
-                          onClick={() => switchRole(role)}
+                          onSelect={() => switchRole(role)}
                           className={activeRole === role ? "bg-accent font-medium" : ""}
                         >
                           {roleLabels[role].nav}
