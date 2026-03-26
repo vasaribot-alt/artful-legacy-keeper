@@ -122,7 +122,8 @@ export function AppSidebar() {
       return;
     }
     setRoles(prev => [...prev, newRole]);
-    toast.success(`${label} account added! You can now switch between roles.`);
+    toast.success(`${label} account added! Switching now.`);
+    switchRole(newRole);
   };
 
   const isActive = (path: string) => location.pathname === path;
