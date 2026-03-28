@@ -131,7 +131,7 @@ const PublicArtistProfile = () => {
           .eq("profile_id", data.id).order("display_order", { ascending: true }),
         supabase.from("founding_artists").select("tier")
           .eq("user_id", userId).maybeSingle(),
-        supabase.from("exhibitions").select("id, title, venue, city, country, opening_date, closing_date, exhibition_type, curator, description")
+        supabase.from("exhibitions").select("id, title, venue, city, country, opening_date, closing_date, exhibition_type, curator, description, exhibition_text")
           .eq("user_id", userId).eq("hide_from_cv", false).order("opening_date", { ascending: false }),
         supabase.from("artworks").select("id, title, year, medium, dimensions, height, width, depth, series, image_url")
           .eq("owner_id", userId).order("year", { ascending: false }),
