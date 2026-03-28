@@ -595,6 +595,9 @@ const PublicArtistProfile = () => {
                               <div className="mt-2 ml-4 mr-4 mb-2 space-y-4">
                                 {ex.curator && <p className="text-sm text-muted-foreground">Curated by {ex.curator}</p>}
                                 {ex.description && <p className="text-sm text-foreground/70 leading-relaxed">{ex.description}</p>}
+                                {ex.exhibition_text && (
+                                  <div className="text-sm text-foreground/70 leading-relaxed whitespace-pre-line">{ex.exhibition_text}</div>
+                                )}
 
                                 {ex.images.length > 0 && (
                                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
