@@ -86,6 +86,7 @@ const PublicArtistProfile = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [exhibitionFilter, setExhibitionFilter] = useState<"solo" | "group">("solo");
   const [openSeries, setOpenSeries] = useState<string | null>(null);
+  const [openExhibitionId, setOpenExhibitionId] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
