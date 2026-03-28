@@ -53,6 +53,7 @@ interface Exhibition {
   exhibition_type: string;
   curator: string | null;
   description: string | null;
+  exhibition_text: string | null;
   images: { storage_path: string; caption: string | null }[];
 }
 
