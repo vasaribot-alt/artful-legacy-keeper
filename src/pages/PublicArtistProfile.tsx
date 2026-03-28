@@ -564,25 +564,54 @@ const PublicArtistProfile = () => {
                         const thumb = getExhibitionThumb(ex);
                         const dateStr = [formatExDate(ex.opening_date), formatExDate(ex.closing_date)].filter(Boolean).join(" – ");
                         const loc = [ex.venue, ex.city, ex.country].filter(Boolean).join(", ");
+                        const isExOpen = openExhibitionId === ex.id;
                         return (
-                          <div key={ex.id} className="flex gap-4 p-4 rounded-md border border-border hover:bg-muted/30 transition-colors">
-                            {thumb && (
-                              <div className="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-muted">
-                                <img src={thumb} alt={ex.title} className="w-full h-full object-cover" loading="lazy" />
+                          <div key={ex.id}>
+                            <button
+                              onClick={() => setOpenExhibitionId(isExOpen ? null : ex.id)}
+                              className={`w-full flex gap-4 p-4 rounded-md border text-left transition-colors ${
+                                isExOpen ? "border-foreground bg-muted/50" : "border-border hover:bg-muted/30"
+                              }`}
+                            >
+                              {thumb && (
+                                <div className="w-20 h-20 rounded-md overflow-hidden shrink-0 bg-muted">
+                                  <img src={thumb} alt={ex.title} className="w-full h-full object-cover" loading="lazy" />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2">
+                                  <h3 className="font-medium text-sm">{ex.title}</h3>
+                                  <span className="text-xs px-2 py-0.5 rounded-full border border-border text-muted-foreground shrink-0 capitalize">
+                                    {ex.exhibition_type}
+                                  </span>
+                                </div>
+                                {loc && <p className="text-sm text-muted-foreground mt-0.5">{loc}</p>}
+                                {dateStr && <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>}
+                              </div>
+                            </button>
+
+                            {isExOpen && (
+                              <div className="mt-2 ml-4 mr-4 mb-2 space-y-4">
+                                {ex.curator && <p className="text-sm text-muted-foreground">Curated by {ex.curator}</p>}
+                                {ex.description && <p className="text-sm text-foreground/70 leading-relaxed">{ex.description}</p>}
+
+                                {ex.images.length > 0 && (
+                                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    {ex.images.map((img, idx) => {
+                                      const url = supabase.storage.from("exhibition-images").getPublicUrl(img.storage_path).data.publicUrl;
+                                      return (
+                                        <div key={idx} className="space-y-1">
+                                          <div className="aspect-[4/3] rounded-md overflow-hidden bg-muted">
+                                            <img src={url} alt={img.caption || ex.title} className="w-full h-full object-cover" loading="lazy" />
+                                          </div>
+                                          {img.caption && <p className="text-[11px] text-muted-foreground">{img.caption}</p>}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
                               </div>
                             )}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <h3 className="font-medium text-sm">{ex.title}</h3>
-                                <span className="text-xs px-2 py-0.5 rounded-full border border-border text-muted-foreground shrink-0 capitalize">
-                                  {ex.exhibition_type}
-                                </span>
-                              </div>
-                              {loc && <p className="text-sm text-muted-foreground mt-0.5">{loc}</p>}
-                              {dateStr && <p className="text-xs text-muted-foreground mt-0.5">{dateStr}</p>}
-                              {ex.curator && <p className="text-xs text-muted-foreground mt-0.5">Curated by {ex.curator}</p>}
-                              {ex.description && <p className="text-xs text-foreground/70 mt-1 line-clamp-2">{ex.description}</p>}
-                            </div>
                           </div>
                         );
                       })}
