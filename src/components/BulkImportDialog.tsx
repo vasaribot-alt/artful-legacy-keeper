@@ -195,7 +195,7 @@ const COLLECTOR_EDITIONS_HEADERS = [
 function downloadTemplate(headers: string[], filename: string) {
   import("xlsx-js-style").then((XLSXStyle) => {
     const wb = XLSXStyle.utils.book_new();
-    const wsData = [headers, sampleRow];
+    const wsData = [headers];
     const ws = XLSXStyle.utils.aoa_to_sheet(wsData);
 
     // Bold header row
