@@ -178,18 +178,11 @@ const ARTIST_EDITIONS_HEADERS = [
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
-  70, 50, 5, 1, 8000
-];
 
 const COLLECTOR_UNIQUE_HEADERS = [
   "Title", "Artist Name", "Category", "Year", "Medium", "Support",
   "Height", "Width", "Depth", "Location", "Provenance",
   "Description", "Image ID", "Price", "Currency"
-];
-const COLLECTOR_UNIQUE_SAMPLE = [
-  "Composition in Blue", "Jane Doe", "Painting", 2022, "Acrylic on canvas", "Canvas",
-  100, 70, null, "Living room", "Acquired from Gallery XYZ, 2023",
-  "Sample collection entry", "IMG_001.jpg", 8000, "EUR"
 ];
 
 const COLLECTOR_EDITIONS_HEADERS = [
@@ -198,14 +191,8 @@ const COLLECTOR_EDITIONS_HEADERS = [
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
-const COLLECTOR_EDITIONS_SAMPLE = [
-  "Coastal Dawn", "Jane Doe", "Photography", 2023, "Archival pigment print", "Hahnemühle",
-  "Office", "Purchased from Artist, 2023", "Sample edition entry", "IMG_001.jpg",
-  40, 30, 8, 2, 4000,
-  60, 45, 5, 1, 7000
-];
 
-function downloadTemplate(headers: string[], sampleRow: (string | number | null)[], filename: string) {
+function downloadTemplate(headers: string[], filename: string) {
   import("xlsx-js-style").then((XLSXStyle) => {
     const wb = XLSXStyle.utils.book_new();
     const wsData = [headers, sampleRow];
