@@ -220,6 +220,12 @@ function downloadTemplate(headers: string[], sampleRow: (string | number | null)
   const wsData = [headers, sampleRow];
   const ws = XLSX.utils.aoa_to_sheet(wsData);
 
+  // Bold header row
+  headers.forEach((_, i) => {
+    const cell = ws[XLSX.utils.encode_cell({ r: 0, c: i })];
+    if (cell) cell.s = { font: { bold: true } };
+  });
+
   // Set column widths
   ws["!cols"] = headers.map(() => ({ wch: 16 }));
 
