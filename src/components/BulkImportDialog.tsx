@@ -594,17 +594,42 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
               className="hidden"
             />
             <div className="text-xs text-muted-foreground mt-4 max-w-sm text-center">
-              The spreadsheet should include a <strong>Title</strong> column. Other recognized columns:
-              Category/Type, Series, Year, Medium, Support, Height/Høyde, Width/Bredde, Depth, Signed, Location,
-              Provenance, Exhibition History, Description/Notes/Merknader, Image ID/filename, Price/Pris.
-              <br />
-              <span className="mt-1 inline-block">
-                For photography with multiple sizes, use repeated Height/Width/Opplag/AP/Price columns — they'll be imported as sizes A, B, C, etc.
-              </span>
-              <br />
-              <span className="mt-1 inline-block">
-                For multiple images per artwork, separate filenames with <strong>;</strong> or <strong>,</strong>.
-              </span>
+              Download a template to get started:
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {userRole !== "collector" && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs h-7"
+                    onClick={() => downloadTemplate(ARTIST_TEMPLATE_HEADERS, ARTIST_TEMPLATE_SAMPLE, "artist-import-template.xlsx")}
+                  >
+                    <Download className="w-3 h-3" /> Artist Template
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs h-7"
+                    onClick={() => downloadTemplate(PHOTOGRAPHY_TEMPLATE_HEADERS, PHOTOGRAPHY_TEMPLATE_SAMPLE, "photography-import-template.xlsx")}
+                  >
+                    <Download className="w-3 h-3" /> Photography Template
+                  </Button>
+                </>
+              )}
+              {userRole !== "artist" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 text-xs h-7"
+                  onClick={() => downloadTemplate(COLLECTOR_TEMPLATE_HEADERS, COLLECTOR_TEMPLATE_SAMPLE, "collector-import-template.xlsx")}
+                >
+                  <Download className="w-3 h-3" /> Collector Template
+                </Button>
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground mt-2 max-w-sm text-center">
+              Or upload your own spreadsheet — just make sure it has a <strong>Title</strong> column.
             </div>
           </div>
         )}
