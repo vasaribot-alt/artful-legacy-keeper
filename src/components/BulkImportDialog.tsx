@@ -613,29 +613,39 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(ARTIST_TEMPLATE_HEADERS, ARTIST_TEMPLATE_SAMPLE, "artist-import-template.xlsx")}
+                    onClick={() => downloadTemplate(ARTIST_UNIQUE_HEADERS, ARTIST_UNIQUE_SAMPLE, "artist-unique-template.xlsx")}
                   >
-                    <Download className="w-3 h-3" /> Artist Template
+                    <Download className="w-3 h-3" /> Unique Works
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(PHOTOGRAPHY_TEMPLATE_HEADERS, PHOTOGRAPHY_TEMPLATE_SAMPLE, "photography-import-template.xlsx")}
+                    onClick={() => downloadTemplate(ARTIST_EDITIONS_HEADERS, ARTIST_EDITIONS_SAMPLE, "artist-editions-template.xlsx")}
                   >
-                    <Download className="w-3 h-3" /> Photography Template
+                    <Download className="w-3 h-3" /> Editions
                   </Button>
                 </>
               )}
               {userRole !== "artist" && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 text-xs h-7"
-                  onClick={() => downloadTemplate(COLLECTOR_TEMPLATE_HEADERS, COLLECTOR_TEMPLATE_SAMPLE, "collector-import-template.xlsx")}
-                >
-                  <Download className="w-3 h-3" /> Collector Template
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs h-7"
+                    onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, COLLECTOR_UNIQUE_SAMPLE, "collector-unique-template.xlsx")}
+                  >
+                    <Download className="w-3 h-3" /> Unique Works
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs h-7"
+                    onClick={() => downloadTemplate(COLLECTOR_EDITIONS_HEADERS, COLLECTOR_EDITIONS_SAMPLE, "collector-editions-template.xlsx")}
+                  >
+                    <Download className="w-3 h-3" /> Editions
+                  </Button>
+                </>
               )}
             </div>
             <div className="text-xs text-muted-foreground mt-2 max-w-sm text-center">
