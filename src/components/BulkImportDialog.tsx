@@ -616,7 +616,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, COLLECTOR_UNIQUE_SAMPLE, "collector-unique-template.xlsx")}
+                    onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, "collector-unique-template.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Unique Works
                   </Button>
