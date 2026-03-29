@@ -18,6 +18,8 @@ interface Props {
   onSuccess: () => void;
   /** When provided, artworks are inserted for this owner (registrar acting on behalf of client) */
   ownerId?: string;
+  /** Role context for template generation */
+  userRole?: "artist" | "collector" | "registrar";
 }
 
 interface SizeGroup {
