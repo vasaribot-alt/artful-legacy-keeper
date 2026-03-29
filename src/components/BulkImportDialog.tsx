@@ -216,15 +216,21 @@ const COLLECTOR_EDITIONS_SAMPLE = [
 ];
 
 function downloadTemplate(headers: string[], sampleRow: (string | number | null)[], filename: string) {
-  const wb = XLSX.utils.book_new();
-  const wsData = [headers, sampleRow];
-  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  import("xlsx-js-style").then((XLSXStyle) => {
+    const wb = XLSXStyle.utils.book_new();
+    const wsData = [headers, sampleRow];
+    const ws = XLSXStyle.utils.aoa_to_sheet(wsData);
 
-  // Set column widths
-  ws["!cols"] = headers.map(() => ({ wch: 16 }));
+    // Bold header row
+    headers.forEach((_, i) => {
+      const ref = XLSXStyle.utils.encode_cell({ r: 0, c: i });
+      if (ws[ref]) ws[ref].s = { font: { bold: true } };
+    });
 
-  XLSX.utils.book_append_sheet(wb, ws, "Artworks");
-  XLSX.writeFile(wb, filename);
+    ws["!cols"] = headers.map(() => ({ wch: 16 }));
+    XLSXStyle.utils.book_append_sheet(wb, ws, "Artworks");
+    XLSXStyle.writeFile(wb, filename);
+  });
 }
 
 export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userRole }: Props) => {
