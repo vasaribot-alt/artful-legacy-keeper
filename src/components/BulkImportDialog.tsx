@@ -178,11 +178,6 @@ const ARTIST_EDITIONS_HEADERS = [
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
-const ARTIST_EDITIONS_SAMPLE = [
-  "Mountain Light", "Photography", "Nature", 2024, "Archival pigment print", "Hahnemühle",
-  "Yes", "Sample edition entry", "IMG_001.jpg",
-  30, 20, 10, 2, 3000,
-  50, 35, 8, 2, 5000,
   70, 50, 5, 1, 8000
 ];
 
