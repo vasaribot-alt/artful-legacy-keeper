@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2 } from "lucide-react";
+import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -18,6 +18,8 @@ interface Props {
   onSuccess: () => void;
   /** When provided, artworks are inserted for this owner (registrar acting on behalf of client) */
   ownerId?: string;
+  /** Role context for template generation */
+  userRole?: "artist" | "collector" | "registrar";
 }
 
 interface SizeGroup {
@@ -163,7 +165,59 @@ function normalizeFilename(name: string): string {
 
 type Step = "upload" | "preview" | "importing" | "images" | "uploading";
 
-export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId }: Props) => {
+const ARTIST_TEMPLATE_HEADERS = [
+  "Title", "Category", "Series", "Year", "Medium", "Support",
+  "Height", "Width", "Depth", "Signed", "Location",
+  "Exhibition History", "Description", "Image ID", "Price", "Currency"
+];
+
+const ARTIST_TEMPLATE_SAMPLE = [
+  "Untitled #1", "Painting", "Landscapes", 2024, "Oil on canvas", "Linen",
+  120, 80, null, "Lower right", "Studio",
+  "", "Sample artwork entry", "IMG_001.jpg", 5000, "EUR"
+];
+
+const COLLECTOR_TEMPLATE_HEADERS = [
+  "Title", "Artist Name", "Category", "Year", "Medium", "Support",
+  "Height", "Width", "Depth", "Location", "Provenance",
+  "Description", "Image ID", "Price", "Currency"
+];
+
+const COLLECTOR_TEMPLATE_SAMPLE = [
+  "Composition in Blue", "Jane Doe", "Painting", 2022, "Acrylic on canvas", "Canvas",
+  100, 70, null, "Living room", "Acquired from Gallery XYZ, 2023",
+  "Sample collection entry", "IMG_001.jpg", 8000, "EUR"
+];
+
+const PHOTOGRAPHY_TEMPLATE_HEADERS = [
+  "Title", "Category", "Series", "Year", "Medium", "Support",
+  "Signed", "Description", "Image ID",
+  "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
+  "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
+  "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
+];
+
+const PHOTOGRAPHY_TEMPLATE_SAMPLE = [
+  "Mountain Light", "Photography", "Nature", 2024, "Archival pigment print", "Hahnemühle",
+  "Yes", "Sample photography entry", "IMG_001.jpg",
+  30, 20, 10, 2, 3000,
+  50, 35, 8, 2, 5000,
+  70, 50, 5, 1, 8000
+];
+
+function downloadTemplate(headers: string[], sampleRow: (string | number | null)[], filename: string) {
+  const wb = XLSX.utils.book_new();
+  const wsData = [headers, sampleRow];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Set column widths
+  ws["!cols"] = headers.map(() => ({ wch: 16 }));
+
+  XLSX.utils.book_append_sheet(wb, ws, "Artworks");
+  XLSX.writeFile(wb, filename);
+}
+
+export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userRole }: Props) => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [step, setStep] = useState<Step>("upload");
   const [progress, setProgress] = useState(0);
@@ -540,17 +594,42 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId }: Pro
               className="hidden"
             />
             <div className="text-xs text-muted-foreground mt-4 max-w-sm text-center">
-              The spreadsheet should include a <strong>Title</strong> column. Other recognized columns:
-              Category/Type, Series, Year, Medium, Support, Height/Høyde, Width/Bredde, Depth, Signed, Location,
-              Provenance, Exhibition History, Description/Notes/Merknader, Image ID/filename, Price/Pris.
-              <br />
-              <span className="mt-1 inline-block">
-                For photography with multiple sizes, use repeated Height/Width/Opplag/AP/Price columns — they'll be imported as sizes A, B, C, etc.
-              </span>
-              <br />
-              <span className="mt-1 inline-block">
-                For multiple images per artwork, separate filenames with <strong>;</strong> or <strong>,</strong>.
-              </span>
+              Download a template to get started:
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {userRole !== "collector" && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs h-7"
+                    onClick={() => downloadTemplate(ARTIST_TEMPLATE_HEADERS, ARTIST_TEMPLATE_SAMPLE, "artist-import-template.xlsx")}
+                  >
+                    <Download className="w-3 h-3" /> Artist Template
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs h-7"
+                    onClick={() => downloadTemplate(PHOTOGRAPHY_TEMPLATE_HEADERS, PHOTOGRAPHY_TEMPLATE_SAMPLE, "photography-import-template.xlsx")}
+                  >
+                    <Download className="w-3 h-3" /> Photography Template
+                  </Button>
+                </>
+              )}
+              {userRole !== "artist" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 text-xs h-7"
+                  onClick={() => downloadTemplate(COLLECTOR_TEMPLATE_HEADERS, COLLECTOR_TEMPLATE_SAMPLE, "collector-import-template.xlsx")}
+                >
+                  <Download className="w-3 h-3" /> Collector Template
+                </Button>
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground mt-2 max-w-sm text-center">
+              Or upload your own spreadsheet — just make sure it has a <strong>Title</strong> column.
             </div>
           </div>
         )}

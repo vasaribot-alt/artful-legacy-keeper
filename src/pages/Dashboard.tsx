@@ -461,6 +461,7 @@ const Dashboard = () => {
         open={bulkImportOpen}
         onOpenChange={setBulkImportOpen}
         onSuccess={fetchArtworks}
+        userRole={activeRole}
       />
 
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
