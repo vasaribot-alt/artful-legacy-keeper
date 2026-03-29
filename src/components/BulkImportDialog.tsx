@@ -170,11 +170,6 @@ const ARTIST_UNIQUE_HEADERS = [
   "Height", "Width", "Depth", "Signed", "Location",
   "Exhibition History", "Description", "Image ID", "Price", "Currency"
 ];
-const ARTIST_UNIQUE_SAMPLE = [
-  "Untitled #1", "Painting", "Landscapes", 2024, "Oil on canvas", "Linen",
-  120, 80, null, "Lower right", "Studio",
-  "", "Sample artwork entry", "IMG_001.jpg", 5000, "EUR"
-];
 
 const ARTIST_EDITIONS_HEADERS = [
   "Title", "Category", "Series", "Year", "Medium", "Support",
@@ -183,23 +178,11 @@ const ARTIST_EDITIONS_HEADERS = [
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
-const ARTIST_EDITIONS_SAMPLE = [
-  "Mountain Light", "Photography", "Nature", 2024, "Archival pigment print", "Hahnemühle",
-  "Yes", "Sample edition entry", "IMG_001.jpg",
-  30, 20, 10, 2, 3000,
-  50, 35, 8, 2, 5000,
-  70, 50, 5, 1, 8000
-];
 
 const COLLECTOR_UNIQUE_HEADERS = [
   "Title", "Artist Name", "Category", "Year", "Medium", "Support",
   "Height", "Width", "Depth", "Location", "Provenance",
   "Description", "Image ID", "Price", "Currency"
-];
-const COLLECTOR_UNIQUE_SAMPLE = [
-  "Composition in Blue", "Jane Doe", "Painting", 2022, "Acrylic on canvas", "Canvas",
-  100, 70, null, "Living room", "Acquired from Gallery XYZ, 2023",
-  "Sample collection entry", "IMG_001.jpg", 8000, "EUR"
 ];
 
 const COLLECTOR_EDITIONS_HEADERS = [
@@ -208,17 +191,11 @@ const COLLECTOR_EDITIONS_HEADERS = [
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
-const COLLECTOR_EDITIONS_SAMPLE = [
-  "Coastal Dawn", "Jane Doe", "Photography", 2023, "Archival pigment print", "Hahnemühle",
-  "Office", "Purchased from Artist, 2023", "Sample edition entry", "IMG_001.jpg",
-  40, 30, 8, 2, 4000,
-  60, 45, 5, 1, 7000
-];
 
-function downloadTemplate(headers: string[], sampleRow: (string | number | null)[], filename: string) {
+function downloadTemplate(headers: string[], filename: string) {
   import("xlsx-js-style").then((XLSXStyle) => {
     const wb = XLSXStyle.utils.book_new();
-    const wsData = [headers, sampleRow];
+    const wsData = [headers];
     const ws = XLSXStyle.utils.aoa_to_sheet(wsData);
 
     // Bold header row
@@ -619,7 +596,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(ARTIST_UNIQUE_HEADERS, ARTIST_UNIQUE_SAMPLE, "artist-unique-template.xlsx")}
+                    onClick={() => downloadTemplate(ARTIST_UNIQUE_HEADERS, "artist-unique-template.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Unique Works
                   </Button>
@@ -627,7 +604,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(ARTIST_EDITIONS_HEADERS, ARTIST_EDITIONS_SAMPLE, "artist-editions-template.xlsx")}
+                    onClick={() => downloadTemplate(ARTIST_EDITIONS_HEADERS, "artist-editions-template.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Editions
                   </Button>
@@ -639,7 +616,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, COLLECTOR_UNIQUE_SAMPLE, "collector-unique-template.xlsx")}
+                    onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, "collector-unique-template.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Unique Works
                   </Button>
@@ -647,7 +624,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(COLLECTOR_EDITIONS_HEADERS, COLLECTOR_EDITIONS_SAMPLE, "collector-editions-template.xlsx")}
+                    onClick={() => downloadTemplate(COLLECTOR_EDITIONS_HEADERS, "collector-editions-template.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Editions
                   </Button>
