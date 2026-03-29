@@ -165,7 +165,59 @@ function normalizeFilename(name: string): string {
 
 type Step = "upload" | "preview" | "importing" | "images" | "uploading";
 
-export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId }: Props) => {
+const ARTIST_TEMPLATE_HEADERS = [
+  "Title", "Category", "Series", "Year", "Medium", "Support",
+  "Height", "Width", "Depth", "Signed", "Location",
+  "Exhibition History", "Description", "Image ID", "Price", "Currency"
+];
+
+const ARTIST_TEMPLATE_SAMPLE = [
+  "Untitled #1", "Painting", "Landscapes", 2024, "Oil on canvas", "Linen",
+  120, 80, null, "Lower right", "Studio",
+  "", "Sample artwork entry", "IMG_001.jpg", 5000, "EUR"
+];
+
+const COLLECTOR_TEMPLATE_HEADERS = [
+  "Title", "Artist Name", "Category", "Year", "Medium", "Support",
+  "Height", "Width", "Depth", "Location", "Provenance",
+  "Description", "Image ID", "Price", "Currency"
+];
+
+const COLLECTOR_TEMPLATE_SAMPLE = [
+  "Composition in Blue", "Jane Doe", "Painting", 2022, "Acrylic on canvas", "Canvas",
+  100, 70, null, "Living room", "Acquired from Gallery XYZ, 2023",
+  "Sample collection entry", "IMG_001.jpg", 8000, "EUR"
+];
+
+const PHOTOGRAPHY_TEMPLATE_HEADERS = [
+  "Title", "Category", "Series", "Year", "Medium", "Support",
+  "Signed", "Description", "Image ID",
+  "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
+  "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
+  "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
+];
+
+const PHOTOGRAPHY_TEMPLATE_SAMPLE = [
+  "Mountain Light", "Photography", "Nature", 2024, "Archival pigment print", "Hahnemühle",
+  "Yes", "Sample photography entry", "IMG_001.jpg",
+  30, 20, 10, 2, 3000,
+  50, 35, 8, 2, 5000,
+  70, 50, 5, 1, 8000
+];
+
+function downloadTemplate(headers: string[], sampleRow: (string | number | null)[], filename: string) {
+  const wb = XLSX.utils.book_new();
+  const wsData = [headers, sampleRow];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Set column widths
+  ws["!cols"] = headers.map(() => ({ wch: 16 }));
+
+  XLSX.utils.book_append_sheet(wb, ws, "Artworks");
+  XLSX.writeFile(wb, filename);
+}
+
+export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userRole }: Props) => {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [step, setStep] = useState<Step>("upload");
   const [progress, setProgress] = useState(0);
