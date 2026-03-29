@@ -170,11 +170,6 @@ const ARTIST_UNIQUE_HEADERS = [
   "Height", "Width", "Depth", "Signed", "Location",
   "Exhibition History", "Description", "Image ID", "Price", "Currency"
 ];
-const ARTIST_UNIQUE_SAMPLE = [
-  "Untitled #1", "Painting", "Landscapes", 2024, "Oil on canvas", "Linen",
-  120, 80, null, "Lower right", "Studio",
-  "", "Sample artwork entry", "IMG_001.jpg", 5000, "EUR"
-];
 
 const ARTIST_EDITIONS_HEADERS = [
   "Title", "Category", "Series", "Year", "Medium", "Support",
