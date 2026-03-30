@@ -222,7 +222,17 @@ const Dashboard = () => {
   const uniqueLocations = [...new Set(artworks.map(a => a.artwork_location).filter(Boolean))] as string[];
 
   // Apply filters
+  const searchLower = searchQuery.toLowerCase().trim();
+  const matchesSearch = (a: Artwork) => {
+    if (!searchLower) return true;
+    return (a.title || "").toLowerCase().includes(searchLower)
+      || (a.medium || "").toLowerCase().includes(searchLower)
+      || (a.series || "").toLowerCase().includes(searchLower)
+      || String(a.year || "").includes(searchLower);
+  };
+
   const filteredArtworks = artworks.filter(a => {
+    if (!matchesSearch(a)) return false;
     if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
     if (locationFilter !== "all") {
       if (locationFilter === "none" && a.artwork_location) return false;
@@ -234,6 +244,7 @@ const Dashboard = () => {
   const filteredGalleryArtworks = galleryArtworks.filter(a => {
     const full = artworks.find(aw => aw.id === a.id);
     if (!full) return true;
+    if (!matchesSearch(full)) return false;
     if (statusFilter !== "all" && (full.status || "available") !== statusFilter) return false;
     if (locationFilter !== "all") {
       if (locationFilter === "none" && full.artwork_location) return false;
