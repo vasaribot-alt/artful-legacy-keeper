@@ -176,7 +176,7 @@ const ArtworkDetail = () => {
     setHasUnsavedChanges(changed);
   }, [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
     signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
-    artistProofs, exhibitionHistory, provenance, status, buyerName, soldDate,
+    artistProofs, exhibitionHistory, provenance, artistName, editionNumber, status, buyerName, soldDate,
     selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, newDocuments, deletedDocIds, loading]);
 
   const loadArtwork = async () => {
