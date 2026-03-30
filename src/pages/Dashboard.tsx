@@ -342,6 +342,7 @@ const Dashboard = () => {
                 </SelectContent>
               </Select>
             </div>
+            </div>
           </div>
 
           {loading ? (
