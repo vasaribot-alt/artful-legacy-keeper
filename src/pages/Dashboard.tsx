@@ -106,7 +106,9 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
+  const [activeRole, setActiveRole] = useState<"artist" | "collector" | "registrar">(
+    (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist"
+  );
   const [idVerified, setIdVerified] = useState(false);
 
   useEffect(() => {
@@ -121,11 +123,21 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Listen for role changes from sidebar
+  useEffect(() => {
+    const handleRoleChange = () => {
+      const newRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
+      setActiveRole(newRole);
+    };
+    window.addEventListener("role-changed", handleRoleChange);
+    return () => window.removeEventListener("role-changed", handleRoleChange);
+  }, []);
+
   useEffect(() => {
     if (!user) return;
     fetchArtworks();
     fetchProfile();
-  }, [user]);
+  }, [user, activeRole]);
 
   const fetchProfile = async () => {
     const { data } = await supabase
