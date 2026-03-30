@@ -85,6 +85,7 @@ const ArtworkDetail = () => {
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
   const [artistName, setArtistName] = useState("");
+  const [editionNumber, setEditionNumber] = useState("");
   const [status, setStatus] = useState("available");
   const [buyerName, setBuyerName] = useState("");
   const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
