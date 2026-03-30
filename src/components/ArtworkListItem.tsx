@@ -24,11 +24,7 @@ interface Artwork {
   buyer_name?: string | null;
 }
 
-const formatDimensions = (h: number | null, w: number | null, d: number | null) => {
-  const parts = [h, w, d].filter((v) => v != null);
-  if (parts.length === 0) return null;
-  return parts.join(" × ") + " cm";
-};
+import { formatDimensions } from "@/lib/formatDimensions";
 
 interface ArtworkListItemProps {
   artwork: Artwork;

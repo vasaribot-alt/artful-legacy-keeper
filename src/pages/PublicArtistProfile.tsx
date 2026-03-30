@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDimensions } from "@/lib/formatDimensions";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
 import {
@@ -219,10 +220,9 @@ const PublicArtistProfile = () => {
     return null;
   };
 
-  const formatDimensions = (aw: ArtworkPublic) => {
+  const formatDims = (aw: ArtworkPublic) => {
     if (aw.dimensions) return aw.dimensions;
-    const parts = [aw.height, aw.width, aw.depth].filter(Boolean);
-    return parts.length > 0 ? parts.join(" × ") + " cm" : null;
+    return formatDimensions(aw.height ?? null, aw.width ?? null, aw.depth ?? null);
   };
 
   const formatExDate = (d: string | null) => {
@@ -504,7 +504,7 @@ const PublicArtistProfile = () => {
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-3 ml-8 mb-4">
                               {group.items.map((aw) => {
                                 const awThumb = getArtworkThumb(aw);
-                                const dims = formatDimensions(aw);
+                                const dims = formatDims(aw);
                                 return (
                                   <div key={aw.id} className="group">
                                     <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
