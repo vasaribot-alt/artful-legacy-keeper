@@ -166,6 +166,7 @@ const ArtworkDetail = () => {
       currency !== o.currency || artworkLocation !== o.artworkLocation ||
       editionCount !== o.editionCount || artistProofs !== o.artistProofs ||
       exhibitionHistory !== o.exhibitionHistory || provenance !== o.provenance ||
+      artistName !== o.artistName || editionNumber !== o.editionNumber ||
       status !== o.status || buyerName !== o.buyerName ||
       (soldDate ? soldDate.toISOString() : "") !== o.soldDate ||
       selectedExhibitionIds.sort().join(",") !== o.selectedExhibitionIds ||
