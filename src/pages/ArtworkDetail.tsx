@@ -533,6 +533,13 @@ const ArtworkDetail = () => {
           <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5" />
         </div>
 
+        {localStorage.getItem("activeRole") === "collector" && (
+          <div>
+            <Label htmlFor="artistName">Artist name</Label>
+            <Input id="artistName" value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="e.g. Henry Moore" className="mt-1.5" autoComplete="off" />
+          </div>
+        )}
+
         <div>
           <Label>Type of artwork</Label>
           <Select value={artworkType} onValueChange={(v) => { setArtworkType(v); if (v !== "Sculpture") setSubCategory(""); }}>
