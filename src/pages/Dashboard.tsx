@@ -410,6 +410,15 @@ const Dashboard = () => {
       ) : (
         /* Gallery presentation view */
         <div className="max-w-5xl mx-auto px-6 py-10">
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by title, series, medium, or year…"
+              className="pl-9"
+            />
+          </div>
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3].map((i) => (
