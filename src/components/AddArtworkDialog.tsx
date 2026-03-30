@@ -485,15 +485,17 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           <Separator />
 
           {/* Materials */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className={cn("grid gap-3", artworkType !== "Sculpture" ? "grid-cols-2" : "grid-cols-1")}>
             <div>
               <Label htmlFor="medium">Medium</Label>
               <Input id="medium" value={medium} onChange={(e) => setMedium(e.target.value)} placeholder="e.g. Oil on canvas" className="mt-1.5" autoComplete="off" />
             </div>
-            <div>
-              <Label htmlFor="support">Support</Label>
-              <Input id="support" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="e.g. Linen" className="mt-1.5" autoComplete="off" />
-            </div>
+            {artworkType !== "Sculpture" && (
+              <div>
+                <Label htmlFor="support">Support</Label>
+                <Input id="support" value={support} onChange={(e) => setSupport(e.target.value)} placeholder="e.g. Linen" className="mt-1.5" autoComplete="off" />
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
