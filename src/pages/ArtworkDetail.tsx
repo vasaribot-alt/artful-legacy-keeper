@@ -581,8 +581,15 @@ const ArtworkDetail = () => {
             <Label>Unique work</Label>
             <p className="text-xs text-muted-foreground">Toggle off for editions</p>
           </div>
-          <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); } }} />
+          <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); setEditionNumber(""); } }} />
         </div>
+
+        {!isUnique && localStorage.getItem("activeRole") === "collector" && (
+          <div>
+            <Label htmlFor="editionNumber">Edition number</Label>
+            <Input id="editionNumber" value={editionNumber} onChange={(e) => setEditionNumber(e.target.value)} placeholder="e.g. 3/8" className="mt-1.5" autoComplete="off" />
+          </div>
+        )}
 
         {/* Multi-size editions for all non-unique works */}
         {!isUnique && id && globalArtworkId > 0 && (
