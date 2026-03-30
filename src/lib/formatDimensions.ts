@@ -1,3 +1,4 @@
+/** 1 cm ≈ 0.393701 inches */
 const CM_TO_INCH = 0.393701;
 
 const toInch = (cm: number) => +(cm * CM_TO_INCH).toFixed(2);
