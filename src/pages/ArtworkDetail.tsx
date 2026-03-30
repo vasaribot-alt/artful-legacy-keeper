@@ -266,6 +266,7 @@ const ArtworkDetail = () => {
       editionCount: data.edition_count ? String(data.edition_count) : "",
       artistProofs: data.artist_proofs ? String(data.artist_proofs) : "",
       exhibitionHistory: data.exhibition_history || "", provenance: data.provenance || "",
+      artistName: data.artist_name || "", editionNumber: data.edition_number || "",
       status: (data as any).status || "available", buyerName: (data as any).buyer_name || "",
       soldDate: (data as any).sold_date ? new Date((data as any).sold_date).toISOString() : "",
       selectedExhibitionIds: exhLinks ? exhLinks.map((l: any) => l.cv_entry_id).sort().join(",") : "",
