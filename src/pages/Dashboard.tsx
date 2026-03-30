@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter, ShieldCheck, Loader2 } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter, ShieldCheck, Loader2, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
@@ -104,6 +105,7 @@ const Dashboard = () => {
   const [deleting, setDeleting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const activeRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
   const [idVerified, setIdVerified] = useState(false);
 
@@ -220,7 +222,17 @@ const Dashboard = () => {
   const uniqueLocations = [...new Set(artworks.map(a => a.artwork_location).filter(Boolean))] as string[];
 
   // Apply filters
+  const searchLower = searchQuery.toLowerCase().trim();
+  const matchesSearch = (a: Artwork) => {
+    if (!searchLower) return true;
+    return (a.title || "").toLowerCase().includes(searchLower)
+      || (a.medium || "").toLowerCase().includes(searchLower)
+      || (a.series || "").toLowerCase().includes(searchLower)
+      || String(a.year || "").includes(searchLower);
+  };
+
   const filteredArtworks = artworks.filter(a => {
+    if (!matchesSearch(a)) return false;
     if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
     if (locationFilter !== "all") {
       if (locationFilter === "none" && a.artwork_location) return false;
@@ -232,6 +244,7 @@ const Dashboard = () => {
   const filteredGalleryArtworks = galleryArtworks.filter(a => {
     const full = artworks.find(aw => aw.id === a.id);
     if (!full) return true;
+    if (!matchesSearch(full)) return false;
     if (statusFilter !== "all" && (full.status || "available") !== statusFilter) return false;
     if (locationFilter !== "all") {
       if (locationFilter === "none" && full.artwork_location) return false;
@@ -289,10 +302,20 @@ const Dashboard = () => {
             <VerifyIdBanner onVerified={() => { setIdVerified(true); fetchProfile(); }} />
           )}
 
-          <div className="mb-6 flex items-center gap-4 flex-wrap">
+          <div className="mb-6 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by title, series, medium, or year…"
+                className="pl-9"
+              />
+            </div>
+            <div className="flex items-center gap-4 flex-wrap">
             <p className="text-sm text-muted-foreground">
               {filteredArtworks.length} artwork{filteredArtworks.length !== 1 ? "s" : ""}
-              {(statusFilter !== "all" || locationFilter !== "all") && ` (filtered from ${artworks.length})`}
+              {(statusFilter !== "all" || locationFilter !== "all" || searchQuery) && ` (filtered from ${artworks.length})`}
             </p>
             <div className="flex items-center gap-2 ml-auto">
               <Filter className="w-3.5 h-3.5 text-muted-foreground" />
@@ -318,6 +341,7 @@ const Dashboard = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
             </div>
           </div>
 
