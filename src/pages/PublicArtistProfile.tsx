@@ -219,10 +219,9 @@ const PublicArtistProfile = () => {
     return null;
   };
 
-  const formatDimensions = (aw: ArtworkPublic) => {
+  const formatDims = (aw: ArtworkPublic) => {
     if (aw.dimensions) return aw.dimensions;
-    const parts = [aw.height, aw.width, aw.depth].filter(Boolean);
-    return parts.length > 0 ? parts.join(" × ") + " cm" : null;
+    return formatDimensions(aw.height ?? null, aw.width ?? null, aw.depth ?? null);
   };
 
   const formatExDate = (d: string | null) => {
