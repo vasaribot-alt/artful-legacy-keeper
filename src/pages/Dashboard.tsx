@@ -429,6 +429,7 @@ const Dashboard = () => {
                   </div>
                   {(() => {
                     const dims = formatDimensions(art.height, art.width, art.depth);
+                    console.log("DIMS DEBUG:", art.title, art.height, art.width, art.depth, "=>", dims);
                     return dims ? (
                       <p className="text-xs text-muted-foreground mt-0.5">{dims}</p>
                     ) : null;
