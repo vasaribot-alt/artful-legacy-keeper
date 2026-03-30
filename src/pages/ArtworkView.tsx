@@ -235,6 +235,9 @@ const ArtworkView = () => {
           <div className="space-y-6">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight italic">{artwork.title}</h1>
+              {artwork.artist_name && (
+                <p className="text-base text-muted-foreground mt-0.5">{artwork.artist_name}</p>
+              )}
               {artwork.year && (
                 <p className="text-muted-foreground mt-1">{artwork.year}</p>
               )}
