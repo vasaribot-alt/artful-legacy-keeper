@@ -276,6 +276,9 @@ const ArtworkView = () => {
               )}
               {!artwork.is_unique && (
                 <>
+                  {artwork.edition_number && (
+                    <DetailRow label="Edition Number" value={artwork.edition_number} />
+                  )}
                   <DetailRow label="Edition" value={`Edition of ${artwork.edition_count || "—"}`} />
                   {artwork.artist_proofs && (
                     <DetailRow label="Artist Proofs" value={`${artwork.artist_proofs} AP`} />
