@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDimensions } from "@/lib/formatDimensions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2, Pencil, Eye, ChevronDown, ChevronRight } from "lucide-react";
@@ -188,12 +189,9 @@ const Series = () => {
               {art.year && art.medium && <span>·</span>}
               {art.medium && <span className="truncate">{art.medium}</span>}
             </div>
-            {(() => {
-              const parts = [art.height, art.width, art.depth].filter((v) => v != null);
-              return parts.length > 0 ? (
-                <p className="text-xs text-muted-foreground mt-0.5">{parts.join(" × ")} cm</p>
-              ) : null;
-            })()}
+            {formatDimensions(art.height, art.width, art.depth) && (
+              <p className="text-xs text-muted-foreground mt-0.5">{formatDimensions(art.height, art.width, art.depth)}</p>
+            )}
           </div>
         ))}
       </div>
