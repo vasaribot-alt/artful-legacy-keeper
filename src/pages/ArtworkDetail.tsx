@@ -84,6 +84,7 @@ const ArtworkDetail = () => {
   const [artistProofs, setArtistProofs] = useState("");
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
+  const [artistName, setArtistName] = useState("");
   const [status, setStatus] = useState("available");
   const [buyerName, setBuyerName] = useState("");
   const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
@@ -206,6 +207,7 @@ const ArtworkDetail = () => {
     setArtistProofs(data.artist_proofs ? String(data.artist_proofs) : "");
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
+    setArtistName(data.artist_name || "");
     setStatus((data as any).status || "available");
     setBuyerName((data as any).buyer_name || "");
     setSoldDate((data as any).sold_date ? new Date((data as any).sold_date) : undefined);
@@ -303,6 +305,7 @@ const ArtworkDetail = () => {
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
+      artist_name: artistName.trim() || null,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
       sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
@@ -529,6 +532,13 @@ const ArtworkDetail = () => {
           <Label htmlFor="title">Title *</Label>
           <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5" />
         </div>
+
+        {localStorage.getItem("activeRole") === "collector" && (
+          <div>
+            <Label htmlFor="artistName">Artist name</Label>
+            <Input id="artistName" value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="e.g. Henry Moore" className="mt-1.5" autoComplete="off" />
+          </div>
+        )}
 
         <div>
           <Label>Type of artwork</Label>
