@@ -305,6 +305,7 @@ const ArtworkDetail = () => {
       artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
+      artist_name: artistName.trim() || null,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
       sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
