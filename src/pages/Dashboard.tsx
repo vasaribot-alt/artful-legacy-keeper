@@ -123,11 +123,21 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Listen for role changes from sidebar
+  useEffect(() => {
+    const handleRoleChange = () => {
+      const newRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
+      setActiveRole(newRole);
+    };
+    window.addEventListener("role-changed", handleRoleChange);
+    return () => window.removeEventListener("role-changed", handleRoleChange);
+  }, []);
+
   useEffect(() => {
     if (!user) return;
     fetchArtworks();
     fetchProfile();
-  }, [user]);
+  }, [user, activeRole]);
 
   const fetchProfile = async () => {
     const { data } = await supabase
