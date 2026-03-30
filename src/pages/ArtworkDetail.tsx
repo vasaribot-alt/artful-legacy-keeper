@@ -85,6 +85,7 @@ const ArtworkDetail = () => {
   const [exhibitionHistory, setExhibitionHistory] = useState("");
   const [provenance, setProvenance] = useState("");
   const [artistName, setArtistName] = useState("");
+  const [editionNumber, setEditionNumber] = useState("");
   const [status, setStatus] = useState("available");
   const [buyerName, setBuyerName] = useState("");
   const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
@@ -165,6 +166,7 @@ const ArtworkDetail = () => {
       currency !== o.currency || artworkLocation !== o.artworkLocation ||
       editionCount !== o.editionCount || artistProofs !== o.artistProofs ||
       exhibitionHistory !== o.exhibitionHistory || provenance !== o.provenance ||
+      artistName !== o.artistName || editionNumber !== o.editionNumber ||
       status !== o.status || buyerName !== o.buyerName ||
       (soldDate ? soldDate.toISOString() : "") !== o.soldDate ||
       selectedExhibitionIds.sort().join(",") !== o.selectedExhibitionIds ||
@@ -174,7 +176,7 @@ const ArtworkDetail = () => {
     setHasUnsavedChanges(changed);
   }, [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
     signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
-    artistProofs, exhibitionHistory, provenance, status, buyerName, soldDate,
+    artistProofs, exhibitionHistory, provenance, artistName, editionNumber, status, buyerName, soldDate,
     selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, newDocuments, deletedDocIds, loading]);
 
   const loadArtwork = async () => {
@@ -208,6 +210,7 @@ const ArtworkDetail = () => {
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
     setArtistName(data.artist_name || "");
+    setEditionNumber(data.edition_number || "");
     setStatus((data as any).status || "available");
     setBuyerName((data as any).buyer_name || "");
     setSoldDate((data as any).sold_date ? new Date((data as any).sold_date) : undefined);
@@ -263,6 +266,7 @@ const ArtworkDetail = () => {
       editionCount: data.edition_count ? String(data.edition_count) : "",
       artistProofs: data.artist_proofs ? String(data.artist_proofs) : "",
       exhibitionHistory: data.exhibition_history || "", provenance: data.provenance || "",
+      artistName: data.artist_name || "", editionNumber: data.edition_number || "",
       status: (data as any).status || "available", buyerName: (data as any).buyer_name || "",
       soldDate: (data as any).sold_date ? new Date((data as any).sold_date).toISOString() : "",
       selectedExhibitionIds: exhLinks ? exhLinks.map((l: any) => l.cv_entry_id).sort().join(",") : "",
@@ -306,6 +310,7 @@ const ArtworkDetail = () => {
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
       artist_name: artistName.trim() || null,
+      edition_number: editionNumber.trim() || null,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
       sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
@@ -578,8 +583,15 @@ const ArtworkDetail = () => {
             <Label>Unique work</Label>
             <p className="text-xs text-muted-foreground">Toggle off for editions</p>
           </div>
-          <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); } }} />
+          <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); setEditionNumber(""); } }} />
         </div>
+
+        {!isUnique && localStorage.getItem("activeRole") === "collector" && (
+          <div>
+            <Label htmlFor="editionNumber">Edition number</Label>
+            <Input id="editionNumber" value={editionNumber} onChange={(e) => setEditionNumber(e.target.value)} placeholder="e.g. 3/8" className="mt-1.5" autoComplete="off" />
+          </div>
+        )}
 
         {/* Multi-size editions for all non-unique works */}
         {!isUnique && id && globalArtworkId > 0 && (
