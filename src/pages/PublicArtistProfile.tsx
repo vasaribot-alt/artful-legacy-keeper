@@ -504,7 +504,7 @@ const PublicArtistProfile = () => {
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-3 ml-8 mb-4">
                               {group.items.map((aw) => {
                                 const awThumb = getArtworkThumb(aw);
-                                const dims = formatDimensions(aw);
+                                const dims = formatDims(aw);
                                 return (
                                   <div key={aw.id} className="group">
                                     <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
