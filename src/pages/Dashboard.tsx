@@ -427,11 +427,12 @@ const Dashboard = () => {
                     {art.year && art.medium && <span>·</span>}
                     {art.medium && <span className="truncate">{art.medium}</span>}
                   </div>
-                  {formatDimensions(art.height, art.width, art.depth) && (
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {formatDimensions(art.height, art.width, art.depth)}
-                    </p>
-                  )}
+                  {(() => {
+                    const dims = formatDimensions(art.height, art.width, art.depth);
+                    return dims ? (
+                      <p className="text-xs text-muted-foreground mt-0.5">{dims}</p>
+                    ) : null;
+                  })()}
                 </div>
               ))}
             </div>
