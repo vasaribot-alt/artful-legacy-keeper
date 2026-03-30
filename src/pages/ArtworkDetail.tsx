@@ -207,6 +207,7 @@ const ArtworkDetail = () => {
     setArtistProofs(data.artist_proofs ? String(data.artist_proofs) : "");
     setExhibitionHistory(data.exhibition_history || "");
     setProvenance(data.provenance || "");
+    setArtistName(data.artist_name || "");
     setStatus((data as any).status || "available");
     setBuyerName((data as any).buyer_name || "");
     setSoldDate((data as any).sold_date ? new Date((data as any).sold_date) : undefined);
