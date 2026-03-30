@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { formatDimensions } from "@/lib/formatDimensions";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
 import {
