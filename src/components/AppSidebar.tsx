@@ -103,6 +103,7 @@ export function AppSidebar() {
   const switchRole = (role: AppRole) => {
     setActiveRole(role);
     localStorage.setItem("activeRole", role);
+    window.dispatchEvent(new Event("role-changed"));
     if (role === "registrar") navigate("/registrar");
     else if (role === "foundation") navigate("/foundation");
     else navigate("/dashboard");
