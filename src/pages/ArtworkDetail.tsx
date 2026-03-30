@@ -308,6 +308,7 @@ const ArtworkDetail = () => {
       exhibition_history: exhibitionHistory.trim() || null,
       provenance: provenance.trim() || null,
       artist_name: artistName.trim() || null,
+      edition_number: editionNumber.trim() || null,
       status,
       buyer_name: status === "sold" ? (buyerName.trim() || null) : null,
       sold_date: status === "sold" && soldDate ? format(soldDate, "yyyy-MM-dd") : null,
