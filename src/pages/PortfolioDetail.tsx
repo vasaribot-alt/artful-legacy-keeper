@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search } from "lucide-react";
+import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import {
