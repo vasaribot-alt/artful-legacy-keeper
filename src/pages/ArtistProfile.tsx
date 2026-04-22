@@ -448,11 +448,51 @@ const ArtistProfile = () => {
     );
   }
 
+  const sectionLinks: { id: string; label: string; indent?: boolean }[] = [
+    { id: "basic-information", label: "Basic Information" },
+    { id: "contacts-web", label: "Contacts & Web" },
+    { id: "social-media-links", label: "Social Media Links" },
+    { id: "galleries", label: "Galleries" },
+    { id: "biography", label: "Biography" },
+    { id: "cv", label: "CV" },
+    { id: "cv", label: "Solo exhibitions", indent: true },
+    { id: "cv", label: "Group exhibitions", indent: true },
+    { id: "chronology", label: "Chronology" },
+    { id: "access-management", label: "Access Management" },
+  ];
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <AppLayout title={profileTitle} headerActions={headerActions}>
-      <div className="max-w-4xl mx-auto px-6 py-10 space-y-10">
+      <div className="max-w-6xl mx-auto px-6 py-10 flex gap-8">
+        {/* Side navigation */}
+        <aside className="hidden lg:block w-56 shrink-0">
+          <nav className="sticky top-6 space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">
+              Jump to
+            </p>
+            {sectionLinks.map((link, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => scrollToSection(link.id)}
+                className={`block w-full text-left text-sm py-1.5 px-2 rounded hover:bg-muted hover:text-foreground transition-colors text-muted-foreground ${
+                  link.indent ? "pl-6 text-xs" : ""
+                }`}
+              >
+                {link.label}
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        <div className="flex-1 min-w-0 space-y-10 scroll-smooth">
         {/* Basic Info */}
-        <section className="space-y-6">
+        <section id="basic-information" className="space-y-6 scroll-mt-6">
           <h2 className="text-2xl">Basic Information</h2>
           <div className="flex items-center gap-6">
             <div className="relative group">
@@ -509,7 +549,7 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        <section className="space-y-6">
+        <section id="contacts-web" className="space-y-6 scroll-mt-6">
           <h2 className="text-2xl">Contacts & Web</h2>
           <p className="text-xs text-muted-foreground -mt-2">Toggle each field to show or hide it on your public profile.</p>
           <div className="space-y-4">
@@ -551,7 +591,7 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        <section className="space-y-6">
+        <section id="social-media-links" className="space-y-6 scroll-mt-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl">Social Media Links</h2>
             <Button variant="outline" size="sm" onClick={addSocialLink} className="gap-1">
@@ -582,35 +622,35 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        <section className="space-y-6">
+        <section id="galleries" className="space-y-6 scroll-mt-6">
           <h2 className="text-2xl">Galleries</h2>
           <GallerySearch galleries={galleries} onGalleriesChange={setGalleries} />
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="biography" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">Biography</h2>
           <Textarea value={biography} onChange={(e) => setBiography(e.target.value)} placeholder="Write your biography…" rows={8} />
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="cv" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">CV</h2>
           {profileId && <CvManager profileId={profileId} />}
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="chronology" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">Chronology</h2>
           <Textarea value={chronology} onChange={(e) => setChronology(e.target.value)} placeholder="Timeline of significant events…" rows={8} />
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="access-management" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">Access Management</h2>
           <p className="text-sm text-muted-foreground">
             Grant registrars access to manage your catalogue raisonné on your behalf.
@@ -623,6 +663,7 @@ const ArtistProfile = () => {
             <Save className="w-4 h-4" />
             {saving ? "Saving…" : "Save Profile"}
           </Button>
+        </div>
         </div>
       </div>
     </AppLayout>
