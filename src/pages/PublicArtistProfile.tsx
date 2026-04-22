@@ -369,23 +369,29 @@ const PublicArtistProfile = () => {
 
           <main className="max-w-4xl mx-auto px-6 pb-20">
             {/* Contact */}
-            {(profile.email || profile.website || profile.studio_address) && (
+            {(() => {
+              const cv = profile.contact_visibility || {};
+              const showEmail = cv.email !== false && !!profile.email;
+              const showWebsite = cv.website !== false && !!profile.website;
+              const showStudio = cv.studio_address !== false && !!profile.studio_address;
+              if (!showEmail && !showWebsite && !showStudio) return null;
+              return (
               <section className="mb-16 max-w-3xl mx-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {profile.email && (
+                  {showEmail && (
                     <a href={`mailto:${profile.email}`} className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors">
                       <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span className="text-sm">{profile.email}</span>
                     </a>
                   )}
-                  {profile.website && (
-                    <a href={profile.website.startsWith("http") ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors">
+                  {showWebsite && (
+                    <a href={profile.website!.startsWith("http") ? profile.website! : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors">
                       <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
-                      <span className="text-sm truncate">{profile.website.replace(/^https?:\/\//, "")}</span>
+                      <span className="text-sm truncate">{profile.website!.replace(/^https?:\/\//, "")}</span>
                       <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0 ml-auto" />
                     </a>
                   )}
-                  {profile.studio_address && (
+                  {showStudio && (
                     <div className="flex items-center gap-3 p-4 rounded-md bg-muted/50">
                       <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span className="text-sm">{profile.studio_address}</span>
@@ -393,7 +399,8 @@ const PublicArtistProfile = () => {
                   )}
                 </div>
               </section>
-            )}
+              );
+            })()}
 
             {/* Social links */}
             {profile.social_media_links.length > 0 && (
