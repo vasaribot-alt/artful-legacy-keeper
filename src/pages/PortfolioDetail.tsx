@@ -37,6 +37,7 @@ const PortfolioDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [portfolioName, setPortfolioName] = useState("");
+  const [portfolioRole, setPortfolioRole] = useState<string>("artist");
   const [shareToken, setShareToken] = useState("");
   const [artworks, setArtworks] = useState<PortfolioArtwork[]>([]);
   const [loading, setLoading] = useState(true);
