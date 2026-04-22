@@ -114,12 +114,43 @@ const PortfolioDetail = () => {
     const activeRole = localStorage.getItem("activeRole") || "artist";
     const { data } = await supabase
       .from("artworks")
-      .select("id, title, year, medium")
+      .select("id, title, year, medium, series")
       .eq("role_context", activeRole)
       .order("title");
     const existingIds = new Set(artworks.map((a) => a.artwork_id));
-    setAvailable((data || []).filter((a) => !existingIds.has(a.id)));
+    const filtered = (data || []).filter((a) => !existingIds.has(a.id));
+
+    // Fetch thumbnails in parallel
+    const enriched: AvailableArtwork[] = await Promise.all(
+      filtered.map(async (a: any) => {
+        const { data: imgs } = await supabase
+          .from("artwork_images")
+          .select("storage_path")
+          .eq("artwork_id", a.id)
+          .order("display_order")
+          .limit(1);
+        let imageUrl: string | null = null;
+        if (imgs && imgs.length > 0) {
+          const { data: urlData } = supabase.storage
+            .from("artwork-images")
+            .getPublicUrl(imgs[0].storage_path);
+          imageUrl = urlData.publicUrl;
+        }
+        return {
+          id: a.id,
+          title: a.title,
+          year: a.year,
+          medium: a.medium,
+          series: a.series,
+          imageUrl,
+        };
+      })
+    );
+
+    setAvailable(enriched);
     setSelected(new Set());
+    setPickerSearch("");
+    setPickerSeries("all");
     setPickerOpen(true);
   };
 
