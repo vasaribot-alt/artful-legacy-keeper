@@ -37,6 +37,7 @@ const PortfolioDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [portfolioName, setPortfolioName] = useState("");
+  const [portfolioRole, setPortfolioRole] = useState<string>("artist");
   const [shareToken, setShareToken] = useState("");
   const [artworks, setArtworks] = useState<PortfolioArtwork[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,12 +57,13 @@ const PortfolioDetail = () => {
     setLoading(true);
     const { data: pData } = await supabase
       .from("portfolios")
-      .select("name, share_token")
+      .select("name, share_token, role_context")
       .eq("id", id!)
       .single();
     if (pData) {
       setPortfolioName((pData as any).name);
       setShareToken((pData as any).share_token);
+      setPortfolioRole((pData as any).role_context || "artist");
     }
 
     const { data: paData } = await supabase
@@ -111,11 +113,10 @@ const PortfolioDetail = () => {
   };
 
   const openPicker = async () => {
-    const activeRole = localStorage.getItem("activeRole") || "artist";
     const { data } = await supabase
       .from("artworks")
       .select("id, title, year, medium, series")
-      .eq("role_context", activeRole)
+      .eq("role_context", portfolioRole)
       .order("title");
     const existingIds = new Set(artworks.map((a) => a.artwork_id));
     const filtered = (data || []).filter((a) => !existingIds.has(a.id));
