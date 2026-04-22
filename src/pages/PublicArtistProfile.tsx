@@ -18,6 +18,8 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
+  X,
 } from "lucide-react";
 
 interface SocialLink { platform: string; url: string; }
@@ -89,6 +91,8 @@ const PublicArtistProfile = () => {
   const [exhibitionFilter, setExhibitionFilter] = useState<"solo" | "group">("solo");
   const [openSeries, setOpenSeries] = useState<string | null>(null);
   const [openExhibitionId, setOpenExhibitionId] = useState<string | null>(null);
+  const [lightboxArtwork, setLightboxArtwork] = useState<ArtworkPublic | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -212,6 +216,34 @@ const PublicArtistProfile = () => {
     if (aw.image_url) return aw.image_url;
     return null;
   };
+
+  const getArtworkImageUrls = (aw: ArtworkPublic): string[] => {
+    const urls = aw.images
+      .slice()
+      .sort((a, b) => a.display_order - b.display_order)
+      .map((img) => supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl);
+    if (urls.length === 0 && aw.image_url) urls.push(aw.image_url);
+    return urls;
+  };
+
+  const openLightbox = (aw: ArtworkPublic) => {
+    setLightboxArtwork(aw);
+    setLightboxIndex(0);
+  };
+
+  const closeLightbox = () => setLightboxArtwork(null);
+
+  useEffect(() => {
+    if (!lightboxArtwork) return;
+    const imgs = getArtworkImageUrls(lightboxArtwork);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") setLightboxIndex((i) => (i + 1) % Math.max(imgs.length, 1));
+      if (e.key === "ArrowLeft") setLightboxIndex((i) => (i - 1 + imgs.length) % Math.max(imgs.length, 1));
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [lightboxArtwork]);
 
   const getExhibitionThumb = (ex: Exhibition) => {
     if (ex.images.length > 0) {
@@ -506,7 +538,7 @@ const PublicArtistProfile = () => {
                                 const awThumb = getArtworkThumb(aw);
                                 const dims = formatDims(aw);
                                 return (
-                                  <div key={aw.id} className="group">
+                                  <div key={aw.id} className="group cursor-pointer" onClick={() => openLightbox(aw)}>
                                     <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
                                       {awThumb ? (
                                         <img src={awThumb} alt={aw.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
