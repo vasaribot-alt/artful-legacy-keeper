@@ -67,6 +67,12 @@ export interface ProfileViewData {
   chronology: string | null;
   global_artist_id: number;
   id_verified: boolean;
+  contact_visibility?: {
+    studio_address?: boolean;
+    phone?: boolean;
+    email?: boolean;
+    website?: boolean;
+  };
 }
 
 export function ProfilePresentationView({ profile }: { profile: ProfileViewData }) {
