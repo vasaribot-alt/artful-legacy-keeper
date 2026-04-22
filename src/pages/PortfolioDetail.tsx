@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Link as LinkIcon, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import {
@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PortfolioArtwork {
   id: string;
@@ -27,6 +29,8 @@ interface AvailableArtwork {
   title: string;
   year: number | null;
   medium: string | null;
+  series: string | null;
+  imageUrl: string | null;
 }
 
 const PortfolioDetail = () => {
@@ -40,6 +44,8 @@ const PortfolioDetail = () => {
   const [available, setAvailable] = useState<AvailableArtwork[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [adding, setAdding] = useState(false);
+  const [pickerSearch, setPickerSearch] = useState("");
+  const [pickerSeries, setPickerSeries] = useState<string>("all");
 
   useEffect(() => {
     if (!id) return;
@@ -108,12 +114,43 @@ const PortfolioDetail = () => {
     const activeRole = localStorage.getItem("activeRole") || "artist";
     const { data } = await supabase
       .from("artworks")
-      .select("id, title, year, medium")
+      .select("id, title, year, medium, series")
       .eq("role_context", activeRole)
       .order("title");
     const existingIds = new Set(artworks.map((a) => a.artwork_id));
-    setAvailable((data || []).filter((a) => !existingIds.has(a.id)));
+    const filtered = (data || []).filter((a) => !existingIds.has(a.id));
+
+    // Fetch thumbnails in parallel
+    const enriched: AvailableArtwork[] = await Promise.all(
+      filtered.map(async (a: any) => {
+        const { data: imgs } = await supabase
+          .from("artwork_images")
+          .select("storage_path")
+          .eq("artwork_id", a.id)
+          .order("display_order")
+          .limit(1);
+        let imageUrl: string | null = null;
+        if (imgs && imgs.length > 0) {
+          const { data: urlData } = supabase.storage
+            .from("artwork-images")
+            .getPublicUrl(imgs[0].storage_path);
+          imageUrl = urlData.publicUrl;
+        }
+        return {
+          id: a.id,
+          title: a.title,
+          year: a.year,
+          medium: a.medium,
+          series: a.series,
+          imageUrl,
+        };
+      })
+    );
+
+    setAvailable(enriched);
     setSelected(new Set());
+    setPickerSearch("");
+    setPickerSeries("all");
     setPickerOpen(true);
   };
 
@@ -217,36 +254,126 @@ const PortfolioDetail = () => {
       </div>
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>Add works to portfolio</DialogTitle>
           </DialogHeader>
           {available.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4">All artworks are already in this portfolio.</p>
-          ) : (
-            <div className="space-y-1 mt-2">
-              {available.map((art) => (
-                <label
-                  key={art.id}
-                  className="flex items-center gap-3 px-3 py-2 rounded-sm hover:bg-secondary/50 cursor-pointer"
-                >
-                  <Checkbox
-                    checked={selected.has(art.id)}
-                    onCheckedChange={() => toggleSelect(art.id)}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium">{art.title}</span>
-                    <div className="flex gap-1.5 text-xs text-muted-foreground">
-                      {art.year && <span>{art.year}</span>}
-                      {art.year && art.medium && <span>·</span>}
-                      {art.medium && <span className="truncate">{art.medium}</span>}
-                    </div>
+          ) : (() => {
+            const seriesList = Array.from(
+              new Set(available.map((a) => a.series).filter((s): s is string => !!s && s.trim().length > 0))
+            ).sort((a, b) => a.localeCompare(b));
+
+            const search = pickerSearch.toLowerCase().trim();
+            const filtered = available.filter((a) => {
+              if (pickerSeries === "all") {
+                // show all
+              } else if (pickerSeries === "__none__") {
+                if (a.series && a.series.trim().length > 0) return false;
+              } else if (a.series !== pickerSeries) {
+                return false;
+              }
+              if (!search) return true;
+              return (
+                (a.title || "").toLowerCase().includes(search) ||
+                (a.medium || "").toLowerCase().includes(search) ||
+                (a.series || "").toLowerCase().includes(search) ||
+                (a.year ? String(a.year) : "").includes(search)
+              );
+            });
+
+            const allSelected = filtered.length > 0 && filtered.every((a) => selected.has(a.id));
+            const toggleAll = () => {
+              setSelected((prev) => {
+                const next = new Set(prev);
+                if (allSelected) filtered.forEach((a) => next.delete(a.id));
+                else filtered.forEach((a) => next.add(a.id));
+                return next;
+              });
+            };
+
+            return (
+              <>
+                <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={pickerSearch}
+                      onChange={(e) => setPickerSearch(e.target.value)}
+                      placeholder="Search title, medium, year…"
+                      className="pl-9 h-9"
+                    />
                   </div>
-                </label>
-              ))}
-            </div>
-          )}
-          <div className="flex justify-end gap-2 mt-4">
+                  <Select value={pickerSeries} onValueChange={setPickerSeries}>
+                    <SelectTrigger className="sm:w-[200px] h-9">
+                      <SelectValue placeholder="All series" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All series</SelectItem>
+                      {seriesList.map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                      <SelectItem value="__none__">No series</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between mt-3 px-1">
+                  <button
+                    type="button"
+                    onClick={toggleAll}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    disabled={filtered.length === 0}
+                  >
+                    {allSelected ? "Deselect all" : "Select all"} ({filtered.length})
+                  </button>
+                  <span className="text-xs text-muted-foreground">{selected.size} selected</span>
+                </div>
+
+                <div className="flex-1 overflow-y-auto mt-2 -mx-1 px-1">
+                  {filtered.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-8 text-center">No matching artworks.</p>
+                  ) : (
+                    <div className="space-y-1">
+                      {filtered.map((art) => (
+                        <label
+                          key={art.id}
+                          className="flex items-center gap-3 px-2 py-2 rounded-sm hover:bg-secondary/50 cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={selected.has(art.id)}
+                            onCheckedChange={() => toggleSelect(art.id)}
+                          />
+                          <div className="w-12 h-12 bg-secondary rounded-sm overflow-hidden shrink-0">
+                            {art.imageUrl ? (
+                              <img src={art.imageUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[8px]">
+                                No img
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium truncate">{art.title}</div>
+                            <div className="flex gap-1.5 text-xs text-muted-foreground">
+                              {art.year && <span>{art.year}</span>}
+                              {art.year && art.medium && <span>·</span>}
+                              {art.medium && <span className="truncate">{art.medium}</span>}
+                            </div>
+                            {art.series && (
+                              <div className="text-[11px] text-muted-foreground/80 truncate italic">{art.series}</div>
+                            )}
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
+          <div className="flex justify-end gap-2 mt-4 pt-2 border-t">
             <Button variant="outline" size="sm" onClick={() => setPickerOpen(false)}>Cancel</Button>
             <Button size="sm" onClick={handleAddArtworks} disabled={selected.size === 0 || adding}>
               Add {selected.size > 0 ? `(${selected.size})` : ""}
