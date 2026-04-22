@@ -549,7 +549,7 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        <section className="space-y-6">
+        <section id="contacts-web" className="space-y-6 scroll-mt-6">
           <h2 className="text-2xl">Contacts & Web</h2>
           <p className="text-xs text-muted-foreground -mt-2">Toggle each field to show or hide it on your public profile.</p>
           <div className="space-y-4">
@@ -591,7 +591,7 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        <section className="space-y-6">
+        <section id="social-media-links" className="space-y-6 scroll-mt-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl">Social Media Links</h2>
             <Button variant="outline" size="sm" onClick={addSocialLink} className="gap-1">
@@ -622,35 +622,35 @@ const ArtistProfile = () => {
 
         <Separator />
 
-        <section className="space-y-6">
+        <section id="galleries" className="space-y-6 scroll-mt-6">
           <h2 className="text-2xl">Galleries</h2>
           <GallerySearch galleries={galleries} onGalleriesChange={setGalleries} />
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="biography" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">Biography</h2>
           <Textarea value={biography} onChange={(e) => setBiography(e.target.value)} placeholder="Write your biography…" rows={8} />
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="cv" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">CV</h2>
           {profileId && <CvManager profileId={profileId} />}
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="chronology" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">Chronology</h2>
           <Textarea value={chronology} onChange={(e) => setChronology(e.target.value)} placeholder="Timeline of significant events…" rows={8} />
         </section>
 
         <Separator />
 
-        <section className="space-y-4">
+        <section id="access-management" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">Access Management</h2>
           <p className="text-sm text-muted-foreground">
             Grant registrars access to manage your catalogue raisonné on your behalf.
@@ -663,6 +663,7 @@ const ArtistProfile = () => {
             <Save className="w-4 h-4" />
             {saving ? "Saving…" : "Save Profile"}
           </Button>
+        </div>
         </div>
       </div>
     </AppLayout>
