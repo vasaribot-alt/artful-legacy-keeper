@@ -22,7 +22,7 @@ export function AppLayout({ children, title, headerActions }: AppLayoutProps) {
               <div className="ml-auto flex items-center gap-2">{headerActions}</div>
             )}
           </header>
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1">
             {children}
           </main>
         </div>
