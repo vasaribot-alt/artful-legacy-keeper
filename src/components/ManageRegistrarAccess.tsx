@@ -47,12 +47,12 @@ export function ManageRegistrarAccess() {
 
     if (!data) { setLoading(false); return; }
 
-    // Enrich with registrar profile info
-    const registrarIds = [...new Set(data.map(d => d.registrar_id))];
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, full_name, email")
-      .in("user_id", registrarIds);
+    // Enrich with registrar profile info via security-definer RPC
+    // (artist owners cannot read registrar profiles directly via RLS)
+    const { data: profiles } = await (supabase as any).rpc(
+      "get_registrar_profiles",
+      { _owner_id: user.id }
+    );
 
     const enriched: AccessRecord[] = data.map(d => {
       const profile = profiles?.find(p => p.user_id === d.registrar_id);
