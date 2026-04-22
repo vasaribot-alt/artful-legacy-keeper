@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye, Pencil } from "lucide-react";
+import { Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye, EyeOff, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
@@ -78,6 +78,15 @@ const ArtistProfile = () => {
   const [cv, setCv] = useState("");
   const [chronology, setChronology] = useState("");
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
+  const [contactVisibility, setContactVisibility] = useState<{
+    studio_address: boolean;
+    phone: boolean;
+    email: boolean;
+    website: boolean;
+  }>({ studio_address: true, phone: true, email: true, website: true });
+
+  const toggleVisibility = (field: "studio_address" | "phone" | "email" | "website") =>
+    setContactVisibility((v) => ({ ...v, [field]: !v[field] }));
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -128,6 +137,15 @@ const ArtistProfile = () => {
       setBiography((data as any).biography || "");
       setCv((data as any).cv || "");
       setChronology((data as any).chronology || "");
+      const cv = (data as any).contact_visibility;
+      if (cv && typeof cv === "object") {
+        setContactVisibility({
+          studio_address: cv.studio_address !== false,
+          phone: cv.phone !== false,
+          email: cv.email !== false,
+          website: cv.website !== false,
+        });
+      }
       if (!(data as any).phone_prefix && (data as any).country) {
         const autoPrefix = getPhonePrefixForCountry((data as any).country);
         if (autoPrefix) setPhonePrefix(autoPrefix);
@@ -157,6 +175,7 @@ const ArtistProfile = () => {
         biography: biography || null,
         cv: cv || null,
         chronology: chronology || null,
+        contact_visibility: contactVisibility,
       } as any)
       .eq("id", profileId);
     setSaving(false);
@@ -235,6 +254,7 @@ const ArtistProfile = () => {
     chronology: chronology || null,
     global_artist_id: globalArtistId,
     id_verified: idVerified,
+    contact_visibility: contactVisibility,
   } : null;
 
   const headerActions = editMode ? (
