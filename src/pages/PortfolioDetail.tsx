@@ -196,8 +196,34 @@ const PortfolioDetail = () => {
     });
   };
 
+  const openRename = () => {
+    setRenameValue(portfolioName);
+    setRenameOpen(true);
+  };
+
+  const handleRename = async () => {
+    const next = renameValue.trim();
+    if (!next || next === portfolioName) { setRenameOpen(false); return; }
+    setRenaming(true);
+    const { error } = await supabase
+      .from("portfolios")
+      .update({ name: next })
+      .eq("id", id!);
+    setRenaming(false);
+    if (error) {
+      toast.error("Failed to rename portfolio");
+    } else {
+      setPortfolioName(next);
+      setRenameOpen(false);
+      toast.success("Portfolio renamed");
+    }
+  };
+
   const headerActions = (
     <>
+      <Button variant="outline" size="sm" onClick={openRename} className="gap-1.5">
+        <Pencil className="w-3.5 h-3.5" /> Rename
+      </Button>
       <Button variant="outline" size="sm" onClick={copyShareLink} className="gap-1.5">
         <LinkIcon className="w-3.5 h-3.5" /> Share
       </Button>
