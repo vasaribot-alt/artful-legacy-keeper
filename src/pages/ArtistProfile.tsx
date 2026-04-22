@@ -470,8 +470,8 @@ const ArtistProfile = () => {
     <AppLayout title={profileTitle} headerActions={headerActions}>
       <div className="max-w-6xl mx-auto px-6 py-10 flex gap-8">
         {/* Side navigation */}
-        <aside className="hidden lg:block w-56 shrink-0">
-          <nav className="sticky top-20 space-y-1 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <aside className="hidden lg:block w-56 shrink-0 self-start sticky top-0 max-h-screen overflow-y-auto py-2">
+          <nav className="space-y-1">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">
               Jump to
             </p>
