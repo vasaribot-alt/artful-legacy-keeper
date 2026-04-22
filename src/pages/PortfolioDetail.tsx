@@ -411,6 +411,29 @@ const PortfolioDetail = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Rename portfolio</DialogTitle>
+          </DialogHeader>
+          <div className="mt-2">
+            <Input
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              placeholder="Portfolio name"
+              autoFocus
+              onKeyDown={(e) => { if (e.key === "Enter") handleRename(); }}
+            />
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" size="sm" onClick={() => setRenameOpen(false)}>Cancel</Button>
+            <Button size="sm" onClick={handleRename} disabled={!renameValue.trim() || renaming}>
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 };
