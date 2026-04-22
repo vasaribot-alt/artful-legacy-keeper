@@ -49,13 +49,18 @@ export function ManageRegistrarAccess() {
 
     // Enrich with registrar profile info via security-definer RPC
     // (artist owners cannot read registrar profiles directly via RLS)
-    const { data: profiles } = await (supabase as any).rpc(
+    const { data: profiles, error: profilesError } = await (supabase as any).rpc(
       "get_registrar_profiles",
       { _owner_id: user.id }
     );
 
+    if (profilesError) {
+      console.error("get_registrar_profiles error:", profilesError);
+    }
+    console.log("Registrar profiles fetched:", profiles, "for owner:", user.id);
+
     const enriched: AccessRecord[] = data.map(d => {
-      const profile = profiles?.find(p => p.user_id === d.registrar_id);
+      const profile = profiles?.find((p: any) => p.user_id === d.registrar_id);
       return {
         ...d,
         registrar_name: profile?.full_name || null,
