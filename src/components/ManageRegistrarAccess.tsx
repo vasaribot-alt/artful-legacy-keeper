@@ -38,37 +38,36 @@ export function ManageRegistrarAccess() {
   const fetchAccess = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-    const { data } = await supabase
-      .from("registrar_access")
-      .select("*")
-      .eq("owner_id", user.id);
-
-    if (!data) { setLoading(false); return; }
-
-    // Enrich with registrar profile info via security-definer RPC
-    // (artist owners cannot read registrar profiles directly via RLS)
-    const { data: profiles, error: profilesError } = await (supabase as any).rpc(
-      "get_registrar_profiles",
+    const { data, error } = await (supabase as any).rpc(
+      "get_registrar_access_details",
       { _owner_id: user.id }
     );
 
-    if (profilesError) {
-      console.error("get_registrar_profiles error:", profilesError);
+    if (error) {
+      console.error("get_registrar_access_details error:", error);
+      toast.error("Failed to load registrar access");
+      setRecords([]);
+      setLoading(false);
+      return;
     }
-    console.log("Registrar profiles fetched:", profiles, "for owner:", user.id);
 
-    const enriched: AccessRecord[] = data.map(d => {
-      const profile = profiles?.find((p: any) => p.user_id === d.registrar_id);
-      return {
-        ...d,
-        registrar_name: profile?.full_name || null,
-        registrar_email: profile?.email || null,
-      };
-    });
+    const normalized: AccessRecord[] = (data || []).map((row: any) => ({
+      id: row.access_id,
+      registrar_id: row.registrar_id,
+      status: row.status,
+      requested_by: "owner",
+      message: null,
+      granted_at: row.granted_at,
+      registrar_name: row.registrar_name || null,
+      registrar_email: row.registrar_email || null,
+    }));
 
-    setRecords(enriched);
+    setRecords(normalized);
     setLoading(false);
   };
 
