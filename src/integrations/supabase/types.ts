@@ -940,6 +940,7 @@ export type Database = {
           birth_year: number | null
           chronology: string | null
           city: string | null
+          contact_visibility: Json
           contacts: string | null
           country: string | null
           created_at: string
@@ -964,6 +965,7 @@ export type Database = {
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
+          contact_visibility?: Json
           contacts?: string | null
           country?: string | null
           created_at?: string
@@ -988,6 +990,7 @@ export type Database = {
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
+          contact_visibility?: Json
           contacts?: string | null
           country?: string | null
           created_at?: string
