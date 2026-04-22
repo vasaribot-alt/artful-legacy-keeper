@@ -29,6 +29,8 @@ interface AvailableArtwork {
   title: string;
   year: number | null;
   medium: string | null;
+  series: string | null;
+  imageUrl: string | null;
 }
 
 const PortfolioDetail = () => {
@@ -42,6 +44,8 @@ const PortfolioDetail = () => {
   const [available, setAvailable] = useState<AvailableArtwork[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [adding, setAdding] = useState(false);
+  const [pickerSearch, setPickerSearch] = useState("");
+  const [pickerSeries, setPickerSeries] = useState<string>("all");
 
   useEffect(() => {
     if (!id) return;
