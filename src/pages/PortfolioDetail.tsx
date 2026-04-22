@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search } from "lucide-react";
+import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import {
@@ -47,6 +47,9 @@ const PortfolioDetail = () => {
   const [adding, setAdding] = useState(false);
   const [pickerSearch, setPickerSearch] = useState("");
   const [pickerSeries, setPickerSeries] = useState<string>("all");
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [renaming, setRenaming] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -193,8 +196,34 @@ const PortfolioDetail = () => {
     });
   };
 
+  const openRename = () => {
+    setRenameValue(portfolioName);
+    setRenameOpen(true);
+  };
+
+  const handleRename = async () => {
+    const next = renameValue.trim();
+    if (!next || next === portfolioName) { setRenameOpen(false); return; }
+    setRenaming(true);
+    const { error } = await supabase
+      .from("portfolios")
+      .update({ name: next })
+      .eq("id", id!);
+    setRenaming(false);
+    if (error) {
+      toast.error("Failed to rename portfolio");
+    } else {
+      setPortfolioName(next);
+      setRenameOpen(false);
+      toast.success("Portfolio renamed");
+    }
+  };
+
   const headerActions = (
     <>
+      <Button variant="outline" size="sm" onClick={openRename} className="gap-1.5">
+        <Pencil className="w-3.5 h-3.5" /> Rename
+      </Button>
       <Button variant="outline" size="sm" onClick={copyShareLink} className="gap-1.5">
         <LinkIcon className="w-3.5 h-3.5" /> Share
       </Button>
@@ -378,6 +407,29 @@ const PortfolioDetail = () => {
             <Button variant="outline" size="sm" onClick={() => setPickerOpen(false)}>Cancel</Button>
             <Button size="sm" onClick={handleAddArtworks} disabled={selected.size === 0 || adding}>
               Add {selected.size > 0 ? `(${selected.size})` : ""}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Rename portfolio</DialogTitle>
+          </DialogHeader>
+          <div className="mt-2">
+            <Input
+              value={renameValue}
+              onChange={(e) => setRenameValue(e.target.value)}
+              placeholder="Portfolio name"
+              autoFocus
+              onKeyDown={(e) => { if (e.key === "Enter") handleRename(); }}
+            />
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" size="sm" onClick={() => setRenameOpen(false)}>Cancel</Button>
+            <Button size="sm" onClick={handleRename} disabled={!renameValue.trim() || renaming}>
+              Save
             </Button>
           </div>
         </DialogContent>
