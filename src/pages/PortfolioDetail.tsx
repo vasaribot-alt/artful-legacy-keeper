@@ -47,6 +47,9 @@ const PortfolioDetail = () => {
   const [adding, setAdding] = useState(false);
   const [pickerSearch, setPickerSearch] = useState("");
   const [pickerSeries, setPickerSeries] = useState<string>("all");
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const [renaming, setRenaming] = useState(false);
 
   useEffect(() => {
     if (!id) return;
