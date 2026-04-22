@@ -80,6 +80,11 @@ export function ProfilePresentationView({ profile }: { profile: ProfileViewData 
   const [startingVerification, setStartingVerification] = useState(false);
   const location = [profile.city, profile.country].filter(Boolean).join(", ");
   const phoneDisplay = [profile.phone_prefix, profile.phone].filter(Boolean).join(" ");
+  const cv = profile.contact_visibility ?? {};
+  const showStudio = cv.studio_address !== false && !!profile.studio_address;
+  const showPhone = cv.phone !== false && !!phoneDisplay;
+  const showEmail = cv.email !== false && !!profile.email;
+  const showWebsite = cv.website !== false && !!profile.website;
 
   const handleVerifyId = async () => {
     setStartingVerification(true);
@@ -152,33 +157,33 @@ export function ProfilePresentationView({ profile }: { profile: ProfileViewData 
       </header>
 
       <div className="max-w-3xl mx-auto px-6 pb-20">
-        {(phoneDisplay || profile.email || profile.website || profile.studio_address) && (
+        {(showPhone || showEmail || showWebsite || showStudio) && (
           <section className="mb-16">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {phoneDisplay && (
+              {showPhone && (
                 <div className="flex items-center gap-3 p-4 rounded-md bg-muted/50">
                   <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
                   <span className="text-sm">{phoneDisplay}</span>
                 </div>
               )}
-              {profile.email && (
+              {showEmail && (
                 <a href={`mailto:${profile.email}`} className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors">
                   <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
                   <span className="text-sm">{profile.email}</span>
                 </a>
               )}
-              {profile.website && (
+              {showWebsite && (
                 <a
-                  href={profile.website.startsWith("http") ? profile.website : `https://${profile.website}`}
+                  href={profile.website!.startsWith("http") ? profile.website! : `https://${profile.website}`}
                   target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-3 p-4 rounded-md bg-muted/50 hover:bg-muted transition-colors"
                 >
                   <Globe className="w-4 h-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm truncate">{profile.website.replace(/^https?:\/\//, "")}</span>
+                  <span className="text-sm truncate">{profile.website!.replace(/^https?:\/\//, "")}</span>
                   <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0 ml-auto" />
                 </a>
               )}
-              {profile.studio_address && (
+              {showStudio && (
                 <div className="flex items-center gap-3 p-4 rounded-md bg-muted/50">
                   <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
                   <span className="text-sm">{profile.studio_address}</span>

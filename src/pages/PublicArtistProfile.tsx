@@ -43,6 +43,12 @@ interface ProfileData {
   chronology: string | null;
   global_artist_id: number;
   profile_id: string;
+  contact_visibility: {
+    studio_address?: boolean;
+    phone?: boolean;
+    email?: boolean;
+    website?: boolean;
+  };
 }
 
 interface Exhibition {
@@ -129,6 +135,7 @@ const PublicArtistProfile = () => {
         chronology: data.chronology,
         global_artist_id: data.global_artist_id,
         profile_id: data.id,
+        contact_visibility: ((data as any).contact_visibility as any) || {},
       });
 
       const [cvRes, foundingRes, exhibitionsRes, artworksRes, seriesRes] = await Promise.all([
