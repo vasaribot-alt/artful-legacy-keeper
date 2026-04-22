@@ -46,8 +46,11 @@ Deno.serve(async (req) => {
 
 Rules:
 - Each entry_text may contain MULTIPLE exhibitions concatenated together. Split them into separate records.
-- Exhibition titles are usually in quotes like "Title Here". If no quotes, infer the title from context.
-- Determine exhibition_type from the section name: "solo" for solo exhibitions, "group" for group/selected exhibitions. "curated" sections should be "group".
+- Exhibition titles are usually in quotes like "Title Here". If no quotes, infer the title from venue/context — even a venue name alone is a valid title fallback.
+- CRITICAL: Determine exhibition_type STRICTLY from the section name of each entry (provided in the metadata):
+  * If the section name contains "solo" (case-insensitive, including singular "Solo Exhibition" or plural "Solo Exhibitions") → exhibition_type MUST be "solo".
+  * If the section name contains "group", "selected", "curated", or generic "exhibition(s)" without "solo" → exhibition_type MUST be "group".
+  * NEVER default everything to "group". Re-read the section name for EACH entry independently.
 - Extract venue/gallery name, city, and country when available.
 - Extract curator name if mentioned (usually after "curated by").
 - Use the year from the entry metadata.

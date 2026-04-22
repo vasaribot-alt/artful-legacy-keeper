@@ -1083,6 +1083,14 @@ export type Database = {
     }
     Functions: {
       find_registrar_by_email: { Args: { _email: string }; Returns: string }
+      get_registrar_profiles: {
+        Args: { _owner_id: string }
+        Returns: {
+          email: string
+          full_name: string
+          user_id: string
+        }[]
+      }
       has_registrar_access: {
         Args: { _owner_id: string; _registrar_id: string }
         Returns: boolean
