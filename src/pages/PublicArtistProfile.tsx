@@ -18,6 +18,8 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
+  X,
 } from "lucide-react";
 
 interface SocialLink { platform: string; url: string; }
@@ -89,6 +91,8 @@ const PublicArtistProfile = () => {
   const [exhibitionFilter, setExhibitionFilter] = useState<"solo" | "group">("solo");
   const [openSeries, setOpenSeries] = useState<string | null>(null);
   const [openExhibitionId, setOpenExhibitionId] = useState<string | null>(null);
+  const [lightboxArtwork, setLightboxArtwork] = useState<ArtworkPublic | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -212,6 +216,34 @@ const PublicArtistProfile = () => {
     if (aw.image_url) return aw.image_url;
     return null;
   };
+
+  const getArtworkImageUrls = (aw: ArtworkPublic): string[] => {
+    const urls = aw.images
+      .slice()
+      .sort((a, b) => a.display_order - b.display_order)
+      .map((img) => supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl);
+    if (urls.length === 0 && aw.image_url) urls.push(aw.image_url);
+    return urls;
+  };
+
+  const openLightbox = (aw: ArtworkPublic) => {
+    setLightboxArtwork(aw);
+    setLightboxIndex(0);
+  };
+
+  const closeLightbox = () => setLightboxArtwork(null);
+
+  useEffect(() => {
+    if (!lightboxArtwork) return;
+    const imgs = getArtworkImageUrls(lightboxArtwork);
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") setLightboxIndex((i) => (i + 1) % Math.max(imgs.length, 1));
+      if (e.key === "ArrowLeft") setLightboxIndex((i) => (i - 1 + imgs.length) % Math.max(imgs.length, 1));
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [lightboxArtwork]);
 
   const getExhibitionThumb = (ex: Exhibition) => {
     if (ex.images.length > 0) {
@@ -506,7 +538,7 @@ const PublicArtistProfile = () => {
                                 const awThumb = getArtworkThumb(aw);
                                 const dims = formatDims(aw);
                                 return (
-                                  <div key={aw.id} className="group">
+                                  <div key={aw.id} className="group cursor-pointer" onClick={() => openLightbox(aw)}>
                                     <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
                                       {awThumb ? (
                                         <img src={awThumb} alt={aw.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
@@ -673,6 +705,79 @@ const PublicArtistProfile = () => {
           </footer>
         </>
       )}
+
+      {lightboxArtwork && (() => {
+        const imgs = getArtworkImageUrls(lightboxArtwork);
+        const dims = formatDims(lightboxArtwork);
+        return (
+          <div
+            className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col"
+            onClick={closeLightbox}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border" onClick={(e) => e.stopPropagation()}>
+              <div className="min-w-0">
+                <h3 className="font-serif text-lg italic truncate">{lightboxArtwork.title}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {[lightboxArtwork.year, lightboxArtwork.medium, dims].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+              <button
+                onClick={closeLightbox}
+                className="p-2 hover:bg-muted rounded-md transition-colors shrink-0"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center relative px-4 py-6" onClick={(e) => e.stopPropagation()}>
+              {imgs.length > 1 && (
+                <button
+                  onClick={() => setLightboxIndex((i) => (i - 1 + imgs.length) % imgs.length)}
+                  className="absolute left-4 p-3 rounded-full bg-background/80 hover:bg-background border border-border transition-colors"
+                  aria-label="Previous"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              )}
+              {imgs.length > 0 ? (
+                <img
+                  src={imgs[lightboxIndex]}
+                  alt={lightboxArtwork.title}
+                  className="max-h-full max-w-full object-contain"
+                />
+              ) : (
+                <div className="text-muted-foreground">No image</div>
+              )}
+              {imgs.length > 1 && (
+                <button
+                  onClick={() => setLightboxIndex((i) => (i + 1) % imgs.length)}
+                  className="absolute right-4 p-3 rounded-full bg-background/80 hover:bg-background border border-border transition-colors"
+                  aria-label="Next"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+
+            {imgs.length > 1 && (
+              <div className="flex items-center justify-center gap-2 pb-6 px-6 overflow-x-auto" onClick={(e) => e.stopPropagation()}>
+                {imgs.map((url, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setLightboxIndex(i)}
+                    className={`w-14 h-14 rounded-md overflow-hidden border-2 shrink-0 transition-colors ${
+                      i === lightboxIndex ? "border-foreground" : "border-transparent opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 };
