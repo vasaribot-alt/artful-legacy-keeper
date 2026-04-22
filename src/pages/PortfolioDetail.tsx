@@ -57,12 +57,13 @@ const PortfolioDetail = () => {
     setLoading(true);
     const { data: pData } = await supabase
       .from("portfolios")
-      .select("name, share_token")
+      .select("name, share_token, role_context")
       .eq("id", id!)
       .single();
     if (pData) {
       setPortfolioName((pData as any).name);
       setShareToken((pData as any).share_token);
+      setPortfolioRole((pData as any).role_context || "artist");
     }
 
     const { data: paData } = await supabase
