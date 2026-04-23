@@ -318,6 +318,14 @@ const Dashboard = () => {
             <VerifyIdBanner onVerified={() => { setIdVerified(true); fetchProfile(); }} />
           )}
 
+          {activeRole === "artist" && user && (
+            <PendingVerificationInbox
+              userId={user.id}
+              activeRole={activeRole}
+              onVerified={fetchArtworks}
+            />
+          )}
+
           <div className="mb-6 space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -357,6 +365,18 @@ const Dashboard = () => {
                   ))}
                 </SelectContent>
               </Select>
+              {activeRole === "artist" && (
+                <Select value={verificationFilter} onValueChange={setVerificationFilter}>
+                  <SelectTrigger className="h-8 w-[150px] text-xs">
+                    <SelectValue placeholder="Verification" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All verification</SelectItem>
+                    <SelectItem value="verified">Artist verified</SelectItem>
+                    <SelectItem value="pending">Pending review</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             </div>
           </div>
