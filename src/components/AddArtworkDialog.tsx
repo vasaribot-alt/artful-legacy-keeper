@@ -601,6 +601,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           <ExhibitionPicker
             selectedIds={selectedExhibitionIds}
             onSelectionChange={setSelectedExhibitionIds}
+            ownerId={ownerId}
           />
 
           <div>

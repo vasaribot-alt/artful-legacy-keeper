@@ -791,6 +791,7 @@ const ArtworkDetail = () => {
         <ExhibitionPicker
           selectedIds={selectedExhibitionIds}
           onSelectionChange={setSelectedExhibitionIds}
+          ownerId={ownerId || undefined}
         />
 
         <CataloguePicker
