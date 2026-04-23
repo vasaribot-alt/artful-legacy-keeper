@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, Images, Calendar, BookOpen, Upload } from "lucide-react";
+import { ArrowLeft, Images, Calendar, BookOpen, Upload, Plus } from "lucide-react";
 import { BulkImportDialog } from "@/components/BulkImportDialog";
+import { AddArtworkDialog } from "@/components/AddArtworkDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ClientProfile {
@@ -33,6 +34,8 @@ const RegistrarClientView = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("artworks");
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
+  const [addArtworkOpen, setAddArtworkOpen] = useState(false);
+  const [clientRole, setClientRole] = useState<"artist" | "collector">("artist");
 
   useEffect(() => {
     if (!ownerId) return;
@@ -49,6 +52,19 @@ const RegistrarClientView = () => {
       .eq("user_id", ownerId!)
       .single();
     setProfile(profileData);
+
+    // Determine client's primary role (artist vs collector) for correct role_context on inserts
+    const { data: roleRows } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", ownerId!);
+    const roles = (roleRows || []).map((r: any) => r.role);
+    const resolvedRole: "artist" | "collector" = roles.includes("artist")
+      ? "artist"
+      : roles.includes("collector")
+        ? "collector"
+        : "artist";
+    setClientRole(resolvedRole);
 
     // Fetch artworks with images
     const { data: artworksData } = await supabase
@@ -101,6 +117,9 @@ const RegistrarClientView = () => {
       title={profile?.full_name || "Client"}
       headerActions={
         <>
+          <Button variant="default" size="sm" onClick={() => setAddArtworkOpen(true)} className="gap-2">
+            <Plus className="w-4 h-4" /> Add Artwork
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setBulkImportOpen(true)} className="gap-2">
             <Upload className="w-4 h-4" /> Import
           </Button>
@@ -118,6 +137,7 @@ const RegistrarClientView = () => {
               <h2 className="text-lg font-medium">{profile.full_name}</h2>
               <p className="text-xs text-muted-foreground">
                 {[profile.city, profile.country].filter(Boolean).join(", ") || profile.email}
+                <span className="ml-2 uppercase tracking-wider">· {clientRole} catalogue</span>
               </p>
             </div>
           </div>
@@ -222,6 +242,16 @@ const RegistrarClientView = () => {
         onOpenChange={setBulkImportOpen}
         onSuccess={fetchClientData}
         ownerId={ownerId}
+        userRole={clientRole}
+      />
+
+      <AddArtworkDialog
+        open={addArtworkOpen}
+        onOpenChange={setAddArtworkOpen}
+        onSuccess={fetchClientData}
+        ownerId={ownerId}
+        roleContext={clientRole}
+        userRole={clientRole}
       />
     </AppLayout>
   );
