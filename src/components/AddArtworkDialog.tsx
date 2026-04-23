@@ -253,7 +253,11 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
     }
 
     const effectiveOwnerId = ownerId || user.id;
-    const activeRole = roleContext || localStorage.getItem("activeRole") || "artist";
+    // When acting on behalf of a client (ownerId set), force a non-registrar role_context
+    // so the artwork shows up in the client's own catalogue.
+    const activeRole = ownerId
+      ? (roleContext && roleContext !== "registrar" ? roleContext : "artist")
+      : (roleContext || localStorage.getItem("activeRole") || "artist");
     const insertData: Record<string, unknown> = {
       owner_id: effectiveOwnerId,
       title: title.trim(),
