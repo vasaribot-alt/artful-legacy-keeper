@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { VerificationBadge } from "@/components/VerificationBadge";
 
 interface Artwork {
   id: string;
@@ -22,6 +23,7 @@ interface Artwork {
   sub_category: string | null;
   status?: string;
   buyer_name?: string | null;
+  verification_status?: string | null;
 }
 
 import { formatDimensions } from "@/lib/formatDimensions";
@@ -95,7 +97,10 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
         )}
       </HoverCard>
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-medium truncate">{artwork.title}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium truncate">{artwork.title}</h3>
+          <VerificationBadge status={artwork.verification_status} className="shrink-0" />
+        </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
           {artwork.artwork_type && <span>{artwork.artwork_type}</span>}
           {artwork.year && <><span>·</span><span>{artwork.year}</span></>}

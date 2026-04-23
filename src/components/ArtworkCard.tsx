@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ArtworkDuplicateData } from "@/components/AddArtworkDialog";
+import { VerificationBadge } from "@/components/VerificationBadge";
 
 interface Artwork {
   id: string;
@@ -25,6 +26,7 @@ interface Artwork {
   sub_category: string | null;
   status?: string;
   buyer_name?: string | null;
+  verification_status?: string | null;
 }
 
 import { formatDimensions } from "@/lib/formatDimensions";
@@ -113,7 +115,10 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
           </Button>
         )}
       </div>
-      <h3 className="text-sm font-medium leading-tight">{artwork.title}</h3>
+      <div className="flex items-start gap-2">
+        <h3 className="text-sm font-medium leading-tight flex-1">{artwork.title}</h3>
+        <VerificationBadge status={artwork.verification_status} className="shrink-0 mt-0.5" />
+      </div>
       <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
         {artwork.artwork_type && (
           <span>{artwork.artwork_type}{artwork.artwork_type === "Sculpture" && artwork.sub_category ? ` — ${artwork.sub_category}` : ""}</span>
