@@ -22,28 +22,35 @@ interface CvEntry {
 interface ExhibitionPickerProps {
   selectedIds: string[];
   onSelectionChange: (ids: string[]) => void;
+  /** When provided, loads exhibitions for this user (e.g., registrar acting on behalf of client) */
+  ownerId?: string;
 }
 
 const EXHIBITION_SECTIONS = ["exhibitions", "solo exhibitions", "group exhibitions", "selected exhibitions", "exhibition"];
 
-export const ExhibitionPicker = ({ selectedIds, onSelectionChange }: ExhibitionPickerProps) => {
+export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: ExhibitionPickerProps) => {
   const [entries, setEntries] = useState<CvEntry[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchExhibitionEntries();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ownerId]);
 
   const fetchExhibitionEntries = async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    let targetUserId = ownerId;
+    if (!targetUserId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      targetUserId = user.id;
+    }
 
     const { data: profile } = await supabase
       .from("profiles")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", targetUserId)
       .single();
 
     if (!profile) { setLoading(false); return; }
