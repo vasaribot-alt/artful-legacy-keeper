@@ -312,18 +312,19 @@ const Dashboard = () => {
       title={activeRole === "artist" ? "Catalogue Raisonné" : activeRole === "collector" ? "Collection" : "Managed Artworks"}
       headerActions={headerActions}
     >
+      {activeRole === "artist" && user && (
+        <div className="max-w-6xl mx-auto px-6 pt-6">
+          <PendingVerificationInbox
+            userId={user.id}
+            activeRole={activeRole}
+            onVerified={fetchArtworks}
+          />
+        </div>
+      )}
       {editMode ? (
         <div className="max-w-6xl mx-auto px-6 py-8">
           {!idVerified && (
             <VerifyIdBanner onVerified={() => { setIdVerified(true); fetchProfile(); }} />
-          )}
-
-          {activeRole === "artist" && user && (
-            <PendingVerificationInbox
-              userId={user.id}
-              activeRole={activeRole}
-              onVerified={fetchArtworks}
-            />
           )}
 
           <div className="mb-6 space-y-3">
