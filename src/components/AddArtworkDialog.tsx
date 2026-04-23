@@ -311,7 +311,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
     // Save new series
     if (series.trim() && !seriesOptions.includes(series.trim())) {
-      await supabase.from("series_groups").insert({ user_id: user.id, name: series.trim() }).select();
+      await supabase.from("series_groups").insert({ user_id: effectiveOwnerId, name: series.trim() }).select();
       fetchSeriesOptions();
     }
 
