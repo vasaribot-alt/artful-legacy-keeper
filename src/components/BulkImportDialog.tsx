@@ -598,7 +598,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     className="gap-1.5 text-xs h-7"
                     onClick={() => downloadTemplate(ARTIST_UNIQUE_HEADERS, "artist-unique-template.xlsx")}
                   >
-                    <Download className="w-3 h-3" /> Unique Works
+                    <Download className="w-3 h-3" /> Artist – Unique Works
                   </Button>
                   <Button
                     variant="ghost"
@@ -606,7 +606,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     className="gap-1.5 text-xs h-7"
                     onClick={() => downloadTemplate(ARTIST_EDITIONS_HEADERS, "artist-editions-template.xlsx")}
                   >
-                    <Download className="w-3 h-3" /> Editions
+                    <Download className="w-3 h-3" /> Artist – Editions
                   </Button>
                 </>
               )}
@@ -618,7 +618,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     className="gap-1.5 text-xs h-7"
                     onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, "collector-unique-template.xlsx")}
                   >
-                    <Download className="w-3 h-3" /> Unique Works
+                    <Download className="w-3 h-3" /> Collector – Unique Works
                   </Button>
                   <Button
                     variant="ghost"
@@ -626,7 +626,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     className="gap-1.5 text-xs h-7"
                     onClick={() => downloadTemplate(COLLECTOR_EDITIONS_HEADERS, "collector-editions-template.xlsx")}
                   >
-                    <Download className="w-3 h-3" /> Editions
+                    <Download className="w-3 h-3" /> Collector – Editions
                   </Button>
                 </>
               )}
