@@ -302,11 +302,22 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       }
     }
 
-    // Link exhibition entries
+    // Link exhibition entries — split by source: "exh:<uuid>" → exhibition_artworks, plain id → artwork_exhibitions
     if (selectedExhibitionIds.length > 0) {
-      await supabase.from("artwork_exhibitions").insert(
-        selectedExhibitionIds.map((cv_entry_id) => ({ artwork_id: artworkData.id, cv_entry_id }))
-      );
+      const cvIds = selectedExhibitionIds.filter((s) => !s.startsWith("exh:"));
+      const exhIds = selectedExhibitionIds
+        .filter((s) => s.startsWith("exh:"))
+        .map((s) => s.slice(4));
+      if (cvIds.length > 0) {
+        await supabase.from("artwork_exhibitions").insert(
+          cvIds.map((cv_entry_id) => ({ artwork_id: artworkData.id, cv_entry_id }))
+        );
+      }
+      if (exhIds.length > 0) {
+        await supabase.from("exhibition_artworks").insert(
+          exhIds.map((exhibition_id) => ({ artwork_id: artworkData.id, exhibition_id }))
+        );
+      }
     }
 
     // Save new series
@@ -601,6 +612,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           <ExhibitionPicker
             selectedIds={selectedExhibitionIds}
             onSelectionChange={setSelectedExhibitionIds}
+            ownerId={ownerId}
           />
 
           <div>

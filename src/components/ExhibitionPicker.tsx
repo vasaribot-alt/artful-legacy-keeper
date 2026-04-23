@@ -12,56 +12,92 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown } from "lucide-react";
 
-interface CvEntry {
+interface PickerEntry {
   id: string;
   entry_text: string;
   year: string | null;
-  section: string;
+  source: "cv" | "exhibition";
 }
 
 interface ExhibitionPickerProps {
   selectedIds: string[];
   onSelectionChange: (ids: string[]) => void;
+  /** When provided, loads exhibitions for this user (e.g., registrar acting on behalf of client) */
+  ownerId?: string;
 }
 
 const EXHIBITION_SECTIONS = ["exhibitions", "solo exhibitions", "group exhibitions", "selected exhibitions", "exhibition"];
 
-export const ExhibitionPicker = ({ selectedIds, onSelectionChange }: ExhibitionPickerProps) => {
-  const [entries, setEntries] = useState<CvEntry[]>([]);
+export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: ExhibitionPickerProps) => {
+  const [entries, setEntries] = useState<PickerEntry[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchExhibitionEntries();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ownerId]);
 
   const fetchExhibitionEntries = async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    let targetUserId = ownerId;
+    if (!targetUserId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      targetUserId = user.id;
+    }
 
     const { data: profile } = await supabase
       .from("profiles")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", targetUserId)
       .single();
 
     if (!profile) { setLoading(false); return; }
 
-    const { data } = await supabase
+    // 1. Fetch CV entries (legacy / manually entered)
+    const { data: cvData } = await supabase
       .from("cv_entries")
       .select("id, entry_text, year, section")
       .eq("profile_id", profile.id)
       .order("year", { ascending: false });
 
-    if (data) {
-      // Filter to exhibition-related sections (case-insensitive)
-      const filtered = data.filter((e) =>
+    const cvEntries: PickerEntry[] = (cvData || [])
+      .filter((e) =>
         EXHIBITION_SECTIONS.some((s) => e.section.toLowerCase().includes(s)) ||
         e.section.toLowerCase().includes("exhibit")
-      );
-      setEntries(filtered);
-    }
+      )
+      .map((e) => ({
+        id: e.id,
+        entry_text: e.entry_text,
+        year: e.year,
+        source: "cv" as const,
+      }));
+
+    // 2. Fetch exhibitions from the new exhibitions table
+    const { data: exhData } = await supabase
+      .from("exhibitions")
+      .select("id, title, venue, city, country, opening_date")
+      .eq("user_id", targetUserId)
+      .order("opening_date", { ascending: false });
+
+    const exhEntries: PickerEntry[] = (exhData || []).map((ex: any) => {
+      const parts: string[] = [ex.title];
+      if (ex.venue) parts.push(ex.venue);
+      if (ex.city) parts.push(ex.city);
+      if (ex.country) parts.push(ex.country);
+      const year = ex.opening_date ? new Date(ex.opening_date).getFullYear().toString() : null;
+      return {
+        id: `exh:${ex.id}`,
+        entry_text: parts.filter(Boolean).join(", "),
+        year,
+        source: "exhibition" as const,
+      };
+    });
+
+    // Merge — exhibitions first (newest authoritative source), then CV entries
+    const merged = [...exhEntries, ...cvEntries];
+    setEntries(merged);
     setLoading(false);
   };
 
@@ -107,7 +143,7 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange }: ExhibitionP
             role="combobox"
             className="w-full justify-between font-normal text-sm"
           >
-            {loading ? "Loading..." : `Select from CV exhibitions (${selectedIds.length} selected)`}
+            {loading ? "Loading..." : `Select exhibitions (${selectedIds.length} selected)`}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -115,7 +151,7 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange }: ExhibitionP
           <div className="max-h-64 overflow-y-auto p-2 space-y-0.5">
             {entries.length === 0 && (
               <p className="text-xs text-muted-foreground p-3 text-center">
-                No exhibition entries found in your CV. Add exhibitions to your CV first.
+                No exhibitions found. Add exhibitions in the Exhibitions section or to the CV first.
               </p>
             )}
             {entries.map((entry) => (
@@ -130,7 +166,7 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange }: ExhibitionP
                   className="mt-0.5 shrink-0"
                   tabIndex={-1}
                 />
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   {entry.year && (
                     <span className="text-muted-foreground text-xs mr-1.5">{entry.year}</span>
                   )}
