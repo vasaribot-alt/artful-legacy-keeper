@@ -285,6 +285,33 @@ const ArtworkDetail = () => {
     setLoading(false);
   };
 
+  const isOwner = !!currentUserId && currentUserId === ownerId;
+
+  const handleToggleVerification = async () => {
+    if (!isOwner) return;
+    setVerifyingNow(true);
+    const goingToVerified = verificationStatus !== "verified";
+    const updates = goingToVerified
+      ? {
+          verification_status: "verified",
+          verified_at: new Date().toISOString(),
+          verified_by: currentUserId,
+        }
+      : {
+          verification_status: "pending",
+          verified_at: null as any,
+          verified_by: null as any,
+        };
+    const { error } = await supabase.from("artworks").update(updates).eq("id", id!);
+    setVerifyingNow(false);
+    if (error) {
+      toast.error("Could not update verification");
+      return;
+    }
+    setVerificationStatus(goingToVerified ? "verified" : "pending");
+    toast.success(goingToVerified ? "Marked as artist verified" : "Verification removed");
+  };
+
   const handleSave = async () => {
     if (!title.trim()) { toast.error("Title is required"); return; }
     setSaving(true);
