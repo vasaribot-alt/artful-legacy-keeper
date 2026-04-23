@@ -63,6 +63,10 @@ interface Props {
   onSuccess: () => void;
   userRole?: string;
   initialData?: ArtworkDuplicateData | null;
+  /** When provided, artwork is created on behalf of this owner (registrar acting on behalf of client) */
+  ownerId?: string;
+  /** When provided, overrides the active role from localStorage (e.g. registrar adding to artist's catalogue) */
+  roleContext?: string;
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
@@ -74,7 +78,7 @@ interface ImagePreview {
   preview: string;
 }
 
-export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist", initialData }: Props) => {
+export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist", initialData, ownerId, roleContext }: Props) => {
   const isCollector = userRole === "collector";
   const [title, setTitle] = useState("");
   const [artistName, setArtistName] = useState("");
@@ -248,9 +252,10 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       return;
     }
 
-    const activeRole = localStorage.getItem("activeRole") || "artist";
+    const effectiveOwnerId = ownerId || user.id;
+    const activeRole = roleContext || localStorage.getItem("activeRole") || "artist";
     const insertData: Record<string, unknown> = {
-      owner_id: user.id,
+      owner_id: effectiveOwnerId,
       title: title.trim(),
       artwork_type: artworkType || null,
       medium: medium.trim() || null,
@@ -290,7 +295,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
     // Upload images
     if (images.length > 0) {
-      const ok = await uploadImages(user.id, artworkData.id);
+      const ok = await uploadImages(effectiveOwnerId, artworkData.id);
       if (!ok) {
         setLoading(false);
         return;
@@ -306,7 +311,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
     // Save new series
     if (series.trim() && !seriesOptions.includes(series.trim())) {
-      await supabase.from("series_groups").insert({ user_id: user.id, name: series.trim() }).select();
+      await supabase.from("series_groups").insert({ user_id: effectiveOwnerId, name: series.trim() }).select();
       fetchSeriesOptions();
     }
 
