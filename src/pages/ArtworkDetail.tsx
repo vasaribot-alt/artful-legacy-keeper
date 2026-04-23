@@ -17,11 +17,12 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, ShieldCheck, ShieldOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
 import { PhotographySizesManager } from "@/components/PhotographySizesManager";
 import { SaleDatePicker } from "@/components/SaleDatePicker";
+import { VerificationBadge } from "@/components/VerificationBadge";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -92,6 +93,10 @@ const ArtworkDetail = () => {
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [globalArtworkId, setGlobalArtworkId] = useState<number>(0);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
+  const [verificationStatus, setVerificationStatus] = useState<string>("pending");
+  const [ownerId, setOwnerId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [verifyingNow, setVerifyingNow] = useState(false);
 
   // Images
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
@@ -183,10 +188,13 @@ const ArtworkDetail = () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/login"); return; }
+    setCurrentUserId(user.id);
 
     const { data, error } = await supabase.from("artworks").select("*").eq("id", id!).single();
     if (error || !data) { toast.error("Artwork not found"); navigate("/dashboard"); return; }
 
+    setOwnerId(data.owner_id);
+    setVerificationStatus((data as any).verification_status || "pending");
     setTitle(data.title);
     setGlobalArtworkId(data.global_artwork_id);
     setArtworkType(data.artwork_type || "");
@@ -275,6 +283,33 @@ const ArtworkDetail = () => {
     setHasUnsavedChanges(false);
 
     setLoading(false);
+  };
+
+  const isOwner = !!currentUserId && currentUserId === ownerId;
+
+  const handleToggleVerification = async () => {
+    if (!isOwner) return;
+    setVerifyingNow(true);
+    const goingToVerified = verificationStatus !== "verified";
+    const updates = goingToVerified
+      ? {
+          verification_status: "verified",
+          verified_at: new Date().toISOString(),
+          verified_by: currentUserId,
+        }
+      : {
+          verification_status: "pending",
+          verified_at: null as any,
+          verified_by: null as any,
+        };
+    const { error } = await supabase.from("artworks").update(updates).eq("id", id!);
+    setVerifyingNow(false);
+    if (error) {
+      toast.error("Could not update verification");
+      return;
+    }
+    setVerificationStatus(goingToVerified ? "verified" : "pending");
+    toast.success(goingToVerified ? "Marked as artist verified" : "Verification removed");
   };
 
   const handleSave = async () => {
@@ -470,6 +505,28 @@ const ArtworkDetail = () => {
             </Button>
           </div>
           <span className="text-sm text-muted-foreground flex-1 truncate">{title}</span>
+          <VerificationBadge status={verificationStatus} size="md" className="hidden sm:inline-flex" />
+          {isOwner && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleVerification}
+              disabled={verifyingNow}
+              className="gap-1.5"
+              title={verificationStatus === "verified" ? "Remove artist verification" : "Mark as artist verified"}
+            >
+              {verifyingNow ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : verificationStatus === "verified" ? (
+                <ShieldOff className="w-3.5 h-3.5" />
+              ) : (
+                <ShieldCheck className="w-3.5 h-3.5" />
+              )}
+              <span className="hidden md:inline">
+                {verificationStatus === "verified" ? "Unverify" : "Verify"}
+              </span>
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
           </Button>

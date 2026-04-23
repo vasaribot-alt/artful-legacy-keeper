@@ -11,6 +11,7 @@ import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
+import { PendingVerificationInbox } from "@/components/PendingVerificationInbox";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,6 +38,7 @@ interface Artwork {
   artwork_location: string | null;
   sub_category: string | null;
   status: string;
+  verification_status: string | null;
 }
 
 interface ArtworkWithImage {
@@ -105,6 +107,7 @@ const Dashboard = () => {
   const [deleting, setDeleting] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [verificationFilter, setVerificationFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRole, setActiveRole] = useState<"artist" | "collector" | "registrar">(
     (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist"
@@ -250,6 +253,7 @@ const Dashboard = () => {
       if (locationFilter === "none" && a.artwork_location) return false;
       if (locationFilter !== "none" && a.artwork_location !== locationFilter) return false;
     }
+    if (verificationFilter !== "all" && (a.verification_status || "pending") !== verificationFilter) return false;
     return true;
   });
 
@@ -314,6 +318,14 @@ const Dashboard = () => {
             <VerifyIdBanner onVerified={() => { setIdVerified(true); fetchProfile(); }} />
           )}
 
+          {activeRole === "artist" && user && (
+            <PendingVerificationInbox
+              userId={user.id}
+              activeRole={activeRole}
+              onVerified={fetchArtworks}
+            />
+          )}
+
           <div className="mb-6 space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -353,6 +365,18 @@ const Dashboard = () => {
                   ))}
                 </SelectContent>
               </Select>
+              {activeRole === "artist" && (
+                <Select value={verificationFilter} onValueChange={setVerificationFilter}>
+                  <SelectTrigger className="h-8 w-[150px] text-xs">
+                    <SelectValue placeholder="Verification" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All verification</SelectItem>
+                    <SelectItem value="verified">Artist verified</SelectItem>
+                    <SelectItem value="pending">Pending review</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             </div>
           </div>

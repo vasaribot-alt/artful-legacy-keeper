@@ -303,6 +303,7 @@ export type Database = {
           buyer_name: string | null
           catalogue_number: string | null
           created_at: string
+          created_by: string | null
           currency: string | null
           depth: number | null
           description: string | null
@@ -328,6 +329,9 @@ export type Database = {
           support: string | null
           title: string
           updated_at: string
+          verification_status: string
+          verified_at: string | null
+          verified_by: string | null
           weight: number | null
           width: number | null
           year: number | null
@@ -340,6 +344,7 @@ export type Database = {
           buyer_name?: string | null
           catalogue_number?: string | null
           created_at?: string
+          created_by?: string | null
           currency?: string | null
           depth?: number | null
           description?: string | null
@@ -365,6 +370,9 @@ export type Database = {
           support?: string | null
           title: string
           updated_at?: string
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
           weight?: number | null
           width?: number | null
           year?: number | null
@@ -377,6 +385,7 @@ export type Database = {
           buyer_name?: string | null
           catalogue_number?: string | null
           created_at?: string
+          created_by?: string | null
           currency?: string | null
           depth?: number | null
           description?: string | null
@@ -402,6 +411,9 @@ export type Database = {
           support?: string | null
           title?: string
           updated_at?: string
+          verification_status?: string
+          verified_at?: string | null
+          verified_by?: string | null
           weight?: number | null
           width?: number | null
           year?: number | null
