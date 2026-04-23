@@ -93,6 +93,10 @@ const ArtworkDetail = () => {
   const [selectedExhibitionIds, setSelectedExhibitionIds] = useState<string[]>([]);
   const [globalArtworkId, setGlobalArtworkId] = useState<number>(0);
   const [selectedCatalogueIds, setSelectedCatalogueIds] = useState<string[]>([]);
+  const [verificationStatus, setVerificationStatus] = useState<string>("pending");
+  const [ownerId, setOwnerId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [verifyingNow, setVerifyingNow] = useState(false);
 
   // Images
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
@@ -184,10 +188,13 @@ const ArtworkDetail = () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/login"); return; }
+    setCurrentUserId(user.id);
 
     const { data, error } = await supabase.from("artworks").select("*").eq("id", id!).single();
     if (error || !data) { toast.error("Artwork not found"); navigate("/dashboard"); return; }
 
+    setOwnerId(data.owner_id);
+    setVerificationStatus((data as any).verification_status || "pending");
     setTitle(data.title);
     setGlobalArtworkId(data.global_artwork_id);
     setArtworkType(data.artwork_type || "");
