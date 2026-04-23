@@ -370,7 +370,11 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     for (let i = 0; i < selected.length; i++) {
       const r = selected[i];
       const effectiveOwnerId = ownerId || user.id;
-      const activeRole = localStorage.getItem("activeRole") || "artist";
+      // When registrar is acting on behalf of a client (ownerId provided), use the client's role context
+      // so the works appear in the client's catalogue — not in the registrar's empty workspace.
+      const activeRole = ownerId
+        ? (userRole && userRole !== "registrar" ? userRole : "artist")
+        : (localStorage.getItem("activeRole") || "artist");
       
       const isPhotography = r.artworkType.toLowerCase() === "photography";
       const hasSizes = r.sizes.length > 0;
