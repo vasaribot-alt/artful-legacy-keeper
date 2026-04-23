@@ -223,12 +223,18 @@ const ArtworkDetail = () => {
     setBuyerName((data as any).buyer_name || "");
     setSoldDate((data as any).sold_date ? new Date((data as any).sold_date) : undefined);
 
-    // Load linked exhibition entries
+    // Load linked exhibition entries from both link tables
     const { data: exhLinks } = await supabase
       .from("artwork_exhibitions")
       .select("cv_entry_id")
       .eq("artwork_id", id!);
-    if (exhLinks) setSelectedExhibitionIds(exhLinks.map((l: any) => l.cv_entry_id));
+    const { data: exhTableLinks } = await supabase
+      .from("exhibition_artworks")
+      .select("exhibition_id")
+      .eq("artwork_id", id!);
+    const cvSelected = (exhLinks || []).map((l: any) => l.cv_entry_id);
+    const exhSelected = (exhTableLinks || []).map((l: any) => `exh:${l.exhibition_id}`);
+    setSelectedExhibitionIds([...exhSelected, ...cvSelected]);
 
     // Load linked catalogues
     const { data: catLinks } = await supabase
@@ -412,12 +418,24 @@ const ArtworkDetail = () => {
       });
     }
 
-    // Sync exhibition links
+    // Sync exhibition links — split by source
     await supabase.from("artwork_exhibitions").delete().eq("artwork_id", id!);
+    await supabase.from("exhibition_artworks").delete().eq("artwork_id", id!);
     if (selectedExhibitionIds.length > 0) {
-      await supabase.from("artwork_exhibitions").insert(
-        selectedExhibitionIds.map((cv_entry_id) => ({ artwork_id: id!, cv_entry_id }))
-      );
+      const cvIds = selectedExhibitionIds.filter((s) => !s.startsWith("exh:"));
+      const exhIds = selectedExhibitionIds
+        .filter((s) => s.startsWith("exh:"))
+        .map((s) => s.slice(4));
+      if (cvIds.length > 0) {
+        await supabase.from("artwork_exhibitions").insert(
+          cvIds.map((cv_entry_id) => ({ artwork_id: id!, cv_entry_id }))
+        );
+      }
+      if (exhIds.length > 0) {
+        await supabase.from("exhibition_artworks").insert(
+          exhIds.map((exhibition_id) => ({ artwork_id: id!, exhibition_id }))
+        );
+      }
     }
 
     // Sync catalogue links
