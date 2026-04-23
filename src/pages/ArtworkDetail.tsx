@@ -505,6 +505,28 @@ const ArtworkDetail = () => {
             </Button>
           </div>
           <span className="text-sm text-muted-foreground flex-1 truncate">{title}</span>
+          <VerificationBadge status={verificationStatus} size="md" className="hidden sm:inline-flex" />
+          {isOwner && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleToggleVerification}
+              disabled={verifyingNow}
+              className="gap-1.5"
+              title={verificationStatus === "verified" ? "Remove artist verification" : "Mark as artist verified"}
+            >
+              {verifyingNow ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : verificationStatus === "verified" ? (
+                <ShieldOff className="w-3.5 h-3.5" />
+              ) : (
+                <ShieldCheck className="w-3.5 h-3.5" />
+              )}
+              <span className="hidden md:inline">
+                {verificationStatus === "verified" ? "Unverify" : "Verify"}
+              </span>
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
           </Button>
