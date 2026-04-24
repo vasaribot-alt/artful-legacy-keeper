@@ -7,6 +7,8 @@ import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { AddArtworkDialog } from "@/components/AddArtworkDialog";
 import { RegistrarWorkspaceLayout } from "@/components/RegistrarWorkspaceLayout";
 import { useActiveOwner } from "@/hooks/use-active-owner";
+import Exhibitions from "@/pages/Exhibitions";
+import Catalogues from "@/pages/Catalogues";
 
 interface ClientArtwork {
   id: string;
@@ -223,44 +225,8 @@ const RegistrarClientView = () => {
       <Route index element={<ArtworksSection ownerId={ownerId} clientRole={clientRole} />} />
       <Route path="artworks" element={<ArtworksSection ownerId={ownerId} clientRole={clientRole} />} />
       <Route path="profile" element={<ProfileSection ownerId={ownerId} />} />
-      <Route
-        path="exhibitions"
-        element={
-          <SimpleListSection
-            ownerId={ownerId}
-            table="exhibitions"
-            emptyText="No exhibitions yet."
-            orderBy={{ column: "opening_date", ascending: false }}
-            renderItem={(ex) => (
-              <div key={ex.id} className="p-4 rounded-sm border border-border">
-                <p className="text-sm font-medium">{ex.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
-                  {ex.opening_date && ` · ${ex.opening_date}`}
-                </p>
-                <span className="text-xs text-muted-foreground capitalize">{ex.exhibition_type}</span>
-              </div>
-            )}
-          />
-        }
-      />
-      <Route
-        path="catalogues"
-        element={
-          <SimpleListSection
-            ownerId={ownerId}
-            table="catalogues"
-            emptyText="No catalogues yet."
-            orderBy={{ column: "created_at", ascending: false }}
-            renderItem={(cat) => (
-              <div key={cat.id} className="p-4 rounded-sm border border-border">
-                <p className="text-sm font-medium">{cat.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{[cat.publisher, cat.publication_year].filter(Boolean).join(", ")}</p>
-              </div>
-            )}
-          />
-        }
-      />
+      <Route path="exhibitions" element={<Exhibitions />} />
+      <Route path="catalogues" element={<Catalogues />} />
       <Route
         path="portfolios"
         element={
