@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
+import { RegistrarWorkspaceLayout } from "@/components/RegistrarWorkspaceLayout";
+import { useActiveOwner } from "@/hooks/use-active-owner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,6 +52,7 @@ interface ExhibitionImage {
 }
 
 const Exhibitions = () => {
+  const { ownerId, isRegistrarContext, loading: ownerLoading } = useActiveOwner();
   const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
   const [images, setImages] = useState<Record<string, ExhibitionImage[]>>({});
   const [typeFilter, setTypeFilter] = useState<"all" | "solo" | "group">("all");
@@ -80,18 +83,17 @@ const Exhibitions = () => {
   const [uploadingImages, setUploadingImages] = useState(false);
 
   useEffect(() => {
-    loadExhibitions();
-  }, []);
+    if (ownerId) loadExhibitions();
+  }, [ownerId]);
 
   const loadExhibitions = async () => {
+    if (!ownerId) return;
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
 
     const { data } = await supabase
       .from("exhibitions")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", ownerId)
       .order("opening_date", { ascending: false });
 
     if (data) {
@@ -162,8 +164,7 @@ const Exhibitions = () => {
 
   const handleSave = async () => {
     if (!title.trim()) { toast.error("Title is required"); return; }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!ownerId) return;
 
     setSaving(true);
     const payload = {
@@ -178,7 +179,7 @@ const Exhibitions = () => {
       artists: artists.trim() || null,
       description: description.trim() || null,
       exhibition_text: exhibitionText.trim() || null,
-      user_id: user.id,
+      user_id: ownerId,
     };
 
     let exhibitionId = editingId;
@@ -227,15 +228,14 @@ const Exhibitions = () => {
 
   const handleImageUpload = async (exhibitionId: string, files: FileList) => {
     setUploadingImages(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setUploadingImages(false); return; }
+    if (!ownerId) { setUploadingImages(false); return; }
 
     const existingCount = (images[exhibitionId] || []).length;
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const ext = file.name.split(".").pop();
-      const path = `${user.id}/${exhibitionId}/${crypto.randomUUID()}.${ext}`;
+      const path = `${ownerId}/${exhibitionId}/${crypto.randomUUID()}.${ext}`;
       const { error: uploadErr } = await supabase.storage.from("exhibition-images").upload(path, file);
       if (uploadErr) { toast.error(`Failed to upload ${file.name}`); continue; }
       await supabase.from("exhibition_images").insert({
@@ -326,8 +326,13 @@ const Exhibitions = () => {
     ? exhibitions
     : exhibitions.filter((ex) => ex.exhibition_type === typeFilter);
 
+  const Layout = isRegistrarContext ? RegistrarWorkspaceLayout : AppLayout;
+  const layoutProps = isRegistrarContext
+    ? { headerActions }
+    : { title: "Exhibitions", headerActions };
+
   return (
-    <AppLayout title="Exhibitions" headerActions={headerActions}>
+    <Layout {...(layoutProps as any)}>
       <div className="max-w-5xl mx-auto px-6 py-10">
         {loading ? (
           <p className="text-muted-foreground text-center py-20">Loading...</p>
@@ -562,7 +567,7 @@ const Exhibitions = () => {
           </div>
         </div>
       )}
-    </AppLayout>
+    </Layout>
   );
 };
 

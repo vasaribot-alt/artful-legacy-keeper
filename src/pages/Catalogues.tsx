@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
+import { RegistrarWorkspaceLayout } from "@/components/RegistrarWorkspaceLayout";
+import { useActiveOwner } from "@/hooks/use-active-owner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +29,7 @@ interface Catalogue {
 }
 
 const Catalogues = () => {
+  const { ownerId, isRegistrarContext } = useActiveOwner();
   const [catalogues, setCatalogues] = useState<Catalogue[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -47,17 +50,16 @@ const Catalogues = () => {
   const [existingCoverPath, setExistingCoverPath] = useState<string | null>(null);
 
   useEffect(() => {
-    loadCatalogues();
-  }, []);
+    if (ownerId) loadCatalogues();
+  }, [ownerId]);
 
   const loadCatalogues = async () => {
+    if (!ownerId) return;
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
     const { data } = await supabase
       .from("catalogues")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", ownerId)
       .order("publication_year", { ascending: false });
     if (data) {
       const withUrls = (data as Catalogue[]).map((c) => {
@@ -111,8 +113,7 @@ const Catalogues = () => {
 
   const handleSave = async () => {
     if (!title.trim()) { toast.error("Title is required"); return; }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!ownerId) return;
 
     setSaving(true);
     let coverPath = existingCoverPath;
@@ -120,7 +121,7 @@ const Catalogues = () => {
     // Upload new cover if selected
     if (coverFile) {
       const ext = coverFile.name.split(".").pop();
-      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const path = `${ownerId}/${crypto.randomUUID()}.${ext}`;
       const { error: uploadErr } = await supabase.storage.from("catalogue-covers").upload(path, coverFile);
       if (uploadErr) { toast.error("Failed to upload cover"); setSaving(false); return; }
       // Delete old cover if replacing
@@ -143,7 +144,7 @@ const Catalogues = () => {
       language: language.trim() || null,
       page_count: pageCount ? parseInt(pageCount) : null,
       cover_image_path: coverPath,
-      user_id: user.id,
+      user_id: ownerId,
     };
 
     if (editingId) {
@@ -179,8 +180,13 @@ const Catalogues = () => {
     </Button>
   );
 
+  const Layout = isRegistrarContext ? RegistrarWorkspaceLayout : AppLayout;
+  const layoutProps = isRegistrarContext
+    ? { headerActions }
+    : { title: "Catalogues", headerActions };
+
   return (
-    <AppLayout title="Catalogues" headerActions={headerActions}>
+    <Layout {...(layoutProps as any)}>
       <div className="max-w-4xl mx-auto px-6 py-10">
         {loading ? (
           <p className="text-muted-foreground text-center py-20">Loading...</p>
@@ -324,7 +330,7 @@ const Catalogues = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    </Layout>
   );
 };
 
