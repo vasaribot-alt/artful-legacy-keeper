@@ -1,20 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { ArrowLeft, Images, Calendar, BookOpen, Upload, Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { BulkImportDialog } from "@/components/BulkImportDialog";
 import { AddArtworkDialog } from "@/components/AddArtworkDialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-interface ClientProfile {
-  full_name: string | null;
-  email: string | null;
-  city: string | null;
-  country: string | null;
-}
+import { RegistrarWorkspaceLayout } from "@/components/RegistrarWorkspaceLayout";
+import { useActiveOwner } from "@/hooks/use-active-owner";
 
 interface ClientArtwork {
   id: string;
@@ -24,57 +16,24 @@ interface ClientArtwork {
   imageUrl: string | null;
 }
 
-const RegistrarClientView = () => {
-  const { ownerId } = useParams<{ ownerId: string }>();
+// ──────────────── ARTWORKS SECTION ────────────────
+function ArtworksSection({ ownerId, clientRole }: { ownerId: string; clientRole: "artist" | "collector" }) {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<ClientProfile | null>(null);
   const [artworks, setArtworks] = useState<ClientArtwork[]>([]);
-  const [exhibitions, setExhibitions] = useState<any[]>([]);
-  const [catalogues, setCatalogues] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("artworks");
-  const [bulkImportOpen, setBulkImportOpen] = useState(false);
-  const [addArtworkOpen, setAddArtworkOpen] = useState(false);
-  const [clientRole, setClientRole] = useState<"artist" | "collector">("artist");
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
-  useEffect(() => {
-    if (!ownerId) return;
-    fetchClientData();
-  }, [ownerId]);
-
-  const fetchClientData = async () => {
+  const fetchArtworks = async () => {
     setLoading(true);
-
-    // Fetch profile
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("full_name, email, city, country")
-      .eq("user_id", ownerId!)
-      .single();
-    setProfile(profileData);
-
-    // Determine client's primary role (artist vs collector) for correct role_context on inserts
-    const { data: roleRows } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", ownerId!);
-    const roles = (roleRows || []).map((r: any) => r.role);
-    const resolvedRole: "artist" | "collector" = roles.includes("artist")
-      ? "artist"
-      : roles.includes("collector")
-        ? "collector"
-        : "artist";
-    setClientRole(resolvedRole);
-
-    // Fetch artworks with images
-    const { data: artworksData } = await supabase
+    const { data } = await supabase
       .from("artworks")
       .select("id, title, year, medium")
-      .eq("owner_id", ownerId!)
+      .eq("owner_id", ownerId)
       .order("created_at", { ascending: false });
 
     const withImages: ClientArtwork[] = await Promise.all(
-      (artworksData || []).map(async (art) => {
+      (data || []).map(async (art) => {
         const { data: imgs } = await supabase
           .from("artwork_images")
           .select("storage_path")
@@ -83,177 +42,263 @@ const RegistrarClientView = () => {
           .limit(1);
         let imageUrl: string | null = null;
         if (imgs && imgs.length > 0) {
-          const { data: urlData } = supabase.storage
-            .from("artwork-images")
-            .getPublicUrl(imgs[0].storage_path);
+          const { data: urlData } = supabase.storage.from("artwork-images").getPublicUrl(imgs[0].storage_path);
           imageUrl = urlData.publicUrl;
         }
         return { ...art, imageUrl };
       })
     );
     setArtworks(withImages);
-
-    // Fetch exhibitions
-    const { data: exhibitionsData } = await supabase
-      .from("exhibitions")
-      .select("*")
-      .eq("user_id", ownerId!)
-      .order("opening_date", { ascending: false });
-    setExhibitions(exhibitionsData || []);
-
-    // Fetch catalogues
-    const { data: cataloguesData } = await supabase
-      .from("catalogues")
-      .select("*")
-      .eq("user_id", ownerId!)
-      .order("created_at", { ascending: false });
-    setCatalogues(cataloguesData || []);
-
     setLoading(false);
   };
 
+  useEffect(() => { fetchArtworks(); }, [ownerId]);
+
   return (
-    <AppLayout
-      title={profile?.full_name || "Client"}
+    <RegistrarWorkspaceLayout
       headerActions={
         <>
-          <Button variant="default" size="sm" onClick={() => setAddArtworkOpen(true)} className="gap-2">
-            <Plus className="w-4 h-4" /> Add Artwork
+          <Button variant="default" size="sm" onClick={() => setAddOpen(true)} className="gap-1.5 h-8">
+            <Plus className="w-3.5 h-3.5" /> Add
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setBulkImportOpen(true)} className="gap-2">
-            <Upload className="w-4 h-4" /> Import
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="gap-1.5">
-            <ArrowLeft className="w-3.5 h-3.5" /> All Clients
+          <Button variant="outline" size="sm" onClick={() => setBulkOpen(true)} className="gap-1.5 h-8">
+            <Upload className="w-3.5 h-3.5" /> Import
           </Button>
         </>
       }
     >
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Client info bar */}
-        {profile && (
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-border">
-            <div>
-              <h2 className="text-lg font-medium">{profile.full_name}</h2>
-              <p className="text-xs text-muted-foreground">
-                {[profile.city, profile.country].filter(Boolean).join(", ") || profile.email}
-                <span className="ml-2 uppercase tracking-wider">· {clientRole} catalogue</span>
-              </p>
-            </div>
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />)}
+          </div>
+        ) : artworks.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-12">No artworks yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {artworks.map((art) => (
+              <div key={art.id} className="group cursor-pointer" onClick={() => navigate(`/artwork/${art.id}`)}>
+                <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
+                  {art.imageUrl ? (
+                    <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
+                  )}
+                </div>
+                <h3 className="text-sm font-medium italic">{art.title}</h3>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                  {art.year && <span>{art.year}</span>}
+                  {art.year && art.medium && <span>·</span>}
+                  {art.medium && <span className="truncate">{art.medium}</span>}
+                </div>
+              </div>
+            ))}
           </div>
         )}
-
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="artworks" className="gap-1.5">
-              <Images className="w-3.5 h-3.5" /> Artworks ({artworks.length})
-            </TabsTrigger>
-            <TabsTrigger value="exhibitions" className="gap-1.5">
-              <Calendar className="w-3.5 h-3.5" /> Exhibitions ({exhibitions.length})
-            </TabsTrigger>
-            <TabsTrigger value="catalogues" className="gap-1.5">
-              <BookOpen className="w-3.5 h-3.5" /> Catalogues ({catalogues.length})
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="artworks" className="mt-6">
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
-                ))}
-              </div>
-            ) : artworks.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-12">No artworks yet.</p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {artworks.map((art) => (
-                  <div
-                    key={art.id}
-                    className="group cursor-pointer"
-                    onClick={() => navigate(`/artwork/${art.id}`)}
-                  >
-                    <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
-                      {art.imageUrl ? (
-                        <img
-                          src={art.imageUrl}
-                          alt={art.title}
-                          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                          No image
-                        </div>
-                      )}
-                    </div>
-                    <h3 className="text-sm font-medium italic">{art.title}</h3>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-                      {art.year && <span>{art.year}</span>}
-                      {art.year && art.medium && <span>·</span>}
-                      {art.medium && <span className="truncate">{art.medium}</span>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="exhibitions" className="mt-6">
-            {exhibitions.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-12">No exhibitions yet.</p>
-            ) : (
-              <div className="space-y-3">
-                {exhibitions.map((ex) => (
-                  <div key={ex.id} className="p-4 rounded-sm border border-border">
-                    <p className="text-sm font-medium">{ex.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
-                      {ex.opening_date && ` · ${ex.opening_date}`}
-                    </p>
-                    <span className="text-xs text-muted-foreground capitalize">{ex.exhibition_type}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="catalogues" className="mt-6">
-            {catalogues.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-12">No catalogues yet.</p>
-            ) : (
-              <div className="space-y-3">
-                {catalogues.map((cat) => (
-                  <div key={cat.id} className="p-4 rounded-sm border border-border">
-                    <p className="text-sm font-medium">{cat.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {[cat.publisher, cat.publication_year].filter(Boolean).join(", ")}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
       </div>
 
-      <BulkImportDialog
-        open={bulkImportOpen}
-        onOpenChange={setBulkImportOpen}
-        onSuccess={fetchClientData}
-        ownerId={ownerId}
-        userRole={clientRole}
-      />
+      <BulkImportDialog open={bulkOpen} onOpenChange={setBulkOpen} onSuccess={fetchArtworks} ownerId={ownerId} userRole={clientRole} />
+      <AddArtworkDialog open={addOpen} onOpenChange={setAddOpen} onSuccess={fetchArtworks} ownerId={ownerId} roleContext={clientRole} userRole={clientRole} />
+    </RegistrarWorkspaceLayout>
+  );
+}
 
-      <AddArtworkDialog
-        open={addArtworkOpen}
-        onOpenChange={setAddArtworkOpen}
-        onSuccess={fetchClientData}
-        ownerId={ownerId}
-        roleContext={clientRole}
-        userRole={clientRole}
+// ──────────────── GENERIC LIST SECTION (Exhibitions / Catalogues) ────────────────
+function SimpleListSection({
+  ownerId,
+  table,
+  emptyText,
+  renderItem,
+  orderBy,
+}: {
+  ownerId: string;
+  table: "exhibitions" | "catalogues" | "portfolios" | "series_groups";
+  emptyText: string;
+  renderItem: (row: any) => React.ReactNode;
+  orderBy: { column: string; ascending: boolean };
+}) {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      const ownerCol = table === "exhibitions" || table === "catalogues" || table === "portfolios" || table === "series_groups" ? "user_id" : "user_id";
+      const { data } = await supabase.from(table).select("*").eq(ownerCol, ownerId).order(orderBy.column, { ascending: orderBy.ascending });
+      setRows(data || []);
+      setLoading(false);
+    })();
+  }, [ownerId, table]);
+
+  return (
+    <RegistrarWorkspaceLayout>
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        {loading ? (
+          <div className="space-y-2">{[1,2,3].map(i => <div key={i} className="h-16 bg-secondary animate-pulse rounded-sm" />)}</div>
+        ) : rows.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-12">{emptyText}</p>
+        ) : (
+          <div className="space-y-3">{rows.map(renderItem)}</div>
+        )}
+      </div>
+    </RegistrarWorkspaceLayout>
+  );
+}
+
+// ──────────────── PROFILE SECTION ────────────────
+function ProfileSection({ ownerId }: { ownerId: string }) {
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("profiles").select("*").eq("user_id", ownerId).maybeSingle();
+      setProfile(data);
+      setLoading(false);
+    })();
+  }, [ownerId]);
+
+  return (
+    <RegistrarWorkspaceLayout>
+      <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
+        {loading ? (
+          <div className="h-32 bg-secondary animate-pulse rounded-sm" />
+        ) : profile ? (
+          <>
+            <div className="space-y-1">
+              <h2 className="text-2xl font-serif">{profile.full_name || "Untitled"}</h2>
+              <p className="text-sm text-muted-foreground">{[profile.city, profile.country].filter(Boolean).join(", ")}</p>
+            </div>
+            {profile.verification_status === "pending" && (
+              <div className="rounded-sm border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
+                Profile changes are pending the client's review.
+              </div>
+            )}
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Email</dt><dd>{profile.email || "—"}</dd></div>
+              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Phone</dt><dd>{profile.phone ? `${profile.phone_prefix || ""} ${profile.phone}` : "—"}</dd></div>
+              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Birth year</dt><dd>{profile.birth_year || "—"}</dd></div>
+              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Website</dt><dd className="truncate">{profile.website || "—"}</dd></div>
+            </dl>
+            {profile.biography && (
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Biography</dt>
+                <dd className="text-sm whitespace-pre-line">{profile.biography}</dd>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground pt-4 border-t border-border">
+              Editing the client profile from the registrar workspace is coming soon. For now, this is a read-only view.
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">No profile found.</p>
+        )}
+      </div>
+    </RegistrarWorkspaceLayout>
+  );
+}
+
+// ──────────────── PLACEHOLDER SECTION ────────────────
+function PlaceholderSection({ title, message }: { title: string; message: string }) {
+  return (
+    <RegistrarWorkspaceLayout>
+      <div className="max-w-3xl mx-auto px-6 py-16 text-center">
+        <h2 className="text-xl font-serif mb-2">{title}</h2>
+        <p className="text-sm text-muted-foreground">{message}</p>
+      </div>
+    </RegistrarWorkspaceLayout>
+  );
+}
+
+// ──────────────── ROOT ────────────────
+const RegistrarClientView = () => {
+  const { ownerId } = useParams<{ ownerId: string }>();
+  const { clientRole, loading } = useActiveOwner();
+
+  if (!ownerId) return <Navigate to="/registrar" replace />;
+  if (loading) return <div className="min-h-screen bg-background" />;
+
+  return (
+    <Routes>
+      <Route index element={<ArtworksSection ownerId={ownerId} clientRole={clientRole} />} />
+      <Route path="artworks" element={<ArtworksSection ownerId={ownerId} clientRole={clientRole} />} />
+      <Route path="profile" element={<ProfileSection ownerId={ownerId} />} />
+      <Route
+        path="exhibitions"
+        element={
+          <SimpleListSection
+            ownerId={ownerId}
+            table="exhibitions"
+            emptyText="No exhibitions yet."
+            orderBy={{ column: "opening_date", ascending: false }}
+            renderItem={(ex) => (
+              <div key={ex.id} className="p-4 rounded-sm border border-border">
+                <p className="text-sm font-medium">{ex.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {[ex.venue, ex.city, ex.country].filter(Boolean).join(", ")}
+                  {ex.opening_date && ` · ${ex.opening_date}`}
+                </p>
+                <span className="text-xs text-muted-foreground capitalize">{ex.exhibition_type}</span>
+              </div>
+            )}
+          />
+        }
       />
-    </AppLayout>
+      <Route
+        path="catalogues"
+        element={
+          <SimpleListSection
+            ownerId={ownerId}
+            table="catalogues"
+            emptyText="No catalogues yet."
+            orderBy={{ column: "created_at", ascending: false }}
+            renderItem={(cat) => (
+              <div key={cat.id} className="p-4 rounded-sm border border-border">
+                <p className="text-sm font-medium">{cat.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{[cat.publisher, cat.publication_year].filter(Boolean).join(", ")}</p>
+              </div>
+            )}
+          />
+        }
+      />
+      <Route
+        path="portfolios"
+        element={
+          <SimpleListSection
+            ownerId={ownerId}
+            table="portfolios"
+            emptyText="No portfolios yet."
+            orderBy={{ column: "created_at", ascending: false }}
+            renderItem={(p) => (
+              <div key={p.id} className="p-4 rounded-sm border border-border">
+                <p className="text-sm font-medium">{p.name}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 capitalize">{p.role_context}</p>
+              </div>
+            )}
+          />
+        }
+      />
+      <Route
+        path="series"
+        element={
+          <SimpleListSection
+            ownerId={ownerId}
+            table="series_groups"
+            emptyText="No series yet."
+            orderBy={{ column: "created_at", ascending: false }}
+            renderItem={(s) => (
+              <div key={s.id} className="p-4 rounded-sm border border-border">
+                <p className="text-sm font-medium">{s.name}</p>
+              </div>
+            )}
+          />
+        }
+      />
+      <Route path="inventory" element={<PlaceholderSection title="Inventory" message="Client-scoped inventory view is coming soon." />} />
+      <Route path="cv" element={<PlaceholderSection title="CV" message="Client-scoped CV editing is coming soon." />} />
+      <Route path="provenance" element={<PlaceholderSection title="Provenance" message="Client-scoped provenance is coming soon." />} />
+      <Route path="*" element={<Navigate to="artworks" replace />} />
+    </Routes>
   );
 };
 

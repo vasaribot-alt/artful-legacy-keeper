@@ -968,7 +968,10 @@ export type Database = {
           social_media_links: Json | null
           studio_address: string | null
           updated_at: string
+          updated_by: string | null
           user_id: string
+          verification_status: string
+          verified_at: string | null
           website: string | null
         }
         Insert: {
@@ -993,7 +996,10 @@ export type Database = {
           social_media_links?: Json | null
           studio_address?: string | null
           updated_at?: string
+          updated_by?: string | null
           user_id: string
+          verification_status?: string
+          verified_at?: string | null
           website?: string | null
         }
         Update: {
@@ -1018,7 +1024,10 @@ export type Database = {
           social_media_links?: Json | null
           studio_address?: string | null
           updated_at?: string
+          updated_by?: string | null
           user_id?: string
+          verification_status?: string
+          verified_at?: string | null
           website?: string | null
         }
         Relationships: []
