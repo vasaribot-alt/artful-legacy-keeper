@@ -290,9 +290,14 @@ const Exhibitions = () => {
   };
 
   const headerActions = (
-    <Button size="sm" onClick={openAdd} className="gap-1.5">
-      <Plus className="w-3.5 h-3.5" /> Add Exhibition
-    </Button>
+    <div className="flex gap-2">
+      <Button size="sm" variant="outline" onClick={() => setImportDialogOpen(true)} className="gap-1.5">
+        <FileUp className="w-3.5 h-3.5" /> Import from CV
+      </Button>
+      <Button size="sm" onClick={openAdd} className="gap-1.5">
+        <Plus className="w-3.5 h-3.5" /> Add Exhibition
+      </Button>
+    </div>
   );
 
   const filteredExhibitions = typeFilter === "all"
@@ -307,6 +312,30 @@ const Exhibitions = () => {
   return (
     <Layout {...(layoutProps as any)}>
       <div className="max-w-5xl mx-auto px-6 py-10">
+        <div className="flex justify-center mb-8">
+          <div className="flex border border-border rounded-md overflow-hidden">
+            <button
+              onClick={() => setTypeFilter("solo")}
+              className={`px-4 py-1.5 text-sm font-medium transition-colors ${
+                typeFilter === "solo"
+                  ? "bg-foreground text-background"
+                  : "bg-background text-foreground hover:bg-muted"
+              }`}
+            >
+              Solo exhibitions
+            </button>
+            <button
+              onClick={() => setTypeFilter("group")}
+              className={`px-4 py-1.5 text-sm font-medium transition-colors border-l border-border ${
+                typeFilter === "group"
+                  ? "bg-foreground text-background"
+                  : "bg-background text-foreground hover:bg-muted"
+              }`}
+            >
+              Group exhibitions
+            </button>
+          </div>
+        </div>
         {loading ? (
           <p className="text-muted-foreground text-center py-20">Loading...</p>
         ) : filteredExhibitions.length === 0 ? (
