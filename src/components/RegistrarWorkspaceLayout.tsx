@@ -32,19 +32,19 @@ export function RegistrarWorkspaceLayout({ children, headerActions }: Props) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Acting on behalf banner */}
-      <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-900/50">
+      <div className="bg-muted border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-2 flex items-center justify-between gap-4 text-xs">
-          <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200">
+          <div className="flex items-center gap-2 text-foreground">
             <span className="font-medium">Acting on behalf of</span>
             <span className="font-semibold">{clientName || "client"}</span>
-            <span className="uppercase tracking-wider opacity-70">· {clientRole}</span>
-            <span className="opacity-70">— changes will be marked pending the client's review</span>
+            <span className="uppercase tracking-wider text-muted-foreground">· {clientRole}</span>
+            <span className="text-muted-foreground">— changes will be marked pending the client's review</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate("/registrar")}
-            className="gap-1.5 h-7 text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+            className="gap-1.5 h-7"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> All Clients
           </Button>
