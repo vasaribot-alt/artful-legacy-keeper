@@ -326,8 +326,13 @@ const Exhibitions = () => {
     ? exhibitions
     : exhibitions.filter((ex) => ex.exhibition_type === typeFilter);
 
+  const Layout = isRegistrarContext ? RegistrarWorkspaceLayout : AppLayout;
+  const layoutProps = isRegistrarContext
+    ? { headerActions }
+    : { title: "Exhibitions", headerActions };
+
   return (
-    <AppLayout title="Exhibitions" headerActions={headerActions}>
+    <Layout {...(layoutProps as any)}>
       <div className="max-w-5xl mx-auto px-6 py-10">
         {loading ? (
           <p className="text-muted-foreground text-center py-20">Loading...</p>
@@ -562,7 +567,7 @@ const Exhibitions = () => {
           </div>
         </div>
       )}
-    </AppLayout>
+    </Layout>
   );
 };
 
