@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
+import { RegistrarWorkspaceLayout } from "@/components/RegistrarWorkspaceLayout";
+import { useActiveOwner } from "@/hooks/use-active-owner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +29,7 @@ interface Catalogue {
 }
 
 const Catalogues = () => {
+  const { ownerId, isRegistrarContext } = useActiveOwner();
   const [catalogues, setCatalogues] = useState<Catalogue[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -47,17 +50,16 @@ const Catalogues = () => {
   const [existingCoverPath, setExistingCoverPath] = useState<string | null>(null);
 
   useEffect(() => {
-    loadCatalogues();
-  }, []);
+    if (ownerId) loadCatalogues();
+  }, [ownerId]);
 
   const loadCatalogues = async () => {
+    if (!ownerId) return;
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
     const { data } = await supabase
       .from("catalogues")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("user_id", ownerId)
       .order("publication_year", { ascending: false });
     if (data) {
       const withUrls = (data as Catalogue[]).map((c) => {
