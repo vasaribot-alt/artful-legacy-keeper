@@ -20,7 +20,9 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
+  Download,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SocialLink { platform: string; url: string; }
 interface Gallery { name: string; phone: string; website: string; }
