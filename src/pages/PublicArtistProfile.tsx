@@ -721,6 +721,11 @@ const PublicArtistProfile = () => {
 
                 {openSection === "cv" && (
                   <div className="space-y-10">
+                    <div className="flex justify-end">
+                      <Button variant="outline" size="sm" onClick={handleDownloadCv} className="gap-1.5">
+                        <Download className="w-3.5 h-3.5" /> Download PDF
+                      </Button>
+                    </div>
                     {cvSections.map((section) => (
                       <div key={section.section}>
                         <h3 className="text-sm uppercase tracking-[0.15em] text-muted-foreground mb-4">
