@@ -20,7 +20,9 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
+  Download,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface SocialLink { platform: string; url: string; }
 interface Gallery { name: string; phone: string; website: string; }
@@ -309,6 +311,51 @@ const PublicArtistProfile = () => {
   const hasExhibitions = exhibitions.length > 0;
   const hasArtworks = artworks.length > 0;
   const hasNavSections = hasCv || hasExhibitions || hasArtworks;
+
+  const handleDownloadCv = () => {
+    if (!profile || cvSections.length === 0) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    const sectionsHtml = cvSections.map(s => `
+      <h2>${s.section}</h2>
+      <div class="entries">
+        ${s.entries.map(e => `
+          <div class="entry">
+            <span class="year">${e.year || ""}</span>
+            <span class="text">${(e.entry_text || "").replace(/</g, "&lt;")}</span>
+          </div>
+        `).join("")}
+      </div>
+    `).join("");
+
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<title>CV — ${profile.full_name || "Artist"}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; color: #111; padding: 48px; max-width: 800px; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 0.1em; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 16px; margin-top: 32px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5; letter-spacing: -0.01em; }
+  .entry { display: flex; gap: 16px; margin-bottom: 8px; page-break-inside: avoid; }
+  .year { font-family: monospace; font-size: 13px; color: #888; width: 60px; flex-shrink: 0; padding-top: 1px; }
+  .text { font-size: 14px; color: #333; line-height: 1.5; flex: 1; }
+  @media print { body { padding: 24px; } h2 { margin-top: 24px; } }
+</style>
+</head>
+<body>
+  <h1>${profile.full_name || "Artist"}</h1>
+  <p class="subtitle">Curriculum Vitae</p>
+  ${sectionsHtml}
+  <script>window.onload = function(){ setTimeout(function(){ window.print(); window.close(); }, 300); };</script>
+</body>
+</html>`);
+    printWindow.document.close();
+  };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -674,6 +721,11 @@ const PublicArtistProfile = () => {
 
                 {openSection === "cv" && (
                   <div className="space-y-10">
+                    <div className="flex justify-end">
+                      <Button variant="outline" size="sm" onClick={handleDownloadCv} className="gap-1.5">
+                        <Download className="w-3.5 h-3.5" /> Download PDF
+                      </Button>
+                    </div>
                     {cvSections.map((section) => (
                       <div key={section.section}>
                         <h3 className="text-sm uppercase tracking-[0.15em] text-muted-foreground mb-4">
