@@ -699,8 +699,8 @@ const ArtworkDetail = () => {
 
         <Separator />
 
-        {/* Dimensions - hidden for edition works (managed per-size) */}
-        {isUnique && (
+        {/* Dimensions - shown for unique works AND for collectors (who own a single edition copy) */}
+        {(isUnique || localStorage.getItem("activeRole") === "collector") && (
           <>
             <div>
               <Label className="mb-1.5 block">Dimensions (cm)</Label>
@@ -724,7 +724,7 @@ const ArtworkDetail = () => {
           </>
         )}
 
-        {!isUnique && (
+        {!isUnique && localStorage.getItem("activeRole") !== "collector" && (
           <div className="grid grid-cols-1">
             <div>
               <Label htmlFor="location">Current Location</Label>
