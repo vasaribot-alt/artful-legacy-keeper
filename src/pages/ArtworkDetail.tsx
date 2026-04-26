@@ -668,8 +668,8 @@ const ArtworkDetail = () => {
           </div>
         )}
 
-        {/* Multi-size editions for all non-unique works */}
-        {!isUnique && id && globalArtworkId > 0 && (
+        {/* Multi-size editions for non-unique works (artists/registrars only — collectors own a single copy) */}
+        {!isUnique && id && globalArtworkId > 0 && localStorage.getItem("activeRole") !== "collector" && (
           <>
             <Separator />
             <PhotographySizesManager artworkId={id} globalArtworkId={globalArtworkId} />
