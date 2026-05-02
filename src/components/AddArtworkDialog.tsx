@@ -202,9 +202,25 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
   const removeImage = (index: number) => {
     setImages((prev) => {
-      URL.revokeObjectURL(prev[index].preview);
+      const img = prev[index];
+      if (img.file) URL.revokeObjectURL(img.preview);
       return prev.filter((_, i) => i !== index);
     });
+  };
+
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const handlePickedUploads = (picked: { id: string; storage_path: string; web_storage_path: string | null }[]) => {
+    const newOnes: ImagePreview[] = picked.map((u) => {
+      const path = u.web_storage_path || u.storage_path;
+      const { data } = supabase.storage.from("artwork-images").getPublicUrl(path);
+      return {
+        preview: data.publicUrl,
+        existingPath: u.storage_path,
+        uploadId: u.id,
+      };
+    });
+    setImages((prev) => [...prev, ...newOnes]);
   };
 
   const resetForm = () => {
