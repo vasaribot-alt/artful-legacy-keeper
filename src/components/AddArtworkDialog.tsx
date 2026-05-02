@@ -67,6 +67,8 @@ interface Props {
   ownerId?: string;
   /** When provided, overrides the active role from localStorage (e.g. registrar adding to artist's catalogue) */
   roleContext?: string;
+  /** Pre-load image files (e.g. from a drag-and-drop into a series folder) */
+  initialImages?: File[];
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
