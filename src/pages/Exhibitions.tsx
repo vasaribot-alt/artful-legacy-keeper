@@ -601,6 +601,14 @@ const Exhibitions = () => {
           </div>
         </div>
       )}
+
+      <DetectArtworksDialog
+        open={!!detectFor}
+        onOpenChange={(o) => !o && setDetectFor(null)}
+        exhibitionId={detectFor?.id ?? null}
+        exhibitionTitle={detectFor?.title}
+        onApplied={fetchAll}
+      />
     </Layout>
   );
 };
