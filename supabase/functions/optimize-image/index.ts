@@ -8,8 +8,13 @@
 //
 // JWT verification is enabled by default — the caller must be authenticated.
 
-import { corsHeaders } from "@supabase/supabase-js/cors";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
 // decode TIFF / other formats via UTIF (pure JS, no native deps)
 import UTIF from "https://esm.sh/utif@3.1.0";
 
