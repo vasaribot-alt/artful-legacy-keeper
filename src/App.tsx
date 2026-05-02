@@ -31,6 +31,7 @@ import Donors from "./pages/Donors";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
+import Files from "./pages/Files";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,7 @@ const App = () => (
           <Route path="/catalogues" element={<Catalogues />} />
           <Route path="/series" element={<Series />} />
           <Route path="/inventory" element={<Inventory />} />
+          <Route path="/files" element={<Files />} />
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
