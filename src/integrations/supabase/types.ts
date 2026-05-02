@@ -1134,6 +1134,42 @@ export type Database = {
         }
         Relationships: []
       }
+      storage_tiers: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          monthly_price_eur: number
+          name: string
+          quota_bytes: number
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          monthly_price_eur?: number
+          name: string
+          quota_bytes: number
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          monthly_price_eur?: number
+          name?: string
+          quota_bytes?: number
+          slug?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -1151,6 +1187,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_storage_tiers: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          tier_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          tier_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          tier_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_storage_tiers_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "storage_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -1175,6 +1240,16 @@ export type Database = {
           email: string
           full_name: string
           user_id: string
+        }[]
+      }
+      get_user_storage_status: {
+        Args: { _user_id: string }
+        Returns: {
+          file_count: number
+          quota_bytes: number
+          tier_name: string
+          tier_slug: string
+          used_bytes: number
         }[]
       }
       get_user_storage_usage: {

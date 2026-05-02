@@ -32,6 +32,7 @@ import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
 import Files from "./pages/Files";
+import StorageTiers from "./pages/StorageTiers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,7 @@ const App = () => (
           <Route path="/series" element={<Series />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/files" element={<Files />} />
+          <Route path="/storage-tiers" element={<StorageTiers />} />
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
