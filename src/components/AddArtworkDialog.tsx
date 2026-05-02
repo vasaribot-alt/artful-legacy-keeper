@@ -157,9 +157,9 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   }, [open, initialData, initialImages]);
 
   useEffect(() => {
-    // Cleanup previews on unmount
+    // Cleanup previews on unmount (only object URLs we created)
     return () => {
-      images.forEach((img) => URL.revokeObjectURL(img.preview));
+      images.forEach((img) => { if (img.file) URL.revokeObjectURL(img.preview); });
     };
   }, []);
 
