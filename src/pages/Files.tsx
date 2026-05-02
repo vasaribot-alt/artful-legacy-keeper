@@ -491,6 +491,36 @@ const Files = () => {
     setExtension("all"); setYearFrom(""); setYearTo("");
   };
 
+  // Series-folder counts (only image files belonging to artworks)
+  const seriesCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    files.forEach(f => {
+      if (f.source === "artwork-image" && f.series) {
+        m[f.series] = (m[f.series] || 0) + 1;
+      }
+    });
+    return m;
+  }, [files]);
+
+  const handleFolderDrop = (e: React.DragEvent, seriesName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverSeries(null);
+    const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+    if (dropped.length === 0) {
+      toast.error("Drop image files only");
+      return;
+    }
+    setPendingDropImages(dropped);
+    setPendingSeriesName(seriesName);
+    setAddDialogOpen(true);
+  };
+
+  const openSeriesFolder = (seriesName: string) => {
+    setSeries(seriesName);
+    setSourceFilter("artwork-image");
+  };
+
   const headerActions = (
     <div className="flex items-center gap-3">
       <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
