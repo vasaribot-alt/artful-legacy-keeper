@@ -607,7 +607,7 @@ const Exhibitions = () => {
         onOpenChange={(o) => !o && setDetectFor(null)}
         exhibitionId={detectFor?.id ?? null}
         exhibitionTitle={detectFor?.title}
-        onApplied={fetchAll}
+        onApplied={loadExhibitions}
       />
     </Layout>
   );
