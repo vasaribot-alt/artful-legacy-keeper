@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 
 type FileKind = "image" | "document";
-type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image";
+type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload";
 
 interface FileRow {
   id: string;
