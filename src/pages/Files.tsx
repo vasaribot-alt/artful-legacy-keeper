@@ -854,7 +854,13 @@ const Files = () => {
                     {f.exhibition_type && <><span>·</span><span className="capitalize">{f.exhibition_type}</span></>}
                   </div>
                 </div>
-                <Badge variant="secondary" className="text-[10px] shrink-0">{SOURCE_LABEL[f.source]}</Badge>
+                {f.source === "unlinked-upload" ? (
+                  <Badge variant="outline" className="text-[10px] shrink-0 gap-1 border-dashed">
+                    <Link2Off className="w-2.5 h-2.5" /> Unlinked
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="text-[10px] shrink-0">{SOURCE_LABEL[f.source]}</Badge>
+                )}
                 {f.extension && <span className="text-[10px] text-muted-foreground uppercase shrink-0">.{f.extension}</span>}
                 {f.file_size != null && (
                   <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline">{formatSize(f.file_size)}</span>
@@ -865,6 +871,11 @@ const Files = () => {
                 {f.linked_route && (
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(f.linked_route!)} title="Go to entry">
                     <ExternalLink className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+                {f.source === "unlinked-upload" && (
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)} title="Delete unlinked file">
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 )}
               </div>
