@@ -115,7 +115,16 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [buyerName, setBuyerName] = useState("");
   const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
   const [images, setImages] = useState<ImagePreview[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open && !ownerId) {
+      supabase.auth.getUser().then(({ data }) => {
+        if (data.user) setCurrentUserId(data.user.id);
+      });
+    }
+  }, [open, ownerId]);
 
   // Series dropdown state
   const [seriesOptions, setSeriesOptions] = useState<string[]>([]);
