@@ -442,7 +442,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           <UnlinkedFilesPicker
             open={pickerOpen}
             onOpenChange={setPickerOpen}
-            userId={ownerId || ""}
+            userId={ownerId || currentUserId}
             onPick={handlePickedUploads}
           />
 
