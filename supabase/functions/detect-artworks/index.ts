@@ -95,18 +95,23 @@ Deno.serve(async (req) => {
       thumbByArtwork.set(im.artwork_id, pub.publicUrl);
     }
 
-    // Catalogue list for prompt
-    const catalogue = artworks
-      .map((a) => ({
-        id: a.id,
-        title: a.title,
-        year: a.year,
-        medium: a.medium,
-        thumb: thumbByArtwork.get(a.id) || a.image_url,
-      }))
-      .filter((a) => a.thumb);
+    // Catalogue list for prompt — keep all artworks, thumb is optional
+    const catalogue = artworks.map((a) => {
+      let thumb = thumbByArtwork.get(a.id) || null;
+      if (!thumb && a.image_url) {
+        thumb = a.image_url.startsWith("http")
+          ? a.image_url
+          : admin.storage.from("artwork-images").getPublicUrl(a.image_url).data.publicUrl;
+      }
+      return { id: a.id, title: a.title, year: a.year, medium: a.medium, thumb };
+    });
 
-    if (catalogue.length === 0) return json({ error: "No artwork thumbnails available" }, 400);
+    const withThumb = catalogue.filter((a) => a.thumb).length;
+    console.log(`detect-artworks: ${artworks.length} artworks, ${withThumb} with thumbs, ${exImages.length} installation views`);
+
+    if (catalogue.length === 0) {
+      return json({ error: "Artist has no artworks to compare against" }, 400);
+    }
 
     // Limit catalogue size per call to avoid huge prompts
     const MAX_CATALOGUE = 60;
@@ -143,7 +148,7 @@ Deno.serve(async (req) => {
 
       // Append catalogue thumbnails (cap to keep payload reasonable)
       for (const a of catalogueSlice) {
-        userContent.push({ type: "image_url", image_url: { url: a.thumb! } });
+        if (a.thumb) userContent.push({ type: "image_url", image_url: { url: a.thumb } });
       }
 
       const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
