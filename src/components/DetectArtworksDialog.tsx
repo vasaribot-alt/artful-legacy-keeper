@@ -1,0 +1,250 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles, Check, X, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+interface Suggestion {
+  id: string;
+  exhibition_image_id: string;
+  artwork_id: string;
+  confidence: number;
+  reasoning: string | null;
+  crop_x: number | null;
+  crop_y: number | null;
+  crop_width: number | null;
+  crop_height: number | null;
+  status: string;
+  artwork: { id: string; title: string; year: number | null };
+  artworkThumb: string | null;
+  installationUrl: string;
+}
+
+interface Props {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  exhibitionId: string | null;
+  exhibitionTitle?: string;
+  onApplied?: () => void;
+}
+
+export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibitionTitle, onApplied }: Props) => {
+  const [running, setRunning] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+
+  useEffect(() => {
+    if (!open || !exhibitionId) return;
+    void loadSuggestions();
+  }, [open, exhibitionId]);
+
+  const loadSuggestions = async () => {
+    if (!exhibitionId) return;
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("artwork_match_suggestions")
+        .select("id, exhibition_image_id, artwork_id, confidence, reasoning, crop_x, crop_y, crop_width, crop_height, status, artworks!inner(id, title, year)")
+        .eq("exhibition_id", exhibitionId)
+        .eq("status", "pending")
+        .order("confidence", { ascending: false });
+
+      if (error) throw error;
+
+      // fetch installation image urls + artwork thumbs in batch
+      const exImgIds = [...new Set((data || []).map((s: any) => s.exhibition_image_id))];
+      const artIds = [...new Set((data || []).map((s: any) => s.artwork_id))];
+
+      const [{ data: exImgs }, { data: artImgs }] = await Promise.all([
+        supabase.from("exhibition_images").select("id, storage_path, web_storage_path").in("id", exImgIds),
+        supabase.from("artwork_images").select("artwork_id, storage_path, web_storage_path, display_order").in("artwork_id", artIds).order("display_order"),
+      ]);
+
+      const exUrlMap = new Map<string, string>();
+      for (const im of exImgs ?? []) {
+        const path = im.web_storage_path || im.storage_path;
+        const bucket = im.web_storage_path ? "exhibition-images-web" : "exhibition-images";
+        exUrlMap.set(im.id, supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl);
+      }
+      const artThumbMap = new Map<string, string>();
+      for (const im of artImgs ?? []) {
+        if (artThumbMap.has(im.artwork_id)) continue;
+        const path = im.web_storage_path || im.storage_path;
+        const bucket = im.web_storage_path ? "artwork-images-web" : "artwork-images";
+        artThumbMap.set(im.artwork_id, supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl);
+      }
+
+      const enriched: Suggestion[] = (data || []).map((s: any) => ({
+        ...s,
+        artwork: s.artworks,
+        artworkThumb: artThumbMap.get(s.artwork_id) || null,
+        installationUrl: exUrlMap.get(s.exhibition_image_id) || "",
+      }));
+      setSuggestions(enriched);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to load suggestions");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runDetection = async () => {
+    if (!exhibitionId) return;
+    setRunning(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("detect-artworks", {
+        body: { exhibition_id: exhibitionId },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const created = (data as any)?.suggestions_created ?? 0;
+      toast.success(
+        created > 0
+          ? `Found ${created} potential match${created === 1 ? "" : "es"}.`
+          : "No new matches detected.",
+      );
+      await loadSuggestions();
+    } catch (e: any) {
+      toast.error(e.message || "Detection failed");
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  const approve = async (s: Suggestion) => {
+    if (!exhibitionId) return;
+    try {
+      // Link artwork (ignore unique conflict)
+      const { error: linkErr } = await supabase
+        .from("exhibition_artworks")
+        .insert({ exhibition_id: exhibitionId, artwork_id: s.artwork_id });
+      if (linkErr && !linkErr.message.includes("duplicate")) throw linkErr;
+
+      await supabase
+        .from("artwork_match_suggestions")
+        .update({ status: "approved", reviewed_at: new Date().toISOString() })
+        .eq("id", s.id);
+
+      setSuggestions((prev) => prev.filter((x) => x.id !== s.id));
+      toast.success("Linked to exhibition");
+      onApplied?.();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to approve");
+    }
+  };
+
+  const reject = async (s: Suggestion) => {
+    try {
+      await supabase
+        .from("artwork_match_suggestions")
+        .update({ status: "rejected", reviewed_at: new Date().toISOString() })
+        .eq("id", s.id);
+      setSuggestions((prev) => prev.filter((x) => x.id !== s.id));
+    } catch (e: any) {
+      toast.error(e.message || "Failed to reject");
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            Detect artworks in installation views
+          </DialogTitle>
+          <DialogDescription>
+            {exhibitionTitle ? <>Compare installation photos in <em>{exhibitionTitle}</em> against your catalogue.</> : "AI compares installation photos against your catalogue."} Approved matches are linked to the exhibition.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex items-center gap-2 pt-2">
+          <Button size="sm" onClick={runDetection} disabled={running}>
+            {running ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-2" />}
+            {running ? "Analyzing..." : "Run detection"}
+          </Button>
+          {suggestions.length > 0 && (
+            <span className="text-xs text-muted-foreground">{suggestions.length} pending</span>
+          )}
+        </div>
+
+        <div className="space-y-3 pt-3">
+          {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
+          {!loading && suggestions.length === 0 && (
+            <p className="text-sm text-muted-foreground py-6 text-center">
+              No pending suggestions. Run detection to scan installation views.
+            </p>
+          )}
+          {suggestions.map((s) => {
+            const hasCrop =
+              s.crop_x !== null && s.crop_y !== null && s.crop_width !== null && s.crop_height !== null;
+            const cropStyle = hasCrop
+              ? {
+                  outline: "2px solid hsl(var(--primary))",
+                  position: "absolute" as const,
+                  left: `${(s.crop_x ?? 0) * 100}%`,
+                  top: `${(s.crop_y ?? 0) * 100}%`,
+                  width: `${(s.crop_width ?? 0) * 100}%`,
+                  height: `${(s.crop_height ?? 0) * 100}%`,
+                  pointerEvents: "none" as const,
+                }
+              : null;
+
+            return (
+              <div key={s.id} className="border border-border rounded-sm p-3 flex gap-3">
+                {/* Installation thumb with crop overlay */}
+                <div className="relative w-40 h-28 bg-secondary rounded-sm overflow-hidden shrink-0">
+                  {s.installationUrl && (
+                    <img src={s.installationUrl} alt="" className="w-full h-full object-cover" />
+                  )}
+                  {cropStyle && <div style={cropStyle} />}
+                </div>
+
+                {/* Artwork thumb */}
+                <div className="w-20 h-28 bg-secondary rounded-sm overflow-hidden shrink-0">
+                  {s.artworkThumb && (
+                    <img src={s.artworkThumb} alt="" className="w-full h-full object-cover" />
+                  )}
+                </div>
+
+                {/* Meta + actions */}
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {s.artwork.title}
+                        {s.artwork.year ? <span className="text-muted-foreground"> · {s.artwork.year}</span> : null}
+                      </p>
+                      <Badge variant="secondary" className="mt-1 font-normal text-[10px]">
+                        {Math.round(s.confidence * 100)}% confidence
+                      </Badge>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => reject(s)}>
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button size="icon" variant="default" className="h-7 w-7" onClick={() => approve(s)}>
+                        <Check className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                  {s.reasoning && (
+                    <p className="text-xs text-muted-foreground mt-1.5 line-clamp-3">{s.reasoning}</p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
