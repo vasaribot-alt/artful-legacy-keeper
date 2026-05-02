@@ -1145,6 +1145,8 @@ export type Database = {
           name: string
           quota_bytes: number
           slug: string
+          stripe_price_id: string | null
+          stripe_product_id: string | null
         }
         Insert: {
           created_at?: string
@@ -1156,6 +1158,8 @@ export type Database = {
           name: string
           quota_bytes: number
           slug: string
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
         }
         Update: {
           created_at?: string
@@ -1167,8 +1171,57 @@ export type Database = {
           name?: string
           quota_bytes?: number
           slug?: string
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
         }
         Relationships: []
+      }
+      tier_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          id: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tier_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tier_subscriptions_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "storage_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
