@@ -785,6 +785,23 @@ const Files = () => {
           </div>
         )}
       </div>
+
+      <AddArtworkDialog
+        open={addDialogOpen}
+        onOpenChange={(o) => {
+          setAddDialogOpen(o);
+          if (!o) {
+            setPendingDropImages([]);
+            setPendingSeriesName("");
+          }
+        }}
+        onSuccess={() => {
+          fetchAll();
+        }}
+        userRole={activeRole}
+        initialData={pendingSeriesName ? ({ series: pendingSeriesName } as ArtworkDuplicateData) : null}
+        initialImages={pendingDropImages}
+      />
     </AppLayout>
   );
 };
