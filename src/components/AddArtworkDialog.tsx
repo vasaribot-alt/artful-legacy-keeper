@@ -390,6 +390,9 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               {images.map((img, i) => (
                 <div key={i} className="relative w-20 h-20 rounded-sm overflow-hidden border border-border">
                   <img src={img.preview} alt="" className="w-full h-full object-cover" />
+                  {img.uploadId && (
+                    <span className="absolute bottom-0.5 left-0.5 text-[9px] bg-background/80 px-1 rounded-sm">From Files</span>
+                  )}
                   <button
                     type="button"
                     onClick={() => removeImage(i)}
@@ -405,7 +408,15 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
                 className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
               >
                 <ImagePlus className="w-5 h-5 mb-0.5" />
-                <span className="text-[10px]">Add</span>
+                <span className="text-[10px]">Upload</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
+                className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
+              >
+                <Folder className="w-5 h-5 mb-0.5" />
+                <span className="text-[10px] text-center leading-tight px-1">From Files</span>
               </button>
             </div>
             <input
@@ -417,6 +428,13 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               className="hidden"
             />
           </div>
+
+          <UnlinkedFilesPicker
+            open={pickerOpen}
+            onOpenChange={setPickerOpen}
+            userId={ownerId || ""}
+            onPick={handlePickedUploads}
+          />
 
           <Separator />
 
