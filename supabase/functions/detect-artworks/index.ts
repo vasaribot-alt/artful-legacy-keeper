@@ -241,8 +241,29 @@ Deno.serve(async (req) => {
       if (!aiResp.ok) {
         const txt = await aiResp.text();
         console.error("AI error", aiResp.status, txt);
-        if (aiResp.status === 429) return json({ error: "Rate limit reached, please try again shortly." }, 429);
-        if (aiResp.status === 402) return json({ error: "AI credits exhausted. Add credits in workspace settings." }, 402);
+
+        if (aiResp.status === 429) {
+          return json({ error: "Rate limit reached, please try again shortly." }, 429);
+        }
+
+        if (aiResp.status === 402) {
+          return json({
+            ok: false,
+            fallback: true,
+            code: "AI_CREDITS_EXHAUSTED",
+            error: "AI credits exhausted. Add credits in workspace settings.",
+            images_analyzed: allMatches.length,
+            images_total: totalImages ?? exImages.length,
+            images_processed_until: offset + allMatches.length,
+            has_more: true,
+            next_offset: offset + allMatches.length,
+            batch_size: batchSize,
+            catalogue_size: catalogueSlice.length,
+            suggestions_created: totalInserted,
+            results: allMatches,
+          });
+        }
+
         continue;
       }
 
