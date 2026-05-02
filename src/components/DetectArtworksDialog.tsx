@@ -107,6 +107,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
       let offset = 0;
       let totalCreated = 0;
       let iterations = 0;
+      let fallbackTriggered = false;
 
       while (iterations < 100) {
         iterations += 1;
@@ -119,6 +120,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
 
         if ((data as any)?.fallback) {
           const message = (data as any)?.error || "Detection stopped because AI is temporarily unavailable.";
+          fallbackTriggered = true;
           setScanMessage(message);
           toast.error(message);
           break;
@@ -138,11 +140,13 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         offset = nextOffset;
       }
 
-      toast.success(
-        totalCreated > 0
-          ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
-          : "No new matches detected.",
-      );
+      if (!fallbackTriggered) {
+        toast.success(
+          totalCreated > 0
+            ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
+            : "No new matches detected.",
+        );
+      }
       await loadSuggestions();
     } catch (e: any) {
       toast.error(e.message || "Detection failed");
