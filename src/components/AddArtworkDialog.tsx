@@ -76,8 +76,11 @@ const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", 
 const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
 interface ImagePreview {
-  file: File;
+  file?: File;
   preview: string;
+  // When set, the image already lives in storage as an unlinked upload — skip re-upload.
+  existingPath?: string;
+  uploadId?: string;
 }
 
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist", initialData, ownerId, roleContext, initialImages }: Props) => {
