@@ -229,23 +229,32 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
     setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available"); setBuyerName(""); setSoldDate(undefined);
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs(""); setEditionNumber("");
-    images.forEach((img) => URL.revokeObjectURL(img.preview));
+    images.forEach((img) => { if (img.file) URL.revokeObjectURL(img.preview); });
     setImages([]);
   };
 
   const uploadImages = async (userId: string, artworkId: string): Promise<boolean> => {
     for (let i = 0; i < images.length; i++) {
       const img = images[i];
-      const ext = img.file.name.split(".").pop() || "jpg";
-      const path = `${userId}/${artworkId}/${crypto.randomUUID()}.${ext}`;
+      let path: string;
 
-      const { error: uploadError } = await supabase.storage
-        .from("artwork-images")
-        .upload(path, img.file);
+      if (img.existingPath) {
+        // Image already exists in storage as an unlinked upload — reuse the path.
+        path = img.existingPath;
+      } else if (img.file) {
+        const ext = img.file.name.split(".").pop() || "jpg";
+        path = `${userId}/${artworkId}/${crypto.randomUUID()}.${ext}`;
 
-      if (uploadError) {
-        toast.error(`Failed to upload image ${i + 1}`);
-        return false;
+        const { error: uploadError } = await supabase.storage
+          .from("artwork-images")
+          .upload(path, img.file);
+
+        if (uploadError) {
+          toast.error(`Failed to upload image ${i + 1}`);
+          return false;
+        }
+      } else {
+        continue;
       }
 
       const { error: dbError } = await supabase.from("artwork_images").insert({
@@ -257,6 +266,11 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       if (dbError) {
         toast.error(`Failed to save image record ${i + 1}`);
         return false;
+      }
+
+      // Promote unlinked upload — remove the user_uploads row (storage stays).
+      if (img.uploadId) {
+        await supabase.from("user_uploads").delete().eq("id", img.uploadId);
       }
     }
     return true;
