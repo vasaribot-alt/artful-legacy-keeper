@@ -256,8 +256,12 @@ const Exhibitions = () => {
           mime_type: res.mime_type,
           display_order: existingCount + i,
         });
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
+        if (e?.name === "QuotaExceededError") {
+          toast.error("Storage quota exceeded — upgrade your tier to upload more.");
+          break;
+        }
         toast.error(`Failed to upload ${file.name}`);
       }
     }
