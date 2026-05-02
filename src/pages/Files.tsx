@@ -96,6 +96,13 @@ const Files = () => {
   const [sortBy, setSortBy] = useState<"recent" | "name" | "size" | "linked">("recent");
   const [view, setView] = useState<"grid" | "list">("list");
 
+  // Series folders
+  const [seriesGroups, setSeriesGroups] = useState<{ id: string; name: string }[]>([]);
+  const [dragOverSeries, setDragOverSeries] = useState<string | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [pendingDropImages, setPendingDropImages] = useState<File[]>([]);
+  const [pendingSeriesName, setPendingSeriesName] = useState<string>("");
+
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
   useEffect(() => {
