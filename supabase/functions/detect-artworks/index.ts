@@ -12,6 +12,9 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
+const DEFAULT_BATCH_SIZE = 2;
+const MAX_BATCH_SIZE = 4;
+const MAX_CATALOGUE = 60;
 
 interface DetectionMatch {
   artwork_id: string;
@@ -36,7 +39,15 @@ Deno.serve(async (req) => {
     if (!userData?.user) return json({ error: "Unauthorized" }, 401);
     const userId = userData.user.id;
 
-    const { exhibition_id } = await req.json();
+    const body = await req.json().catch(() => null);
+    const exhibition_id = body?.exhibition_id;
+    const rawOffset = Number(body?.offset ?? 0);
+    const rawBatchSize = Number(body?.batch_size ?? DEFAULT_BATCH_SIZE);
+    const offset = Number.isFinite(rawOffset) ? Math.max(0, Math.floor(rawOffset)) : 0;
+    const batchSize = Number.isFinite(rawBatchSize)
+      ? Math.min(MAX_BATCH_SIZE, Math.max(1, Math.floor(rawBatchSize)))
+      : DEFAULT_BATCH_SIZE;
+
     if (!exhibition_id) return json({ error: "exhibition_id required" }, 400);
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
@@ -58,14 +69,31 @@ Deno.serve(async (req) => {
       if (!hasAccess) return json({ error: "Forbidden" }, 403);
     }
 
-    // Load installation view images
-    const { data: exImages } = await admin
+    // Load a small batch of installation view images so each invocation stays fast.
+    const { data: exImages, count: totalImages, error: exImagesError } = await admin
       .from("exhibition_images")
-      .select("id, storage_path, web_storage_path")
-      .eq("exhibition_id", exhibition_id);
+      .select("id, storage_path, web_storage_path", { count: "exact" })
+      .eq("exhibition_id", exhibition_id)
+      .order("display_order")
+      .range(offset, offset + batchSize - 1);
+
+    if (exImagesError) throw exImagesError;
+
+    if ((totalImages ?? 0) === 0) {
+      return json({ error: "No installation views to analyze" }, 400);
+    }
 
     if (!exImages || exImages.length === 0) {
-      return json({ error: "No installation views to analyze" }, 400);
+      return json({
+        ok: true,
+        images_analyzed: 0,
+        images_total: totalImages ?? 0,
+        images_processed_until: offset,
+        has_more: false,
+        next_offset: null,
+        suggestions_created: 0,
+        results: [],
+      });
     }
 
     // Load artist's catalogue (only verified or owned works)
@@ -113,12 +141,14 @@ Deno.serve(async (req) => {
       return json({ error: "Artist has no artworks to compare against" }, 400);
     }
 
-    // Limit catalogue size per call to avoid huge prompts
-    const MAX_CATALOGUE = 60;
     const catalogueSlice = catalogue.slice(0, MAX_CATALOGUE);
 
     let totalInserted = 0;
     const allMatches: Array<{ exhibition_image_id: string; matches: DetectionMatch[] }> = [];
+
+    console.log(
+      `detect-artworks batch: offset ${offset}, processing ${exImages.length}/${totalImages ?? exImages.length} installation views, ${artworks.length} artworks, ${withThumb} with thumbs`,
+    );
 
     // Analyze each installation view independently
     for (const exImg of exImages) {
@@ -251,9 +281,17 @@ Deno.serve(async (req) => {
       }
     }
 
+    const imagesProcessedUntil = offset + exImages.length;
+    const total = totalImages ?? imagesProcessedUntil;
+
     return json({
       ok: true,
       images_analyzed: exImages.length,
+      images_total: total,
+      images_processed_until: imagesProcessedUntil,
+      has_more: imagesProcessedUntil < total,
+      next_offset: imagesProcessedUntil < total ? imagesProcessedUntil : null,
+      batch_size: batchSize,
       catalogue_size: catalogueSlice.length,
       suggestions_created: totalInserted,
       results: allMatches,
