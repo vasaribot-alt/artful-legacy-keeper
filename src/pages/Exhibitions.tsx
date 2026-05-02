@@ -20,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, X, FileUp, EyeOff, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, X, FileUp, EyeOff, Eye, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { DetectArtworksDialog } from "@/components/DetectArtworksDialog";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ImportCvExhibitionsDialog } from "@/components/ImportCvExhibitionsDialog";
@@ -75,6 +76,7 @@ const Exhibitions = () => {
   const [exhibitionText, setExhibitionText] = useState("");
   const [selectedArtworkIds, setSelectedArtworkIds] = useState<string[]>([]);
   const [exhibitionArtworks, setExhibitionArtworks] = useState<Record<string, { id: string; title: string; year: number | null }[]>>({});
+  const [detectFor, setDetectFor] = useState<{ id: string; title: string } | null>(null);
 
   // Lightbox
   const [lightbox, setLightbox] = useState<{ images: ExhibitionImage[]; index: number } | null>(null);
@@ -421,6 +423,15 @@ const Exhibitions = () => {
                       >
                         {ex.hide_from_cv ? <EyeOff className="w-3.5 h-3.5 text-muted-foreground" /> : <Eye className="w-3.5 h-3.5 text-muted-foreground" />}
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title="Detect artworks in installation views"
+                        onClick={() => setDetectFor({ id: ex.id, title: ex.title })}
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(ex)}>
                         <Pencil className="w-3.5 h-3.5" />
                       </Button>
@@ -590,6 +601,14 @@ const Exhibitions = () => {
           </div>
         </div>
       )}
+
+      <DetectArtworksDialog
+        open={!!detectFor}
+        onOpenChange={(o) => !o && setDetectFor(null)}
+        exhibitionId={detectFor?.id ?? null}
+        exhibitionTitle={detectFor?.title}
+        onApplied={loadExhibitions}
+      />
     </Layout>
   );
 };
