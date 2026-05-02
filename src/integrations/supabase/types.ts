@@ -265,6 +265,82 @@ export type Database = {
           },
         ]
       }
+      artwork_match_suggestions: {
+        Row: {
+          artwork_id: string
+          confidence: number
+          created_at: string
+          crop_height: number | null
+          crop_width: number | null
+          crop_x: number | null
+          crop_y: number | null
+          exhibition_id: string
+          exhibition_image_id: string
+          id: string
+          owner_id: string
+          reasoning: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          artwork_id: string
+          confidence: number
+          created_at?: string
+          crop_height?: number | null
+          crop_width?: number | null
+          crop_x?: number | null
+          crop_y?: number | null
+          exhibition_id: string
+          exhibition_image_id: string
+          id?: string
+          owner_id: string
+          reasoning?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          artwork_id?: string
+          confidence?: number
+          created_at?: string
+          crop_height?: number | null
+          crop_width?: number | null
+          crop_x?: number | null
+          crop_y?: number | null
+          exhibition_id?: string
+          exhibition_image_id?: string
+          id?: string
+          owner_id?: string
+          reasoning?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_match_suggestions_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artwork_match_suggestions_exhibition_id_fkey"
+            columns: ["exhibition_id"]
+            isOneToOne: false
+            referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artwork_match_suggestions_exhibition_image_id_fkey"
+            columns: ["exhibition_image_id"]
+            isOneToOne: false
+            referencedRelation: "exhibition_images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artwork_sizes: {
         Row: {
           artist_proofs: number
