@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { StorageUsageMeter } from "@/components/StorageUsageMeter";
-import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X, Folder, FolderOpen } from "lucide-react";
+import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X, Folder, FolderOpen, Upload, Trash2, Link2Off } from "lucide-react";
 import { toast } from "sonner";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 
 type FileKind = "image" | "document";
-type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image";
+type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload";
 
 interface FileRow {
   id: string;
@@ -48,6 +48,7 @@ const SOURCE_LABEL: Record<SourceType, string> = {
   "exhibition-document": "Exhibition document",
   "catalogue-cover": "Catalogue cover",
   "cv-image": "CV image",
+  "unlinked-upload": "Unlinked",
 };
 
 const PUBLIC_BUCKETS = new Set([
@@ -385,6 +386,39 @@ const Files = () => {
       });
     }
 
+    // Unlinked uploads (files not yet attached to any artwork)
+    const { data: unlinked } = await supabase
+      .from("user_uploads")
+      .select("id, storage_path, web_storage_path, file_name, file_size, original_size, mime_type, series, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    (unlinked || []).forEach((r: any) => {
+      rows.push({
+        id: `up-${r.id}`,
+        bucket: "artwork-images",
+        storage_path: r.storage_path,
+        thumb_bucket: r.web_storage_path ? "artwork-images-web" : "artwork-images",
+        thumb_path: r.web_storage_path || r.storage_path,
+        file_name: r.file_name,
+        file_type: r.mime_type || null,
+        file_size: r.original_size ?? r.file_size ?? null,
+        kind: "image",
+        source: "unlinked-upload",
+        linked_id: r.id,
+        linked_title: "Not yet attached",
+        linked_route: undefined,
+        year: null,
+        medium: null,
+        series: r.series || null,
+        artwork_type: null,
+        exhibition_type: null,
+        exhibition_id: null,
+        extension: extOf(r.file_name),
+        caption: null,
+        created_at: r.created_at,
+      });
+    });
+
     setFiles(rows);
 
     // Build thumbnails
@@ -521,6 +555,52 @@ const Files = () => {
     setSourceFilter("artwork-image");
   };
 
+  // Upload unlinked files
+  const [uploading, setUploading] = useState(false);
+  const [dragOverUnlinked, setDragOverUnlinked] = useState(false);
+
+  const handleUploadUnlinked = async (fileList: File[]) => {
+    if (!userId || fileList.length === 0) return;
+    const imgs = fileList.filter((f) => f.type.startsWith("image/"));
+    if (imgs.length === 0) {
+      toast.error("Only image files are supported");
+      return;
+    }
+    setUploading(true);
+    let okCount = 0;
+    for (const file of imgs) {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${userId}/_unlinked/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("artwork-images").upload(path, file);
+      if (upErr) { toast.error(`Failed to upload ${file.name}`); continue; }
+      const { error: dbErr } = await supabase.from("user_uploads").insert({
+        user_id: userId,
+        role_context: activeRole,
+        storage_path: path,
+        file_name: file.name,
+        file_size: file.size,
+        original_size: file.size,
+        mime_type: file.type || null,
+      });
+      if (dbErr) { toast.error(`Saved file but failed to record ${file.name}`); continue; }
+      okCount++;
+    }
+    setUploading(false);
+    if (okCount > 0) {
+      toast.success(`${okCount} file${okCount === 1 ? "" : "s"} uploaded`);
+      fetchAll();
+    }
+  };
+
+  const handleDeleteUnlinked = async (fileId: string, storagePath: string) => {
+    const id = fileId.replace(/^up-/, "");
+    await supabase.storage.from("artwork-images").remove([storagePath]);
+    const { error } = await supabase.from("user_uploads").delete().eq("id", id);
+    if (error) { toast.error("Failed to delete"); return; }
+    toast.success("File deleted");
+    setFiles((prev) => prev.filter((f) => f.id !== fileId));
+  };
+
   const headerActions = (
     <div className="flex items-center gap-3">
       <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
@@ -544,6 +624,45 @@ const Files = () => {
       <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
         {/* Storage usage meter */}
         {userId && <StorageUsageMeter userId={userId} />}
+
+        {/* Upload unlinked files — drop zone */}
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOverUnlinked(true); }}
+          onDragLeave={() => setDragOverUnlinked(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOverUnlinked(false);
+            handleUploadUnlinked(Array.from(e.dataTransfer.files));
+          }}
+          className={`rounded-sm border-2 border-dashed px-4 py-5 transition-colors ${
+            dragOverUnlinked ? "border-foreground bg-accent" : "border-border hover:bg-accent/30"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <Upload className="w-5 h-5 text-muted-foreground" />
+              <div>
+                <div className="text-sm font-medium">Upload images to your library</div>
+                <div className="text-xs text-muted-foreground">
+                  Drop image files here, or browse. Files stay "Unlinked" until you attach them to an artwork.
+                </div>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild disabled={uploading}>
+              <label className="cursor-pointer">
+                {uploading ? "Uploading…" : "Browse files"}
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={(e) => e.target.files && handleUploadUnlinked(Array.from(e.target.files))}
+                />
+              </label>
+            </Button>
+          </div>
+        </div>
 
         {/* Series folders — drag-and-drop image files to add artworks to a series */}
         {seriesGroups.length > 0 && (
@@ -735,7 +854,13 @@ const Files = () => {
                     {f.exhibition_type && <><span>·</span><span className="capitalize">{f.exhibition_type}</span></>}
                   </div>
                 </div>
-                <Badge variant="secondary" className="text-[10px] shrink-0">{SOURCE_LABEL[f.source]}</Badge>
+                {f.source === "unlinked-upload" ? (
+                  <Badge variant="outline" className="text-[10px] shrink-0 gap-1 border-dashed">
+                    <Link2Off className="w-2.5 h-2.5" /> Unlinked
+                  </Badge>
+                ) : (
+                  <Badge variant="secondary" className="text-[10px] shrink-0">{SOURCE_LABEL[f.source]}</Badge>
+                )}
                 {f.extension && <span className="text-[10px] text-muted-foreground uppercase shrink-0">.{f.extension}</span>}
                 {f.file_size != null && (
                   <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline">{formatSize(f.file_size)}</span>
@@ -746,6 +871,11 @@ const Files = () => {
                 {f.linked_route && (
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(f.linked_route!)} title="Go to entry">
                     <ExternalLink className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+                {f.source === "unlinked-upload" && (
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)} title="Delete unlinked file">
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 )}
               </div>
@@ -763,6 +893,11 @@ const Files = () => {
                       <FileText className="w-8 h-8 text-muted-foreground" />
                     </div>
                   )}
+                  {f.source === "unlinked-upload" && (
+                    <span className="absolute top-1 left-1 text-[9px] bg-background/85 px-1.5 py-0.5 rounded-sm flex items-center gap-1 border border-dashed border-border">
+                      <Link2Off className="w-2.5 h-2.5" /> Unlinked
+                    </span>
+                  )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                     <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => handleDownload(f)}>
                       <Download className="w-3.5 h-3.5" />
@@ -770,6 +905,11 @@ const Files = () => {
                     {f.linked_route && (
                       <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => navigate(f.linked_route!)}>
                         <ExternalLink className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                    {f.source === "unlinked-upload" && (
+                      <Button size="icon" variant="secondary" className="h-8 w-8 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)}>
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}
                   </div>

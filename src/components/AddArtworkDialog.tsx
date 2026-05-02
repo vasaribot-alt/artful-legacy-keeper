@@ -23,7 +23,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Plus, ImagePlus, X } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, ImagePlus, X, Folder } from "lucide-react";
+import { UnlinkedFilesPicker } from "@/components/UnlinkedFilesPicker";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -76,8 +77,11 @@ const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", 
 const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
 interface ImagePreview {
-  file: File;
+  file?: File;
   preview: string;
+  // When set, the image already lives in storage as an unlinked upload — skip re-upload.
+  existingPath?: string;
+  uploadId?: string;
 }
 
 export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist", initialData, ownerId, roleContext, initialImages }: Props) => {
@@ -111,7 +115,16 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [buyerName, setBuyerName] = useState("");
   const [soldDate, setSoldDate] = useState<Date | undefined>(undefined);
   const [images, setImages] = useState<ImagePreview[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open && !ownerId) {
+      supabase.auth.getUser().then(({ data }) => {
+        if (data.user) setCurrentUserId(data.user.id);
+      });
+    }
+  }, [open, ownerId]);
 
   // Series dropdown state
   const [seriesOptions, setSeriesOptions] = useState<string[]>([]);
@@ -154,9 +167,9 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   }, [open, initialData, initialImages]);
 
   useEffect(() => {
-    // Cleanup previews on unmount
+    // Cleanup previews on unmount (only object URLs we created)
     return () => {
-      images.forEach((img) => URL.revokeObjectURL(img.preview));
+      images.forEach((img) => { if (img.file) URL.revokeObjectURL(img.preview); });
     };
   }, []);
 
@@ -199,9 +212,25 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
   const removeImage = (index: number) => {
     setImages((prev) => {
-      URL.revokeObjectURL(prev[index].preview);
+      const img = prev[index];
+      if (img.file) URL.revokeObjectURL(img.preview);
       return prev.filter((_, i) => i !== index);
     });
+  };
+
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const handlePickedUploads = (picked: { id: string; storage_path: string; web_storage_path: string | null }[]) => {
+    const newOnes: ImagePreview[] = picked.map((u) => {
+      const path = u.web_storage_path || u.storage_path;
+      const { data } = supabase.storage.from("artwork-images").getPublicUrl(path);
+      return {
+        preview: data.publicUrl,
+        existingPath: u.storage_path,
+        uploadId: u.id,
+      };
+    });
+    setImages((prev) => [...prev, ...newOnes]);
   };
 
   const resetForm = () => {
@@ -210,23 +239,32 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
     setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available"); setBuyerName(""); setSoldDate(undefined);
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs(""); setEditionNumber("");
-    images.forEach((img) => URL.revokeObjectURL(img.preview));
+    images.forEach((img) => { if (img.file) URL.revokeObjectURL(img.preview); });
     setImages([]);
   };
 
   const uploadImages = async (userId: string, artworkId: string): Promise<boolean> => {
     for (let i = 0; i < images.length; i++) {
       const img = images[i];
-      const ext = img.file.name.split(".").pop() || "jpg";
-      const path = `${userId}/${artworkId}/${crypto.randomUUID()}.${ext}`;
+      let path: string;
 
-      const { error: uploadError } = await supabase.storage
-        .from("artwork-images")
-        .upload(path, img.file);
+      if (img.existingPath) {
+        // Image already exists in storage as an unlinked upload — reuse the path.
+        path = img.existingPath;
+      } else if (img.file) {
+        const ext = img.file.name.split(".").pop() || "jpg";
+        path = `${userId}/${artworkId}/${crypto.randomUUID()}.${ext}`;
 
-      if (uploadError) {
-        toast.error(`Failed to upload image ${i + 1}`);
-        return false;
+        const { error: uploadError } = await supabase.storage
+          .from("artwork-images")
+          .upload(path, img.file);
+
+        if (uploadError) {
+          toast.error(`Failed to upload image ${i + 1}`);
+          return false;
+        }
+      } else {
+        continue;
       }
 
       const { error: dbError } = await supabase.from("artwork_images").insert({
@@ -238,6 +276,11 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       if (dbError) {
         toast.error(`Failed to save image record ${i + 1}`);
         return false;
+      }
+
+      // Promote unlinked upload — remove the user_uploads row (storage stays).
+      if (img.uploadId) {
+        await supabase.from("user_uploads").delete().eq("id", img.uploadId);
       }
     }
     return true;
@@ -357,6 +400,9 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               {images.map((img, i) => (
                 <div key={i} className="relative w-20 h-20 rounded-sm overflow-hidden border border-border">
                   <img src={img.preview} alt="" className="w-full h-full object-cover" />
+                  {img.uploadId && (
+                    <span className="absolute bottom-0.5 left-0.5 text-[9px] bg-background/80 px-1 rounded-sm">From Files</span>
+                  )}
                   <button
                     type="button"
                     onClick={() => removeImage(i)}
@@ -372,7 +418,15 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
                 className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
               >
                 <ImagePlus className="w-5 h-5 mb-0.5" />
-                <span className="text-[10px]">Add</span>
+                <span className="text-[10px]">Upload</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
+                className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
+              >
+                <Folder className="w-5 h-5 mb-0.5" />
+                <span className="text-[10px] text-center leading-tight px-1">From Files</span>
               </button>
             </div>
             <input
@@ -384,6 +438,13 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               className="hidden"
             />
           </div>
+
+          <UnlinkedFilesPicker
+            open={pickerOpen}
+            onOpenChange={setPickerOpen}
+            userId={ownerId || currentUserId}
+            onPick={handlePickedUploads}
+          />
 
           <Separator />
 
