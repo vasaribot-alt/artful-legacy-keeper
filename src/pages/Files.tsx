@@ -555,6 +555,52 @@ const Files = () => {
     setSourceFilter("artwork-image");
   };
 
+  // Upload unlinked files
+  const [uploading, setUploading] = useState(false);
+  const [dragOverUnlinked, setDragOverUnlinked] = useState(false);
+
+  const handleUploadUnlinked = async (fileList: File[]) => {
+    if (!userId || fileList.length === 0) return;
+    const imgs = fileList.filter((f) => f.type.startsWith("image/"));
+    if (imgs.length === 0) {
+      toast.error("Only image files are supported");
+      return;
+    }
+    setUploading(true);
+    let okCount = 0;
+    for (const file of imgs) {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${userId}/_unlinked/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("artwork-images").upload(path, file);
+      if (upErr) { toast.error(`Failed to upload ${file.name}`); continue; }
+      const { error: dbErr } = await supabase.from("user_uploads").insert({
+        user_id: userId,
+        role_context: activeRole,
+        storage_path: path,
+        file_name: file.name,
+        file_size: file.size,
+        original_size: file.size,
+        mime_type: file.type || null,
+      });
+      if (dbErr) { toast.error(`Saved file but failed to record ${file.name}`); continue; }
+      okCount++;
+    }
+    setUploading(false);
+    if (okCount > 0) {
+      toast.success(`${okCount} file${okCount === 1 ? "" : "s"} uploaded`);
+      fetchAll();
+    }
+  };
+
+  const handleDeleteUnlinked = async (fileId: string, storagePath: string) => {
+    const id = fileId.replace(/^up-/, "");
+    await supabase.storage.from("artwork-images").remove([storagePath]);
+    const { error } = await supabase.from("user_uploads").delete().eq("id", id);
+    if (error) { toast.error("Failed to delete"); return; }
+    toast.success("File deleted");
+    setFiles((prev) => prev.filter((f) => f.id !== fileId));
+  };
+
   const headerActions = (
     <div className="flex items-center gap-3">
       <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
