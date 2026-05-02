@@ -41,6 +41,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [scanProgress, setScanProgress] = useState<{ processed: number; total: number } | null>(null);
+  const [scanMessage, setScanMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open || !exhibitionId) return;
@@ -101,10 +102,12 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
     if (!exhibitionId) return;
     setRunning(true);
     setScanProgress(null);
+    setScanMessage(null);
     try {
       let offset = 0;
       let totalCreated = 0;
       let iterations = 0;
+      let fallbackTriggered = false;
 
       while (iterations < 100) {
         iterations += 1;
@@ -114,6 +117,15 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         });
 
         if (error) throw error;
+
+        if ((data as any)?.fallback) {
+          const message = (data as any)?.error || "Detection stopped because AI is temporarily unavailable.";
+          fallbackTriggered = true;
+          setScanMessage(message);
+          toast.error(message);
+          break;
+        }
+
         if ((data as any)?.error) throw new Error((data as any).error);
 
         const processed = Number((data as any)?.images_processed_until ?? 0);
@@ -128,11 +140,13 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         offset = nextOffset;
       }
 
-      toast.success(
-        totalCreated > 0
-          ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
-          : "No new matches detected.",
-      );
+      if (!fallbackTriggered) {
+        toast.success(
+          totalCreated > 0
+            ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
+            : "No new matches detected.",
+        );
+      }
       await loadSuggestions();
     } catch (e: any) {
       toast.error(e.message || "Detection failed");
@@ -203,6 +217,12 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
             <span className="text-xs text-muted-foreground">{suggestions.length} pending</span>
           )}
         </div>
+
+        {scanMessage && (
+          <p className="text-sm text-muted-foreground pt-2">
+            {scanMessage}
+          </p>
+        )}
 
         <div className="space-y-3 pt-3">
           {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
