@@ -545,6 +545,48 @@ const Files = () => {
         {/* Storage usage meter */}
         {userId && <StorageUsageMeter userId={userId} />}
 
+        {/* Series folders — drag-and-drop image files to add artworks to a series */}
+        {seriesGroups.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Series folders</h3>
+              <span className="text-[11px] text-muted-foreground">Drop image files into a folder to add a new artwork to that series</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+              {seriesGroups.map((s) => {
+                const isOver = dragOverSeries === s.name;
+                const count = seriesCounts[s.name] || 0;
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => openSeriesFolder(s.name)}
+                    onDragOver={(e) => { e.preventDefault(); setDragOverSeries(s.name); }}
+                    onDragLeave={() => setDragOverSeries((cur) => (cur === s.name ? null : cur))}
+                    onDrop={(e) => handleFolderDrop(e, s.name)}
+                    className={`group cursor-pointer rounded-sm border px-3 py-3 transition-colors ${
+                      isOver
+                        ? "border-foreground bg-accent ring-2 ring-foreground/30"
+                        : "border-border border-dashed hover:bg-accent/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {isOver ? (
+                        <FolderOpen className="w-4 h-4 shrink-0" />
+                      ) : (
+                        <Folder className="w-4 h-4 shrink-0 text-muted-foreground" />
+                      )}
+                      <span className="text-sm font-medium truncate">{s.name}</span>
+                    </div>
+                    <div className="text-[11px] text-muted-foreground mt-1">
+                      {count} {count === 1 ? "image" : "images"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
