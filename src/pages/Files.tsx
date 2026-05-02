@@ -115,6 +115,13 @@ const Files = () => {
     if (!user) { navigate("/login"); return; }
     setUserId(user.id);
 
+    const { data: sg } = await supabase
+      .from("series_groups")
+      .select("id, name")
+      .eq("user_id", user.id)
+      .order("name");
+    setSeriesGroups(sg || []);
+
     const { data: artworks } = await supabase
       .from("artworks")
       .select("id, title, year, medium, series, artwork_type")
