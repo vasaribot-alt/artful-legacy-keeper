@@ -893,6 +893,11 @@ const Files = () => {
                       <FileText className="w-8 h-8 text-muted-foreground" />
                     </div>
                   )}
+                  {f.source === "unlinked-upload" && (
+                    <span className="absolute top-1 left-1 text-[9px] bg-background/85 px-1.5 py-0.5 rounded-sm flex items-center gap-1 border border-dashed border-border">
+                      <Link2Off className="w-2.5 h-2.5" /> Unlinked
+                    </span>
+                  )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                     <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => handleDownload(f)}>
                       <Download className="w-3.5 h-3.5" />
@@ -900,6 +905,11 @@ const Files = () => {
                     {f.linked_route && (
                       <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => navigate(f.linked_route!)}>
                         <ExternalLink className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                    {f.source === "unlinked-upload" && (
+                      <Button size="icon" variant="secondary" className="h-8 w-8 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)}>
+                        <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}
                   </div>
