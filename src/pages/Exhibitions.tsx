@@ -109,7 +109,9 @@ const Exhibitions = () => {
         if (imgs) {
           const grouped: Record<string, ExhibitionImage[]> = {};
           imgs.forEach((img: any) => {
-            const { data: urlData } = supabase.storage.from("exhibition-images").getPublicUrl(img.storage_path);
+            const bucket = img.web_storage_path ? "exhibition-images-web" : "exhibition-images";
+            const path = img.web_storage_path || img.storage_path;
+            const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
             const withUrl = { ...img, publicUrl: urlData.publicUrl };
             if (!grouped[img.exhibition_id]) grouped[img.exhibition_id] = [];
             grouped[img.exhibition_id].push(withUrl);

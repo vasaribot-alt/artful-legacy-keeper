@@ -87,8 +87,10 @@ const ArtworkView = () => {
 
     if (imgs) {
       setImages(
-        imgs.map((img) => {
-          const { data: urlData } = supabase.storage.from("artwork-images").getPublicUrl(img.storage_path);
+        imgs.map((img: any) => {
+          const bucket = img.web_storage_path ? "artwork-images-web" : "artwork-images";
+          const path = img.web_storage_path || img.storage_path;
+          const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
           return { ...img, publicUrl: urlData.publicUrl };
         })
       );
