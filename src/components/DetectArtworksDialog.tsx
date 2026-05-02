@@ -40,6 +40,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [scanProgress, setScanProgress] = useState<{ processed: number; total: number } | null>(null);
 
   useEffect(() => {
     if (!open || !exhibitionId) return;
@@ -99,16 +100,37 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
   const runDetection = async () => {
     if (!exhibitionId) return;
     setRunning(true);
+    setScanProgress(null);
     try {
-      const { data, error } = await supabase.functions.invoke("detect-artworks", {
-        body: { exhibition_id: exhibitionId },
-      });
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
-      const created = (data as any)?.suggestions_created ?? 0;
+      let offset = 0;
+      let totalCreated = 0;
+      let iterations = 0;
+
+      while (iterations < 100) {
+        iterations += 1;
+
+        const { data, error } = await supabase.functions.invoke("detect-artworks", {
+          body: { exhibition_id: exhibitionId, offset, batch_size: 2 },
+        });
+
+        if (error) throw error;
+        if ((data as any)?.error) throw new Error((data as any).error);
+
+        const processed = Number((data as any)?.images_processed_until ?? 0);
+        const total = Number((data as any)?.images_total ?? processed);
+        totalCreated += Number((data as any)?.suggestions_created ?? 0);
+        setScanProgress({ processed, total });
+
+        if (!(data as any)?.has_more) break;
+
+        const nextOffset = Number((data as any)?.next_offset ?? processed);
+        if (!Number.isFinite(nextOffset) || nextOffset <= offset) break;
+        offset = nextOffset;
+      }
+
       toast.success(
-        created > 0
-          ? `Found ${created} potential match${created === 1 ? "" : "es"}.`
+        totalCreated > 0
+          ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
           : "No new matches detected.",
       );
       await loadSuggestions();
@@ -116,6 +138,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
       toast.error(e.message || "Detection failed");
     } finally {
       setRunning(false);
+      setScanProgress(null);
     }
   };
 
@@ -169,8 +192,13 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         <div className="flex items-center gap-2 pt-2">
           <Button size="sm" onClick={runDetection} disabled={running}>
             {running ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-2" />}
-            {running ? "Analyzing..." : "Run detection"}
+            {running ? "Scanning..." : "Run detection"}
           </Button>
+          {running && scanProgress && (
+            <span className="text-xs text-muted-foreground">
+              {Math.min(scanProgress.processed, scanProgress.total)} / {scanProgress.total} views scanned
+            </span>
+          )}
           {suggestions.length > 0 && (
             <span className="text-xs text-muted-foreground">{suggestions.length} pending</span>
           )}
@@ -178,6 +206,11 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
 
         <div className="space-y-3 pt-3">
           {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
+          {!loading && running && scanProgress && suggestions.length === 0 && (
+            <p className="text-sm text-muted-foreground py-6 text-center">
+              Scanning installation views and preparing suggestions…
+            </p>
+          )}
           {!loading && suggestions.length === 0 && (
             <p className="text-sm text-muted-foreground py-6 text-center">
               No pending suggestions. Run detection to scan installation views.
