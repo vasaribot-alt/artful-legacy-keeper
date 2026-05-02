@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { StorageUsageMeter } from "@/components/StorageUsageMeter";
-import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X } from "lucide-react";
+import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X, Folder, FolderOpen } from "lucide-react";
 import { toast } from "sonner";
+import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 
 type FileKind = "image" | "document";
 type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image";
