@@ -625,6 +625,45 @@ const Files = () => {
         {/* Storage usage meter */}
         {userId && <StorageUsageMeter userId={userId} />}
 
+        {/* Upload unlinked files — drop zone */}
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOverUnlinked(true); }}
+          onDragLeave={() => setDragOverUnlinked(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOverUnlinked(false);
+            handleUploadUnlinked(Array.from(e.dataTransfer.files));
+          }}
+          className={`rounded-sm border-2 border-dashed px-4 py-5 transition-colors ${
+            dragOverUnlinked ? "border-foreground bg-accent" : "border-border hover:bg-accent/30"
+          }`}
+        >
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <Upload className="w-5 h-5 text-muted-foreground" />
+              <div>
+                <div className="text-sm font-medium">Upload images to your library</div>
+                <div className="text-xs text-muted-foreground">
+                  Drop image files here, or browse. Files stay "Unlinked" until you attach them to an artwork.
+                </div>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild disabled={uploading}>
+              <label className="cursor-pointer">
+                {uploading ? "Uploading…" : "Browse files"}
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={(e) => e.target.files && handleUploadUnlinked(Array.from(e.target.files))}
+                />
+              </label>
+            </Button>
+          </div>
+        </div>
+
         {/* Series folders — drag-and-drop image files to add artworks to a series */}
         {seriesGroups.length > 0 && (
           <div className="space-y-2">
