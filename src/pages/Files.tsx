@@ -48,6 +48,7 @@ const SOURCE_LABEL: Record<SourceType, string> = {
   "exhibition-document": "Exhibition document",
   "catalogue-cover": "Catalogue cover",
   "cv-image": "CV image",
+  "unlinked-upload": "Unlinked",
 };
 
 const PUBLIC_BUCKETS = new Set([
