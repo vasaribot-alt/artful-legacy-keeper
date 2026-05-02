@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
 
       // Append catalogue thumbnails (cap to keep payload reasonable)
       for (const a of catalogueSlice) {
-        userContent.push({ type: "image_url", image_url: { url: a.thumb! } });
+        if (a.thumb) userContent.push({ type: "image_url", image_url: { url: a.thumb } });
       }
 
       const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
