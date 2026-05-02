@@ -67,6 +67,8 @@ interface Props {
   ownerId?: string;
   /** When provided, overrides the active role from localStorage (e.g. registrar adding to artist's catalogue) */
   roleContext?: string;
+  /** Pre-load image files (e.g. from a drag-and-drop into a series folder) */
+  initialImages?: File[];
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
@@ -78,7 +80,7 @@ interface ImagePreview {
   preview: string;
 }
 
-export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist", initialData, ownerId, roleContext }: Props) => {
+export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "artist", initialData, ownerId, roleContext, initialImages }: Props) => {
   const isCollector = userRole === "collector";
   const [title, setTitle] = useState("");
   const [artistName, setArtistName] = useState("");
@@ -144,8 +146,12 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
         setExhibitionHistory(initialData.exhibitionHistory || "");
         setProvenance(initialData.provenance || "");
       }
+      if (initialImages && initialImages.length > 0) {
+        const previews = initialImages.map((file) => ({ file, preview: URL.createObjectURL(file) }));
+        setImages(previews);
+      }
     }
-  }, [open, initialData]);
+  }, [open, initialData, initialImages]);
 
   useEffect(() => {
     // Cleanup previews on unmount

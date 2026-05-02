@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { StorageUsageMeter } from "@/components/StorageUsageMeter";
-import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X } from "lucide-react";
+import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X, Folder, FolderOpen } from "lucide-react";
 import { toast } from "sonner";
+import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 
 type FileKind = "image" | "document";
 type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image";
@@ -95,6 +96,13 @@ const Files = () => {
   const [sortBy, setSortBy] = useState<"recent" | "name" | "size" | "linked">("recent");
   const [view, setView] = useState<"grid" | "list">("list");
 
+  // Series folders
+  const [seriesGroups, setSeriesGroups] = useState<{ id: string; name: string }[]>([]);
+  const [dragOverSeries, setDragOverSeries] = useState<string | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [pendingDropImages, setPendingDropImages] = useState<File[]>([]);
+  const [pendingSeriesName, setPendingSeriesName] = useState<string>("");
+
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
   useEffect(() => {
@@ -106,6 +114,13 @@ const Files = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/login"); return; }
     setUserId(user.id);
+
+    const { data: sg } = await supabase
+      .from("series_groups")
+      .select("id, name")
+      .eq("user_id", user.id)
+      .order("name");
+    setSeriesGroups(sg || []);
 
     const { data: artworks } = await supabase
       .from("artworks")
@@ -476,6 +491,36 @@ const Files = () => {
     setExtension("all"); setYearFrom(""); setYearTo("");
   };
 
+  // Series-folder counts (only image files belonging to artworks)
+  const seriesCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    files.forEach(f => {
+      if (f.source === "artwork-image" && f.series) {
+        m[f.series] = (m[f.series] || 0) + 1;
+      }
+    });
+    return m;
+  }, [files]);
+
+  const handleFolderDrop = (e: React.DragEvent, seriesName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverSeries(null);
+    const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+    if (dropped.length === 0) {
+      toast.error("Drop image files only");
+      return;
+    }
+    setPendingDropImages(dropped);
+    setPendingSeriesName(seriesName);
+    setAddDialogOpen(true);
+  };
+
+  const openSeriesFolder = (seriesName: string) => {
+    setSeries(seriesName);
+    setSourceFilter("artwork-image");
+  };
+
   const headerActions = (
     <div className="flex items-center gap-3">
       <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
@@ -499,6 +544,48 @@ const Files = () => {
       <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
         {/* Storage usage meter */}
         {userId && <StorageUsageMeter userId={userId} />}
+
+        {/* Series folders — drag-and-drop image files to add artworks to a series */}
+        {seriesGroups.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Series folders</h3>
+              <span className="text-[11px] text-muted-foreground">Drop image files into a folder to add a new artwork to that series</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+              {seriesGroups.map((s) => {
+                const isOver = dragOverSeries === s.name;
+                const count = seriesCounts[s.name] || 0;
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => openSeriesFolder(s.name)}
+                    onDragOver={(e) => { e.preventDefault(); setDragOverSeries(s.name); }}
+                    onDragLeave={() => setDragOverSeries((cur) => (cur === s.name ? null : cur))}
+                    onDrop={(e) => handleFolderDrop(e, s.name)}
+                    className={`group cursor-pointer rounded-sm border px-3 py-3 transition-colors ${
+                      isOver
+                        ? "border-foreground bg-accent ring-2 ring-foreground/30"
+                        : "border-border border-dashed hover:bg-accent/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {isOver ? (
+                        <FolderOpen className="w-4 h-4 shrink-0" />
+                      ) : (
+                        <Folder className="w-4 h-4 shrink-0 text-muted-foreground" />
+                      )}
+                      <span className="text-sm font-medium truncate">{s.name}</span>
+                    </div>
+                    <div className="text-[11px] text-muted-foreground mt-1">
+                      {count} {count === 1 ? "image" : "images"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Search */}
         <div className="relative">
@@ -698,6 +785,23 @@ const Files = () => {
           </div>
         )}
       </div>
+
+      <AddArtworkDialog
+        open={addDialogOpen}
+        onOpenChange={(o) => {
+          setAddDialogOpen(o);
+          if (!o) {
+            setPendingDropImages([]);
+            setPendingSeriesName("");
+          }
+        }}
+        onSuccess={() => {
+          fetchAll();
+        }}
+        userRole={activeRole}
+        initialData={pendingSeriesName ? ({ series: pendingSeriesName } as ArtworkDuplicateData) : null}
+        initialImages={pendingDropImages}
+      />
     </AppLayout>
   );
 };
