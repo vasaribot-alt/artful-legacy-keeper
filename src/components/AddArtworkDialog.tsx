@@ -145,9 +145,12 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
         setEditionNumber(initialData.editionNumber || "");
         setExhibitionHistory(initialData.exhibitionHistory || "");
         setProvenance(initialData.provenance || "");
+      if (initialImages && initialImages.length > 0) {
+        const previews = initialImages.map((file) => ({ file, preview: URL.createObjectURL(file) }));
+        setImages(previews);
       }
     }
-  }, [open, initialData]);
+  }, [open, initialData, initialImages]);
 
   useEffect(() => {
     // Cleanup previews on unmount
