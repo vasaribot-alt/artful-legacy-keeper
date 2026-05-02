@@ -246,9 +246,20 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      const aiData = await aiResp.json();
-      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (!toolCall) continue;
+      const rawText = await aiResp.text();
+      if (!rawText || !rawText.trim()) {
+        console.warn("AI returned empty body for image", exImg.id);
+        continue;
+      }
+      let aiData: any;
+      try {
+        aiData = JSON.parse(rawText);
+      } catch (e) {
+        console.warn("AI returned non-JSON body for image", exImg.id, rawText.slice(0, 200));
+        continue;
+      }
+      const toolCall = aiData?.choices?.[0]?.message?.tool_calls?.[0];
+      if (!toolCall?.function?.arguments) continue;
       let parsed: { matches: DetectionMatch[] };
       try {
         parsed = JSON.parse(toolCall.function.arguments);
