@@ -380,19 +380,34 @@ const ArtworkDetail = () => {
       }
     }
 
-    // Upload new images
+    // Upload new images (with web-optimized derivative)
+    const { uploadOptimizedImage } = await import("@/lib/uploadOptimizedImage");
     const currentMax = existingImages.filter((i) => !deletedImageIds.includes(i.id)).length;
     for (let i = 0; i < newImages.length; i++) {
       const img = newImages[i];
-      const ext = img.file.name.split(".").pop() || "jpg";
-      const path = `${user.id}/${id}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("artwork-images").upload(path, img.file);
-      if (upErr) { toast.error(`Failed to upload image ${i + 1}`); continue; }
-      await supabase.from("artwork_images").insert({
-        artwork_id: id!,
-        storage_path: path,
-        display_order: currentMax + i,
-      });
+      try {
+        const res = await uploadOptimizedImage({
+          file: img.file,
+          userId: user.id,
+          originalBucket: "artwork-images",
+          webBucket: "artwork-images-web",
+          pathPrefix: `${user.id}/${id}`,
+        });
+        await supabase.from("artwork_images").insert({
+          artwork_id: id!,
+          storage_path: res.storage_path,
+          web_storage_path: res.web_storage_path,
+          file_size: res.file_size,
+          original_size: res.original_size,
+          width: res.width,
+          height: res.height,
+          mime_type: res.mime_type,
+          display_order: currentMax + i,
+        });
+      } catch (e) {
+        console.error(e);
+        toast.error(`Failed to upload image ${i + 1}`);
+      }
     }
 
     // Delete removed documents
