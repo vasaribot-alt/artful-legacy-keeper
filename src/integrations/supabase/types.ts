@@ -185,22 +185,40 @@ export type Database = {
           artwork_id: string
           created_at: string
           display_order: number
+          file_size: number | null
+          height: number | null
           id: string
+          mime_type: string | null
+          original_size: number | null
           storage_path: string
+          web_storage_path: string | null
+          width: number | null
         }
         Insert: {
           artwork_id: string
           created_at?: string
           display_order?: number
+          file_size?: number | null
+          height?: number | null
           id?: string
+          mime_type?: string | null
+          original_size?: number | null
           storage_path: string
+          web_storage_path?: string | null
+          width?: number | null
         }
         Update: {
           artwork_id?: string
           created_at?: string
           display_order?: number
+          file_size?: number | null
+          height?: number | null
           id?: string
+          mime_type?: string | null
+          original_size?: number | null
           storage_path?: string
+          web_storage_path?: string | null
+          width?: number | null
         }
         Relationships: [
           {
@@ -423,6 +441,7 @@ export type Database = {
       catalogues: {
         Row: {
           authors: string | null
+          cover_file_size: number | null
           cover_image_path: string | null
           created_at: string
           id: string
@@ -436,6 +455,7 @@ export type Database = {
         }
         Insert: {
           authors?: string | null
+          cover_file_size?: number | null
           cover_image_path?: string | null
           created_at?: string
           id?: string
@@ -449,6 +469,7 @@ export type Database = {
         }
         Update: {
           authors?: string | null
+          cover_file_size?: number | null
           cover_image_path?: string | null
           created_at?: string
           id?: string
@@ -506,24 +527,36 @@ export type Database = {
           created_at: string
           cv_entry_id: string
           display_order: number
+          file_size: number | null
           id: string
+          mime_type: string | null
+          original_size: number | null
           storage_path: string
+          web_storage_path: string | null
         }
         Insert: {
           caption?: string | null
           created_at?: string
           cv_entry_id: string
           display_order?: number
+          file_size?: number | null
           id?: string
+          mime_type?: string | null
+          original_size?: number | null
           storage_path: string
+          web_storage_path?: string | null
         }
         Update: {
           caption?: string | null
           created_at?: string
           cv_entry_id?: string
           display_order?: number
+          file_size?: number | null
           id?: string
+          mime_type?: string | null
+          original_size?: number | null
           storage_path?: string
+          web_storage_path?: string | null
         }
         Relationships: [
           {
@@ -698,24 +731,42 @@ export type Database = {
           created_at: string
           display_order: number
           exhibition_id: string
+          file_size: number | null
+          height: number | null
           id: string
+          mime_type: string | null
+          original_size: number | null
           storage_path: string
+          web_storage_path: string | null
+          width: number | null
         }
         Insert: {
           caption?: string | null
           created_at?: string
           display_order?: number
           exhibition_id: string
+          file_size?: number | null
+          height?: number | null
           id?: string
+          mime_type?: string | null
+          original_size?: number | null
           storage_path: string
+          web_storage_path?: string | null
+          width?: number | null
         }
         Update: {
           caption?: string | null
           created_at?: string
           display_order?: number
           exhibition_id?: string
+          file_size?: number | null
+          height?: number | null
           id?: string
+          mime_type?: string | null
+          original_size?: number | null
           storage_path?: string
+          web_storage_path?: string | null
+          width?: number | null
         }
         Relationships: [
           {
@@ -1124,6 +1175,14 @@ export type Database = {
           email: string
           full_name: string
           user_id: string
+        }[]
+      }
+      get_user_storage_usage: {
+        Args: { _user_id: string }
+        Returns: {
+          bytes: number
+          file_count: number
+          source: string
         }[]
       }
       has_registrar_access: {
