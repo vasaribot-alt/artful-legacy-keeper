@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { assertWithinQuota } from "./storageQuota";
 
 export interface OptimizedUploadResult {
   storage_path: string;
@@ -55,8 +56,10 @@ export async function uploadOptimizedImage(opts: {
   const { file, userId, originalBucket, webBucket, pathPrefix } = opts;
   const ext = (file.name.split(".").pop() || "bin").toLowerCase();
   const baseName = `${crypto.randomUUID()}`;
-  // Originals folder MUST start with userId for storage RLS
   const originalPath = `${pathPrefix}/${baseName}.${ext}`;
+
+  // 0. Quota check (fail-fast before upload)
+  await assertWithinQuota(userId, file.size);
 
   // 1. Upload original
   const { error: origErr } = await supabase.storage
@@ -64,25 +67,48 @@ export async function uploadOptimizedImage(opts: {
     .upload(originalPath, file, { contentType: file.type, upsert: false });
   if (origErr) throw origErr;
 
-  // 2. Try to generate + upload web derivative
   let web_storage_path: string | null = null;
   let width: number | null = null;
   let height: number | null = null;
   let webSize = file.size;
 
-  // Web buckets RLS requires path to start with auth.uid() — folder = userId
   const webPath = `${userId}/${baseName}.jpg`;
+  const isTiff = ext === "tif" || ext === "tiff" || file.type === "image/tiff";
 
-  const derivative = await generateWebDerivative(file);
-  if (derivative) {
-    const { error: webErr } = await supabase.storage
-      .from(webBucket)
-      .upload(webPath, derivative.blob, { contentType: "image/jpeg", upsert: false });
-    if (!webErr) {
-      web_storage_path = webPath;
-      width = derivative.width;
-      height = derivative.height;
-      webSize = derivative.blob.size;
+  // 2a. TIFF / unsupported → server-side optimization via edge function
+  if (isTiff) {
+    try {
+      const { data, error } = await supabase.functions.invoke("optimize-image", {
+        body: {
+          originalBucket,
+          originalPath,
+          webBucket,
+          webPath,
+          mimeType: file.type,
+        },
+      });
+      if (!error && data?.web_storage_path) {
+        web_storage_path = data.web_storage_path;
+        width = data.width ?? null;
+        height = data.height ?? null;
+        webSize = data.size ?? file.size;
+      }
+    } catch (e) {
+      console.warn("Server-side optimization failed, falling back to original:", e);
+    }
+  } else {
+    // 2b. Standard browser-decodable formats → client-side derivative
+    const derivative = await generateWebDerivative(file);
+    if (derivative) {
+      const { error: webErr } = await supabase.storage
+        .from(webBucket)
+        .upload(webPath, derivative.blob, { contentType: "image/jpeg", upsert: false });
+      if (!webErr) {
+        web_storage_path = webPath;
+        width = derivative.width;
+        height = derivative.height;
+        webSize = derivative.blob.size;
+      }
     }
   }
 
