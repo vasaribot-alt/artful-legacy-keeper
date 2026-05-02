@@ -309,7 +309,10 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
         storage_path: path,
         caption: "",
         display_order: entry.images.length,
-      });
+        file_size: file.size,
+        original_size: file.size,
+        mime_type: file.type,
+      } as any);
     }
     setSections(updated);
     markDirty();

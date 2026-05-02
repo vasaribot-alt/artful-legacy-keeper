@@ -109,7 +109,9 @@ const Exhibitions = () => {
         if (imgs) {
           const grouped: Record<string, ExhibitionImage[]> = {};
           imgs.forEach((img: any) => {
-            const { data: urlData } = supabase.storage.from("exhibition-images").getPublicUrl(img.storage_path);
+            const bucket = img.web_storage_path ? "exhibition-images-web" : "exhibition-images";
+            const path = img.web_storage_path || img.storage_path;
+            const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
             const withUrl = { ...img, publicUrl: urlData.publicUrl };
             if (!grouped[img.exhibition_id]) grouped[img.exhibition_id] = [];
             grouped[img.exhibition_id].push(withUrl);
@@ -230,19 +232,34 @@ const Exhibitions = () => {
     setUploadingImages(true);
     if (!ownerId) { setUploadingImages(false); return; }
 
+    const { uploadOptimizedImage } = await import("@/lib/uploadOptimizedImage");
     const existingCount = (images[exhibitionId] || []).length;
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      const ext = file.name.split(".").pop();
-      const path = `${ownerId}/${exhibitionId}/${crypto.randomUUID()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage.from("exhibition-images").upload(path, file);
-      if (uploadErr) { toast.error(`Failed to upload ${file.name}`); continue; }
-      await supabase.from("exhibition_images").insert({
-        exhibition_id: exhibitionId,
-        storage_path: path,
-        display_order: existingCount + i,
-      });
+      try {
+        const res = await uploadOptimizedImage({
+          file,
+          userId: ownerId,
+          originalBucket: "exhibition-images",
+          webBucket: "exhibition-images-web",
+          pathPrefix: `${ownerId}/${exhibitionId}`,
+        });
+        await supabase.from("exhibition_images").insert({
+          exhibition_id: exhibitionId,
+          storage_path: res.storage_path,
+          web_storage_path: res.web_storage_path,
+          file_size: res.file_size,
+          original_size: res.original_size,
+          width: res.width,
+          height: res.height,
+          mime_type: res.mime_type,
+          display_order: existingCount + i,
+        });
+      } catch (e) {
+        console.error(e);
+        toast.error(`Failed to upload ${file.name}`);
+      }
     }
 
     setUploadingImages(false);

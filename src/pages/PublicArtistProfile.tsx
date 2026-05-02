@@ -218,10 +218,14 @@ const PublicArtistProfile = () => {
 
   const location = profile ? [profile.city, profile.country].filter(Boolean).join(", ") : "";
 
+  const resolveArtworkImg = (img: any) => {
+    const bucket = img.web_storage_path ? "artwork-images-web" : "artwork-images";
+    const path = img.web_storage_path || img.storage_path;
+    return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  };
+
   const getArtworkThumb = (aw: ArtworkPublic) => {
-    if (aw.images.length > 0) {
-      return supabase.storage.from("artwork-images").getPublicUrl(aw.images[0].storage_path).data.publicUrl;
-    }
+    if (aw.images.length > 0) return resolveArtworkImg(aw.images[0]);
     if (aw.image_url) return aw.image_url;
     return null;
   };
@@ -230,7 +234,7 @@ const PublicArtistProfile = () => {
     const urls = aw.images
       .slice()
       .sort((a, b) => a.display_order - b.display_order)
-      .map((img) => supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl);
+      .map((img) => resolveArtworkImg(img));
     if (urls.length === 0 && aw.image_url) urls.push(aw.image_url);
     return urls;
   };
@@ -256,7 +260,10 @@ const PublicArtistProfile = () => {
 
   const getExhibitionThumb = (ex: Exhibition) => {
     if (ex.images.length > 0) {
-      return supabase.storage.from("exhibition-images").getPublicUrl(ex.images[0].storage_path).data.publicUrl;
+      const img: any = ex.images[0];
+      const bucket = img.web_storage_path ? "exhibition-images-web" : "exhibition-images";
+      const path = img.web_storage_path || img.storage_path;
+      return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
     }
     return null;
   };
@@ -694,8 +701,10 @@ const PublicArtistProfile = () => {
 
                                 {ex.images.length > 0 && (
                                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    {ex.images.map((img, idx) => {
-                                      const url = supabase.storage.from("exhibition-images").getPublicUrl(img.storage_path).data.publicUrl;
+                                    {ex.images.map((img: any, idx) => {
+                                      const bucket = img.web_storage_path ? "exhibition-images-web" : "exhibition-images";
+                                      const path = img.web_storage_path || img.storage_path;
+                                      const url = supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
                                       return (
                                         <div key={idx} className="space-y-1">
                                           <div className="aspect-[4/3] rounded-md overflow-hidden bg-muted">
