@@ -386,6 +386,39 @@ const Files = () => {
       });
     }
 
+    // Unlinked uploads (files not yet attached to any artwork)
+    const { data: unlinked } = await supabase
+      .from("user_uploads")
+      .select("id, storage_path, web_storage_path, file_name, file_size, original_size, mime_type, series, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    (unlinked || []).forEach((r: any) => {
+      rows.push({
+        id: `up-${r.id}`,
+        bucket: "artwork-images",
+        storage_path: r.storage_path,
+        thumb_bucket: r.web_storage_path ? "artwork-images-web" : "artwork-images",
+        thumb_path: r.web_storage_path || r.storage_path,
+        file_name: r.file_name,
+        file_type: r.mime_type || null,
+        file_size: r.original_size ?? r.file_size ?? null,
+        kind: "image",
+        source: "unlinked-upload",
+        linked_id: r.id,
+        linked_title: "Not yet attached",
+        linked_route: undefined,
+        year: null,
+        medium: null,
+        series: r.series || null,
+        artwork_type: null,
+        exhibition_type: null,
+        exhibition_id: null,
+        extension: extOf(r.file_name),
+        caption: null,
+        created_at: r.created_at,
+      });
+    });
+
     setFiles(rows);
 
     // Build thumbnails
