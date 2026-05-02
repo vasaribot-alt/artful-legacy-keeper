@@ -1346,6 +1346,57 @@ export type Database = {
           },
         ]
       }
+      user_uploads: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          note: string | null
+          original_size: number | null
+          role_context: string
+          series: string | null
+          storage_path: string
+          user_id: string
+          web_storage_path: string | null
+          width: number | null
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          note?: string | null
+          original_size?: number | null
+          role_context?: string
+          series?: string | null
+          storage_path: string
+          user_id: string
+          web_storage_path?: string | null
+          width?: number | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          note?: string | null
+          original_size?: number | null
+          role_context?: string
+          series?: string | null
+          storage_path?: string
+          user_id?: string
+          web_storage_path?: string | null
+          width?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
