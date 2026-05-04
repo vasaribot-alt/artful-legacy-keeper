@@ -390,6 +390,8 @@ export type Database = {
       }
       artworks: {
         Row: {
+          ai_described_at: string | null
+          ai_description: string | null
           artist_name: string | null
           artist_proofs: number | null
           artwork_location: string | null
@@ -431,6 +433,8 @@ export type Database = {
           year: number | null
         }
         Insert: {
+          ai_described_at?: string | null
+          ai_description?: string | null
           artist_name?: string | null
           artist_proofs?: number | null
           artwork_location?: string | null
@@ -472,6 +476,8 @@ export type Database = {
           year?: number | null
         }
         Update: {
+          ai_described_at?: string | null
+          ai_description?: string | null
           artist_name?: string | null
           artist_proofs?: number | null
           artwork_location?: string | null
@@ -803,6 +809,8 @@ export type Database = {
       }
       exhibition_images: {
         Row: {
+          ai_described_at: string | null
+          ai_description: string | null
           caption: string | null
           created_at: string
           display_order: number
@@ -817,6 +825,8 @@ export type Database = {
           width: number | null
         }
         Insert: {
+          ai_described_at?: string | null
+          ai_description?: string | null
           caption?: string | null
           created_at?: string
           display_order?: number
@@ -831,6 +841,8 @@ export type Database = {
           width?: number | null
         }
         Update: {
+          ai_described_at?: string | null
+          ai_description?: string | null
           caption?: string | null
           created_at?: string
           display_order?: number
