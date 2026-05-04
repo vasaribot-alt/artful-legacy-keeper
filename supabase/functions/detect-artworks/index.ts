@@ -19,7 +19,10 @@ const MAX_VERIFICATION_CANDIDATES = 12;
 const MIN_CANDIDATE_CONFIDENCE = 0.55;
 const MIN_VERIFICATION_CONFIDENCE = 0.72;
 const INSTALLATION_TRANSFORM = { width: 1400, quality: 72 };
-const THUMB_TRANSFORM = { width: 320, height: 320, resize: "contain", quality: 55 } as const;
+// NOTE: We intentionally do NOT use Supabase's render/transform endpoint for
+// catalogue thumbnails. Google AI Studio's image fetcher returns 400 on some
+// transformed URLs. Plain public URLs from the web bucket (already optimised
+// by our optimize-image function) work reliably.
 
 interface DetectionMatch {
   artwork_id: string;
@@ -286,10 +289,12 @@ Deno.serve(async (req) => {
       }
       for (const im of artImages ?? []) {
         if (thumbByArtwork.has(im.artwork_id)) continue;
+        // Prefer the optimised web variant (already small JPEG/WebP); fall
+        // back to the original. Use plain public URL — no render transform.
         const path = im.web_storage_path || im.storage_path;
         if (!path) continue;
         const bucket = im.web_storage_path ? "artwork-images-web" : "artwork-images";
-        thumbByArtwork.set(im.artwork_id, getPublicImageUrl(admin, bucket, path, THUMB_TRANSFORM));
+        thumbByArtwork.set(im.artwork_id, getPublicImageUrl(admin, bucket, path));
       }
     }
 
@@ -299,7 +304,7 @@ Deno.serve(async (req) => {
       if (!thumb && a.image_url) {
         thumb = a.image_url.startsWith("http")
           ? a.image_url
-          : getPublicImageUrl(admin, "artwork-images", a.image_url, THUMB_TRANSFORM);
+          : getPublicImageUrl(admin, "artwork-images", a.image_url);
       }
       return { id: a.id, title: a.title, year: a.year, medium: a.medium, thumb };
     });
