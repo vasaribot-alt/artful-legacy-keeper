@@ -312,6 +312,9 @@ Deno.serve(async (req) => {
     }
 
     const catalogueWithThumbs = [...catalogue].filter((a) => a.thumb);
+    if (catalogueWithThumbs.length === 0) {
+      return json({ error: "Artist has no artwork images to compare against" }, 400);
+    }
     const catalogueChunks = chunkArray(catalogueWithThumbs, CATALOGUE_CHUNK_SIZE);
 
     let totalInserted = 0;
@@ -414,20 +417,65 @@ Deno.serve(async (req) => {
           })
           .filter(Boolean) as Array<CatalogueArtwork & { seed_confidence: number; seed_reasoning?: string; seed_crop?: DetectionMatch["crop"] }>;
 
-        const verified = await requestMatches(
-          installationUrl,
-          verificationSlice,
-          exImg.id,
-          [
-            "TASK: Final verification pass.",
-            "The candidates shown were preselected as possible matches.",
-            "Return only exact matches that survive strict comparison.",
-            "Reject candidates if there is any mismatch in colour field, motif placement, text/number content, or overall composition.",
-            `Only report confidence >= ${MIN_VERIFICATION_CONFIDENCE}.`,
-            "If none are exact, return an empty list.",
-          ].join("\n"),
-          "You are performing a final verification pass for artwork detection. Be conservative: a same-series lookalike must be rejected. Only exact, defendable matches should survive.",
-        );
+        let verified: DetectionMatch[] = [];
+        try {
+          verified = await requestMatches(
+            installationUrl,
+            verificationSlice,
+            exImg.id,
+            [
+              "TASK: Final verification pass.",
+              "The candidates shown were preselected as possible matches.",
+              "Return only exact matches that survive strict comparison.",
+              "Reject candidates if there is any mismatch in colour field, motif placement, text/number content, or overall composition.",
+              `Only report confidence >= ${MIN_VERIFICATION_CONFIDENCE}.`,
+              "If none are exact, return an empty list.",
+            ].join("\n"),
+            "You are performing a final verification pass for artwork detection. Be conservative: a same-series lookalike must be rejected. Only exact, defendable matches should survive.",
+          );
+        } catch (error) {
+          if (error instanceof AiRequestError && error.status === 429) {
+            return json({ error: "Rate limit reached, please try again shortly." }, 429);
+          }
+
+          if (error instanceof AiRequestError && error.status === 402) {
+            return json({
+              ok: false,
+              fallback: true,
+              code: "AI_CREDITS_EXHAUSTED",
+              error: "AI credits exhausted. Add credits in workspace settings.",
+              images_analyzed: allMatches.length,
+              images_total: totalImages ?? exImages.length,
+              images_processed_until: offset + allMatches.length,
+              has_more: true,
+              next_offset: offset + allMatches.length,
+              batch_size: batchSize,
+              catalogue_size: catalogueWithThumbs.length,
+              suggestions_created: totalInserted,
+              results: allMatches,
+            });
+          }
+
+          if (error instanceof AiRequestError && error.status === 413) {
+            return json({
+              ok: false,
+              fallback: true,
+              code: "AI_IMAGE_PAYLOAD_TOO_LARGE",
+              error: "Detection payload was still too large for AI processing. I reduced image sizes further — please run it again.",
+              images_analyzed: allMatches.length,
+              images_total: totalImages ?? exImages.length,
+              images_processed_until: offset + allMatches.length,
+              has_more: true,
+              next_offset: offset + allMatches.length,
+              batch_size: batchSize,
+              catalogue_size: catalogueWithThumbs.length,
+              suggestions_created: totalInserted,
+              results: allMatches,
+            });
+          }
+
+          throw error;
+        }
 
         const validVerifiedIds = new Set(verificationSlice.map((a) => a.id));
         cleaned = verified
