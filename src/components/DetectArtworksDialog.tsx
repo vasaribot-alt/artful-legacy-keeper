@@ -42,7 +42,8 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [scanProgress, setScanProgress] = useState<{ processed: number; total: number } | null>(null);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
-  const [scanSummary, setScanSummary] = useState<{ indexed: number; total: number; created: number } | null>(null);
+  const [savedMatchCount, setSavedMatchCount] = useState(0);
+  const [scanSummary, setScanSummary] = useState<{ indexed: number; total: number; created: number; saved: number } | null>(null);
 
   useEffect(() => {
     if (!open || !exhibitionId) return;
@@ -53,14 +54,26 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
     if (!exhibitionId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("artwork_match_suggestions")
-        .select("id, exhibition_image_id, artwork_id, confidence, reasoning, crop_x, crop_y, crop_width, crop_height, status, artworks!inner(id, title, year)")
-        .eq("exhibition_id", exhibitionId)
-        .eq("status", "pending")
-        .order("confidence", { ascending: false });
+      const [
+        { data, error },
+        { count: savedCount, error: savedCountError },
+      ] = await Promise.all([
+        supabase
+          .from("artwork_match_suggestions")
+          .select("id, exhibition_image_id, artwork_id, confidence, reasoning, crop_x, crop_y, crop_width, crop_height, status, artworks!inner(id, title, year)")
+          .eq("exhibition_id", exhibitionId)
+          .eq("status", "pending")
+          .order("confidence", { ascending: false }),
+        supabase
+          .from("artwork_match_suggestions")
+          .select("id", { count: "exact", head: true })
+          .eq("exhibition_id", exhibitionId)
+          .in("status", ["pending", "approved"]),
+      ]);
 
       if (error) throw error;
+      if (savedCountError) throw savedCountError;
+      setSavedMatchCount(savedCount ?? 0);
 
       // fetch installation image urls + artwork thumbs in batch
       const exImgIds = [...new Set((data || []).map((s: any) => s.exhibition_image_id))];
@@ -147,11 +160,28 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
       }
 
       if (!fallbackTriggered) {
-        setScanSummary({ indexed: lastIndexedCatalogueSize, total: lastTotalCatalogueSize || lastIndexedCatalogueSize, created: totalCreated });
+        const { count: savedCount, error: savedCountError } = await supabase
+          .from("artwork_match_suggestions")
+          .select("id", { count: "exact", head: true })
+          .eq("exhibition_id", exhibitionId)
+          .in("status", ["pending", "approved"]);
+
+        if (savedCountError) throw savedCountError;
+
+        const totalSaved = savedCount ?? 0;
+        setSavedMatchCount(totalSaved);
+        setScanSummary({
+          indexed: lastIndexedCatalogueSize,
+          total: lastTotalCatalogueSize || lastIndexedCatalogueSize,
+          created: totalCreated,
+          saved: totalSaved,
+        });
         toast.success(
           totalCreated > 0
             ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
-            : "No new matches detected.",
+            : totalSaved > 0
+              ? `No new matches detected. ${totalSaved} saved match${totalSaved === 1 ? " is" : "es are"} already on this exhibition.`
+              : "No matches detected.",
         );
       }
       await loadSuggestions();
@@ -235,7 +265,11 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
           <p className="text-sm text-muted-foreground pt-2">
             {scanSummary.indexed < scanSummary.total
               ? `Detection searched ${scanSummary.indexed} of ${scanSummary.total} catalogued artworks so far.`
-              : "Detection searched the full catalogue."}{scanSummary.created === 0 ? " No new pending matches were added." : ""}
+              : "Detection searched the full catalogue."}{scanSummary.created === 0
+              ? scanSummary.saved > 0
+                ? ` No new pending matches were added. ${scanSummary.saved} saved match${scanSummary.saved === 1 ? " remains" : "es remain"} on this exhibition.`
+                : " No new pending matches were added."
+              : ""}
           </p>
         )}
 
@@ -248,7 +282,9 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
           )}
           {!loading && suggestions.length === 0 && (
             <p className="text-sm text-muted-foreground py-6 text-center">
-              No pending suggestions. Run detection to scan installation views.
+              {savedMatchCount > 0
+                ? `No pending suggestions. ${savedMatchCount} saved match${savedMatchCount === 1 ? " is" : "es are"} already on this exhibition.`
+                : "No pending suggestions. Run detection to scan installation views."}
             </p>
           )}
           {suggestions.map((s) => {
