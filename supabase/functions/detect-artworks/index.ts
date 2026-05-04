@@ -12,9 +12,9 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
-const DEFAULT_BATCH_SIZE = 2;
-const MAX_BATCH_SIZE = 4;
-const MAX_CATALOGUE = 60;
+const DEFAULT_BATCH_SIZE = 1;
+const MAX_BATCH_SIZE = 2;
+const MAX_CATALOGUE = 30;
 
 interface DetectionMatch {
   artwork_id: string;
@@ -216,7 +216,7 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "openai/gpt-5",
+          model: "google/gemini-2.5-pro",
           messages: [
             {
               role: "system",
