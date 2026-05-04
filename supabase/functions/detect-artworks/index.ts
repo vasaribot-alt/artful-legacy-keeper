@@ -306,7 +306,7 @@ Deno.serve(async (req) => {
 
       const validIds = new Set(catalogueSlice.map((a) => a.id));
       const cleaned = (parsed.matches || []).filter(
-        (m) => validIds.has(m.artwork_id) && m.confidence > 0.4,
+        (m) => validIds.has(m.artwork_id) && m.confidence >= 0.75,
       );
 
       allMatches.push({ exhibition_image_id: exImg.id, matches: cleaned });
