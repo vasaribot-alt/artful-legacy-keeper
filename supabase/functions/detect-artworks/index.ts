@@ -1,6 +1,17 @@
 // Detect which catalogued artworks appear in an exhibition's installation views.
-// Uses Lovable AI (Gemini vision) to compare each exhibition image against
-// the artist's own artwork catalogue thumbnails.
+//
+// Strategy (description-first):
+//   1. For each installation view, ensure we have an AI-generated visual
+//      description cached on `exhibition_images.ai_description`.
+//   2. For each catalogue artwork, ensure we have an AI description cached on
+//      `artworks.ai_description`.
+//   3. Use a text-only AI call to shortlist plausible artwork candidates per
+//      installation view (no image payload).
+//   4. Visually verify the shortlist (1 installation view + 1 candidate thumb
+//      per call) — small payloads, no 413 errors.
+//
+// Descriptions are cached forever so re-running detection is nearly free.
+
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -12,24 +23,15 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
+const AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const MODEL = "google/gemini-2.5-flash";
+
 const DEFAULT_BATCH_SIZE = 1;
 const MAX_BATCH_SIZE = 1;
-const CATALOGUE_CHUNK_SIZE = 3;
-const MAX_VERIFICATION_CANDIDATES = 4;
-const MIN_CANDIDATE_CONFIDENCE = 0.55;
+const SHORTLIST_SIZE = 6;            // candidates from text matching
 const MIN_VERIFICATION_CONFIDENCE = 0.72;
-const INSTALLATION_TRANSFORM = { width: 640, quality: 45 };
-// NOTE: We intentionally do NOT use Supabase's render/transform endpoint for
-// catalogue thumbnails. Google AI Studio's image fetcher returns 400 on some
-// transformed URLs. Plain public URLs from the web bucket (already optimised
-// by our optimize-image function) work reliably.
-
-interface DetectionMatch {
-  artwork_id: string;
-  confidence: number;
-  reasoning?: string;
-  crop?: { x: number; y: number; width: number; height: number };
-}
+const INSTALLATION_TRANSFORM = { width: 900, quality: 60 };
+const THUMB_TRANSFORM = { width: 512, quality: 60 };
 
 interface CatalogueArtwork {
   id: string;
@@ -37,12 +39,12 @@ interface CatalogueArtwork {
   year: number | null;
   medium: string | null;
   thumb: string | null;
+  description: string | null;
 }
 
 class AiRequestError extends Error {
   status: number;
   body: string;
-
   constructor(status: number, body: string) {
     super(`AI request failed with status ${status}`);
     this.status = status;
@@ -54,138 +56,185 @@ function getPublicImageUrl(
   admin: ReturnType<typeof createClient>,
   bucket: string,
   path: string,
-  transform?: { width?: number; height?: number; quality?: number; resize?: "cover" | "contain" | "fill" },
+  transform?: { width?: number; height?: number; quality?: number },
 ) {
   return admin.storage.from(bucket).getPublicUrl(path, transform ? { transform } : undefined).data.publicUrl;
 }
 
-function chunkArray<T>(items: T[], size: number) {
-  const chunks: T[][] = [];
-  for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
-  return chunks;
-}
-
-function parseToolMatches(rawText: string, exImgId: string) {
-  if (!rawText || !rawText.trim()) {
-    console.warn("AI returned empty body for image", exImgId);
-    return [] as DetectionMatch[];
-  }
-
-  let aiData: any;
-  try {
-    aiData = JSON.parse(rawText);
-  } catch {
-    console.warn("AI returned non-JSON body for image", exImgId, rawText.slice(0, 200));
-    return [] as DetectionMatch[];
-  }
-
-  const toolCall = aiData?.choices?.[0]?.message?.tool_calls?.[0];
-  if (!toolCall?.function?.arguments) return [] as DetectionMatch[];
-
-  try {
-    const parsed = JSON.parse(toolCall.function.arguments) as { matches?: DetectionMatch[] };
-    return parsed.matches || [];
-  } catch {
-    return [] as DetectionMatch[];
-  }
-}
-
-async function requestMatches(
-  installationUrl: string,
-  catalogueSlice: CatalogueArtwork[],
-  exImgId: string,
-  instruction: string,
-  systemPrompt: string,
-) {
-  const userContent: Array<Record<string, unknown>> = [
-    {
-      type: "text",
-      text:
-        `${instruction}\n\n` +
-        `You will receive images in this exact order:\n` +
-        `Image 1 = installation view.\n` +
-        `Images 2..${catalogueSlice.length + 1} = labelled catalogue candidates.\n\n` +
-        `Catalogue candidates:\n` +
-        catalogueSlice
-          .map(
-            (a, i) =>
-              `[${i + 1}] id=${a.id} | "${a.title}"${a.year ? ` (${a.year})` : ""}${a.medium ? ` — ${a.medium}` : ""}`,
-          )
-          .join("\n"),
-    },
-    { type: "image_url", image_url: { url: installationUrl } },
-  ];
-
-  for (let i = 0; i < catalogueSlice.length; i++) {
-    const artwork = catalogueSlice[i];
-    if (!artwork.thumb) continue;
-    userContent.push({
-      type: "text",
-      text: `[${i + 1}] "${artwork.title}"${artwork.year ? ` (${artwork.year})` : ""} — id=${artwork.id}`,
-    });
-    userContent.push({ type: "image_url", image_url: { url: artwork.thumb } });
-  }
-
-  const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+async function aiFetch(body: unknown): Promise<any> {
+  const resp = await fetch(AI_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${LOVABLE_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userContent },
-      ],
-      tools: [
-        {
-          type: "function",
-          function: {
-            name: "report_matches",
-            description: "Return artworks detected in the installation view.",
-            parameters: {
-              type: "object",
-              properties: {
-                matches: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      artwork_id: { type: "string", description: "id from the catalogue" },
-                      confidence: { type: "number", description: "0..1" },
-                      reasoning: { type: "string" },
-                      crop: {
-                        type: "object",
-                        properties: {
-                          x: { type: "number" },
-                          y: { type: "number" },
-                          width: { type: "number" },
-                          height: { type: "number" },
-                        },
-                        required: ["x", "y", "width", "height"],
-                      },
-                    },
-                    required: ["artwork_id", "confidence"],
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) {
+    const txt = await resp.text();
+    console.error("AI error", resp.status, txt.slice(0, 300));
+    throw new AiRequestError(resp.status, txt);
+  }
+  return await resp.json();
+}
+
+// Generate a structured visual description of a single image.
+async function describeImage(imageUrl: string, kind: "artwork" | "installation"): Promise<string> {
+  const instruction =
+    kind === "artwork"
+      ? "Describe this single artwork for archival matching. Cover: dominant colours, palette mood, geometry/composition, motifs, any visible text/numbers/lettering, medium cues (paint texture, photo, sculpture), and orientation. 60-120 words. No interpretation, just visual facts."
+      : "Describe every artwork visible in this installation photograph. For each work, give: position in the scene (left/centre/right, foreground/back wall), dominant colours, geometry/motif, any visible text or numbers, and medium cues. Then list the room features (wall colour, floor, lighting). 100-200 words.";
+
+  const data = await aiFetch({
+    model: MODEL,
+    messages: [
+      { role: "system", content: "You are a precise visual describer for an art archive. Be concrete, neutral, and concise." },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: instruction },
+          { type: "image_url", image_url: { url: imageUrl } },
+        ],
+      },
+    ],
+  });
+  const text = data?.choices?.[0]?.message?.content;
+  if (typeof text !== "string" || !text.trim()) throw new Error("Empty description from AI");
+  return text.trim();
+}
+
+// Given an installation description and the catalogue list (with descriptions),
+// return ranked artwork ids that plausibly appear in the photo.
+async function shortlistCandidates(
+  installationDescription: string,
+  catalogue: Array<CatalogueArtwork & { description: string }>,
+): Promise<Array<{ artwork_id: string; score: number; reasoning?: string }>> {
+  // Build a compact catalogue text block. No images.
+  const catalogueText = catalogue
+    .map(
+      (a, i) =>
+        `[${i + 1}] id=${a.id} | "${a.title}"${a.year ? ` (${a.year})` : ""}${a.medium ? ` — ${a.medium}` : ""}\nDESC: ${a.description}`,
+    )
+    .join("\n\n");
+
+  const data = await aiFetch({
+    model: MODEL,
+    messages: [
+      {
+        role: "system",
+        content:
+          "You shortlist artwork candidates from a catalogue that may appear in an installation photograph. Use only the textual descriptions. Be inclusive at this stage — include any work whose description plausibly matches something visible. Reject only clearly unrelated works.",
+      },
+      {
+        role: "user",
+        content:
+          `INSTALLATION DESCRIPTION:\n${installationDescription}\n\n` +
+          `CATALOGUE (${catalogue.length} works):\n${catalogueText}\n\n` +
+          `Return up to ${SHORTLIST_SIZE} candidate ids ranked by how well their description matches works visible in the installation. Use the exact id strings shown above.`,
+      },
+    ],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "shortlist",
+          description: "Return ranked candidate artwork ids.",
+          parameters: {
+            type: "object",
+            properties: {
+              candidates: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    artwork_id: { type: "string" },
+                    score: { type: "number", description: "0..1 plausibility" },
+                    reasoning: { type: "string" },
                   },
+                  required: ["artwork_id", "score"],
                 },
               },
-              required: ["matches"],
             },
+            required: ["candidates"],
           },
         },
-      ],
-      tool_choice: { type: "function", function: { name: "report_matches" } },
-    }),
+      },
+    ],
+    tool_choice: { type: "function", function: { name: "shortlist" } },
   });
-
-  if (!aiResp.ok) {
-    const txt = await aiResp.text();
-    console.error("AI error", aiResp.status, txt);
-    throw new AiRequestError(aiResp.status, txt);
+  const args = data?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+  if (!args) return [];
+  try {
+    const parsed = JSON.parse(args) as { candidates?: Array<{ artwork_id: string; score: number; reasoning?: string }> };
+    const valid = new Set(catalogue.map((a) => a.id));
+    return (parsed.candidates ?? [])
+      .filter((c) => valid.has(c.artwork_id))
+      .slice(0, SHORTLIST_SIZE);
+  } catch {
+    return [];
   }
+}
 
-  return parseToolMatches(await aiResp.text(), exImgId);
+// Visually verify a single (installation, artwork) pair. Tiny payload.
+async function verifyPair(
+  installationUrl: string,
+  artwork: CatalogueArtwork,
+): Promise<{ confidence: number; reasoning?: string } | null> {
+  if (!artwork.thumb) return null;
+  const data = await aiFetch({
+    model: MODEL,
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a strict art-historical verifier. Decide whether the catalogue artwork (image 2) is actually visible in the installation photograph (image 1). Reject same-series lookalikes. Be conservative.",
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text:
+              `Catalogue artwork: "${artwork.title}"${artwork.year ? ` (${artwork.year})` : ""}${artwork.medium ? ` — ${artwork.medium}` : ""}.\n` +
+              `Image 1 = installation view. Image 2 = catalogue artwork.\n` +
+              `Return confidence 0..1 that THIS exact work is visible in the installation. Cite specific evidence (colours, motifs, text, composition). Confidence < ${MIN_VERIFICATION_CONFIDENCE} means no match.`,
+          },
+          { type: "image_url", image_url: { url: installationUrl } },
+          { type: "image_url", image_url: { url: artwork.thumb } },
+        ],
+      },
+    ],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "verify",
+          parameters: {
+            type: "object",
+            properties: {
+              confidence: { type: "number" },
+              reasoning: { type: "string" },
+            },
+            required: ["confidence"],
+          },
+        },
+      },
+    ],
+    tool_choice: { type: "function", function: { name: "verify" } },
+  });
+  const args = data?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+  if (!args) return null;
+  try {
+    const parsed = JSON.parse(args) as { confidence: number; reasoning?: string };
+    if (typeof parsed.confidence !== "number") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function fallbackResponse(code: string, message: string, ctx: any) {
+  return json({ ok: false, fallback: true, code, error: message, ...ctx });
 }
 
 Deno.serve(async (req) => {
@@ -193,9 +242,7 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return json({ error: "Missing authorization" }, 401);
-    }
+    if (!authHeader) return json({ error: "Missing authorization" }, 401);
 
     const userClient = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY")!, {
       global: { headers: { Authorization: authHeader } },
@@ -217,7 +264,7 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-    // Load exhibition + verify access (owner or registrar)
+    // Verify access
     const { data: ex } = await admin
       .from("exhibitions")
       .select("id, user_id, title")
@@ -234,20 +281,16 @@ Deno.serve(async (req) => {
       if (!hasAccess) return json({ error: "Forbidden" }, 403);
     }
 
-    // Load a small batch of installation view images so each invocation stays fast.
+    // Load this batch of installation views
     const { data: exImages, count: totalImages, error: exImagesError } = await admin
       .from("exhibition_images")
-      .select("id, storage_path, web_storage_path", { count: "exact" })
+      .select("id, storage_path, web_storage_path, ai_description", { count: "exact" })
       .eq("exhibition_id", exhibition_id)
       .order("display_order")
       .range(offset, offset + batchSize - 1);
-
     if (exImagesError) throw exImagesError;
 
-    if ((totalImages ?? 0) === 0) {
-      return json({ error: "No installation views to analyze" }, 400);
-    }
-
+    if ((totalImages ?? 0) === 0) return json({ error: "No installation views to analyze" }, 400);
     if (!exImages || exImages.length === 0) {
       return json({
         ok: true,
@@ -261,244 +304,196 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Load artist's catalogue (only verified or owned works)
+    // Load full artwork catalogue (with cached descriptions)
     const { data: artworks } = await admin
       .from("artworks")
-      .select("id, title, year, medium, image_url")
+      .select("id, title, year, medium, image_url, ai_description")
       .eq("owner_id", ownerId);
-
     if (!artworks || artworks.length === 0) {
       return json({ error: "Artist has no catalogued artworks to compare against" }, 400);
     }
 
-    // Get a thumbnail per artwork (first image). Chunk the .in() filter so the
-    // PostgREST URL never exceeds the gateway limit (440+ UUIDs blow past it).
+    // Build thumb map
     const ids = artworks.map((a) => a.id);
-    const thumbByArtwork = new Map<string, string>();
+    const thumbInfo = new Map<string, { bucket: string; path: string }>();
     const CHUNK = 100;
     for (let i = 0; i < ids.length; i += CHUNK) {
       const slice = ids.slice(i, i + CHUNK);
-      const { data: artImages, error: artImagesErr } = await admin
+      const { data: artImages } = await admin
         .from("artwork_images")
         .select("artwork_id, storage_path, web_storage_path, display_order")
         .in("artwork_id", slice)
         .order("display_order", { nullsFirst: false });
-      if (artImagesErr) {
-        console.error("artwork_images query error", artImagesErr);
-        continue;
-      }
       for (const im of artImages ?? []) {
-        if (thumbByArtwork.has(im.artwork_id)) continue;
-        // Prefer the optimised web variant (already small JPEG/WebP); fall
-        // back to the original. Use plain public URL — no render transform.
+        if (thumbInfo.has(im.artwork_id)) continue;
         const path = im.web_storage_path || im.storage_path;
         if (!path) continue;
         const bucket = im.web_storage_path ? "artwork-images-web" : "artwork-images";
-        thumbByArtwork.set(im.artwork_id, getPublicImageUrl(admin, bucket, path));
+        thumbInfo.set(im.artwork_id, { bucket, path });
       }
     }
 
-    // Catalogue list for prompt — keep all artworks, thumb is optional
-    const catalogue = artworks.map((a) => {
-      let thumb = thumbByArtwork.get(a.id) || null;
-      if (!thumb && a.image_url) {
+    const catalogue: CatalogueArtwork[] = artworks.map((a) => {
+      const info = thumbInfo.get(a.id);
+      let thumb: string | null = null;
+      if (info) {
+        thumb = getPublicImageUrl(admin, info.bucket, info.path);
+      } else if (a.image_url) {
         thumb = a.image_url.startsWith("http")
           ? a.image_url
           : getPublicImageUrl(admin, "artwork-images", a.image_url);
       }
-      return { id: a.id, title: a.title, year: a.year, medium: a.medium, thumb };
+      return {
+        id: a.id,
+        title: a.title,
+        year: a.year,
+        medium: a.medium,
+        thumb,
+        description: a.ai_description ?? null,
+      };
     });
 
-    const withThumb = catalogue.filter((a) => a.thumb).length;
-    console.log(`detect-artworks: ${artworks.length} artworks, ${withThumb} with thumbs, ${exImages.length} installation views`);
-
-    if (catalogue.length === 0) {
-      return json({ error: "Artist has no artworks to compare against" }, 400);
+    // Generate descriptions for any artworks missing them (cached forever).
+    // Cap how many we describe per invocation to keep latency reasonable.
+    const MAX_DESCRIBE_PER_RUN = 30;
+    const needArtworkDesc = catalogue.filter((a) => !a.description && a.thumb).slice(0, MAX_DESCRIBE_PER_RUN);
+    let describedArtworks = 0;
+    for (const a of needArtworkDesc) {
+      try {
+        // Use a small transformed thumb to keep payload tiny
+        const info = thumbInfo.get(a.id);
+        const url = info ? getPublicImageUrl(admin, info.bucket, info.path, THUMB_TRANSFORM) : a.thumb!;
+        const desc = await describeImage(url, "artwork");
+        a.description = desc;
+        await admin.from("artworks").update({ ai_description: desc, ai_described_at: new Date().toISOString() }).eq("id", a.id);
+        describedArtworks++;
+      } catch (e) {
+        if (e instanceof AiRequestError && e.status === 429) {
+          return fallbackResponse("AI_RATE_LIMIT", "Rate limit reached while describing artworks. Please run again shortly.", {
+            images_total: totalImages ?? exImages.length,
+            images_processed_until: offset,
+            has_more: true,
+            next_offset: offset,
+            described_artworks: describedArtworks,
+          });
+        }
+        if (e instanceof AiRequestError && e.status === 402) {
+          return fallbackResponse("AI_CREDITS_EXHAUSTED", "AI credits exhausted. Add credits in workspace settings.", {
+            images_total: totalImages ?? exImages.length,
+            images_processed_until: offset,
+            has_more: true,
+            next_offset: offset,
+          });
+        }
+        console.warn("describe artwork failed", a.id, e instanceof Error ? e.message : e);
+      }
     }
 
-    const catalogueWithThumbs = [...catalogue].filter((a) => a.thumb);
-    if (catalogueWithThumbs.length === 0) {
-      return json({ error: "Artist has no artwork images to compare against" }, 400);
+    const catalogueWithDesc = catalogue.filter((a) => a.description && a.thumb) as Array<CatalogueArtwork & { description: string }>;
+    if (catalogueWithDesc.length === 0) {
+      return json({ error: "No artwork descriptions available yet — please run again to continue indexing." }, 400);
     }
-    const catalogueChunks = chunkArray(catalogueWithThumbs, CATALOGUE_CHUNK_SIZE);
 
     let totalInserted = 0;
-    const allMatches: Array<{ exhibition_image_id: string; matches: DetectionMatch[] }> = [];
+    const allMatches: Array<{ exhibition_image_id: string; matches: any[] }> = [];
 
-    console.log(
-      `detect-artworks batch: offset ${offset}, processing ${exImages.length}/${totalImages ?? exImages.length} installation views, ${artworks.length} artworks, ${withThumb} with thumbs`,
-    );
-
-    // Analyze each installation view independently
     for (const exImg of exImages) {
       const exPath = exImg.web_storage_path || exImg.storage_path;
       const exBucket = exImg.web_storage_path ? "exhibition-images-web" : "exhibition-images";
       const installationUrl = getPublicImageUrl(admin, exBucket, exPath, INSTALLATION_TRANSFORM);
 
-      const candidateMap = new Map<string, DetectionMatch>();
-
-      try {
-        for (const slice of catalogueChunks) {
-          const matches = await requestMatches(
-            installationUrl,
-            slice,
-            exImg.id,
-            [
-              "TASK: Identify only exact catalogue matches visible in the installation photo.",
-              "METHOD:",
-              "1. Describe each visible work by dominant colours, geometry, text/numbers, and composition.",
-              "2. Compare against every candidate in this chunk.",
-              "3. Return a match only if the exact work is visible, not merely a related work from the same series.",
-              "4. Prefer no match over a weak match.",
-              `5. Only report confidence >= ${MIN_CANDIDATE_CONFIDENCE}.`,
-              "6. Reasoning must cite specific evidence, not general style.",
-            ].join("\n"),
-            "You are a rigorous art-historical visual matcher. False positives are unacceptable. Reject same-series lookalikes unless composition, motif placement, and text/number details line up.",
-          );
-
-          const validIds = new Set(slice.map((a) => a.id));
-          for (const match of matches) {
-            if (!validIds.has(match.artwork_id) || match.confidence < MIN_CANDIDATE_CONFIDENCE) continue;
-            const existing = candidateMap.get(match.artwork_id);
-            if (!existing || match.confidence > existing.confidence) {
-              candidateMap.set(match.artwork_id, match);
-            }
-          }
-        }
-      } catch (error) {
-        if (error instanceof AiRequestError && error.status === 429) {
-          return json({ error: "Rate limit reached, please try again shortly." }, 429);
-        }
-
-        if (error instanceof AiRequestError && error.status === 402) {
-          return json({
-            ok: false,
-            fallback: true,
-            code: "AI_CREDITS_EXHAUSTED",
-            error: "AI credits exhausted. Add credits in workspace settings.",
-            images_analyzed: allMatches.length,
-            images_total: totalImages ?? exImages.length,
-            images_processed_until: offset + allMatches.length,
-            has_more: true,
-            next_offset: offset + allMatches.length,
-            batch_size: batchSize,
-            catalogue_size: catalogueWithThumbs.length,
-            suggestions_created: totalInserted,
-            results: allMatches,
-          });
-        }
-
-        if (error instanceof AiRequestError && error.status === 413) {
-          return json({
-            ok: false,
-            fallback: true,
-            code: "AI_IMAGE_PAYLOAD_TOO_LARGE",
-            error: "Detection payload was still too large for AI processing. I reduced image sizes further — please run it again.",
-            images_analyzed: allMatches.length,
-            images_total: totalImages ?? exImages.length,
-            images_processed_until: offset + allMatches.length,
-            has_more: true,
-            next_offset: offset + allMatches.length,
-            batch_size: batchSize,
-            catalogue_size: catalogueWithThumbs.length,
-            suggestions_created: totalInserted,
-            results: allMatches,
-          });
-        }
-
-        throw error;
-      }
-
-      const verificationCandidates = [...candidateMap.values()]
-        .sort((a, b) => b.confidence - a.confidence)
-        .slice(0, MAX_VERIFICATION_CANDIDATES);
-
-      let cleaned: DetectionMatch[] = [];
-      if (verificationCandidates.length > 0) {
-        const verificationSlice = verificationCandidates
-          .map((candidate) => {
-            const artwork = catalogueWithThumbs.find((item) => item.id === candidate.artwork_id);
-            return artwork ? { ...artwork, seed_confidence: candidate.confidence, seed_reasoning: candidate.reasoning, seed_crop: candidate.crop } : null;
-          })
-          .filter(Boolean) as Array<CatalogueArtwork & { seed_confidence: number; seed_reasoning?: string; seed_crop?: DetectionMatch["crop"] }>;
-
-        let verified: DetectionMatch[] = [];
+      // 1. Ensure installation description
+      let installationDesc = exImg.ai_description as string | null;
+      if (!installationDesc) {
         try {
-          verified = await requestMatches(
-            installationUrl,
-            verificationSlice,
-            exImg.id,
-            [
-              "TASK: Final verification pass.",
-              "The candidates shown were preselected as possible matches.",
-              "Return only exact matches that survive strict comparison.",
-              "Reject candidates if there is any mismatch in colour field, motif placement, text/number content, or overall composition.",
-              `Only report confidence >= ${MIN_VERIFICATION_CONFIDENCE}.`,
-              "If none are exact, return an empty list.",
-            ].join("\n"),
-            "You are performing a final verification pass for artwork detection. Be conservative: a same-series lookalike must be rejected. Only exact, defendable matches should survive.",
-          );
-        } catch (error) {
-          if (error instanceof AiRequestError && error.status === 429) {
-            return json({ error: "Rate limit reached, please try again shortly." }, 429);
-          }
-
-          if (error instanceof AiRequestError && error.status === 402) {
-            return json({
-              ok: false,
-              fallback: true,
-              code: "AI_CREDITS_EXHAUSTED",
-              error: "AI credits exhausted. Add credits in workspace settings.",
+          installationDesc = await describeImage(installationUrl, "installation");
+          await admin
+            .from("exhibition_images")
+            .update({ ai_description: installationDesc, ai_described_at: new Date().toISOString() })
+            .eq("id", exImg.id);
+        } catch (e) {
+          if (e instanceof AiRequestError && e.status === 429) {
+            return fallbackResponse("AI_RATE_LIMIT", "Rate limit reached. Please run again shortly.", {
               images_analyzed: allMatches.length,
               images_total: totalImages ?? exImages.length,
               images_processed_until: offset + allMatches.length,
               has_more: true,
               next_offset: offset + allMatches.length,
-              batch_size: batchSize,
-              catalogue_size: catalogueWithThumbs.length,
               suggestions_created: totalInserted,
               results: allMatches,
             });
           }
-
-          if (error instanceof AiRequestError && error.status === 413) {
-            return json({
-              ok: false,
-              fallback: true,
-              code: "AI_IMAGE_PAYLOAD_TOO_LARGE",
-              error: "Detection payload was still too large for AI processing. I reduced image sizes further — please run it again.",
+          if (e instanceof AiRequestError && e.status === 402) {
+            return fallbackResponse("AI_CREDITS_EXHAUSTED", "AI credits exhausted.", {
               images_analyzed: allMatches.length,
               images_total: totalImages ?? exImages.length,
               images_processed_until: offset + allMatches.length,
               has_more: true,
               next_offset: offset + allMatches.length,
-              batch_size: batchSize,
-              catalogue_size: catalogueWithThumbs.length,
               suggestions_created: totalInserted,
               results: allMatches,
             });
           }
-
-          throw error;
+          throw e;
         }
-
-        const validVerifiedIds = new Set(verificationSlice.map((a) => a.id));
-        cleaned = verified
-          .filter((match) => validVerifiedIds.has(match.artwork_id) && match.confidence >= MIN_VERIFICATION_CONFIDENCE)
-          .map((match) => {
-            const seed = candidateMap.get(match.artwork_id);
-            return {
-              ...match,
-              crop: match.crop ?? seed?.crop,
-              reasoning: match.reasoning ?? seed?.reasoning,
-            };
-          });
       }
 
-      allMatches.push({ exhibition_image_id: exImg.id, matches: cleaned });
+      // 2. Text shortlist
+      let shortlist: Array<{ artwork_id: string; score: number; reasoning?: string }> = [];
+      try {
+        shortlist = await shortlistCandidates(installationDesc, catalogueWithDesc);
+      } catch (e) {
+        if (e instanceof AiRequestError && (e.status === 429 || e.status === 402)) {
+          const code = e.status === 429 ? "AI_RATE_LIMIT" : "AI_CREDITS_EXHAUSTED";
+          return fallbackResponse(code, e.status === 429 ? "Rate limit reached." : "AI credits exhausted.", {
+            images_analyzed: allMatches.length,
+            images_total: totalImages ?? exImages.length,
+            images_processed_until: offset + allMatches.length,
+            has_more: true,
+            next_offset: offset + allMatches.length,
+            suggestions_created: totalInserted,
+            results: allMatches,
+          });
+        }
+        throw e;
+      }
 
-      // Insert as suggestions (skip duplicates of pending ones via unique idx)
-      for (const m of cleaned) {
+      // 3. Visual verify each shortlisted candidate (one at a time — tiny payload)
+      const verified: Array<{ artwork_id: string; confidence: number; reasoning?: string }> = [];
+      for (const cand of shortlist) {
+        const artwork = catalogueWithDesc.find((a) => a.id === cand.artwork_id);
+        if (!artwork) continue;
+        // Use transformed thumb for verification too
+        const info = thumbInfo.get(artwork.id);
+        const verifyArtwork: CatalogueArtwork = {
+          ...artwork,
+          thumb: info ? getPublicImageUrl(admin, info.bucket, info.path, THUMB_TRANSFORM) : artwork.thumb,
+        };
+        try {
+          const result = await verifyPair(installationUrl, verifyArtwork);
+          if (result && result.confidence >= MIN_VERIFICATION_CONFIDENCE) {
+            verified.push({ artwork_id: artwork.id, confidence: result.confidence, reasoning: result.reasoning ?? cand.reasoning });
+          }
+        } catch (e) {
+          if (e instanceof AiRequestError && (e.status === 429 || e.status === 402)) {
+            const code = e.status === 429 ? "AI_RATE_LIMIT" : "AI_CREDITS_EXHAUSTED";
+            return fallbackResponse(code, e.status === 429 ? "Rate limit reached." : "AI credits exhausted.", {
+              images_analyzed: allMatches.length,
+              images_total: totalImages ?? exImages.length,
+              images_processed_until: offset + allMatches.length,
+              has_more: true,
+              next_offset: offset + allMatches.length,
+              suggestions_created: totalInserted,
+              results: allMatches,
+            });
+          }
+          console.warn("verify failed", artwork.id, e instanceof Error ? e.message : e);
+        }
+      }
+
+      allMatches.push({ exhibition_image_id: exImg.id, matches: verified });
+
+      for (const m of verified) {
         const { error: insErr } = await admin.from("artwork_match_suggestions").insert({
           exhibition_id,
           exhibition_image_id: exImg.id,
@@ -506,10 +501,6 @@ Deno.serve(async (req) => {
           owner_id: ownerId,
           confidence: m.confidence,
           reasoning: m.reasoning ?? null,
-          crop_x: m.crop?.x ?? null,
-          crop_y: m.crop?.y ?? null,
-          crop_width: m.crop?.width ?? null,
-          crop_height: m.crop?.height ?? null,
         });
         if (!insErr) totalInserted++;
       }
@@ -526,7 +517,8 @@ Deno.serve(async (req) => {
       has_more: imagesProcessedUntil < total,
       next_offset: imagesProcessedUntil < total ? imagesProcessedUntil : null,
       batch_size: batchSize,
-      catalogue_size: catalogueWithThumbs.length,
+      catalogue_size: catalogueWithDesc.length,
+      described_artworks_this_run: describedArtworks,
       suggestions_created: totalInserted,
       results: allMatches,
     });
