@@ -42,6 +42,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [scanProgress, setScanProgress] = useState<{ processed: number; total: number } | null>(null);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
+  const [scanSummary, setScanSummary] = useState<{ indexed: number; total: number; created: number } | null>(null);
 
   useEffect(() => {
     if (!open || !exhibitionId) return;
@@ -103,11 +104,13 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
     setRunning(true);
     setScanProgress(null);
     setScanMessage(null);
+    setScanSummary(null);
     try {
       let offset = 0;
       let totalCreated = 0;
       let iterations = 0;
       let fallbackTriggered = false;
+      let lastCatalogueSize = 0;
 
       while (iterations < 100) {
         iterations += 1;
@@ -131,6 +134,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         const processed = Number((data as any)?.images_processed_until ?? 0);
         const total = Number((data as any)?.images_total ?? processed);
         totalCreated += Number((data as any)?.suggestions_created ?? 0);
+        lastCatalogueSize = Number((data as any)?.catalogue_size ?? lastCatalogueSize);
         setScanProgress({ processed, total });
 
         if (!(data as any)?.has_more) break;
@@ -141,6 +145,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
       }
 
       if (!fallbackTriggered) {
+        setScanSummary({ indexed: lastCatalogueSize, total: lastCatalogueSize + 0, created: totalCreated });
         toast.success(
           totalCreated > 0
             ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
@@ -221,6 +226,12 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         {scanMessage && (
           <p className="text-sm text-muted-foreground pt-2">
             {scanMessage}
+          </p>
+        )}
+
+        {!running && scanSummary && scanSummary.created === 0 && (
+          <p className="text-sm text-muted-foreground pt-2">
+            Detection completed, but no new pending matches were added.
           </p>
         )}
 
