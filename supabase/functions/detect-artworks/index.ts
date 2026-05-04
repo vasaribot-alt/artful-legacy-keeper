@@ -150,7 +150,11 @@ Deno.serve(async (req) => {
       return json({ error: "Artist has no artworks to compare against" }, 400);
     }
 
-    const catalogueSlice = catalogue.slice(0, MAX_CATALOGUE);
+    // Prioritise artworks that actually have a thumbnail — without an image the
+    // model can only match on title text, which is useless for visual detection.
+    const catalogueSlice = [...catalogue]
+      .sort((a, b) => (a.thumb ? 0 : 1) - (b.thumb ? 0 : 1))
+      .slice(0, MAX_CATALOGUE);
 
     let totalInserted = 0;
     const allMatches: Array<{ exhibition_image_id: string; matches: DetectionMatch[] }> = [];
