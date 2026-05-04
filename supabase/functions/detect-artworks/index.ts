@@ -14,11 +14,11 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 const DEFAULT_BATCH_SIZE = 1;
 const MAX_BATCH_SIZE = 1;
-const CATALOGUE_CHUNK_SIZE = 5;
-const MAX_VERIFICATION_CANDIDATES = 8;
+const CATALOGUE_CHUNK_SIZE = 3;
+const MAX_VERIFICATION_CANDIDATES = 4;
 const MIN_CANDIDATE_CONFIDENCE = 0.55;
 const MIN_VERIFICATION_CONFIDENCE = 0.72;
-const INSTALLATION_TRANSFORM = { width: 900, quality: 65 };
+const INSTALLATION_TRANSFORM = { width: 640, quality: 45 };
 // NOTE: We intentionally do NOT use Supabase's render/transform endpoint for
 // catalogue thumbnails. Google AI Studio's image fetcher returns 400 on some
 // transformed URLs. Plain public URLs from the web bucket (already optimised
