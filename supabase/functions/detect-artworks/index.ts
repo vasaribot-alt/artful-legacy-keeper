@@ -61,6 +61,14 @@ function getPublicImageUrl(
   return admin.storage.from(bucket).getPublicUrl(path, transform ? { transform } : undefined).data.publicUrl;
 }
 
+function getAiSafeImageUrl(
+  admin: ReturnType<typeof createClient>,
+  bucket: string,
+  path: string,
+) {
+  return admin.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
 async function aiFetch(body: unknown): Promise<any> {
   const resp = await fetch(AI_URL, {
     method: "POST",
@@ -362,7 +370,7 @@ Deno.serve(async (req) => {
       try {
         // Use a small transformed thumb to keep payload tiny
         const info = thumbInfo.get(a.id);
-        const url = info ? getPublicImageUrl(admin, info.bucket, info.path, THUMB_TRANSFORM) : a.thumb!;
+        const url = info ? getAiSafeImageUrl(admin, info.bucket, info.path) : a.thumb!;
         const desc = await describeImage(url, "artwork");
         a.description = desc;
         await admin.from("artworks").update({ ai_description: desc, ai_described_at: new Date().toISOString() }).eq("id", a.id);
@@ -400,7 +408,7 @@ Deno.serve(async (req) => {
     for (const exImg of exImages) {
       const exPath = exImg.web_storage_path || exImg.storage_path;
       const exBucket = exImg.web_storage_path ? "exhibition-images-web" : "exhibition-images";
-      const installationUrl = getPublicImageUrl(admin, exBucket, exPath, INSTALLATION_TRANSFORM);
+      const installationUrl = getAiSafeImageUrl(admin, exBucket, exPath);
 
       // 1. Ensure installation description
       let installationDesc = exImg.ai_description as string | null;
@@ -459,15 +467,21 @@ Deno.serve(async (req) => {
       }
 
       // 3. Visual verify each shortlisted candidate (one at a time — tiny payload)
+      const { data: existingSuggestions } = await admin
+        .from("artwork_match_suggestions")
+        .select("artwork_id")
+        .eq("exhibition_image_id", exImg.id);
+
+      const existingArtworkIds = new Set((existingSuggestions ?? []).map((row) => row.artwork_id));
       const verified: Array<{ artwork_id: string; confidence: number; reasoning?: string }> = [];
       for (const cand of shortlist) {
+        if (existingArtworkIds.has(cand.artwork_id)) continue;
         const artwork = catalogueWithDesc.find((a) => a.id === cand.artwork_id);
         if (!artwork) continue;
-        // Use transformed thumb for verification too
         const info = thumbInfo.get(artwork.id);
         const verifyArtwork: CatalogueArtwork = {
           ...artwork,
-          thumb: info ? getPublicImageUrl(admin, info.bucket, info.path, THUMB_TRANSFORM) : artwork.thumb,
+          thumb: info ? getAiSafeImageUrl(admin, info.bucket, info.path) : artwork.thumb,
         };
         try {
           const result = await verifyPair(installationUrl, verifyArtwork);
@@ -517,6 +531,8 @@ Deno.serve(async (req) => {
       has_more: imagesProcessedUntil < total,
       next_offset: imagesProcessedUntil < total ? imagesProcessedUntil : null,
       batch_size: batchSize,
+      indexed_catalogue_artworks: catalogueWithDesc.length,
+      total_catalogue_artworks: artworks.length,
       catalogue_size: catalogueWithDesc.length,
       described_artworks_this_run: describedArtworks,
       suggestions_created: totalInserted,

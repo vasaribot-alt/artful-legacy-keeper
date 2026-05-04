@@ -42,6 +42,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [scanProgress, setScanProgress] = useState<{ processed: number; total: number } | null>(null);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
+  const [scanSummary, setScanSummary] = useState<{ indexed: number; total: number; created: number } | null>(null);
 
   useEffect(() => {
     if (!open || !exhibitionId) return;
@@ -103,11 +104,14 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
     setRunning(true);
     setScanProgress(null);
     setScanMessage(null);
+    setScanSummary(null);
     try {
       let offset = 0;
       let totalCreated = 0;
       let iterations = 0;
       let fallbackTriggered = false;
+      let lastIndexedCatalogueSize = 0;
+      let lastTotalCatalogueSize = 0;
 
       while (iterations < 100) {
         iterations += 1;
@@ -131,6 +135,8 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         const processed = Number((data as any)?.images_processed_until ?? 0);
         const total = Number((data as any)?.images_total ?? processed);
         totalCreated += Number((data as any)?.suggestions_created ?? 0);
+        lastIndexedCatalogueSize = Number((data as any)?.indexed_catalogue_artworks ?? (data as any)?.catalogue_size ?? lastIndexedCatalogueSize);
+        lastTotalCatalogueSize = Number((data as any)?.total_catalogue_artworks ?? lastTotalCatalogueSize);
         setScanProgress({ processed, total });
 
         if (!(data as any)?.has_more) break;
@@ -141,6 +147,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
       }
 
       if (!fallbackTriggered) {
+        setScanSummary({ indexed: lastIndexedCatalogueSize, total: lastTotalCatalogueSize || lastIndexedCatalogueSize, created: totalCreated });
         toast.success(
           totalCreated > 0
             ? `Found ${totalCreated} potential match${totalCreated === 1 ? "" : "es"}.`
@@ -221,6 +228,14 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         {scanMessage && (
           <p className="text-sm text-muted-foreground pt-2">
             {scanMessage}
+          </p>
+        )}
+
+        {!running && scanSummary && (
+          <p className="text-sm text-muted-foreground pt-2">
+            {scanSummary.indexed < scanSummary.total
+              ? `Detection searched ${scanSummary.indexed} of ${scanSummary.total} catalogued artworks so far.`
+              : "Detection searched the full catalogue."}{scanSummary.created === 0 ? " No new pending matches were added." : ""}
           </p>
         )}
 
