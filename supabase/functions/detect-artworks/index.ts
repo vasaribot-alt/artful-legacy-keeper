@@ -28,10 +28,20 @@ const MODEL = "google/gemini-2.5-flash";
 
 const DEFAULT_BATCH_SIZE = 1;
 const MAX_BATCH_SIZE = 1;
-const SHORTLIST_SIZE = 6;            // candidates from text matching
+const SHORTLIST_SIZE = 3;
+const MAX_DESCRIBE_PER_RUN = 4;
+const MAX_VERIFY_PER_RUN = 3;
 const MIN_VERIFICATION_CONFIDENCE = 0.72;
 const INSTALLATION_TRANSFORM = { width: 900, quality: 60 };
 const THUMB_TRANSFORM = { width: 512, quality: 60 };
+const STOP_WORDS = new Set([
+  "the", "and", "with", "from", "that", "this", "into", "onto", "over", "under", "near", "left", "right",
+  "centre", "center", "foreground", "background", "wall", "room", "floor", "lighting", "visible", "image",
+  "artwork", "installation", "photo", "photograph", "scene", "work", "works", "there", "their", "then",
+  "than", "each", "across", "against", "while", "where", "which", "just", "very", "more", "most", "some",
+  "any", "all", "its", "it", "is", "are", "was", "were", "be", "been", "being", "of", "in", "on", "at",
+  "to", "for", "by", "as", "an", "a", "or", "if", "no",
+]);
 
 interface CatalogueArtwork {
   id: string;
@@ -111,76 +121,62 @@ async function describeImage(imageUrl: string, kind: "artwork" | "installation")
   return text.trim();
 }
 
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => {
+      if (!token || STOP_WORDS.has(token)) return false;
+      if (/^\d+$/.test(token)) return true;
+      return token.length >= 3;
+    });
+}
+
+function tokenScore(needles: string[], haystackSet: Set<string>) {
+  let hits = 0;
+  for (const token of needles) {
+    if (haystackSet.has(token)) hits += /^\d+$/.test(token) ? 1.5 : 1;
+  }
+  return hits;
+}
+
 // Given an installation description and the catalogue list (with descriptions),
 // return ranked artwork ids that plausibly appear in the photo.
-async function shortlistCandidates(
+function shortlistCandidates(
   installationDescription: string,
   catalogue: Array<CatalogueArtwork & { description: string }>,
-): Promise<Array<{ artwork_id: string; score: number; reasoning?: string }>> {
-  // Build a compact catalogue text block. No images.
-  const catalogueText = catalogue
-    .map(
-      (a, i) =>
-        `[${i + 1}] id=${a.id} | "${a.title}"${a.year ? ` (${a.year})` : ""}${a.medium ? ` — ${a.medium}` : ""}\nDESC: ${a.description}`,
-    )
-    .join("\n\n");
+): Array<{ artwork_id: string; score: number; reasoning?: string }> {
+  const installationTokens = tokenize(installationDescription);
+  const installationSet = new Set(installationTokens);
 
-  const data = await aiFetch({
-    model: MODEL,
-    messages: [
-      {
-        role: "system",
-        content:
-          "You shortlist artwork candidates from a catalogue that may appear in an installation photograph. Use only the textual descriptions. Be inclusive at this stage — include any work whose description plausibly matches something visible. Reject only clearly unrelated works.",
-      },
-      {
-        role: "user",
-        content:
-          `INSTALLATION DESCRIPTION:\n${installationDescription}\n\n` +
-          `CATALOGUE (${catalogue.length} works):\n${catalogueText}\n\n` +
-          `Return up to ${SHORTLIST_SIZE} candidate ids ranked by how well their description matches works visible in the installation. Use the exact id strings shown above.`,
-      },
-    ],
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "shortlist",
-          description: "Return ranked candidate artwork ids.",
-          parameters: {
-            type: "object",
-            properties: {
-              candidates: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    artwork_id: { type: "string" },
-                    score: { type: "number", description: "0..1 plausibility" },
-                    reasoning: { type: "string" },
-                  },
-                  required: ["artwork_id", "score"],
-                },
-              },
-            },
-            required: ["candidates"],
-          },
-        },
-      },
-    ],
-    tool_choice: { type: "function", function: { name: "shortlist" } },
-  });
-  const args = data?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-  if (!args) return [];
-  try {
-    const parsed = JSON.parse(args) as { candidates?: Array<{ artwork_id: string; score: number; reasoning?: string }> };
-    const valid = new Set(catalogue.map((a) => a.id));
-    return (parsed.candidates ?? [])
-      .filter((c) => valid.has(c.artwork_id))
-      .slice(0, SHORTLIST_SIZE);
-  } catch {
-    return [];
-  }
+  return catalogue
+    .map((artwork) => {
+      const titleTokens = tokenize(artwork.title);
+      const mediumTokens = tokenize(artwork.medium ?? "");
+      const descriptionTokens = tokenize(artwork.description);
+      const combined = [...titleTokens, ...mediumTokens, ...descriptionTokens];
+      const combinedSet = new Set(combined);
+
+      const overlap = tokenScore(installationTokens, combinedSet);
+      const titleBoost = tokenScore(titleTokens, installationSet) * 0.6;
+      const mediumBoost = tokenScore(mediumTokens, installationSet) * 0.35;
+      const score = overlap + titleBoost + mediumBoost;
+
+      return {
+        artwork_id: artwork.id,
+        score,
+        reasoning: `Shared ${Math.round(overlap)} descriptive tokens with title/medium boost ${Math.round((titleBoost + mediumBoost) * 10) / 10}.`,
+      };
+    })
+    .filter((candidate) => candidate.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, SHORTLIST_SIZE)
+    .map((candidate, index, arr) => ({
+      ...candidate,
+      score: arr.length === 1 ? 1 : Math.max(0.2, 1 - index / arr.length),
+    }));
 }
 
 // Visually verify a single (installation, artwork) pair. Tiny payload.
