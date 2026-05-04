@@ -19,7 +19,10 @@ const MAX_VERIFICATION_CANDIDATES = 12;
 const MIN_CANDIDATE_CONFIDENCE = 0.55;
 const MIN_VERIFICATION_CONFIDENCE = 0.72;
 const INSTALLATION_TRANSFORM = { width: 1400, quality: 72 };
-const THUMB_TRANSFORM = { width: 320, height: 320, resize: "contain", quality: 55 } as const;
+// NOTE: We intentionally do NOT use Supabase's render/transform endpoint for
+// catalogue thumbnails. Google AI Studio's image fetcher returns 400 on some
+// transformed URLs. Plain public URLs from the web bucket (already optimised
+// by our optimize-image function) work reliably.
 
 interface DetectionMatch {
   artwork_id: string;
