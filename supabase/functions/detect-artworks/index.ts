@@ -191,7 +191,10 @@ async function verifyPair(
       {
         role: "system",
         content:
-          "You are a strict art-historical verifier. Decide whether the catalogue artwork (image 2) is actually visible in the installation photograph (image 1). Reject same-series lookalikes. Be conservative.",
+          "You are an extremely strict art-historical verifier identifying whether a SPECIFIC physical artwork (image 2) appears in an installation photograph (image 1). " +
+          "Same subject matter is NOT enough — the work must match in palette, proportions, composition, brushwork/texture, surface condition, and distinctive markings. " +
+          "Two paintings of the same flag, symbol, or motif by the same artist are DIFFERENT works unless every visual detail matches. " +
+          "When in doubt, return low confidence. Only return >= 0.85 when you can point to multiple specific matching details (exact colour placement, identical distressing/marks, same aspect ratio, same edges).",
       },
       {
         role: "user",
@@ -200,8 +203,14 @@ async function verifyPair(
             type: "text",
             text:
               `Catalogue artwork: "${artwork.title}"${artwork.year ? ` (${artwork.year})` : ""}${artwork.medium ? ` — ${artwork.medium}` : ""}.\n` +
-              `Image 1 = installation view. Image 2 = catalogue artwork.\n` +
-              `Return confidence 0..1 that THIS exact work is visible in the installation. Cite specific evidence (colours, motifs, text, composition). Confidence < ${MIN_VERIFICATION_CONFIDENCE} means no match.`,
+              `Image 1 = installation view (may contain several works). Image 2 = the ONE catalogue artwork to verify.\n` +
+              `Checklist before claiming a match:\n` +
+              `  • Aspect ratio of the candidate panel in image 1 matches image 2.\n` +
+              `  • Colour palette and tonal values match (not just the same subject).\n` +
+              `  • Distinctive marks, textures, distressing, drips, or brushwork align.\n` +
+              `  • Composition/cropping is identical (no extra/missing elements).\n` +
+              `If the installation shows a DIFFERENT version of the same subject (e.g. different flag of the same country, different palette, different proportions), confidence MUST be < 0.5.\n` +
+              `Return confidence 0..1 and cite the specific evidence (or the specific mismatch). Threshold for a real match is ${MIN_VERIFICATION_CONFIDENCE}.`,
           },
           { type: "image_url", image_url: { url: installationUrl } },
           { type: "image_url", image_url: { url: artwork.thumb } },
