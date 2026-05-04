@@ -106,21 +106,30 @@ Deno.serve(async (req) => {
       return json({ error: "Artist has no catalogued artworks to compare against" }, 400);
     }
 
-    // Get a thumbnail per artwork (first image)
+    // Get a thumbnail per artwork (first image). Chunk the .in() filter so the
+    // PostgREST URL never exceeds the gateway limit (440+ UUIDs blow past it).
     const ids = artworks.map((a) => a.id);
-    const { data: artImages } = await admin
-      .from("artwork_images")
-      .select("artwork_id, storage_path, web_storage_path, display_order")
-      .in("artwork_id", ids)
-      .order("display_order");
-
     const thumbByArtwork = new Map<string, string>();
-    for (const im of artImages ?? []) {
-      if (thumbByArtwork.has(im.artwork_id)) continue;
-      const path = im.web_storage_path || im.storage_path;
-      const bucket = im.web_storage_path ? "artwork-images-web" : "artwork-images";
-      const { data: pub } = admin.storage.from(bucket).getPublicUrl(path);
-      thumbByArtwork.set(im.artwork_id, pub.publicUrl);
+    const CHUNK = 100;
+    for (let i = 0; i < ids.length; i += CHUNK) {
+      const slice = ids.slice(i, i + CHUNK);
+      const { data: artImages, error: artImagesErr } = await admin
+        .from("artwork_images")
+        .select("artwork_id, storage_path, web_storage_path, display_order")
+        .in("artwork_id", slice)
+        .order("display_order", { nullsFirst: false });
+      if (artImagesErr) {
+        console.error("artwork_images query error", artImagesErr);
+        continue;
+      }
+      for (const im of artImages ?? []) {
+        if (thumbByArtwork.has(im.artwork_id)) continue;
+        const path = im.web_storage_path || im.storage_path;
+        if (!path) continue;
+        const bucket = im.web_storage_path ? "artwork-images-web" : "artwork-images";
+        const { data: pub } = admin.storage.from(bucket).getPublicUrl(path);
+        thumbByArtwork.set(im.artwork_id, pub.publicUrl);
+      }
     }
 
     // Catalogue list for prompt — keep all artworks, thumb is optional
@@ -141,7 +150,11 @@ Deno.serve(async (req) => {
       return json({ error: "Artist has no artworks to compare against" }, 400);
     }
 
-    const catalogueSlice = catalogue.slice(0, MAX_CATALOGUE);
+    // Prioritise artworks that actually have a thumbnail — without an image the
+    // model can only match on title text, which is useless for visual detection.
+    const catalogueSlice = [...catalogue]
+      .sort((a, b) => (a.thumb ? 0 : 1) - (b.thumb ? 0 : 1))
+      .slice(0, MAX_CATALOGUE);
 
     let totalInserted = 0;
     const allMatches: Array<{ exhibition_image_id: string; matches: DetectionMatch[] }> = [];
@@ -204,7 +217,6 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           model: "openai/gpt-5",
-          reasoning: { effort: "high" },
           messages: [
             {
               role: "system",
