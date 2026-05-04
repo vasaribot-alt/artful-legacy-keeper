@@ -311,11 +311,8 @@ Deno.serve(async (req) => {
       return json({ error: "Artist has no artworks to compare against" }, 400);
     }
 
-    // Prioritise artworks that actually have a thumbnail — without an image the
-    // model can only match on title text, which is useless for visual detection.
-    const catalogueSlice = [...catalogue]
-      .sort((a, b) => (a.thumb ? 0 : 1) - (b.thumb ? 0 : 1))
-      .slice(0, MAX_CATALOGUE);
+    const catalogueWithThumbs = [...catalogue].filter((a) => a.thumb);
+    const catalogueChunks = chunkArray(catalogueWithThumbs, CATALOGUE_CHUNK_SIZE);
 
     let totalInserted = 0;
     const allMatches: Array<{ exhibition_image_id: string; matches: DetectionMatch[] }> = [];
@@ -330,111 +327,42 @@ Deno.serve(async (req) => {
       const exBucket = exImg.web_storage_path ? "exhibition-images-web" : "exhibition-images";
       const installationUrl = getPublicImageUrl(admin, exBucket, exPath, INSTALLATION_TRANSFORM);
 
-      const userContent: Array<Record<string, unknown>> = [
-        {
-          type: "text",
-          text:
-            `TASK: Identify which catalogued artworks appear in the installation photograph.\n\n` +
-            `You will receive images IN THIS EXACT ORDER:\n` +
-            `  Image 1 = the INSTALLATION VIEW (a gallery photo with one or more works on the wall).\n` +
-            `  Images 2..${catalogueSlice.filter((a) => a.thumb).length + 1} = CATALOGUE THUMBNAILS, each labelled [1], [2], [3]... matching the list below.\n\n` +
-            `CATALOGUE (${catalogueSlice.length} works — use the bracket number to refer back):\n` +
-            catalogueSlice
-              .map(
-                (a, i) =>
-                  `[${i + 1}] id=${a.id} | "${a.title}"${a.year ? ` (${a.year})` : ""}${
-                    a.medium ? ` — ${a.medium}` : ""
-                  }`,
-              )
-              .join("\n") +
-            `\n\nMETHOD (follow strictly):\n` +
-            `1. Look at the installation view. For each artwork visible on the wall, write a short visual description: dominant colours, shapes/motifs, any text or numbers, composition.\n` +
-            `2. For EACH visible work, scan ALL catalogue thumbnails. Compare colours, motifs, text, and composition — NOT just the general series style. Many catalogue works look superficially similar; you must discriminate between them.\n` +
-            `3. Only report a match when the SAME painting is clearly present — same dominant colour field, same motifs in the same positions, same text/numbers if any. If the installation crop is too small or blurry to be sure which specific work it is, DO NOT guess — omit it.\n` +
-            `4. NEVER pick a catalogue work just because it belongs to the same series. A wrong-but-same-series match is worse than no match.\n` +
-            `5. Confidence scale: 0.95+ = identical work clearly visible; 0.75 = strong match with minor uncertainty; <0.75 = do not report.\n` +
-            `6. The 'reasoning' field MUST cite the specific visual evidence ("yellow background, blue '79' digits, green diagonal stripe at lower right — matches catalogue [12]"). Generic reasoning like "pyramid shape on white" is not acceptable.`,
-        },
-        { type: "image_url", image_url: { url: installationUrl } },
-      ];
+      const candidateMap = new Map<string, DetectionMatch>();
 
-      // Append catalogue thumbnails with index labels so the model can ground choices.
-      for (let i = 0; i < catalogueSlice.length; i++) {
-        const a = catalogueSlice[i];
-        if (!a.thumb) continue;
-        userContent.push({
-          type: "text",
-          text: `[${i + 1}] "${a.title}"${a.year ? ` (${a.year})` : ""} — id=${a.id}`,
-        });
-        userContent.push({ type: "image_url", image_url: { url: a.thumb } });
-      }
+      try {
+        for (const slice of catalogueChunks) {
+          const matches = await requestMatches(
+            installationUrl,
+            slice,
+            exImg.id,
+            [
+              "TASK: Identify only exact catalogue matches visible in the installation photo.",
+              "METHOD:",
+              "1. Describe each visible work by dominant colours, geometry, text/numbers, and composition.",
+              "2. Compare against every candidate in this chunk.",
+              "3. Return a match only if the exact work is visible, not merely a related work from the same series.",
+              "4. Prefer no match over a weak match.",
+              `5. Only report confidence >= ${MIN_CANDIDATE_CONFIDENCE}.`,
+              "6. Reasoning must cite specific evidence, not general style.",
+            ].join("\n"),
+            "You are a rigorous art-historical visual matcher. False positives are unacceptable. Reject same-series lookalikes unless composition, motif placement, and text/number details line up.",
+          );
 
-      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a rigorous art-historical visual matching assistant. Your job is to discriminate between visually similar works in the SAME series — not to recognise the series itself. A confident wrong answer is the worst possible outcome; omitting an uncertain match is correct behaviour. Always justify matches with specific visible evidence (colours, motifs, numbers, composition).",
-            },
-            { role: "user", content: userContent },
-          ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "report_matches",
-                description: "Return artworks detected in the installation view.",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    matches: {
-                      type: "array",
-                      items: {
-                        type: "object",
-                        properties: {
-                          artwork_id: { type: "string", description: "id from the catalogue" },
-                          confidence: { type: "number", description: "0..1" },
-                          reasoning: { type: "string" },
-                          crop: {
-                            type: "object",
-                            properties: {
-                              x: { type: "number" },
-                              y: { type: "number" },
-                              width: { type: "number" },
-                              height: { type: "number" },
-                            },
-                            required: ["x", "y", "width", "height"],
-                          },
-                        },
-                        required: ["artwork_id", "confidence"],
-                      },
-                    },
-                  },
-                  required: ["matches"],
-                },
-              },
-            },
-          ],
-          tool_choice: { type: "function", function: { name: "report_matches" } },
-        }),
-      });
-
-      if (!aiResp.ok) {
-        const txt = await aiResp.text();
-        console.error("AI error", aiResp.status, txt);
-
-        if (aiResp.status === 429) {
+          const validIds = new Set(slice.map((a) => a.id));
+          for (const match of matches) {
+            if (!validIds.has(match.artwork_id) || match.confidence < MIN_CANDIDATE_CONFIDENCE) continue;
+            const existing = candidateMap.get(match.artwork_id);
+            if (!existing || match.confidence > existing.confidence) {
+              candidateMap.set(match.artwork_id, match);
+            }
+          }
+        }
+      } catch (error) {
+        if (error instanceof AiRequestError && error.status === 429) {
           return json({ error: "Rate limit reached, please try again shortly." }, 429);
         }
 
-        if (aiResp.status === 402) {
+        if (error instanceof AiRequestError && error.status === 402) {
           return json({
             ok: false,
             fallback: true,
@@ -446,13 +374,13 @@ Deno.serve(async (req) => {
             has_more: true,
             next_offset: offset + allMatches.length,
             batch_size: batchSize,
-            catalogue_size: catalogueSlice.length,
+            catalogue_size: catalogueWithThumbs.length,
             suggestions_created: totalInserted,
             results: allMatches,
           });
         }
 
-        if (aiResp.status === 413) {
+        if (error instanceof AiRequestError && error.status === 413) {
           return json({
             ok: false,
             fallback: true,
@@ -464,40 +392,55 @@ Deno.serve(async (req) => {
             has_more: true,
             next_offset: offset + allMatches.length,
             batch_size: batchSize,
-            catalogue_size: catalogueSlice.length,
+            catalogue_size: catalogueWithThumbs.length,
             suggestions_created: totalInserted,
             results: allMatches,
           });
         }
 
-        continue;
+        throw error;
       }
 
-      const rawText = await aiResp.text();
-      if (!rawText || !rawText.trim()) {
-        console.warn("AI returned empty body for image", exImg.id);
-        continue;
-      }
-      let aiData: any;
-      try {
-        aiData = JSON.parse(rawText);
-      } catch (e) {
-        console.warn("AI returned non-JSON body for image", exImg.id, rawText.slice(0, 200));
-        continue;
-      }
-      const toolCall = aiData?.choices?.[0]?.message?.tool_calls?.[0];
-      if (!toolCall?.function?.arguments) continue;
-      let parsed: { matches: DetectionMatch[] };
-      try {
-        parsed = JSON.parse(toolCall.function.arguments);
-      } catch {
-        continue;
-      }
+      const verificationCandidates = [...candidateMap.values()]
+        .sort((a, b) => b.confidence - a.confidence)
+        .slice(0, MAX_VERIFICATION_CANDIDATES);
 
-      const validIds = new Set(catalogueSlice.map((a) => a.id));
-      const cleaned = (parsed.matches || []).filter(
-        (m) => validIds.has(m.artwork_id) && m.confidence >= 0.75,
-      );
+      let cleaned: DetectionMatch[] = [];
+      if (verificationCandidates.length > 0) {
+        const verificationSlice = verificationCandidates
+          .map((candidate) => {
+            const artwork = catalogueWithThumbs.find((item) => item.id === candidate.artwork_id);
+            return artwork ? { ...artwork, seed_confidence: candidate.confidence, seed_reasoning: candidate.reasoning, seed_crop: candidate.crop } : null;
+          })
+          .filter(Boolean) as Array<CatalogueArtwork & { seed_confidence: number; seed_reasoning?: string; seed_crop?: DetectionMatch["crop"] }>;
+
+        const verified = await requestMatches(
+          installationUrl,
+          verificationSlice,
+          exImg.id,
+          [
+            "TASK: Final verification pass.",
+            "The candidates shown were preselected as possible matches.",
+            "Return only exact matches that survive strict comparison.",
+            "Reject candidates if there is any mismatch in colour field, motif placement, text/number content, or overall composition.",
+            `Only report confidence >= ${MIN_VERIFICATION_CONFIDENCE}.`,
+            "If none are exact, return an empty list.",
+          ].join("\n"),
+          "You are performing a final verification pass for artwork detection. Be conservative: a same-series lookalike must be rejected. Only exact, defendable matches should survive.",
+        );
+
+        const validVerifiedIds = new Set(verificationSlice.map((a) => a.id));
+        cleaned = verified
+          .filter((match) => validVerifiedIds.has(match.artwork_id) && match.confidence >= MIN_VERIFICATION_CONFIDENCE)
+          .map((match) => {
+            const seed = candidateMap.get(match.artwork_id);
+            return {
+              ...match,
+              crop: match.crop ?? seed?.crop,
+              reasoning: match.reasoning ?? seed?.reasoning,
+            };
+          });
+      }
 
       allMatches.push({ exhibition_image_id: exImg.id, matches: cleaned });
 
@@ -530,7 +473,7 @@ Deno.serve(async (req) => {
       has_more: imagesProcessedUntil < total,
       next_offset: imagesProcessedUntil < total ? imagesProcessedUntil : null,
       batch_size: batchSize,
-      catalogue_size: catalogueSlice.length,
+      catalogue_size: catalogueWithThumbs.length,
       suggestions_created: totalInserted,
       results: allMatches,
     });
