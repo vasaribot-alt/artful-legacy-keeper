@@ -13,14 +13,25 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 const DEFAULT_BATCH_SIZE = 1;
-const MAX_BATCH_SIZE = 2;
-const MAX_CATALOGUE = 30;
+const MAX_BATCH_SIZE = 1;
+const MAX_CATALOGUE = 18;
+const INSTALLATION_TRANSFORM = { width: 1400, quality: 72 };
+const THUMB_TRANSFORM = { width: 320, height: 320, resize: "contain", quality: 55 } as const;
 
 interface DetectionMatch {
   artwork_id: string;
   confidence: number;
   reasoning?: string;
   crop?: { x: number; y: number; width: number; height: number };
+}
+
+function getPublicImageUrl(
+  admin: ReturnType<typeof createClient>,
+  bucket: string,
+  path: string,
+  transform?: { width?: number; height?: number; quality?: number; resize?: "cover" | "contain" | "fill" },
+) {
+  return admin.storage.from(bucket).getPublicUrl(path, transform ? { transform } : undefined).data.publicUrl;
 }
 
 Deno.serve(async (req) => {
@@ -127,8 +138,7 @@ Deno.serve(async (req) => {
         const path = im.web_storage_path || im.storage_path;
         if (!path) continue;
         const bucket = im.web_storage_path ? "artwork-images-web" : "artwork-images";
-        const { data: pub } = admin.storage.from(bucket).getPublicUrl(path);
-        thumbByArtwork.set(im.artwork_id, pub.publicUrl);
+        thumbByArtwork.set(im.artwork_id, getPublicImageUrl(admin, bucket, path, THUMB_TRANSFORM));
       }
     }
 
@@ -138,7 +148,7 @@ Deno.serve(async (req) => {
       if (!thumb && a.image_url) {
         thumb = a.image_url.startsWith("http")
           ? a.image_url
-          : admin.storage.from("artwork-images").getPublicUrl(a.image_url).data.publicUrl;
+          : getPublicImageUrl(admin, "artwork-images", a.image_url, THUMB_TRANSFORM);
       }
       return { id: a.id, title: a.title, year: a.year, medium: a.medium, thumb };
     });
@@ -167,8 +177,7 @@ Deno.serve(async (req) => {
     for (const exImg of exImages) {
       const exPath = exImg.web_storage_path || exImg.storage_path;
       const exBucket = exImg.web_storage_path ? "exhibition-images-web" : "exhibition-images";
-      const { data: exPub } = admin.storage.from(exBucket).getPublicUrl(exPath);
-      const installationUrl = exPub.publicUrl;
+      const installationUrl = getPublicImageUrl(admin, exBucket, exPath, INSTALLATION_TRANSFORM);
 
       const userContent: Array<Record<string, unknown>> = [
         {
@@ -280,6 +289,24 @@ Deno.serve(async (req) => {
             fallback: true,
             code: "AI_CREDITS_EXHAUSTED",
             error: "AI credits exhausted. Add credits in workspace settings.",
+            images_analyzed: allMatches.length,
+            images_total: totalImages ?? exImages.length,
+            images_processed_until: offset + allMatches.length,
+            has_more: true,
+            next_offset: offset + allMatches.length,
+            batch_size: batchSize,
+            catalogue_size: catalogueSlice.length,
+            suggestions_created: totalInserted,
+            results: allMatches,
+          });
+        }
+
+        if (aiResp.status === 413) {
+          return json({
+            ok: false,
+            fallback: true,
+            code: "AI_IMAGE_PAYLOAD_TOO_LARGE",
+            error: "Detection payload was still too large for AI processing. I reduced image sizes further — please run it again.",
             images_analyzed: allMatches.length,
             images_total: totalImages ?? exImages.length,
             images_processed_until: offset + allMatches.length,

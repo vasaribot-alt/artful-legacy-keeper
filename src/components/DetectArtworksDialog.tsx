@@ -113,7 +113,7 @@ export const DetectArtworksDialog = ({ open, onOpenChange, exhibitionId, exhibit
         iterations += 1;
 
         const { data, error } = await supabase.functions.invoke("detect-artworks", {
-          body: { exhibition_id: exhibitionId, offset, batch_size: 2 },
+          body: { exhibition_id: exhibitionId, offset, batch_size: 1 },
         });
 
         if (error) throw error;
