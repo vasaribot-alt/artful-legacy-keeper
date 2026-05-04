@@ -304,7 +304,7 @@ Deno.serve(async (req) => {
       if (!thumb && a.image_url) {
         thumb = a.image_url.startsWith("http")
           ? a.image_url
-          : getPublicImageUrl(admin, "artwork-images", a.image_url, THUMB_TRANSFORM);
+          : getPublicImageUrl(admin, "artwork-images", a.image_url);
       }
       return { id: a.id, title: a.title, year: a.year, medium: a.medium, thumb };
     });
