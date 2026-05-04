@@ -359,7 +359,6 @@ Deno.serve(async (req) => {
 
     // Generate descriptions for any artworks missing them (cached forever).
     // Cap how many we describe per invocation to keep latency reasonable.
-    const MAX_DESCRIBE_PER_RUN = 30;
     const needArtworkDesc = catalogue.filter((a) => !a.description && a.thumb).slice(0, MAX_DESCRIBE_PER_RUN);
     let describedArtworks = 0;
     for (const a of needArtworkDesc) {
@@ -443,24 +442,7 @@ Deno.serve(async (req) => {
       }
 
       // 2. Text shortlist
-      let shortlist: Array<{ artwork_id: string; score: number; reasoning?: string }> = [];
-      try {
-        shortlist = await shortlistCandidates(installationDesc, catalogueWithDesc);
-      } catch (e) {
-        if (e instanceof AiRequestError && (e.status === 429 || e.status === 402)) {
-          const code = e.status === 429 ? "AI_RATE_LIMIT" : "AI_CREDITS_EXHAUSTED";
-          return fallbackResponse(code, e.status === 429 ? "Rate limit reached." : "AI credits exhausted.", {
-            images_analyzed: allMatches.length,
-            images_total: totalImages ?? exImages.length,
-            images_processed_until: offset + allMatches.length,
-            has_more: true,
-            next_offset: offset + allMatches.length,
-            suggestions_created: totalInserted,
-            results: allMatches,
-          });
-        }
-        throw e;
-      }
+      const shortlist = shortlistCandidates(installationDesc, catalogueWithDesc);
 
       // 3. Visual verify each shortlisted candidate (one at a time — tiny payload)
       const { data: existingSuggestions } = await admin
@@ -470,7 +452,7 @@ Deno.serve(async (req) => {
 
       const existingArtworkIds = new Set((existingSuggestions ?? []).map((row) => row.artwork_id));
       const verified: Array<{ artwork_id: string; confidence: number; reasoning?: string }> = [];
-      for (const cand of shortlist) {
+      for (const cand of shortlist.slice(0, MAX_VERIFY_PER_RUN)) {
         if (existingArtworkIds.has(cand.artwork_id)) continue;
         const artwork = catalogueWithDesc.find((a) => a.id === cand.artwork_id);
         if (!artwork) continue;
