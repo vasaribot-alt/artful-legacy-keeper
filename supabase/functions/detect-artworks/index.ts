@@ -217,7 +217,6 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           model: "openai/gpt-5",
-          reasoning: { effort: "high" },
           messages: [
             {
               role: "system",
