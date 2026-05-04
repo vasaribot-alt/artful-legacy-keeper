@@ -289,10 +289,12 @@ Deno.serve(async (req) => {
       }
       for (const im of artImages ?? []) {
         if (thumbByArtwork.has(im.artwork_id)) continue;
+        // Prefer the optimised web variant (already small JPEG/WebP); fall
+        // back to the original. Use plain public URL — no render transform.
         const path = im.web_storage_path || im.storage_path;
         if (!path) continue;
         const bucket = im.web_storage_path ? "artwork-images-web" : "artwork-images";
-        thumbByArtwork.set(im.artwork_id, getPublicImageUrl(admin, bucket, path, THUMB_TRANSFORM));
+        thumbByArtwork.set(im.artwork_id, getPublicImageUrl(admin, bucket, path));
       }
     }
 
