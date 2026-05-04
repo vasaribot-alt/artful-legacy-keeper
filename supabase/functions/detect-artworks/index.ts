@@ -14,7 +14,10 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 const DEFAULT_BATCH_SIZE = 1;
 const MAX_BATCH_SIZE = 1;
-const MAX_CATALOGUE = 18;
+const CATALOGUE_CHUNK_SIZE = 10;
+const MAX_VERIFICATION_CANDIDATES = 6;
+const MIN_CANDIDATE_CONFIDENCE = 0.78;
+const MIN_VERIFICATION_CONFIDENCE = 0.9;
 const INSTALLATION_TRANSFORM = { width: 1400, quality: 72 };
 const THUMB_TRANSFORM = { width: 320, height: 320, resize: "contain", quality: 55 } as const;
 
@@ -25,6 +28,25 @@ interface DetectionMatch {
   crop?: { x: number; y: number; width: number; height: number };
 }
 
+interface CatalogueArtwork {
+  id: string;
+  title: string;
+  year: number | null;
+  medium: string | null;
+  thumb: string | null;
+}
+
+class AiRequestError extends Error {
+  status: number;
+  body: string;
+
+  constructor(status: number, body: string) {
+    super(`AI request failed with status ${status}`);
+    this.status = status;
+    this.body = body;
+  }
+}
+
 function getPublicImageUrl(
   admin: ReturnType<typeof createClient>,
   bucket: string,
@@ -32,6 +54,135 @@ function getPublicImageUrl(
   transform?: { width?: number; height?: number; quality?: number; resize?: "cover" | "contain" | "fill" },
 ) {
   return admin.storage.from(bucket).getPublicUrl(path, transform ? { transform } : undefined).data.publicUrl;
+}
+
+function chunkArray<T>(items: T[], size: number) {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) chunks.push(items.slice(i, i + size));
+  return chunks;
+}
+
+function parseToolMatches(rawText: string, exImgId: string) {
+  if (!rawText || !rawText.trim()) {
+    console.warn("AI returned empty body for image", exImgId);
+    return [] as DetectionMatch[];
+  }
+
+  let aiData: any;
+  try {
+    aiData = JSON.parse(rawText);
+  } catch {
+    console.warn("AI returned non-JSON body for image", exImgId, rawText.slice(0, 200));
+    return [] as DetectionMatch[];
+  }
+
+  const toolCall = aiData?.choices?.[0]?.message?.tool_calls?.[0];
+  if (!toolCall?.function?.arguments) return [] as DetectionMatch[];
+
+  try {
+    const parsed = JSON.parse(toolCall.function.arguments) as { matches?: DetectionMatch[] };
+    return parsed.matches || [];
+  } catch {
+    return [] as DetectionMatch[];
+  }
+}
+
+async function requestMatches(
+  installationUrl: string,
+  catalogueSlice: CatalogueArtwork[],
+  exImgId: string,
+  instruction: string,
+  systemPrompt: string,
+) {
+  const userContent: Array<Record<string, unknown>> = [
+    {
+      type: "text",
+      text:
+        `${instruction}\n\n` +
+        `You will receive images in this exact order:\n` +
+        `Image 1 = installation view.\n` +
+        `Images 2..${catalogueSlice.length + 1} = labelled catalogue candidates.\n\n` +
+        `Catalogue candidates:\n` +
+        catalogueSlice
+          .map(
+            (a, i) =>
+              `[${i + 1}] id=${a.id} | "${a.title}"${a.year ? ` (${a.year})` : ""}${a.medium ? ` — ${a.medium}` : ""}`,
+          )
+          .join("\n"),
+    },
+    { type: "image_url", image_url: { url: installationUrl } },
+  ];
+
+  for (let i = 0; i < catalogueSlice.length; i++) {
+    const artwork = catalogueSlice[i];
+    if (!artwork.thumb) continue;
+    userContent.push({
+      type: "text",
+      text: `[${i + 1}] "${artwork.title}"${artwork.year ? ` (${artwork.year})` : ""} — id=${artwork.id}`,
+    });
+    userContent.push({ type: "image_url", image_url: { url: artwork.thumb } });
+  }
+
+  const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContent },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "report_matches",
+            description: "Return artworks detected in the installation view.",
+            parameters: {
+              type: "object",
+              properties: {
+                matches: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      artwork_id: { type: "string", description: "id from the catalogue" },
+                      confidence: { type: "number", description: "0..1" },
+                      reasoning: { type: "string" },
+                      crop: {
+                        type: "object",
+                        properties: {
+                          x: { type: "number" },
+                          y: { type: "number" },
+                          width: { type: "number" },
+                          height: { type: "number" },
+                        },
+                        required: ["x", "y", "width", "height"],
+                      },
+                    },
+                    required: ["artwork_id", "confidence"],
+                  },
+                },
+              },
+              required: ["matches"],
+            },
+          },
+        },
+      ],
+      tool_choice: { type: "function", function: { name: "report_matches" } },
+    }),
+  });
+
+  if (!aiResp.ok) {
+    const txt = await aiResp.text();
+    console.error("AI error", aiResp.status, txt);
+    throw new AiRequestError(aiResp.status, txt);
+  }
+
+  return parseToolMatches(await aiResp.text(), exImgId);
 }
 
 Deno.serve(async (req) => {
