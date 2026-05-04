@@ -531,6 +531,8 @@ Deno.serve(async (req) => {
       has_more: imagesProcessedUntil < total,
       next_offset: imagesProcessedUntil < total ? imagesProcessedUntil : null,
       batch_size: batchSize,
+      indexed_catalogue_artworks: catalogueWithDesc.length,
+      total_catalogue_artworks: artworks.length,
       catalogue_size: catalogueWithDesc.length,
       described_artworks_this_run: describedArtworks,
       suggestions_created: totalInserted,
