@@ -161,9 +161,11 @@ Deno.serve(async (req) => {
         {
           type: "text",
           text:
-            `INSTALLATION VIEW (analyze this photo):\n` +
-            `Identify which of the catalogued artworks below appear in this installation photo.\n\n` +
-            `CATALOGUE (${catalogueSlice.length} works):\n` +
+            `TASK: Identify which catalogued artworks appear in the installation photograph.\n\n` +
+            `You will receive images IN THIS EXACT ORDER:\n` +
+            `  Image 1 = the INSTALLATION VIEW (a gallery photo with one or more works on the wall).\n` +
+            `  Images 2..${catalogueSlice.filter((a) => a.thumb).length + 1} = CATALOGUE THUMBNAILS, each labelled [1], [2], [3]... matching the list below.\n\n` +
+            `CATALOGUE (${catalogueSlice.length} works — use the bracket number to refer back):\n` +
             catalogueSlice
               .map(
                 (a, i) =>
@@ -171,14 +173,27 @@ Deno.serve(async (req) => {
                     a.medium ? ` — ${a.medium}` : ""
                   }`,
               )
-              .join("\n"),
+              .join("\n") +
+            `\n\nMETHOD (follow strictly):\n` +
+            `1. Look at the installation view. For each artwork visible on the wall, write a short visual description: dominant colours, shapes/motifs, any text or numbers, composition.\n` +
+            `2. For EACH visible work, scan ALL catalogue thumbnails. Compare colours, motifs, text, and composition — NOT just the general series style. Many catalogue works look superficially similar; you must discriminate between them.\n` +
+            `3. Only report a match when the SAME painting is clearly present — same dominant colour field, same motifs in the same positions, same text/numbers if any. If the installation crop is too small or blurry to be sure which specific work it is, DO NOT guess — omit it.\n` +
+            `4. NEVER pick a catalogue work just because it belongs to the same series. A wrong-but-same-series match is worse than no match.\n` +
+            `5. Confidence scale: 0.95+ = identical work clearly visible; 0.75 = strong match with minor uncertainty; <0.75 = do not report.\n` +
+            `6. The 'reasoning' field MUST cite the specific visual evidence ("yellow background, blue '79' digits, green diagonal stripe at lower right — matches catalogue [12]"). Generic reasoning like "pyramid shape on white" is not acceptable.`,
         },
         { type: "image_url", image_url: { url: installationUrl } },
       ];
 
-      // Append catalogue thumbnails (cap to keep payload reasonable)
-      for (const a of catalogueSlice) {
-        if (a.thumb) userContent.push({ type: "image_url", image_url: { url: a.thumb } });
+      // Append catalogue thumbnails with index labels so the model can ground choices.
+      for (let i = 0; i < catalogueSlice.length; i++) {
+        const a = catalogueSlice[i];
+        if (!a.thumb) continue;
+        userContent.push({
+          type: "text",
+          text: `[${i + 1}] "${a.title}"${a.year ? ` (${a.year})` : ""} — id=${a.id}`,
+        });
+        userContent.push({ type: "image_url", image_url: { url: a.thumb } });
       }
 
       const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -188,12 +203,13 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: "openai/gpt-5",
+          reasoning: { effort: "high" },
           messages: [
             {
               role: "system",
               content:
-                "You are an art-historical visual matching assistant. Compare an installation photograph to a catalogue of an artist's individual works. Identify which catalogued works appear (in whole or part) in the installation photo. Be conservative — only report a match if the visual evidence (composition, palette, marks) clearly corresponds. Provide confidence 0-1 and an approximate normalized bounding box (0-1 coordinates) of where it appears in the installation photo.",
+                "You are a rigorous art-historical visual matching assistant. Your job is to discriminate between visually similar works in the SAME series — not to recognise the series itself. A confident wrong answer is the worst possible outcome; omitting an uncertain match is correct behaviour. Always justify matches with specific visible evidence (colours, motifs, numbers, composition).",
             },
             { role: "user", content: userContent },
           ],
@@ -290,7 +306,7 @@ Deno.serve(async (req) => {
 
       const validIds = new Set(catalogueSlice.map((a) => a.id));
       const cleaned = (parsed.matches || []).filter(
-        (m) => validIds.has(m.artwork_id) && m.confidence > 0.4,
+        (m) => validIds.has(m.artwork_id) && m.confidence >= 0.75,
       );
 
       allMatches.push({ exhibition_image_id: exImg.id, matches: cleaned });
