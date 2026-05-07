@@ -650,6 +650,114 @@ export type Database = {
           },
         ]
       }
+      donation_subscriptions: {
+        Row: {
+          amount_cents: number | null
+          cancel_at_period_end: boolean | null
+          created_at: string
+          currency: string
+          current_period_end: string | null
+          current_period_start: string | null
+          environment: string
+          id: string
+          kind: string
+          price_id: string
+          product_id: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number | null
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          currency?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          kind: string
+          price_id: string
+          product_id?: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number | null
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          currency?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          kind?: string
+          price_id?: string
+          product_id?: string | null
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      donations: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          donor_name: string | null
+          email: string | null
+          environment: string
+          id: string
+          kind: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          stripe_subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          donor_name?: string | null
+          email?: string | null
+          environment?: string
+          id?: string
+          kind: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          donor_name?: string | null
+          email?: string | null
+          environment?: string
+          id?: string
+          kind?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       donors: {
         Row: {
           added_by: string
@@ -1451,6 +1559,10 @@ export type Database = {
           file_count: number
           source: string
         }[]
+      }
+      has_collector_access: {
+        Args: { _env?: string; _user_id: string }
+        Returns: boolean
       }
       has_registrar_access: {
         Args: { _owner_id: string; _registrar_id: string }
