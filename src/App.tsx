@@ -33,6 +33,9 @@ import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
 import Files from "./pages/Files";
 import StorageTiers from "./pages/StorageTiers";
+import Donate from "./pages/Donate";
+import DonateThanks from "./pages/DonateThanks";
+import CollectorAccess from "./pages/CollectorAccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -74,6 +77,9 @@ const App = () => (
           <Route path="/donors" element={<Donors />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/donate/thanks" element={<DonateThanks />} />
+          <Route path="/collector-access" element={<CollectorAccess />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
