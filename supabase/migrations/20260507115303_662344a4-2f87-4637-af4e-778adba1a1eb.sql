@@ -1,0 +1,1 @@
+INSERT INTO public.user_roles (user_id, role) VALUES ('036923bd-b3d7-41eb-82dc-24064da264d2','collector'), ('036923bd-b3d7-41eb-82dc-24064da264d2','foundation') ON CONFLICT (user_id, role) DO NOTHING;
