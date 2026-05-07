@@ -275,6 +275,13 @@ Deno.serve(async (req) => {
 
     if (!exhibition_id) return json({ error: "exhibition_id required" }, 400);
 
+    // Optional series filter — array of series names. The token "__unassigned__"
+    // means artworks with no series. null/undefined = no filter (whole catalogue).
+    const seriesFilterRaw = body?.series;
+    const seriesFilter: string[] | null = Array.isArray(seriesFilterRaw)
+      ? seriesFilterRaw.filter((s) => typeof s === "string")
+      : null;
+
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
     // Verify access
