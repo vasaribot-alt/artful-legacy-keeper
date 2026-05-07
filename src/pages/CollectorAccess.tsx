@@ -84,16 +84,20 @@ export default function CollectorAccess() {
                   "Foundation receipt — no VAT (gift to Dutch stichting)",
                 ].map((f) => (
                   <li key={f} className="flex items-start gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0" />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#7ac143]" />
                     <span>{f}</span>
                   </li>
                 ))}
               </ul>
-              <Button size="lg" className="mt-8 w-full" onClick={() => setShowCheckout(true)}>
+              <Button
+                size="lg"
+                className="mt-8 h-12 w-full rounded-lg bg-[#7ac143] text-sm font-semibold uppercase tracking-wide text-white hover:bg-[#6aab36]"
+                onClick={() => setShowCheckout(true)}
+              >
                 Continue to gift
               </Button>
               <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5" />
+                <ShieldCheck className="h-3.5 w-3.5 text-[#7ac143]" />
                 Secure payment via Stripe
               </p>
             </div>
