@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Heart, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Heart, ShieldCheck, ArrowRight } from "lucide-react";
 import { DonationCheckout } from "@/components/payments/DonationCheckout";
 import { PaymentTestModeBanner } from "@/components/payments/PaymentTestModeBanner";
 
@@ -62,67 +62,87 @@ export default function Donate() {
       <main className="mx-auto max-w-3xl px-6 py-12 sm:py-20">
         {!checkout ? (
           <>
-            <div className="mb-12 text-center">
-              <Heart className="mx-auto mb-6 h-8 w-8" strokeWidth={1.25} />
-              <h1 className="font-serif text-4xl leading-tight sm:text-5xl">Support the 100-Year Preservation Plan</h1>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-                Your gift helps build and maintain a permanent, archival record of contemporary art —
-                free for artists, accessible to scholars, and stewarded for the next century.
+            <div className="mb-10 text-center">
+              <h1 className="font-serif text-3xl leading-tight sm:text-4xl">Choose an amount you'd like to donate</h1>
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                Your gift helps build a permanent, archival record of contemporary art — stewarded for the next century.
               </p>
             </div>
 
-            {/* Frequency toggle */}
-            <div className="mx-auto mb-8 flex w-full max-w-md rounded-full border border-border p-1">
-              {(["one_off", "monthly"] as Frequency[]).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => {
-                    setFrequency(f);
-                    setSelected(f === "one_off" ? 75 : 25);
-                    setCustomAmount("");
-                  }}
-                  className={`flex-1 rounded-full px-4 py-2 text-sm transition ${
-                    frequency === f ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {f === "one_off" ? "One-off gift" : "Monthly"}
-                </button>
-              ))}
-            </div>
+            <div className="mx-auto max-w-md">
+              {/* Frequency toggle — green pill */}
+              <div className="relative flex w-full overflow-hidden rounded-full border border-[#7ac143]/40 bg-white p-1">
+                {(["one_off", "monthly"] as Frequency[]).map((f) => {
+                  const active = frequency === f;
+                  return (
+                    <button
+                      key={f}
+                      onClick={() => {
+                        setFrequency(f);
+                        setSelected(f === "one_off" ? 75 : 25);
+                        setCustomAmount("");
+                      }}
+                      className={`relative flex-1 rounded-full px-4 py-2.5 text-sm font-semibold uppercase tracking-wide transition ${
+                        active ? "bg-[#7ac143] text-white shadow-sm" : "text-neutral-600 hover:text-neutral-900"
+                      }`}
+                    >
+                      <span className="inline-flex items-center justify-center gap-2">
+                        {f === "monthly" && (
+                          <Heart className={`h-4 w-4 ${active ? "fill-red-500 text-red-500" : "text-red-500"}`} />
+                        )}
+                        {f === "one_off" ? "One-off" : "Monthly"}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
 
-            {/* Amount presets */}
-            <div className="mx-auto grid max-w-md grid-cols-3 gap-3">
-              {presets.map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => {
-                    setSelected(amt);
-                    setCustomAmount("");
-                  }}
-                  className={`rounded-md border px-4 py-4 text-lg transition ${
-                    selected === amt && !isCustom
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border hover:border-foreground"
-                  }`}
-                >
-                  €{amt}
-                  {frequency === "monthly" && <span className="ml-0.5 text-xs opacity-70">/mo</span>}
-                </button>
-              ))}
-            </div>
+              {/* Amount presets */}
+              <div className="mt-6 grid grid-cols-3 gap-3">
+                {presets.map((amt, idx) => {
+                  const isSelected = selected === amt && !isCustom;
+                  const isPopular = frequency === "one_off" && idx === 1;
+                  return (
+                    <div key={amt} className="relative">
+                      {isPopular && isSelected && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-2 text-[10px] font-semibold text-[#7ac143]">
+                          ★ Most Popular
+                        </div>
+                      )}
+                      <button
+                        onClick={() => {
+                          setSelected(amt);
+                          setCustomAmount("");
+                        }}
+                        className={`w-full rounded-lg border-2 px-3 py-5 text-lg font-semibold transition ${
+                          isSelected
+                            ? "border-dashed border-[#7ac143] bg-[#7ac143]/15 text-[#3d6b1f]"
+                            : "border-neutral-200 bg-white text-neutral-800 hover:border-[#7ac143]/60"
+                        }`}
+                      >
+                        €{amt}
+                        {frequency === "monthly" && (
+                          <span className="ml-1 text-xs font-normal text-neutral-500">per month</span>
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
 
-            {/* Custom amount */}
-            <div className="mx-auto mt-3 max-w-md">
+              {/* Custom amount */}
               <button
                 onClick={() => setSelected(-1)}
-                className={`mb-2 w-full rounded-md border px-4 py-3 text-sm transition ${
-                  isCustom ? "border-foreground" : "border-border hover:border-foreground"
+                className={`mt-3 w-full rounded-lg border-2 px-4 py-4 text-sm font-medium transition ${
+                  isCustom
+                    ? "border-[#7ac143] bg-[#7ac143]/10 text-[#3d6b1f]"
+                    : "border-neutral-200 bg-white text-neutral-700 hover:border-[#7ac143]/60"
                 }`}
               >
-                Other amount
+                Choose your own amount
               </button>
               {isCustom && (
-                <div className="relative">
+                <div className="relative mt-3">
                   <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">€</span>
                   <Input
                     type="number"
@@ -141,32 +161,32 @@ export default function Donate() {
                   )}
                 </div>
               )}
-            </div>
 
-            <div className="mx-auto mt-8 max-w-md">
               <Button
                 size="lg"
-                className="w-full"
                 onClick={handleContinue}
                 disabled={
                   (frequency === "monthly" && isCustom) ||
                   (isCustom && customCents < 100) ||
                   (!isCustom && selected < 1)
                 }
+                className="mt-6 h-14 w-full rounded-lg bg-[#7ac143] text-base font-semibold uppercase tracking-wide text-white shadow-sm hover:bg-[#6aab36] disabled:bg-neutral-300"
               >
-                Continue
+                <span className="inline-flex w-full items-center justify-center gap-2">
+                  Next
+                  <ArrowRight className="h-5 w-5" />
+                </span>
               </Button>
+
               <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
                 The Global Artist Registry Foundation is a Dutch <em>stichting</em>.
-                Donations are gifts and not subject to VAT.
-                A receipt will be emailed to you for your records.
+                Donations are gifts and not subject to VAT. A receipt will be emailed to you.
               </p>
-            </div>
 
-            {/* Trust footer */}
-            <div className="mx-auto mt-16 flex max-w-md items-center justify-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="h-4 w-4" />
-              Secure payment processed by Stripe
+              <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <ShieldCheck className="h-4 w-4 text-[#7ac143]" />
+                Secure payment processed by Stripe
+              </div>
             </div>
           </>
         ) : (
