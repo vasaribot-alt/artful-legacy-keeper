@@ -325,12 +325,23 @@ Deno.serve(async (req) => {
     }
 
     // Load full artwork catalogue (with cached descriptions)
-    const { data: artworks } = await admin
+    const { data: allArtworks } = await admin
       .from("artworks")
-      .select("id, title, year, medium, image_url, ai_description")
+      .select("id, title, year, medium, image_url, ai_description, series")
       .eq("owner_id", ownerId);
-    if (!artworks || artworks.length === 0) {
+    if (!allArtworks || allArtworks.length === 0) {
       return json({ error: "Artist has no catalogued artworks to compare against" }, 400);
+    }
+
+    // Apply optional series filter
+    const artworks = seriesFilter
+      ? allArtworks.filter((a: any) => {
+          const key = a.series && String(a.series).trim() ? String(a.series).trim() : "__unassigned__";
+          return seriesFilter.includes(key);
+        })
+      : allArtworks;
+    if (artworks.length === 0) {
+      return json({ error: "No artworks match the selected series." }, 400);
     }
 
     // Build thumb map
