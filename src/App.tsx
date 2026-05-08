@@ -36,6 +36,7 @@ import StorageTiers from "./pages/StorageTiers";
 import Donate from "./pages/Donate";
 import DonateThanks from "./pages/DonateThanks";
 import CollectorAccess from "./pages/CollectorAccess";
+import Capture from "./pages/Capture";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -80,6 +81,7 @@ const App = () => (
           <Route path="/donate" element={<Donate />} />
           <Route path="/donate/thanks" element={<DonateThanks />} />
           <Route path="/collector-access" element={<CollectorAccess />} />
+          <Route path="/capture" element={<Capture />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
