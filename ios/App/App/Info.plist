@@ -47,5 +47,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Artful Legacy Keeper needs camera access so you can photograph artworks directly into your archive.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Artful Legacy Keeper needs photo library access so you can attach existing artwork images to your archive.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Artful Legacy Keeper needs permission to save artwork images to your photo library.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Artful Legacy Keeper may use the microphone for video recordings of artworks.</string>
 </dict>
 </plist>
