@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Artful Legacy Keeper',
   webDir: 'dist',
   server: {
-    url: 'https://id-preview--8585a995-9d51-467b-a3cf-2d93bcfb0473.lovable.app?forceHideBadge=true',
+    url: 'https://globalartistregistry.org',
     cleartext: true,
   },
 };
