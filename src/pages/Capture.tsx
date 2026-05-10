@@ -148,11 +148,19 @@ const Capture = () => {
     setTitle("");
     setArtistName("");
     setYear("");
+    setArtworkType("");
+    setSubCategory("");
+    setSeries("");
+    setIsUnique(true);
+    setEditionNumber("");
+    setEditionCount("");
+    setArtistProofs("");
     setMedium("");
+    setSupport("");
+    setSigned("");
     setHeight("");
     setWidth("");
     setDepth("");
-    setEditionNumber("");
     setNotes("");
   };
 
@@ -171,20 +179,28 @@ const Capture = () => {
     }
     setSaving(true);
 
+    const isSculpture = artworkType === "Sculpture";
     const insertData: Record<string, unknown> = {
       owner_id: effectiveOwnerId,
       title: title.trim(),
       year: year ? parseInt(year) : null,
+      artwork_type: artworkType || null,
+      sub_category: isSculpture && subCategory ? subCategory : null,
+      series: series.trim() || null,
       medium: medium.trim() || null,
+      support: !isSculpture && support.trim() ? support.trim() : null,
+      signed: signed.trim() || null,
       height: height ? parseFloat(height) : null,
       width: width ? parseFloat(width) : null,
       depth: depth ? parseFloat(depth) : null,
       description: notes.trim() || null,
       role_context: effectiveRoleContext,
       artist_name: isCollectorContext && artistName.trim() ? artistName.trim() : null,
-      edition_number: editionNumber.trim() || null,
+      is_unique: isUnique,
+      edition_number: !isUnique && editionNumber.trim() ? editionNumber.trim() : null,
+      edition_count: !isUnique && editionCount ? parseInt(editionCount) : null,
+      artist_proofs: !isUnique && artistProofs ? parseInt(artistProofs) : null,
       status: "available",
-      is_unique: true,
     };
 
     const { data: artwork, error } = await supabase
