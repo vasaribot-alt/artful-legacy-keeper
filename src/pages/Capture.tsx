@@ -12,10 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Camera, X, Check, ArrowLeft, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 type AppRole = "artist" | "collector" | "registrar";
+
+const ARTWORK_TYPES = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
+const SCULPTURE_SUB_CATEGORIES = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
 interface ClientOption {
   owner_id: string;
