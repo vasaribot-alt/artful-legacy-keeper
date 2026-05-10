@@ -51,11 +51,19 @@ const Capture = () => {
   const [title, setTitle] = useState("");
   const [artistName, setArtistName] = useState("");
   const [year, setYear] = useState("");
+  const [artworkType, setArtworkType] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [series, setSeries] = useState("");
+  const [isUnique, setIsUnique] = useState(true);
+  const [editionNumber, setEditionNumber] = useState("");
+  const [editionCount, setEditionCount] = useState("");
+  const [artistProofs, setArtistProofs] = useState("");
   const [medium, setMedium] = useState("");
+  const [support, setSupport] = useState("");
+  const [signed, setSigned] = useState("");
   const [height, setHeight] = useState("");
   const [width, setWidth] = useState("");
   const [depth, setDepth] = useState("");
-  const [editionNumber, setEditionNumber] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
