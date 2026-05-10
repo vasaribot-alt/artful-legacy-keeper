@@ -401,9 +401,46 @@ const Capture = () => {
             </div>
           )}
 
+          {/* Type of artwork */}
+          <div>
+            <Label htmlFor="artworkType">Type of artwork</Label>
+            <Select
+              value={artworkType}
+              onValueChange={(v) => {
+                setArtworkType(v);
+                if (v !== "Sculpture") setSubCategory("");
+              }}
+            >
+              <SelectTrigger id="artworkType" className="mt-1.5 h-11 text-base">
+                <SelectValue placeholder="Select type…" />
+              </SelectTrigger>
+              <SelectContent>
+                {ARTWORK_TYPES.map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {artworkType === "Sculpture" && (
+            <div>
+              <Label htmlFor="subCategory">Sculpture sub-category</Label>
+              <Select value={subCategory} onValueChange={setSubCategory}>
+                <SelectTrigger id="subCategory" className="mt-1.5 h-11 text-base">
+                  <SelectValue placeholder="Select sub-category…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SCULPTURE_SUB_CATEGORIES.map((s) => (
+                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="year">Year</Label>
+              <Label htmlFor="year">Date of creation</Label>
               <Input
                 id="year"
                 type="number"
@@ -416,25 +453,107 @@ const Capture = () => {
               />
             </div>
             <div>
-              <Label htmlFor="edition">Edition</Label>
+              <Label htmlFor="series">Series / Group</Label>
               <Input
-                id="edition"
-                value={editionNumber}
-                onChange={(e) => setEditionNumber(e.target.value)}
-                placeholder="e.g. 1/5"
+                id="series"
+                value={series}
+                onChange={(e) => setSeries(e.target.value)}
+                placeholder="e.g. Abstrakt"
                 className="mt-1.5 h-11 text-base"
                 autoComplete="off"
               />
             </div>
           </div>
 
+          {/* Unique work toggle */}
+          <div className="flex items-start justify-between gap-4 rounded-md border border-border p-3">
+            <div className="min-w-0">
+              <Label htmlFor="isUnique" className="block">Unique work</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">Toggle off for editions</p>
+            </div>
+            <Switch
+              id="isUnique"
+              checked={isUnique}
+              onCheckedChange={(v) => setIsUnique(v)}
+            />
+          </div>
+
+          {!isUnique && (
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label htmlFor="editionNumber" className="text-xs">Edition #</Label>
+                <Input
+                  id="editionNumber"
+                  value={editionNumber}
+                  onChange={(e) => setEditionNumber(e.target.value)}
+                  placeholder="e.g. 1"
+                  className="mt-1.5 h-11 text-base"
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editionCount" className="text-xs">Edition of</Label>
+                <Input
+                  id="editionCount"
+                  type="number"
+                  inputMode="numeric"
+                  value={editionCount}
+                  onChange={(e) => setEditionCount(e.target.value)}
+                  placeholder="e.g. 5"
+                  className="mt-1.5 h-11 text-base"
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <Label htmlFor="artistProofs" className="text-xs">AP</Label>
+                <Input
+                  id="artistProofs"
+                  type="number"
+                  inputMode="numeric"
+                  value={artistProofs}
+                  onChange={(e) => setArtistProofs(e.target.value)}
+                  placeholder="0"
+                  className="mt-1.5 h-11 text-base"
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className={artworkType === "Sculpture" ? "" : "grid grid-cols-2 gap-3"}>
+            <div>
+              <Label htmlFor="medium">Medium</Label>
+              <Input
+                id="medium"
+                value={medium}
+                onChange={(e) => setMedium(e.target.value)}
+                placeholder={artworkType === "Sculpture" ? "e.g. Bronze" : "e.g. Oil"}
+                className="mt-1.5 h-11 text-base"
+                autoComplete="off"
+              />
+            </div>
+            {artworkType !== "Sculpture" && (
+              <div>
+                <Label htmlFor="support">Support</Label>
+                <Input
+                  id="support"
+                  value={support}
+                  onChange={(e) => setSupport(e.target.value)}
+                  placeholder="e.g. Canvas"
+                  className="mt-1.5 h-11 text-base"
+                  autoComplete="off"
+                />
+              </div>
+            )}
+          </div>
+
           <div>
-            <Label htmlFor="medium">Medium</Label>
+            <Label htmlFor="signed">Signed</Label>
             <Input
-              id="medium"
-              value={medium}
-              onChange={(e) => setMedium(e.target.value)}
-              placeholder="Oil on canvas"
+              id="signed"
+              value={signed}
+              onChange={(e) => setSigned(e.target.value)}
+              placeholder="e.g. Signed verso"
               className="mt-1.5 h-11 text-base"
               autoComplete="off"
             />
