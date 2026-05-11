@@ -28,6 +28,7 @@ interface Submission {
   medium: string | null;
   status: Status;
   submitter_name: string | null;
+  submitter_email: string | null;
   created_at: string;
   rejection_reason: string | null;
   rejection_notes: string | null;
@@ -38,6 +39,16 @@ interface Submission {
   provenance: string | null;
   condition_notes: string | null;
   owner_contact: string | null;
+  cr_number: number | null;
+  resulting_artwork_id: string | null;
+}
+
+interface SubmissionImage {
+  id: string;
+  submission_id: string;
+  storage_path: string;
+  display_order: number;
+  caption: string | null;
 }
 
 interface VoteRow {
