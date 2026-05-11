@@ -1717,6 +1717,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_cr_submission: {
+        Args: {
+          _artist_owner_id: string
+          _condition_notes?: string
+          _depth?: number
+          _height?: number
+          _medium?: string
+          _owner_contact?: string
+          _provenance?: string
+          _submitter_email?: string
+          _submitter_name?: string
+          _title: string
+          _width?: number
+          _year_estimated?: string
+        }
+        Returns: string
+      }
       find_registrar_by_email: { Args: { _email: string }; Returns: string }
       get_cr_submission_status: {
         Args: { _token: string }
