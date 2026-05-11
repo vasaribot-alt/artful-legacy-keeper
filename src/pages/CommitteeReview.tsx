@@ -642,9 +642,7 @@ export function CommitteeSubmissionDetail() {
                   <dd>{submission.owner_contact || "—"}</dd>
                 </div>
               </dl>
-              <p className="text-[11px] text-muted-foreground pt-2 border-t border-border">
-                Image upload and full metadata editing is coming next. For now, this view focuses on the review workflow.
-              </p>
+              </dl>
             </section>
 
             {/* Images */}
