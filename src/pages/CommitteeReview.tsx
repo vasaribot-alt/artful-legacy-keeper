@@ -584,15 +584,33 @@ export function CommitteeSubmissionDetail() {
 
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-2xl font-serif italic">{submission.title}</h2>
               <StatusBadge status={submission.status} />
+              {submission.cr_number && (
+                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm bg-foreground text-background font-medium">
+                  CR {submission.cr_number}
+                </span>
+              )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Submitted {new Date(submission.created_at).toLocaleDateString()}
               {submission.submitter_name ? ` by ${submission.submitter_name}` : ""}
+              {submission.submitter_email ? ` · ${submission.submitter_email}` : ""}
             </p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5 shrink-0"
+            onClick={() => {
+              const url = `${window.location.origin}/cr/submit/${submission.artist_owner_id}`;
+              navigator.clipboard.writeText(url);
+              toast.success("Public submission link copied");
+            }}
+          >
+            <Share2 className="w-3.5 h-3.5" /> Public link
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
