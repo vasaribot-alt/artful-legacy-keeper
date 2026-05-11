@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Check, X, Pause, MinusCircle, Plus, Loader2, ScrollText } from "lucide-react";
+import { ArrowLeft, Check, X, Pause, MinusCircle, Plus, Loader2, ScrollText, ImagePlus, Trash2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 type Status = "submitted" | "under_review" | "accepted" | "rejected" | "deferred";
