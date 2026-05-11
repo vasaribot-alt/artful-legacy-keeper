@@ -642,7 +642,6 @@ export function CommitteeSubmissionDetail() {
                   <dd>{submission.owner_contact || "—"}</dd>
                 </div>
               </dl>
-              </dl>
             </section>
 
             {/* Images */}
