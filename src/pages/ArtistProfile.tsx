@@ -145,6 +145,9 @@ const ArtistProfile = () => {
       setFullName(data.full_name || "");
       setGlobalArtistId(data.global_artist_id);
       setBirthYear((data as any).birth_year?.toString() || "");
+      setIsDeceased((data as any).is_deceased || false);
+      setDeathYear((data as any).death_year?.toString() || "");
+      setCommitteeConnected((data as any).committee_connected || false);
       setCity((data as any).city || "");
       setCountry((data as any).country || "");
       setStudioAddress((data as any).studio_address || "");
