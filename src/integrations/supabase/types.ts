@@ -690,6 +690,7 @@ export type Database = {
           medium: string | null
           owner_contact: string | null
           provenance: string | null
+          public_token: string
           rejection_notes: string | null
           rejection_reason: string | null
           resulting_artwork_id: string | null
@@ -715,6 +716,7 @@ export type Database = {
           medium?: string | null
           owner_contact?: string | null
           provenance?: string | null
+          public_token?: string
           rejection_notes?: string | null
           rejection_reason?: string | null
           resulting_artwork_id?: string | null
@@ -740,6 +742,7 @@ export type Database = {
           medium?: string | null
           owner_contact?: string | null
           provenance?: string | null
+          public_token?: string
           rejection_notes?: string | null
           rejection_reason?: string | null
           resulting_artwork_id?: string | null
@@ -1715,6 +1718,28 @@ export type Database = {
     }
     Functions: {
       find_registrar_by_email: { Args: { _email: string }; Returns: string }
+      get_cr_submission_status: {
+        Args: { _token: string }
+        Returns: {
+          artist_id: string
+          artist_name: string
+          cr_number: number
+          created_at: string
+          decision_at: string
+          id: string
+          rejection_reason: string
+          status: string
+          title: string
+        }[]
+      }
+      get_cr_submission_timeline: {
+        Args: { _token: string }
+        Returns: {
+          action: string
+          created_at: string
+          payload: Json
+        }[]
+      }
       get_registrar_access_details: {
         Args: { _owner_id: string }
         Returns: {
