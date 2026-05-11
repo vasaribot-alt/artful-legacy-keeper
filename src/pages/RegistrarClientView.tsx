@@ -9,6 +9,7 @@ import { RegistrarWorkspaceLayout } from "@/components/RegistrarWorkspaceLayout"
 import { useActiveOwner } from "@/hooks/use-active-owner";
 import Exhibitions from "@/pages/Exhibitions";
 import Catalogues from "@/pages/Catalogues";
+import { CommitteeInbox, CommitteeSubmissionDetail } from "@/pages/CommitteeReview";
 
 interface ClientArtwork {
   id: string;
@@ -260,6 +261,8 @@ const RegistrarClientView = () => {
           />
         }
       />
+      <Route path="committee" element={<CommitteeInbox />} />
+      <Route path="committee/:submissionId" element={<CommitteeSubmissionDetail />} />
       <Route path="inventory" element={<PlaceholderSection title="Inventory" message="Client-scoped inventory view is coming soon." />} />
       <Route path="cv" element={<PlaceholderSection title="CV" message="Client-scoped CV editing is coming soon." />} />
       <Route path="provenance" element={<PlaceholderSection title="Provenance" message="Client-scoped provenance is coming soon." />} />
