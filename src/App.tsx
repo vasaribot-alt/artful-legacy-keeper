@@ -39,6 +39,7 @@ import DonateThanks from "./pages/DonateThanks";
 import CollectorAccess from "./pages/CollectorAccess";
 import Capture from "./pages/Capture";
 import CrSubmit from "./pages/CrSubmit";
+import CrStatus from "./pages/CrStatus";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -87,6 +88,7 @@ const App = () => (
           <Route path="/collector-access" element={<CollectorAccess />} />
           <Route path="/capture" element={<Capture />} />
           <Route path="/cr/submit/:artistId" element={<CrSubmit />} />
+          <Route path="/cr/status/:token" element={<CrStatus />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

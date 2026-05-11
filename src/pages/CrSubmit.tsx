@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Loader2, CheckCircle2, ArrowLeft, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 interface Artist {
@@ -20,6 +20,7 @@ export default function CrSubmit() {
   const [lookupLoading, setLookupLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [statusToken, setStatusToken] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
@@ -55,27 +56,27 @@ export default function CrSubmit() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("cr_submissions" as any).insert({
-      artist_owner_id: artist.user_id,
-      title: title.trim(),
-      year_estimated: year.trim() || null,
-      medium: medium.trim() || null,
-      height: height ? Number(height) : null,
-      width: width ? Number(width) : null,
-      depth: depth ? Number(depth) : null,
-      provenance: provenance.trim() || null,
-      condition_notes: condition.trim() || null,
-      submitter_name: name.trim(),
-      submitter_email: email.trim(),
-      owner_contact: contact.trim() || null,
-      status: "submitted",
-    } as any);
+    const { data, error } = await supabase.rpc("create_cr_submission" as any, {
+      _artist_owner_id: artist.user_id,
+      _title: title.trim(),
+      _year_estimated: year.trim() || null,
+      _medium: medium.trim() || null,
+      _height: height ? Number(height) : null,
+      _width: width ? Number(width) : null,
+      _depth: depth ? Number(depth) : null,
+      _provenance: provenance.trim() || null,
+      _condition_notes: condition.trim() || null,
+      _submitter_name: name.trim(),
+      _submitter_email: email.trim(),
+      _owner_contact: contact.trim() || null,
+    });
     setSubmitting(false);
     if (error) {
       toast.error("Could not submit. Please try again.");
       console.error(error);
       return;
     }
+    setStatusToken((data as any) ?? null);
     setSubmitted(true);
   };
 
@@ -101,6 +102,7 @@ export default function CrSubmit() {
   }
 
   if (submitted) {
+    const statusUrl = statusToken ? `${window.location.origin}/cr/status/${statusToken}` : null;
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
         <CheckCircle2 className="w-12 h-12 text-green-700 dark:text-green-400 mb-4" />
@@ -110,6 +112,41 @@ export default function CrSubmit() {
           <span className="italic">{artist.full_name}</span> will evaluate your submission and may contact you at{" "}
           <span className="font-mono">{email}</span>.
         </p>
+
+        {statusUrl && (
+          <div className="mt-8 w-full max-w-md border border-border rounded-sm p-4 text-left">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Your status link</p>
+            <p className="text-xs text-muted-foreground mb-3">
+              Save this link to check your submission's progress at any time.
+            </p>
+            <div className="flex gap-2">
+              <input
+                readOnly
+                value={statusUrl}
+                className="flex-1 text-xs font-mono bg-muted/50 border border-border rounded-sm px-2 py-1.5 truncate"
+                onFocus={(e) => e.currentTarget.select()}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(statusUrl);
+                  toast.success("Link copied");
+                }}
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+            </div>
+            <Link
+              to={`/cr/status/${statusToken}`}
+              className="inline-flex items-center gap-1.5 text-xs underline mt-3"
+            >
+              View status now <ExternalLink className="w-3 h-3" />
+            </Link>
+          </div>
+        )}
+
         <Link to="/" className="mt-6 text-sm underline">Return home</Link>
       </div>
     );
