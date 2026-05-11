@@ -86,6 +86,7 @@ const App = () => (
           <Route path="/donate/thanks" element={<DonateThanks />} />
           <Route path="/collector-access" element={<CollectorAccess />} />
           <Route path="/capture" element={<Capture />} />
+          <Route path="/cr/submit/:artistId" element={<CrSubmit />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
