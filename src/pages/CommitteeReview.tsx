@@ -479,8 +479,19 @@ export function CommitteeSubmissionDetail() {
       update.rejection_notes = null;
     }
 
-    // Create artwork on accept
+    // Create artwork on accept + assign CR number
     if (outcome === "accepted") {
+      // Next CR number for this estate
+      const { data: maxRow } = await supabase
+        .from("artworks")
+        .select("cr_number")
+        .eq("owner_id", submission.artist_owner_id)
+        .not("cr_number", "is", null)
+        .order("cr_number", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const nextCr = ((maxRow as any)?.cr_number || 0) + 1;
+
       const { data: artwork, error: artErr } = await supabase
         .from("artworks")
         .insert({
@@ -494,6 +505,8 @@ export function CommitteeSubmissionDetail() {
           provenance: submission.provenance,
           status: "available",
           role_context: "artist",
+          cr_number: nextCr,
+          catalogue_number: `CR ${nextCr}`,
         } as any)
         .select("id")
         .single();
@@ -503,6 +516,17 @@ export function CommitteeSubmissionDetail() {
         return;
       }
       update.resulting_artwork_id = artwork.id;
+      update.cr_number = nextCr;
+
+      // Copy submission images into artwork_images (re-use same storage paths)
+      if (images.length > 0) {
+        const rows = images.map((img, idx) => ({
+          artwork_id: artwork.id,
+          storage_path: img.storage_path,
+          display_order: idx,
+        }));
+        await supabase.from("artwork_images").insert(rows as any);
+      }
     }
 
     const { error } = await supabase.from("cr_submissions" as any).update(update).eq("id", submissionId);
