@@ -56,28 +56,27 @@ export default function CrSubmit() {
       return;
     }
     setSubmitting(true);
-    const { data, error } = await supabase.from("cr_submissions" as any).insert({
-      artist_owner_id: artist.user_id,
-      title: title.trim(),
-      year_estimated: year.trim() || null,
-      medium: medium.trim() || null,
-      height: height ? Number(height) : null,
-      width: width ? Number(width) : null,
-      depth: depth ? Number(depth) : null,
-      provenance: provenance.trim() || null,
-      condition_notes: condition.trim() || null,
-      submitter_name: name.trim(),
-      submitter_email: email.trim(),
-      owner_contact: contact.trim() || null,
-      status: "submitted",
-    } as any).select("public_token").single();
+    const { data, error } = await supabase.rpc("create_cr_submission" as any, {
+      _artist_owner_id: artist.user_id,
+      _title: title.trim(),
+      _year_estimated: year.trim() || null,
+      _medium: medium.trim() || null,
+      _height: height ? Number(height) : null,
+      _width: width ? Number(width) : null,
+      _depth: depth ? Number(depth) : null,
+      _provenance: provenance.trim() || null,
+      _condition_notes: condition.trim() || null,
+      _submitter_name: name.trim(),
+      _submitter_email: email.trim(),
+      _owner_contact: contact.trim() || null,
+    });
     setSubmitting(false);
     if (error) {
       toast.error("Could not submit. Please try again.");
       console.error(error);
       return;
     }
-    setStatusToken((data as any)?.public_token ?? null);
+    setStatusToken((data as any) ?? null);
     setSubmitted(true);
   };
 
