@@ -266,37 +266,34 @@ const RegistrarDashboard = () => {
             {filteredClients.map((client) => (
               <div
                 key={client.id}
-                className="group p-5 rounded-sm border border-border hover:border-foreground/30 transition-colors bg-card"
+                className="group p-5 rounded-sm border border-border hover:border-foreground/30 transition-colors bg-card flex flex-col"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <button
-                    onClick={() => navigate(`/registrar/client/${client.owner_id}`)}
-                    className="text-left flex-1"
-                  >
-                    <p className="font-medium text-sm">{client.owner_name || "Unnamed"}</p>
-                    {client.owner_email && (
-                      <p className="text-xs text-muted-foreground mt-0.5">{client.owner_email}</p>
-                    )}
-                    <div className="flex items-center gap-2 mt-3">
-                      <span className="text-xs text-muted-foreground">
-                        {client.artwork_count} artwork{client.artwork_count !== 1 ? "s" : ""}
-                      </span>
-                      <CheckCircle className="w-3 h-3 text-primary" />
-                    </div>
-                  </button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/registrar/client/${client.owner_id}/committee`);
-                    }}
-                    className="gap-1 h-7 text-xs text-muted-foreground hover:text-foreground"
-                    title="Go to Committee Review"
-                  >
-                    <Gavel className="w-3.5 h-3.5" /> Committee
-                  </Button>
-                </div>
+                <button
+                  onClick={() => navigate(`/registrar/client/${client.owner_id}`)}
+                  className="text-left flex-1"
+                >
+                  <p className="font-medium text-sm">{client.owner_name || "Unnamed"}</p>
+                  {client.owner_email && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{client.owner_email}</p>
+                  )}
+                  <div className="flex items-center gap-2 mt-3">
+                    <span className="text-xs text-muted-foreground">
+                      {client.artwork_count} artwork{client.artwork_count !== 1 ? "s" : ""}
+                    </span>
+                    <CheckCircle className="w-3 h-3 text-primary" />
+                  </div>
+                </button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/registrar/client/${client.owner_id}/committee`);
+                  }}
+                  className="gap-1.5 mt-4 w-full"
+                >
+                  <Gavel className="w-3.5 h-3.5" /> Go to Committee Review
+                </Button>
               </div>
             ))}
           </div>
