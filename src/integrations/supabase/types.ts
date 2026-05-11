@@ -565,6 +565,189 @@ export type Database = {
         }
         Relationships: []
       }
+      cr_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          payload: Json | null
+          submission_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json | null
+          submission_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json | null
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cr_audit_log_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "cr_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cr_committee_votes: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          submission_id: string
+          updated_at: string
+          vote: string
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          submission_id: string
+          updated_at?: string
+          vote: string
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          submission_id?: string
+          updated_at?: string
+          vote?: string
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cr_committee_votes_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "cr_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cr_submission_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          display_order: number
+          id: string
+          storage_path: string
+          submission_id: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          storage_path: string
+          submission_id: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          storage_path?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cr_submission_images_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "cr_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cr_submissions: {
+        Row: {
+          artist_owner_id: string
+          condition_notes: string | null
+          created_at: string
+          decision_at: string | null
+          decision_by: string | null
+          depth: number | null
+          height: number | null
+          id: string
+          medium: string | null
+          owner_contact: string | null
+          provenance: string | null
+          rejection_notes: string | null
+          rejection_reason: string | null
+          resulting_artwork_id: string | null
+          status: string
+          submitted_by: string | null
+          submitter_email: string | null
+          submitter_name: string | null
+          title: string
+          updated_at: string
+          width: number | null
+          year_estimated: string | null
+        }
+        Insert: {
+          artist_owner_id: string
+          condition_notes?: string | null
+          created_at?: string
+          decision_at?: string | null
+          decision_by?: string | null
+          depth?: number | null
+          height?: number | null
+          id?: string
+          medium?: string | null
+          owner_contact?: string | null
+          provenance?: string | null
+          rejection_notes?: string | null
+          rejection_reason?: string | null
+          resulting_artwork_id?: string | null
+          status?: string
+          submitted_by?: string | null
+          submitter_email?: string | null
+          submitter_name?: string | null
+          title: string
+          updated_at?: string
+          width?: number | null
+          year_estimated?: string | null
+        }
+        Update: {
+          artist_owner_id?: string
+          condition_notes?: string | null
+          created_at?: string
+          decision_at?: string | null
+          decision_by?: string | null
+          depth?: number | null
+          height?: number | null
+          id?: string
+          medium?: string | null
+          owner_contact?: string | null
+          provenance?: string | null
+          rejection_notes?: string | null
+          rejection_reason?: string | null
+          resulting_artwork_id?: string | null
+          status?: string
+          submitted_by?: string | null
+          submitter_email?: string | null
+          submitter_name?: string | null
+          title?: string
+          updated_at?: string
+          width?: number | null
+          year_estimated?: string | null
+        }
+        Relationships: []
+      }
       cv_entries: {
         Row: {
           created_at: string
@@ -1199,6 +1382,7 @@ export type Database = {
           birth_year: number | null
           chronology: string | null
           city: string | null
+          committee_quorum: number
           contact_visibility: Json
           contacts: string | null
           country: string | null
@@ -1227,6 +1411,7 @@ export type Database = {
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
+          committee_quorum?: number
           contact_visibility?: Json
           contacts?: string | null
           country?: string | null
@@ -1255,6 +1440,7 @@ export type Database = {
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
+          committee_quorum?: number
           contact_visibility?: Json
           contacts?: string | null
           country?: string | null
