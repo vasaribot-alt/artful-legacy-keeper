@@ -366,7 +366,52 @@ export function CommitteeSubmissionDetail() {
       .order("created_at", { ascending: false });
     setAudit((log || []) as unknown as AuditEntry[]);
 
+    const { data: imgs } = await supabase
+      .from("cr_submission_images" as any)
+      .select("*")
+      .eq("submission_id", submissionId)
+      .order("display_order", { ascending: true });
+    setImages((imgs || []) as unknown as SubmissionImage[]);
+
     setLoading(false);
+  };
+
+  const handleUpload = async (files: FileList | null) => {
+    if (!files || !submission || !submissionId) return;
+    setUploading(true);
+    let nextOrder = images.length;
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `cr-submissions/${submission.artist_owner_id}/${submissionId}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("artwork-images").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (upErr) {
+        console.error(upErr);
+        toast.error(`Could not upload ${file.name}`);
+        continue;
+      }
+      const { error: dbErr } = await supabase.from("cr_submission_images" as any).insert({
+        submission_id: submissionId,
+        storage_path: path,
+        display_order: nextOrder++,
+      } as any);
+      if (dbErr) {
+        console.error(dbErr);
+        await supabase.storage.from("artwork-images").remove([path]);
+        toast.error(`Could not record ${file.name}`);
+      }
+    }
+    setUploading(false);
+    fetchAll();
+  };
+
+  const handleDeleteImage = async (img: SubmissionImage) => {
+    if (!confirm("Remove this image?")) return;
+    await supabase.storage.from("artwork-images").remove([img.storage_path]);
+    await supabase.from("cr_submission_images" as any).delete().eq("id", img.id);
+    fetchAll();
   };
 
   useEffect(() => {
