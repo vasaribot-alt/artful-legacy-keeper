@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Check, X, Pause, MinusCircle, Plus, Loader2, ScrollText } from "lucide-react";
+import { ArrowLeft, Check, X, Pause, MinusCircle, Plus, Loader2, ScrollText, ImagePlus, Trash2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 type Status = "submitted" | "under_review" | "accepted" | "rejected" | "deferred";
@@ -28,6 +28,7 @@ interface Submission {
   medium: string | null;
   status: Status;
   submitter_name: string | null;
+  submitter_email: string | null;
   created_at: string;
   rejection_reason: string | null;
   rejection_notes: string | null;
@@ -38,6 +39,16 @@ interface Submission {
   provenance: string | null;
   condition_notes: string | null;
   owner_contact: string | null;
+  cr_number: number | null;
+  resulting_artwork_id: string | null;
+}
+
+interface SubmissionImage {
+  id: string;
+  submission_id: string;
+  storage_path: string;
+  display_order: number;
+  caption: string | null;
 }
 
 interface VoteRow {
@@ -293,6 +304,8 @@ export function CommitteeSubmissionDetail() {
   const [rejectionReason, setRejectionReason] = useState("");
   const [rejectionNotes, setRejectionNotes] = useState("");
   const [showAudit, setShowAudit] = useState(true);
+  const [images, setImages] = useState<SubmissionImage[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   const fetchAll = async () => {
     if (!submissionId) return;
@@ -353,7 +366,52 @@ export function CommitteeSubmissionDetail() {
       .order("created_at", { ascending: false });
     setAudit((log || []) as unknown as AuditEntry[]);
 
+    const { data: imgs } = await supabase
+      .from("cr_submission_images" as any)
+      .select("*")
+      .eq("submission_id", submissionId)
+      .order("display_order", { ascending: true });
+    setImages((imgs || []) as unknown as SubmissionImage[]);
+
     setLoading(false);
+  };
+
+  const handleUpload = async (files: FileList | null) => {
+    if (!files || !submission || !submissionId) return;
+    setUploading(true);
+    let nextOrder = images.length;
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `cr-submissions/${submission.artist_owner_id}/${submissionId}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("artwork-images").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (upErr) {
+        console.error(upErr);
+        toast.error(`Could not upload ${file.name}`);
+        continue;
+      }
+      const { error: dbErr } = await supabase.from("cr_submission_images" as any).insert({
+        submission_id: submissionId,
+        storage_path: path,
+        display_order: nextOrder++,
+      } as any);
+      if (dbErr) {
+        console.error(dbErr);
+        await supabase.storage.from("artwork-images").remove([path]);
+        toast.error(`Could not record ${file.name}`);
+      }
+    }
+    setUploading(false);
+    fetchAll();
+  };
+
+  const handleDeleteImage = async (img: SubmissionImage) => {
+    if (!confirm("Remove this image?")) return;
+    await supabase.storage.from("artwork-images").remove([img.storage_path]);
+    await supabase.from("cr_submission_images" as any).delete().eq("id", img.id);
+    fetchAll();
   };
 
   useEffect(() => {
@@ -421,8 +479,19 @@ export function CommitteeSubmissionDetail() {
       update.rejection_notes = null;
     }
 
-    // Create artwork on accept
+    // Create artwork on accept + assign CR number
     if (outcome === "accepted") {
+      // Next CR number for this estate
+      const { data: maxRow } = await supabase
+        .from("artworks")
+        .select("cr_number")
+        .eq("owner_id", submission.artist_owner_id)
+        .not("cr_number", "is", null)
+        .order("cr_number", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const nextCr = ((maxRow as any)?.cr_number || 0) + 1;
+
       const { data: artwork, error: artErr } = await supabase
         .from("artworks")
         .insert({
@@ -436,6 +505,8 @@ export function CommitteeSubmissionDetail() {
           provenance: submission.provenance,
           status: "available",
           role_context: "artist",
+          cr_number: nextCr,
+          catalogue_number: `CR ${nextCr}`,
         } as any)
         .select("id")
         .single();
@@ -445,6 +516,17 @@ export function CommitteeSubmissionDetail() {
         return;
       }
       update.resulting_artwork_id = artwork.id;
+      update.cr_number = nextCr;
+
+      // Copy submission images into artwork_images (re-use same storage paths)
+      if (images.length > 0) {
+        const rows = images.map((img, idx) => ({
+          artwork_id: artwork.id,
+          storage_path: img.storage_path,
+          display_order: idx,
+        }));
+        await supabase.from("artwork_images").insert(rows as any);
+      }
     }
 
     const { error } = await supabase.from("cr_submissions" as any).update(update).eq("id", submissionId);
@@ -502,15 +584,33 @@ export function CommitteeSubmissionDetail() {
 
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-2xl font-serif italic">{submission.title}</h2>
               <StatusBadge status={submission.status} />
+              {submission.cr_number && (
+                <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm bg-foreground text-background font-medium">
+                  CR {submission.cr_number}
+                </span>
+              )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Submitted {new Date(submission.created_at).toLocaleDateString()}
               {submission.submitter_name ? ` by ${submission.submitter_name}` : ""}
+              {submission.submitter_email ? ` · ${submission.submitter_email}` : ""}
             </p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5 shrink-0"
+            onClick={() => {
+              const url = `${window.location.origin}/cr/submit/${submission.artist_owner_id}`;
+              navigator.clipboard.writeText(url);
+              toast.success("Public submission link copied");
+            }}
+          >
+            <Share2 className="w-3.5 h-3.5" /> Public link
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
@@ -542,12 +642,52 @@ export function CommitteeSubmissionDetail() {
                   <dd>{submission.owner_contact || "—"}</dd>
                 </div>
               </dl>
-              <p className="text-[11px] text-muted-foreground pt-2 border-t border-border">
-                Image upload and full metadata editing is coming next. For now, this view focuses on the review workflow.
-              </p>
             </section>
 
-            {/* Committee votes */}
+            {/* Images */}
+            <section className="border border-border rounded-sm p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs uppercase tracking-wider text-muted-foreground">Images ({images.length})</h3>
+                {!decided && (
+                  <label className="text-xs inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-sm cursor-pointer hover:bg-accent">
+                    {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImagePlus className="w-3.5 h-3.5" />}
+                    Add images
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => { handleUpload(e.target.files); e.target.value = ""; }}
+                    />
+                  </label>
+                )}
+              </div>
+              {images.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No images attached yet.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {images.map((img) => {
+                    const url = supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl;
+                    return (
+                      <div key={img.id} className="relative aspect-square rounded-sm overflow-hidden bg-secondary group">
+                        <img src={url} alt="Submission" className="w-full h-full object-cover" />
+                        {!decided && (
+                          <button
+                            onClick={() => handleDeleteImage(img)}
+                            className="absolute top-1.5 right-1.5 p-1 bg-background/90 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="w-3 h-3 text-destructive" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="text-[11px] text-muted-foreground pt-2 border-t border-border">
+                On acceptance, these images are linked to the resulting catalogue artwork.
+              </p>
+            </section>
             <section className="border border-border rounded-sm p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs uppercase tracking-wider text-muted-foreground">Committee votes</h3>
