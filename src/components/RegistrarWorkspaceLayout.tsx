@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink, useNavigate, useParams, useLocation } from "react-router-dom";
-import { ArrowLeft, User, Images, Layers, Warehouse, Briefcase, FileText, Calendar, BookOpen, ScrollText } from "lucide-react";
+import { ArrowLeft, User, Images, Layers, Warehouse, Briefcase, FileText, Calendar, BookOpen, ScrollText, Gavel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveOwner } from "@/hooks/use-active-owner";
 
@@ -14,6 +14,7 @@ const navItems = [
   { label: "Exhibitions", path: "exhibitions", icon: Calendar },
   { label: "Catalogues", path: "catalogues", icon: BookOpen },
   { label: "Provenance", path: "provenance", icon: ScrollText },
+  { label: "Committee", path: "committee", icon: Gavel },
 ];
 
 interface Props {
@@ -57,7 +58,9 @@ export function RegistrarWorkspaceLayout({ children, headerActions }: Props) {
           <nav className="flex items-center gap-1 flex-1">
             {navItems.map((item) => {
               const fullPath = `${base}/${item.path}`;
-              const isActive = location.pathname === fullPath || (item.path === "artworks" && location.pathname === base);
+              const isActive = location.pathname === fullPath
+                || location.pathname.startsWith(fullPath + "/")
+                || (item.path === "artworks" && location.pathname === base);
               return (
                 <NavLink
                   key={item.path}
