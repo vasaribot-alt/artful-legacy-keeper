@@ -1391,18 +1391,21 @@ export type Database = {
           birth_year: number | null
           chronology: string | null
           city: string | null
+          committee_connected: boolean
           committee_quorum: number
           contact_visibility: Json
           contacts: string | null
           country: string | null
           created_at: string
           cv: string | null
+          death_year: number | null
           email: string | null
           full_name: string | null
           galleries: Json | null
           global_artist_id: number
           id: string
           id_verified: boolean
+          is_deceased: boolean
           phone: string | null
           phone_prefix: string | null
           social_media_links: Json | null
@@ -1420,18 +1423,21 @@ export type Database = {
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
+          committee_connected?: boolean
           committee_quorum?: number
           contact_visibility?: Json
           contacts?: string | null
           country?: string | null
           created_at?: string
           cv?: string | null
+          death_year?: number | null
           email?: string | null
           full_name?: string | null
           galleries?: Json | null
           global_artist_id?: number
           id?: string
           id_verified?: boolean
+          is_deceased?: boolean
           phone?: string | null
           phone_prefix?: string | null
           social_media_links?: Json | null
@@ -1449,18 +1455,21 @@ export type Database = {
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
+          committee_connected?: boolean
           committee_quorum?: number
           contact_visibility?: Json
           contacts?: string | null
           country?: string | null
           created_at?: string
           cv?: string | null
+          death_year?: number | null
           email?: string | null
           full_name?: string | null
           galleries?: Json | null
           global_artist_id?: number
           id?: string
           id_verified?: boolean
+          is_deceased?: boolean
           phone?: string | null
           phone_prefix?: string | null
           social_media_links?: Json | null
