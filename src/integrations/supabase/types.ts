@@ -398,6 +398,7 @@ export type Database = {
           artwork_type: string | null
           buyer_name: string | null
           catalogue_number: string | null
+          cr_number: number | null
           created_at: string
           created_by: string | null
           currency: string | null
@@ -441,6 +442,7 @@ export type Database = {
           artwork_type?: string | null
           buyer_name?: string | null
           catalogue_number?: string | null
+          cr_number?: number | null
           created_at?: string
           created_by?: string | null
           currency?: string | null
@@ -484,6 +486,7 @@ export type Database = {
           artwork_type?: string | null
           buyer_name?: string | null
           catalogue_number?: string | null
+          cr_number?: number | null
           created_at?: string
           created_by?: string | null
           currency?: string | null
@@ -677,6 +680,7 @@ export type Database = {
         Row: {
           artist_owner_id: string
           condition_notes: string | null
+          cr_number: number | null
           created_at: string
           decision_at: string | null
           decision_by: string | null
@@ -701,6 +705,7 @@ export type Database = {
         Insert: {
           artist_owner_id: string
           condition_notes?: string | null
+          cr_number?: number | null
           created_at?: string
           decision_at?: string | null
           decision_by?: string | null
@@ -725,6 +730,7 @@ export type Database = {
         Update: {
           artist_owner_id?: string
           condition_notes?: string | null
+          cr_number?: number | null
           created_at?: string
           decision_at?: string | null
           decision_by?: string | null
@@ -1760,6 +1766,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      lookup_cr_artist: {
+        Args: { _query: string }
+        Returns: {
+          full_name: string
+          global_artist_id: number
+          user_id: string
+        }[]
       }
     }
     Enums: {
