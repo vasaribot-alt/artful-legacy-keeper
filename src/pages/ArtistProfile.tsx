@@ -504,13 +504,6 @@ const ArtistProfile = () => {
         {/* Basic Info */}
         <section id="basic-information" className="space-y-6 scroll-mt-6">
           <h2 className="text-2xl">Basic Information</h2>
-          <div className="flex items-center gap-6">
-            <div className="relative group">
-              <Avatar className="w-24 h-24 border-2 border-border">
-                <AvatarImage src={avatarUrl || undefined} alt="Profile photo" />
-        {/* Basic Info */}
-        <section id="basic-information" className="space-y-6 scroll-mt-6">
-          <h2 className="text-2xl">Basic Information</h2>
           <div className="flex flex-wrap items-start gap-6 justify-between">
             <div className="flex items-center gap-6">
               <div className="relative group">
