@@ -82,6 +82,9 @@ const ArtistProfile = () => {
 
   const [fullName, setFullName] = useState("");
   const [birthYear, setBirthYear] = useState("");
+  const [isDeceased, setIsDeceased] = useState(false);
+  const [deathYear, setDeathYear] = useState("");
+  const [committeeConnected, setCommitteeConnected] = useState(false);
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [studioAddress, setStudioAddress] = useState("");
