@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Users, Search, Send, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Users, Search, Send, Clock, CheckCircle, XCircle, Gavel } from "lucide-react";
 import {
   Dialog,
   DialogContent,
