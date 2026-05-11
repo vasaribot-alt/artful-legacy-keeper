@@ -647,7 +647,50 @@ export function CommitteeSubmissionDetail() {
               </p>
             </section>
 
-            {/* Committee votes */}
+            {/* Images */}
+            <section className="border border-border rounded-sm p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs uppercase tracking-wider text-muted-foreground">Images ({images.length})</h3>
+                {!decided && (
+                  <label className="text-xs inline-flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-sm cursor-pointer hover:bg-accent">
+                    {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImagePlus className="w-3.5 h-3.5" />}
+                    Add images
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => { handleUpload(e.target.files); e.target.value = ""; }}
+                    />
+                  </label>
+                )}
+              </div>
+              {images.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No images attached yet.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {images.map((img) => {
+                    const url = supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl;
+                    return (
+                      <div key={img.id} className="relative aspect-square rounded-sm overflow-hidden bg-secondary group">
+                        <img src={url} alt="Submission" className="w-full h-full object-cover" />
+                        {!decided && (
+                          <button
+                            onClick={() => handleDeleteImage(img)}
+                            className="absolute top-1.5 right-1.5 p-1 bg-background/90 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="w-3 h-3 text-destructive" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <p className="text-[11px] text-muted-foreground pt-2 border-t border-border">
+                On acceptance, these images are linked to the resulting catalogue artwork.
+              </p>
+            </section>
             <section className="border border-border rounded-sm p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs uppercase tracking-wider text-muted-foreground">Committee votes</h3>
