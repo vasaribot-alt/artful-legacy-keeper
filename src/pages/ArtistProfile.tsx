@@ -186,6 +186,9 @@ const ArtistProfile = () => {
       .update({
         full_name: fullName || null,
         birth_year: birthYear ? parseInt(birthYear) : null,
+        is_deceased: isDeceased,
+        death_year: isDeceased && deathYear ? parseInt(deathYear) : null,
+        committee_connected: committeeConnected,
         city: city || null,
         country: country || null,
         studio_address: studioAddress || null,
