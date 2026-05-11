@@ -508,22 +508,63 @@ const ArtistProfile = () => {
             <div className="relative group">
               <Avatar className="w-24 h-24 border-2 border-border">
                 <AvatarImage src={avatarUrl || undefined} alt="Profile photo" />
-                <AvatarFallback className="text-2xl">
-                  {fullName ? fullName.charAt(0).toUpperCase() : "?"}
-                </AvatarFallback>
-              </Avatar>
-              <button
-                onClick={() => avatarInputRef.current?.click()}
-                disabled={uploadingAvatar}
-                className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-              >
-                {uploadingAvatar ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : <Camera className="w-6 h-6 text-white" />}
-              </button>
-              <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+        {/* Basic Info */}
+        <section id="basic-information" className="space-y-6 scroll-mt-6">
+          <h2 className="text-2xl">Basic Information</h2>
+          <div className="flex flex-wrap items-start gap-6 justify-between">
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <Avatar className="w-24 h-24 border-2 border-border">
+                  <AvatarImage src={avatarUrl || undefined} alt="Profile photo" />
+                  <AvatarFallback className="text-2xl">
+                    {fullName ? fullName.charAt(0).toUpperCase() : "?"}
+                  </AvatarFallback>
+                </Avatar>
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  {uploadingAvatar ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : <Camera className="w-6 h-6 text-white" />}
+                </button>
+                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Profile Photo</p>
+                <p className="text-xs text-muted-foreground">Click to upload or change</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium">Profile Photo</p>
-              <p className="text-xs text-muted-foreground">Click to upload or change</p>
+
+            {/* Toggles: Committee + Deceased */}
+            <div className="space-y-4 min-w-[260px]">
+              <div className="flex items-center justify-between gap-4 p-3 rounded-md border border-border">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Gavel className="w-3.5 h-3.5 text-muted-foreground" />
+                    <p className="text-sm font-medium">Connect to Committee</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Enable Catalogue Raisonné review</p>
+                </div>
+                <Switch checked={committeeConnected} onCheckedChange={setCommitteeConnected} />
+              </div>
+              {committeeConnected && userId && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/registrar/client/${userId}/committee`)}
+                  className="w-full gap-1.5"
+                >
+                  <Gavel className="w-3.5 h-3.5" /> Go to Committee Review
+                </Button>
+              )}
+              <div className="flex items-center justify-between gap-4 p-3 rounded-md border border-border">
+                <div>
+                  <p className="text-sm font-medium">Artist is deceased</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Show year of death on profile</p>
+                </div>
+                <Switch checked={isDeceased} onCheckedChange={setIsDeceased} />
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -535,6 +576,12 @@ const ArtistProfile = () => {
               <Label>Year of Birth</Label>
               <Input type="number" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} placeholder="e.g. 1979" className="mt-1" />
             </div>
+            {isDeceased && (
+              <div>
+                <Label>Year of Death</Label>
+                <Input type="number" value={deathYear} onChange={(e) => setDeathYear(e.target.value)} placeholder="e.g. 2014" className="mt-1" />
+              </div>
+            )}
             <div>
               <Label>City</Label>
               <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Oslo" className="mt-1" />
