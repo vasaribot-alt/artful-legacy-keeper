@@ -38,6 +38,7 @@ import Donate from "./pages/Donate";
 import DonateThanks from "./pages/DonateThanks";
 import CollectorAccess from "./pages/CollectorAccess";
 import Capture from "./pages/Capture";
+import CrSubmit from "./pages/CrSubmit";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
