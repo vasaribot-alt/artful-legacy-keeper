@@ -1,99 +1,74 @@
-# Committee Review for Catalogue Raisonné
+# Catalogue Raisonné as a Separate Product
 
-Build a review workflow where a committee of registrars (acting for a deceased-artist estate) votes on submitted works, records decisions with notes and rejection reasons, and keeps a tamper-evident audit log.
+Launch the CR workflow as its own branded frontend on a separate domain, while reusing the existing Lovable Cloud backend (artists, registrars, identity, payments, and the `cr_*` tables we already built).
 
-## Scope of this step
-
-This is the **review engine only**. Public submission forms, CR-number assignment rules, and "rejected attributions" public publishing are separate later steps. We build the committee-facing UI and the data plumbing.
-
-## Data model (new tables)
+## The shape of it
 
 ```text
-cr_submissions
-  id, artist_owner_id, submitted_by, submitted_at
-  title, year_estimated, medium, dimensions_h/w/d
-  provenance, condition_notes, owner_contact
-  image refs (reuse artwork_images via temporary artwork shell? — see Decision A)
-  status: 'submitted' | 'under_review' | 'accepted' | 'rejected' | 'deferred'
-  decision_at, decision_by (committee member who finalized)
-  rejection_reason (enum), rejection_notes (text)
-  resulting_artwork_id (nullable, set when accepted)
-
-cr_committee_votes
-  id, submission_id, voter_id (registrar uuid)
-  vote: 'accept' | 'reject' | 'defer' | 'abstain'
-  note (text), created_at
-  unique(submission_id, voter_id)  -- one vote per member, can be updated
-
-cr_audit_log
-  id, submission_id, actor_id, action, payload jsonb, created_at
-  action: 'submitted' | 'vote_cast' | 'vote_changed' | 'note_added'
-           | 'status_changed' | 'decision_finalized' | 'reopened'
+globalartistregistry.org           → living artists (current product, unchanged)
+catalogueraisonne.org  (or sim.)   → new CR product, separate brand
+        │
+        └──── same Lovable Cloud backend ────┐
+                                              │
+              shared: profiles, registrars,   │
+              verifications, storage,         │
+              cr_submissions, cr_votes,       │
+              cr_audit_log, cr_status_tokens  │
 ```
 
-RLS: all three tables gated by `has_registrar_access(auth.uid(), artist_owner_id)` for read/write, plus the artist's own profile owner if present. Audit log is **append-only** (no UPDATE/DELETE policy).
+Two frontends, one database. A registrar serving an estate logs into the CR site; a living artist never sees CR language. Public submitters land on the CR site only.
 
-### Decision A — image storage for submissions
+## How we build it (concretely)
 
-Reuse the existing `artwork-images` bucket with a `cr_submissions/<id>/` prefix and a parallel `cr_submission_images` table. When accepted, images are linked/copied to the new artwork row. Keeps the submission lightweight and avoids polluting the `artworks` table with non-catalogued works.
+1. **Remix the current project** into a new Lovable project — call it e.g. `catalogue-raisonne`. Same backend gets connected (same Supabase project ref), so all `cr_*` tables, RLS, RPCs and the `lookup_cr_artist` / `create_cr_submission` functions are immediately usable.
+2. **Strip the CR remix down** to only the screens that belong to the scholarly product:
+   - Public landing (what a CR is, how submissions work, the committees)
+   - `/cr/submit/:artistId` (already built)
+   - `/cr/status/:token` (already built)
+   - Registrar login → committee inbox → submission detail (already built as `/registrar/client/:ownerId/committee`)
+   - Estate / deceased-artist profile pages (public-facing scholarly view)
+   - Remove: artist self-service dashboard, artwork CRUD as artist, exhibitions editor, donation flows, founding-artist marketing — none of this belongs on a CR product.
+3. **Strip the current project down** in the opposite direction:
+   - Remove or hide the CR submit/status/committee routes from the living-artists product.
+   - Keep the `cr_*` data layer intact (it's just unused from this frontend).
+4. **Brand the CR product distinctly**: serif-forward, museum-catalogue typography, monochrome but heavier (think Yale University Press / Wildenstein Plattner Institute), distinct logo, distinct domain. Goal: a contemporary artist visiting the CR site immediately understands "this is not for me."
+5. **Domains**: point a new domain (e.g. `catalogueraisonne.org`) at the new Lovable project. Living-artist domain stays on this project.
+6. **Estate-profile flag** (deferred but worth naming now): add `profiles.profile_kind = 'living' | 'estate'` later, so the same artist record can be promoted to an estate without data migration. Until then, "any profile with a committee of registrars" is treated as an estate by the CR frontend.
 
-## Routes & UI
+## What stays shared vs duplicated
 
 ```text
-/registrar/client/:ownerId/committee
-  ├─ Inbox      → list of submissions, filter by status
-  ├─ /:submissionId   → review detail page
-  └─ /log       → full audit log for this estate
+SHARED (one source of truth, in the backend)
+  profiles · user_roles · registrar_invites · verifications
+  artworks · artwork_images · storage buckets
+  cr_submissions · cr_committee_votes · cr_audit_log
+  Stripe customer + subscription tables
+  Veriff sessions
+
+DUPLICATED (per-frontend, intentionally)
+  Branding, copy, landing pages
+  Auth screens (different wording, same Supabase auth)
+  Navigation + sidebar
+  Public profile presentation
 ```
 
-### Inbox
-- Columns: thumbnail, title (working), submitter, submitted date, status badge, vote tally (e.g. "2 accept · 1 defer · 0 reject"), your vote chip.
-- Quick filters: Pending my vote · Under review · Decided · Rejected · Deferred.
+## Migration risk: near zero
 
-### Submission detail
-- Left: image carousel + zoom, metadata panel (provenance, condition, owner contact).
-- Right column:
-  - **Your vote**: 4-button row (Accept / Reject / Defer / Abstain) + note textarea. Saving upserts your vote and writes audit log entry.
-  - **Committee votes**: list of members with their vote chip + note + timestamp.
-  - **Decision panel** (visible to anyone with registrar access, action gated by quorum — see Decision B): "Finalize as Accepted" / "Finalize as Rejected" buttons. Rejection requires a reason (dropdown: *Not by artist · Insufficient provenance · Condition/integrity · Duplicate · Other*) plus optional notes.
-  - **Audit log** (collapsible): chronological event stream.
+Because the CR tables and RPCs already exist in this project's backend, the new frontend just consumes them. No data move, no double-entry, no sync logic. If we later decide to split backends, we can — but we won't have to.
 
-### Decision B — quorum
+## What I'd do first, in order
 
-Configurable per estate (`profiles.committee_quorum`, default 2). Finalize button is enabled when:
-- ≥ quorum votes cast, AND
-- A clear majority for one outcome (ties → defer).
-- Any committee member can press Finalize — we don't auto-finalize, to preserve human authorship of the decision.
+1. You confirm the direction and a working name / domain for the CR product.
+2. I remix this project into the new CR project and connect it to the same Lovable Cloud backend.
+3. I strip the CR remix to only the scholarly surfaces and build a proper CR landing + estate profile layout.
+4. I remove the CR routes from this (living-artists) project so the two products visually never collide.
+5. We point the new domain and soft-launch with one estate (the test estate we already use for committee review).
 
-On finalize:
-- Accepted → create `artworks` row owned by `artist_owner_id`, copy images, link `resulting_artwork_id`, set status `accepted`.
-- Rejected → status `rejected`, keep submission record, no artwork row created.
-- Reopen action available (writes `reopened` audit entry, status returns to `under_review`).
+## What's not in scope yet
 
-## Audit log mechanics
+- Estate-profile type flag in `profiles` (do it once we have a second real estate).
+- CR-number assignment scheme (manual field on accepted artworks until we have a curator preference).
+- Public "rejected attributions" listing (sensitive — handle after first real committee accepts a workflow).
+- Email notifications to committee members (nice-to-have, after the manual flow is proven).
 
-Server-side trigger writes entries for every meaningful change:
-- Insert into `cr_submissions` → `submitted`
-- Insert/update on `cr_committee_votes` → `vote_cast` / `vote_changed`
-- Status transitions on `cr_submissions` → `status_changed` + `decision_finalized` when terminal
-- Manual notes via a small "Add committee note" action → `note_added`
-
-The log is **read-only** in the UI and in RLS. Each entry stores `actor_id`, the action verb, a small `payload` (e.g., `{from: 'submitted', to: 'under_review'}` or `{vote: 'accept'}`), and timestamp.
-
-## What's NOT in this step
-
-- Public submission form for outside owners (next step).
-- CR-number assignment logic (next step — likely manual field on accepted artworks).
-- Public "Rejected attributions" listing.
-- Email notifications to committee members on new submissions.
-- A "deceased artist / estate" profile flag — for now any profile with multiple registrars can use it. We'll formalize the estate profile type once the workflow is proven.
-
-## Build order
-
-1. Migration: three tables, RLS, triggers for audit log.
-2. `/registrar/client/:ownerId/committee` inbox page.
-3. Submission detail page with vote panel + decision panel + audit log view.
-4. Seed a couple of test submissions for the existing test estate so you can click through.
-5. Memory entry documenting the workflow.
-
-A separate task will add the public submission form; that's the right moment to also decide the estate-profile flag and CR-number scheme.
+If you're happy with this shape, tell me a working name for the CR product and I'll start with step 2.
