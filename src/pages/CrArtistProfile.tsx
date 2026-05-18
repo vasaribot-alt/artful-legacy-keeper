@@ -59,6 +59,7 @@ export default function CrArtistProfile() {
   const { gar } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [cv, setCv] = useState<CvEntry[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
