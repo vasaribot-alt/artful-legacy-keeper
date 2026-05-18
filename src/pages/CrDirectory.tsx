@@ -62,16 +62,40 @@ export default function CrDirectory() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b">
         <div className="max-w-5xl mx-auto px-6 py-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            The Raisonné
-          </p>
-          <h1 className="font-serif text-4xl md:text-5xl mt-2">
-            Catalogues Raisonnés
-          </h1>
-          <p className="text-muted-foreground mt-3 max-w-2xl">
-            A scholarly directory of artists whose catalogues raisonnés are
-            published, in preparation, or available online.
-          </p>
+          <div className="flex items-start justify-between gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                The Raisonné
+              </p>
+              <h1 className="font-serif text-4xl md:text-5xl mt-2">
+                Catalogues Raisonnés
+              </h1>
+              <p className="text-muted-foreground mt-3 max-w-2xl">
+                A scholarly directory of artists whose catalogues raisonnés are
+                published, in preparation, or available online.
+              </p>
+            </div>
+            <Link to="/cr/profile" className="shrink-0">
+              <Button variant="outline" size="sm">
+                Set up CR profile
+              </Button>
+            </Link>
+          </div>
+
+          <div className="mt-8 border-t pt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium">
+                Are you a scholar or compiler of a catalogue raisonné?
+              </p>
+              <p className="text-sm text-muted-foreground">
+                List your project in the directory — published, in preparation,
+                or online.
+              </p>
+            </div>
+            <Link to="/cr/profile">
+              <Button size="sm">List your catalogue raisonné</Button>
+            </Link>
+          </div>
         </div>
       </header>
 
