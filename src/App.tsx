@@ -40,6 +40,9 @@ import CollectorAccess from "./pages/CollectorAccess";
 import Capture from "./pages/Capture";
 import CrSubmit from "./pages/CrSubmit";
 import CrStatus from "./pages/CrStatus";
+import CrDirectory from "./pages/CrDirectory";
+import CrArtistProfile from "./pages/CrArtistProfile";
+import CrProfileEditor from "./pages/CrProfileEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
