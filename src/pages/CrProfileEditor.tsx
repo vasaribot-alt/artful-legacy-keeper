@@ -422,6 +422,17 @@ export default function CrProfileEditor() {
           </div>
         </section>
 
+        <section className="space-y-4">
+          <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Committee
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Add the author of the catalogue raisonné and any committee members.
+            The list appears on the public scholarly page.
+          </p>
+          {activeId && <CrCommitteeManager artistUserId={activeId} />}
+        </section>
+
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button onClick={save} disabled={saving}>
             {saving ? (
