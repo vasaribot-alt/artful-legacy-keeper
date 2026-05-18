@@ -1388,6 +1388,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           biography: string | null
+          birth_country: string | null
           birth_year: number | null
           chronology: string | null
           city: string | null
@@ -1396,8 +1397,19 @@ export type Database = {
           contact_visibility: Json
           contacts: string | null
           country: string | null
+          cr_compilers: string | null
+          cr_contact_email: string | null
+          cr_first_volume_year: number | null
+          cr_isbn: string | null
+          cr_listed: boolean
+          cr_publisher: string | null
+          cr_scope: string | null
+          cr_sponsor: string | null
+          cr_status: string | null
+          cr_website_url: string | null
           created_at: string
           cv: string | null
+          death_country: string | null
           death_year: number | null
           email: string | null
           full_name: string | null
@@ -1406,6 +1418,9 @@ export type Database = {
           id: string
           id_verified: boolean
           is_deceased: boolean
+          nationality: string | null
+          period_activity_end: number | null
+          period_activity_start: number | null
           phone: string | null
           phone_prefix: string | null
           social_media_links: Json | null
@@ -1420,6 +1435,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           biography?: string | null
+          birth_country?: string | null
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
@@ -1428,8 +1444,19 @@ export type Database = {
           contact_visibility?: Json
           contacts?: string | null
           country?: string | null
+          cr_compilers?: string | null
+          cr_contact_email?: string | null
+          cr_first_volume_year?: number | null
+          cr_isbn?: string | null
+          cr_listed?: boolean
+          cr_publisher?: string | null
+          cr_scope?: string | null
+          cr_sponsor?: string | null
+          cr_status?: string | null
+          cr_website_url?: string | null
           created_at?: string
           cv?: string | null
+          death_country?: string | null
           death_year?: number | null
           email?: string | null
           full_name?: string | null
@@ -1438,6 +1465,9 @@ export type Database = {
           id?: string
           id_verified?: boolean
           is_deceased?: boolean
+          nationality?: string | null
+          period_activity_end?: number | null
+          period_activity_start?: number | null
           phone?: string | null
           phone_prefix?: string | null
           social_media_links?: Json | null
@@ -1452,6 +1482,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           biography?: string | null
+          birth_country?: string | null
           birth_year?: number | null
           chronology?: string | null
           city?: string | null
@@ -1460,8 +1491,19 @@ export type Database = {
           contact_visibility?: Json
           contacts?: string | null
           country?: string | null
+          cr_compilers?: string | null
+          cr_contact_email?: string | null
+          cr_first_volume_year?: number | null
+          cr_isbn?: string | null
+          cr_listed?: boolean
+          cr_publisher?: string | null
+          cr_scope?: string | null
+          cr_sponsor?: string | null
+          cr_status?: string | null
+          cr_website_url?: string | null
           created_at?: string
           cv?: string | null
+          death_country?: string | null
           death_year?: number | null
           email?: string | null
           full_name?: string | null
@@ -1470,6 +1512,9 @@ export type Database = {
           id?: string
           id_verified?: boolean
           is_deceased?: boolean
+          nationality?: string | null
+          period_activity_end?: number | null
+          period_activity_start?: number | null
           phone?: string | null
           phone_prefix?: string | null
           social_media_links?: Json | null
