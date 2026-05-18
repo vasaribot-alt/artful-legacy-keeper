@@ -92,6 +92,9 @@ const App = () => (
           <Route path="/capture" element={<Capture />} />
           <Route path="/cr/submit/:artistId" element={<CrSubmit />} />
           <Route path="/cr/status/:token" element={<CrStatus />} />
+          <Route path="/cr" element={<CrDirectory />} />
+          <Route path="/cr/artist/:gar" element={<CrArtistProfile />} />
+          <Route path="/cr/profile" element={<CrProfileEditor />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
