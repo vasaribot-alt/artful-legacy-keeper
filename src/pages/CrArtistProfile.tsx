@@ -220,6 +220,44 @@ export default function CrArtistProfile() {
           </dl>
         </section>
 
+        {members.length > 0 && (
+          <section>
+            <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">
+              Committee
+            </h2>
+            <ul className="divide-y border-t border-b">
+              {members.map((m) => (
+                <li
+                  key={m.id}
+                  className="grid grid-cols-1 sm:grid-cols-[12rem_1fr_auto] gap-2 sm:gap-6 py-3 text-sm"
+                >
+                  <span className="text-muted-foreground">
+                    {MEMBER_ROLE_LABEL[m.role] || m.role}
+                  </span>
+                  <span>
+                    <span className="font-medium">{m.name}</span>
+                    {m.affiliation && (
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · {m.affiliation}
+                      </span>
+                    )}
+                  </span>
+                  {m.email && (
+                    <a
+                      href={`mailto:${m.email}`}
+                      className="underline text-muted-foreground hover:text-foreground sm:text-right"
+                    >
+                      {m.email}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+
         {profile.biography && (
           <section>
             <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-3">
