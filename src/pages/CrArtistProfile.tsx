@@ -34,6 +34,21 @@ interface CvEntry {
   entry_text: string;
 }
 
+interface Member {
+  id: string;
+  name: string;
+  email: string | null;
+  role: string;
+  affiliation: string | null;
+  sort_order: number;
+}
+
+const MEMBER_ROLE_LABEL: Record<string, string> = {
+  author: "Author",
+  committee_chair: "Committee Chair",
+  committee_member: "Committee Member",
+};
+
 const STATUS_LABEL: Record<string, string> = {
   published: "Published",
   in_preparation: "In Preparation",
