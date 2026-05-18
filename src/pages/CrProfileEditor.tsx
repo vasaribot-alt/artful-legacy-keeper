@@ -35,6 +35,13 @@ interface CrFields {
   cr_isbn: string;
 }
 
+interface EditableProfile {
+  user_id: string;
+  full_name: string | null;
+  global_artist_id: number | null;
+  relation: "author" | "committee";
+}
+
 const EMPTY: CrFields = {
   cr_listed: false,
   birth_country: "",
@@ -57,10 +64,12 @@ export default function CrProfileEditor() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [profiles, setProfiles] = useState<EditableProfile[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [gar, setGar] = useState<number | null>(null);
   const [f, setF] = useState<CrFields>(EMPTY);
 
+  // Step 1: build the list of profiles the user can edit (author + committee)
   useEffect(() => {
     (async () => {
       const {
@@ -70,13 +79,70 @@ export default function CrProfileEditor() {
         navigate("/login");
         return;
       }
-      setUserId(session.user.id);
+
+      const list: EditableProfile[] = [];
+
+      // Author: own profile
+      const { data: own } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, global_artist_id")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      if (own) {
+        list.push({
+          user_id: own.user_id,
+          full_name: own.full_name,
+          global_artist_id: own.global_artist_id,
+          relation: "author",
+        });
+      }
+
+      // Committee: profiles where the current user has registrar access
+      const { data: access } = await supabase
+        .from("registrar_access")
+        .select("owner_id")
+        .eq("registrar_id", session.user.id)
+        .eq("status", "approved");
+
+      const ownerIds = (access || [])
+        .map((r: { owner_id: string }) => r.owner_id)
+        .filter((id) => id !== session.user.id);
+
+      if (ownerIds.length > 0) {
+        const { data: granted } = await supabase
+          .from("profiles")
+          .select("user_id, full_name, global_artist_id")
+          .in("user_id", ownerIds);
+        (granted || []).forEach((p) =>
+          list.push({
+            user_id: p.user_id,
+            full_name: p.full_name,
+            global_artist_id: p.global_artist_id,
+            relation: "committee",
+          })
+        );
+      }
+
+      setProfiles(list);
+      if (list.length > 0) {
+        setActiveId(list[0].user_id);
+      } else {
+        setLoading(false);
+      }
+    })();
+  }, [navigate]);
+
+  // Step 2: load CR fields for the active profile
+  useEffect(() => {
+    if (!activeId) return;
+    setLoading(true);
+    (async () => {
       const { data } = await supabase
         .from("profiles")
         .select(
           "global_artist_id, cr_listed, birth_country, death_country, nationality, period_activity_start, period_activity_end, cr_status, cr_scope, cr_compilers, cr_sponsor, cr_contact_email, cr_website_url, cr_first_volume_year, cr_publisher, cr_isbn"
         )
-        .eq("user_id", session.user.id)
+        .eq("user_id", activeId)
         .maybeSingle();
       if (data) {
         setGar((data as { global_artist_id: number }).global_artist_id);
@@ -97,16 +163,19 @@ export default function CrProfileEditor() {
           cr_publisher: data.cr_publisher ?? "",
           cr_isbn: data.cr_isbn ?? "",
         });
+      } else {
+        setF(EMPTY);
+        setGar(null);
       }
       setLoading(false);
     })();
-  }, [navigate]);
+  }, [activeId]);
 
   const setField = <K extends keyof CrFields>(k: K, v: CrFields[K]) =>
     setF((p) => ({ ...p, [k]: v }));
 
   const save = async () => {
-    if (!userId) return;
+    if (!activeId) return;
     setSaving(true);
     const toInt = (s: string) => (s.trim() === "" ? null : parseInt(s, 10));
     const { error } = await supabase
@@ -128,7 +197,7 @@ export default function CrProfileEditor() {
         cr_publisher: f.cr_publisher || null,
         cr_isbn: f.cr_isbn || null,
       })
-      .eq("user_id", userId);
+      .eq("user_id", activeId);
     setSaving(false);
     if (error) {
       toast.error(error.message);
@@ -147,6 +216,25 @@ export default function CrProfileEditor() {
     );
   }
 
+  if (profiles.length === 0) {
+    return (
+      <AppLayout>
+        <div className="max-w-3xl mx-auto px-6 py-10">
+          <h1 className="font-serif text-3xl mb-3">
+            Catalogue Raisonné Profile
+          </h1>
+          <p className="text-muted-foreground">
+            You don't have access to any artist profile yet. To edit a CR
+            profile you must either be the artist (author) or hold approved
+            committee access via the registrar system.
+          </p>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  const active = profiles.find((p) => p.user_id === activeId);
+
   return (
     <AppLayout>
       <div className="max-w-3xl mx-auto px-6 py-10 space-y-10">
@@ -158,10 +246,40 @@ export default function CrProfileEditor() {
             Catalogue Raisonné Profile
           </h1>
           <p className="text-sm text-muted-foreground mt-3">
-            Scholarly entry for the public CR directory at{" "}
-            <code>/cr</code>. Modelled on IFAR's catalogue raisonné database.
+            Scholarly entry for the public CR directory at <code>/cr</code>.
+            Editable by the artist (author) and by approved committee members.
           </p>
         </header>
+
+        {profiles.length > 1 && (
+          <section className="space-y-2">
+            <Label>Editing profile for</Label>
+            <Select
+              value={activeId ?? undefined}
+              onValueChange={(v) => setActiveId(v)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {profiles.map((p) => (
+                  <SelectItem key={p.user_id} value={p.user_id}>
+                    {p.full_name || "Untitled"}
+                    {p.global_artist_id ? ` · GAR-${p.global_artist_id}` : ""}
+                    {p.relation === "author" ? " · author" : " · committee"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </section>
+        )}
+
+        {active && (
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            Your role on this profile:{" "}
+            <span className="text-foreground">{active.relation}</span>
+          </p>
+        )}
 
         <section className="border rounded-md p-5 flex items-center justify-between">
           <div>
