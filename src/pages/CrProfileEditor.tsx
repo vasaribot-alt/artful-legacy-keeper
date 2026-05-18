@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, ExternalLink } from "lucide-react";
+import { CrCommitteeManager } from "@/components/CrCommitteeManager";
 
 interface CrFields {
   cr_listed: boolean;
