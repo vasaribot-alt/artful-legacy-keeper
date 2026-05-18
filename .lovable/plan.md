@@ -1,74 +1,72 @@
-# Catalogue Raisonné as a Separate Product
+# IFAR-style CR artist profile
 
-Launch the CR workflow as its own branded frontend on a separate domain, while reusing the existing Lovable Cloud backend (artists, registrars, identity, payments, and the `cr_*` tables we already built).
+Model the public artist entry on IFAR's Catalogues Raisonnés database: one scholarly profile per artist, with the CR project(s) attached underneath. Public read, committee/owner write.
 
-## The shape of it
+## 1. Extend `profiles` with IFAR scholarly fields
 
-```text
-globalartistregistry.org           → living artists (current product, unchanged)
-catalogueraisonne.org  (or sim.)   → new CR product, separate brand
-        │
-        └──── same Lovable Cloud backend ────┐
-                                              │
-              shared: profiles, registrars,   │
-              verifications, storage,         │
-              cr_submissions, cr_votes,       │
-              cr_audit_log, cr_status_tokens  │
-```
+Add (nullable, additive — nothing existing is touched):
 
-Two frontends, one database. A registrar serving an estate logs into the CR site; a living artist never sees CR language. Public submitters land on the CR site only.
+- `birth_country` text — IFAR keys browse by country of birth, not current residence
+- `death_country` text
+- `nationality` text — distinct from country (e.g. born in Algeria, French national)
+- `period_activity_start` int, `period_activity_end` int — IFAR's "Period of Artist's Activity" buckets (e.g. 1950–present)
+- `cr_listed` boolean default false — gate for the public CR directory
+- `cr_status` text — `in_preparation` | `published` | `digital_only`
+- `cr_scope` text — what the CR covers: paintings, drawings, prints, sculpture, complete works…
+- `cr_compilers` text — author(s) of the catalogue raisonné
+- `cr_sponsor` text — sponsoring foundation / institution
+- `cr_contact_email` text — public scholarly contact (separate from `profiles.email`)
+- `cr_website_url` text — link if the CR is published online
+- `cr_first_volume_year` int, `cr_publisher` text, `cr_isbn` text — for published CRs
 
-## How we build it (concretely)
+## 2. RLS
 
-1. **Remix the current project** into a new Lovable project — call it e.g. `catalogue-raisonne`. Same backend gets connected (same Supabase project ref), so all `cr_*` tables, RLS, RPCs and the `lookup_cr_artist` / `create_cr_submission` functions are immediately usable.
-2. **Strip the CR remix down** to only the screens that belong to the scholarly product:
-   - Public landing (what a CR is, how submissions work, the committees)
-   - `/cr/submit/:artistId` (already built)
-   - `/cr/status/:token` (already built)
-   - Registrar login → committee inbox → submission detail (already built as `/registrar/client/:ownerId/committee`)
-   - Estate / deceased-artist profile pages (public-facing scholarly view)
-   - Remove: artist self-service dashboard, artwork CRUD as artist, exhibitions editor, donation flows, founding-artist marketing — none of this belongs on a CR product.
-3. **Strip the current project down** in the opposite direction:
-   - Remove or hide the CR submit/status/committee routes from the living-artists product.
-   - Keep the `cr_*` data layer intact (it's just unused from this frontend).
-4. **Brand the CR product distinctly**: serif-forward, museum-catalogue typography, monochrome but heavier (think Yale University Press / Wildenstein Plattner Institute), distinct logo, distinct domain. Goal: a contemporary artist visiting the CR site immediately understands "this is not for me."
-5. **Domains**: point a new domain (e.g. `catalogueraisonne.org`) at the new Lovable project. Living-artist domain stays on this project.
-6. **Estate-profile flag** (deferred but worth naming now): add `profiles.profile_kind = 'living' | 'estate'` later, so the same artist record can be promoted to an estate without data migration. Until then, "any profile with a committee of registrars" is treated as an estate by the CR frontend.
+- New SELECT policy on `profiles` for `anon` + `public`: `cr_listed = true` only. Existing owner/registrar policies untouched.
+- Mirror SELECT grants on `cv_entries`, `artwork_images`, `artworks` already exist for founding artists — extend to "cr_listed" the same way so the public profile can render exhibition history and a few key works.
 
-## What stays shared vs duplicated
+## 3. Public routes
 
 ```text
-SHARED (one source of truth, in the backend)
-  profiles · user_roles · registrar_invites · verifications
-  artworks · artwork_images · storage buckets
-  cr_submissions · cr_committee_votes · cr_audit_log
-  Stripe customer + subscription tables
-  Veriff sessions
-
-DUPLICATED (per-frontend, intentionally)
-  Branding, copy, landing pages
-  Auth screens (different wording, same Supabase auth)
-  Navigation + sidebar
-  Public profile presentation
+/cr                    A–Z directory of cr_listed artists, IFAR-style filters
+                       (name search, country of birth/death, period of activity,
+                        published vs. in-preparation)
+/cr/artist/:gar        Scholarly artist profile (IFAR-style layout)
 ```
 
-## Migration risk: near zero
+`/cr/artist/:gar` layout:
 
-Because the CR tables and RPCs already exist in this project's backend, the new frontend just consumes them. No data move, no double-entry, no sync logic. If we later decide to split backends, we can — but we won't have to.
+```text
+┌────────────────────────────────────────────────────────┐
+│ ARTIST FULL NAME                                       │
+│ b. 1932, Algiers, Algeria — d. 2017, Paris, France     │
+│ French · Active 1950–2010                              │
+├────────────────────────────────────────────────────────┤
+│ Catalogue Raisonné                                     │
+│   Status:        In Preparation                        │
+│   Scope:         Paintings, 1955–2010                  │
+│   Compilers:     X, Y                                  │
+│   Sponsor:       The Raisonné Foundation               │
+│   Contact:       cr@theraisonne.org                    │
+│   Online:        theraisonne.org/cr/artist/GAR-…       │
+├────────────────────────────────────────────────────────┤
+│ Biography (short scholarly note)                       │
+│ Chronology / Exhibitions (from cv_entries)             │
+│ Selected works (from artworks, verified only)          │
+└────────────────────────────────────────────────────────┘
+```
 
-## What I'd do first, in order
+## 4. Owner / committee editor
 
-1. You confirm the direction and a working name / domain for the CR product.
-2. I remix this project into the new CR project and connect it to the same Lovable Cloud backend.
-3. I strip the CR remix to only the scholarly surfaces and build a proper CR landing + estate profile layout.
-4. I remove the CR routes from this (living-artists) project so the two products visually never collide.
-5. We point the new domain and soft-launch with one estate (the test estate we already use for committee review).
+Add a "Catalogue Raisonné" tab on the existing profile editor that surfaces only the new `cr_*` fields plus the `cr_listed` toggle. No new editor screen — just one panel inside the current profile form.
 
-## What's not in scope yet
+## 5. Out of scope (later)
 
-- Estate-profile type flag in `profiles` (do it once we have a second real estate).
-- CR-number assignment scheme (manual field on accepted artworks until we have a curator preference).
-- Public "rejected attributions" listing (sensitive — handle after first real committee accepts a workflow).
-- Email notifications to committee members (nice-to-have, after the manual flow is proven).
+- Separate `cr_projects` table for artists with multiple distinct CRs (Picasso has many). For now, one CR per artist is enough; we can split later without breaking the URL or the public page.
+- Donation prompt on the directory (IFAR had one). Stripe is dormant per project memory.
 
-If you're happy with this shape, tell me a working name for the CR product and I'll start with step 2.
+## Technical notes
+
+- Migration is purely additive; no data backfill needed.
+- `/cr/artist/:gar` resolves via the existing `lookup_cr_artist` function (UUID or numeric GAR).
+- Public directory query: `select … from profiles where cr_listed = true order by full_name`.
+- A–Z buckets in UI: client-side `substr(full_name,1,1)` grouping, matching IFAR's A–E / F–K / L–Q / R–Z tabs.
