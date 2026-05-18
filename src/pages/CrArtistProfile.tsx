@@ -34,6 +34,21 @@ interface CvEntry {
   entry_text: string;
 }
 
+interface Member {
+  id: string;
+  name: string;
+  email: string | null;
+  role: string;
+  affiliation: string | null;
+  sort_order: number;
+}
+
+const MEMBER_ROLE_LABEL: Record<string, string> = {
+  author: "Author",
+  committee_chair: "Committee Chair",
+  committee_member: "Committee Member",
+};
+
 const STATUS_LABEL: Record<string, string> = {
   published: "Published",
   in_preparation: "In Preparation",
@@ -44,6 +59,7 @@ export default function CrArtistProfile() {
   const { gar } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [cv, setCv] = useState<CvEntry[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -70,6 +86,12 @@ export default function CrArtistProfile() {
         .eq("profile_id", (data as { id: string }).id)
         .order("year", { ascending: false });
       setCv((cvData as CvEntry[]) || []);
+      const { data: memberData } = await supabase
+        .from("cr_committee_members")
+        .select("id, name, email, role, affiliation, sort_order")
+        .eq("artist_user_id", (data as { user_id: string }).user_id)
+        .order("sort_order", { ascending: true });
+      setMembers((memberData as Member[]) || []);
       setLoading(false);
     })();
   }, [gar]);
@@ -197,6 +219,44 @@ export default function CrArtistProfile() {
             )}
           </dl>
         </section>
+
+        {members.length > 0 && (
+          <section>
+            <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">
+              Committee
+            </h2>
+            <ul className="divide-y border-t border-b">
+              {members.map((m) => (
+                <li
+                  key={m.id}
+                  className="grid grid-cols-1 sm:grid-cols-[12rem_1fr_auto] gap-2 sm:gap-6 py-3 text-sm"
+                >
+                  <span className="text-muted-foreground">
+                    {MEMBER_ROLE_LABEL[m.role] || m.role}
+                  </span>
+                  <span>
+                    <span className="font-medium">{m.name}</span>
+                    {m.affiliation && (
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · {m.affiliation}
+                      </span>
+                    )}
+                  </span>
+                  {m.email && (
+                    <a
+                      href={`mailto:${m.email}`}
+                      className="underline text-muted-foreground hover:text-foreground sm:text-right"
+                    >
+                      {m.email}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
 
         {profile.biography && (
           <section>

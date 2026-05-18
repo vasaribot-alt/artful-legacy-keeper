@@ -603,6 +603,42 @@ export type Database = {
           },
         ]
       }
+      cr_committee_members: {
+        Row: {
+          affiliation: string | null
+          artist_user_id: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          role: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          affiliation?: string | null
+          artist_user_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          role?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          affiliation?: string | null
+          artist_user_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          role?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cr_committee_votes: {
         Row: {
           created_at: string

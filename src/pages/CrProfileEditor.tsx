@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, ExternalLink } from "lucide-react";
+import { CrCommitteeManager } from "@/components/CrCommitteeManager";
 
 interface CrFields {
   cr_listed: boolean;
@@ -419,6 +420,17 @@ export default function CrProfileEditor() {
               onChange={(v) => setField("cr_isbn", v)}
             />
           </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Committee
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Add the author of the catalogue raisonné and any committee members.
+            The list appears on the public scholarly page.
+          </p>
+          {activeId && <CrCommitteeManager artistUserId={activeId} />}
         </section>
 
         <div className="flex justify-end gap-3 pt-4 border-t">
