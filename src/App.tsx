@@ -43,7 +43,16 @@ import CrStatus from "./pages/CrStatus";
 import CrDirectory from "./pages/CrDirectory";
 import CrArtistProfile from "./pages/CrArtistProfile";
 import CrProfileEditor from "./pages/CrProfileEditor";
+import CrFoundationLanding from "./pages/CrFoundationLanding";
 import NotFound from "./pages/NotFound";
+
+const CR_HOSTS = ["catalogueraisonnefoundation.org", "theraisonne.org"];
+const isCrHost = () => {
+  if (typeof window === "undefined") return false;
+  const h = window.location.hostname.toLowerCase().replace(/^www\./, "");
+  return CR_HOSTS.includes(h);
+};
+const RootLanding = () => (isCrHost() ? <CrFoundationLanding /> : <Index />);
 
 const queryClient = new QueryClient();
 
