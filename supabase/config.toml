@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.donor-portal]
 verify_jwt = false
+
+[functions.process-email-queue]
+verify_jwt = true
