@@ -74,6 +74,12 @@ const Index = () => {
             <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Supporters
             </Link>
+            <a
+              href="https://catalogueraisonnefoundation.org"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+            >
+              CR Foundation <ExternalLink className="w-3 h-3" />
+            </a>
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sign In
             </Link>
