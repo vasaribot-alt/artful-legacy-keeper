@@ -72,10 +72,9 @@ export const SceneImagesMatch: React.FC = () => {
                   width: 56, height: 56, borderRadius: 4, overflow: "hidden",
                   background: "#F0EDE6", position: "relative", flexShrink: 0,
                 }}>
-                  <div style={{
-                    position: "absolute", inset: 0,
-                    background: it.tone, opacity: matchS,
-                    transform: `scale(${0.85 + matchS * 0.15})`,
+                  <Img src={staticFile(it.src)} style={{
+                    position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+                    opacity: matchS, transform: `scale(${0.85 + matchS * 0.15})`, filter: "grayscale(1)",
                   }} />
                 </div>
                 <div style={{ flex: 1 }}>
