@@ -3,7 +3,16 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
+import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
+
+const tutorials = [
+  { src: "/tutorials/how-to-register.mp4", title: "Register & verify", desc: "Create your account and complete ID verification." },
+  { src: "/tutorials/how-to-profile.mp4", title: "Set up your profile", desc: "Build your artist profile with biography and CV." },
+  { src: "/tutorials/how-to-capture.mp4", title: "Capture an artwork", desc: "Document a single work with archival metadata." },
+  { src: "/tutorials/how-to-bulk.mp4", title: "Bulk import", desc: "Upload your back-catalogue from an Excel template." },
+  { src: "/tutorials/how-to-exhibition.mp4", title: "Add an exhibition", desc: "Record exhibitions with installation views." },
+  { src: "/tutorials/how-to-catalogues.mp4", title: "Catalogues", desc: "Link publications and essays to your works." },
+];
 
 const features = [
   {
@@ -199,6 +208,38 @@ const Index = () => {
                   <h4 className="text-lg mb-1 font-sans font-medium">{item.title}</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tutorials */}
+      <section className="py-20 px-6 border-t border-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3 inline-flex items-center gap-2">
+              <PlayCircle className="w-4 h-4" /> Tutorials
+            </p>
+            <h2 className="text-3xl mb-3">See how it works</h2>
+            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
+              Short walkthroughs covering the core workflows in the Registry.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {tutorials.map((t) => (
+              <div key={t.src} className="group">
+                <div className="aspect-video bg-secondary rounded-md overflow-hidden mb-4 ring-1 ring-border">
+                  <video
+                    src={t.src}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h4 className="text-base font-medium mb-1">{t.title}</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
               </div>
             ))}
           </div>
