@@ -66,15 +66,13 @@ export const HowToRegister: React.FC = () => {
     <AbsoluteFill>
       <PaperGrain />
       <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={100}><SceneTitle /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 18 })} />
-        <TransitionSeries.Sequence durationInFrames={110}><SceneVisit /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={140}><SceneForm /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={120}><SceneVeriff /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={180}><SceneTitle /></TransitionSeries.Sequence>
         <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={106}><SceneVault /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={180}><SceneVisit /></TransitionSeries.Sequence>
+        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+        <TransitionSeries.Sequence durationInFrames={230}><SceneForm /></TransitionSeries.Sequence>
+        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+        <TransitionSeries.Sequence durationInFrames={180}><SceneVault /></TransitionSeries.Sequence>
       </TransitionSeries>
       <Chrome />
     </AbsoluteFill>
