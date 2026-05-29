@@ -5,7 +5,7 @@ export const RemotionRoot = () => (
   <Composition
     id="how-to-register"
     component={HowToRegister}
-    durationInFrames={510}
+    durationInFrames={720}
     fps={30}
     width={1920}
     height={1080}
