@@ -8,7 +8,6 @@ import { theme } from "./theme";
 import { SceneTitle } from "./scenes/SceneTitle";
 import { SceneVisit } from "./scenes/SceneVisit";
 import { SceneForm } from "./scenes/SceneForm";
-import { SceneVeriff } from "./scenes/SceneVeriff";
 import { SceneVault } from "./scenes/SceneVault";
 
 loadSerif();
