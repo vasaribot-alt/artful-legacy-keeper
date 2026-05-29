@@ -214,6 +214,38 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Tutorials */}
+      <section className="py-20 px-6 border-t border-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3 inline-flex items-center gap-2">
+              <PlayCircle className="w-4 h-4" /> Tutorials
+            </p>
+            <h2 className="text-3xl mb-3">See how it works</h2>
+            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
+              Short walkthroughs covering the core workflows in the Registry.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {tutorials.map((t) => (
+              <div key={t.src} className="group">
+                <div className="aspect-video bg-secondary rounded-md overflow-hidden mb-4 ring-1 ring-border">
+                  <video
+                    src={t.src}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h4 className="text-base font-medium mb-1">{t.title}</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Trust indicators */}
       <section className="py-20 px-6 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
