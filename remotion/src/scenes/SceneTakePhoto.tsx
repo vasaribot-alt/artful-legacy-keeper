@@ -68,6 +68,28 @@ export const SceneTakePhoto: React.FC = () => {
                 transform: `translate(-50%, -50%) scale(${tapScale})`,
                 opacity: tapO * 0.4,
               }} />
+
+              {/* Finger tap cursor moves in and taps */}
+              {(() => {
+                const inX = interpolate(frame, [0, tapStart], [130, 0], { extrapolateRight: "clamp" });
+                const inY = interpolate(frame, [0, tapStart], [170, 0], { extrapolateRight: "clamp" });
+                const fadeOut = interpolate(frame, [tapStart + 16, tapStart + 30], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+                const press = pressed ? 0.78 : 1;
+                return (
+                  <div style={{
+                    position: "absolute", top: "calc(50% + 6px)", left: "calc(50% + 10px)",
+                    transform: `translate(${inX}px, ${inY}px) scale(${press})`,
+                    opacity: fadeOut,
+                    pointerEvents: "none",
+                  }}>
+                    <div style={{
+                      width: 46, height: 46, borderRadius: "50%",
+                      background: theme.ink, border: `3px solid ${theme.card}`,
+                      boxShadow: `0 8px 20px ${theme.ink}55`,
+                    }} />
+                  </div>
+                );
+              })()}
             </div>
           ) : (
             <div style={{
