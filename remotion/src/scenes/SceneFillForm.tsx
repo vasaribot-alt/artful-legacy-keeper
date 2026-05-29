@@ -96,12 +96,12 @@ export const SceneFillForm: React.FC = () => {
         <div style={{
           fontFamily: "DM Sans", fontSize: 13, letterSpacing: "0.25em",
           textTransform: "uppercase", color: theme.muted, marginBottom: 14,
-        }}>Step 02</div>
+        }}>Step 03</div>
         <div style={{
           fontFamily: "DM Serif Display", fontSize: 56, lineHeight: 1.05,
           color: theme.ink, letterSpacing: "-0.02em",
         }}>
-          Log the <span style={{ fontStyle: "italic" }}>essentials.</span>
+          Fill in the<br/><span style={{ fontStyle: "italic" }}>information.</span>
         </div>
         <div style={{
           fontFamily: "DM Sans", fontSize: 17, color: theme.inkSoft, marginTop: 18, lineHeight: 1.5,
