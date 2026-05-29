@@ -237,8 +237,7 @@ const Index = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <h4 className="text-base font-medium mb-1">{t.title}</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
+                <h4 className="text-base font-medium">{t.title}</h4>
               </div>
             ))}
           </div>
