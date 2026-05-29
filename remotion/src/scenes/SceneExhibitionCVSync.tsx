@@ -2,14 +2,14 @@ import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } fr
 import { theme } from "../theme";
 
 const SOLO = [
-  { year: "2026", title: "Vapor — A Survey", venue: "Kunsthalle Bergen", city: "Bergen, NO", isNew: true },
-  { year: "2024", title: "Slow Light", venue: "Galleri Riis", city: "Oslo, NO" },
+  { year: "2026", title: "Vapor — A Survey", venue: "Kunsthalle Köln", city: "Köln, DE", isNew: true },
+  { year: "2024", title: "Slow Light", venue: "Galerie Eigen + Art", city: "Berlin, DE" },
   { year: "2022", title: "Veils", venue: "Cité Internationale des Arts", city: "Paris, FR" },
 ];
 
 const GROUP = [
-  { year: "2025", title: "Northern Surfaces", venue: "Henie Onstad Kunstsenter", city: "Høvikodden, NO" },
-  { year: "2023", title: "Atlas", venue: "Tate Modern", city: "London, UK" },
+  { year: "2025", title: "Northern Surfaces", venue: "Museum Folkwang", city: "Essen, DE" },
+  { year: "2023", title: "Atlas", venue: "Centre Pompidou", city: "Paris, FR" },
 ];
 
 export const SceneExhibitionCVSync: React.FC = () => {
@@ -48,7 +48,7 @@ export const SceneExhibitionCVSync: React.FC = () => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 28 }}>
           <div>
             <div style={{ fontFamily: "DM Sans", fontSize: 11, color: theme.muted, letterSpacing: "0.2em", textTransform: "uppercase" }}>Curriculum Vitae</div>
-            <div style={{ fontFamily: "DM Serif Display", fontSize: 30, color: theme.ink, marginTop: 4 }}>Marit Solberg</div>
+            <div style={{ fontFamily: "DM Serif Display", fontSize: 30, color: theme.ink, marginTop: 4 }}>Elin Vandermeer</div>
           </div>
           <div style={{
             padding: "6px 12px", border: `1px solid ${theme.ink}25`, borderRadius: 3,
