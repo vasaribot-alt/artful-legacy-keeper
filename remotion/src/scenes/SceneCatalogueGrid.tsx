@@ -65,9 +65,10 @@ export const SceneCatalogueGrid: React.FC = () => {
                 opacity: s, transform: `translateY(${(1 - s) * 14}px)`,
               }}>
                 <div style={{
-                  width: "100%", aspectRatio: "4/5", background: g.tone, borderRadius: 4,
+                  width: "100%", aspectRatio: "4/5", background: "#1a1a1a", borderRadius: 4,
                   position: "relative", overflow: "hidden",
                 }}>
+                  <Img src={staticFile(g.img)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(1)" }} />
                   <div style={{
                     position: "absolute", inset: 0,
                     background: `linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.12) 100%)`,
