@@ -1,12 +1,12 @@
-import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
+import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig, staticFile, Img } from "remotion";
 import { theme } from "../theme";
 
 const ITEMS = [
-  { title: "Untitled (Vapor)", img: "IMG_2401.jpg", tone: "#3a3a3a" },
-  { title: "Nocturne IV",      img: "IMG_2402.jpg", tone: "#1a1a1a" },
-  { title: "Pale Field",       img: "IMG_2403.jpg", tone: "#c7c2ba" },
-  { title: "Slow Light",       img: "IMG_2404.jpg", tone: "#5a5a5a" },
-  { title: "Margin Study",     img: "IMG_2405.jpg", tone: "#e8e4dd" },
+  { title: "Untitled (Vapor)", img: "IMG_2401.jpg", src: "images/art1.jpg" },
+  { title: "Nocturne IV",      img: "IMG_2402.jpg", src: "images/art2.jpg" },
+  { title: "Pale Field",       img: "IMG_2403.jpg", src: "images/art3.jpg" },
+  { title: "Slow Light",       img: "IMG_2404.jpg", src: "images/art4.jpg" },
+  { title: "Margin Study",     img: "IMG_2405.jpg", src: "images/art5.jpg" },
 ];
 
 export const SceneImagesMatch: React.FC = () => {
