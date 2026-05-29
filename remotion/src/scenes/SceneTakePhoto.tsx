@@ -137,13 +137,13 @@ export const SceneTakePhoto: React.FC = () => {
           fontFamily: "DM Sans", fontSize: 13, letterSpacing: "0.25em",
           textTransform: "uppercase", color: theme.muted, marginBottom: 14,
           opacity: interpolate(frame, [10, 40], [0, 1], { extrapolateRight: "clamp" }),
-        }}>Step 01</div>
+        }}>Step 02</div>
         <div style={{
           fontFamily: "DM Serif Display", fontSize: 56, lineHeight: 1.05,
           color: theme.ink, letterSpacing: "-0.02em",
           opacity: interpolate(frame, [16, 50], [0, 1], { extrapolateRight: "clamp" }),
         }}>
-          Open <span style={{ fontStyle: "italic" }}>/capture.</span>
+          Tap <span style={{ fontStyle: "italic" }}>Take photo.</span>
         </div>
         <div style={{
           fontFamily: "DM Sans", fontSize: 17, color: theme.inkSoft, marginTop: 18, lineHeight: 1.5,

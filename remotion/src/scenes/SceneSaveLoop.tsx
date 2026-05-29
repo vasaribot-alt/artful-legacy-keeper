@@ -115,7 +115,7 @@ export const SceneSaveLoop: React.FC = () => {
         <div style={{
           fontFamily: "DM Sans", fontSize: 13, letterSpacing: "0.25em",
           textTransform: "uppercase", color: theme.muted, marginBottom: 14,
-        }}>Step 03</div>
+        }}>Step 04</div>
         <div style={{
           fontFamily: "DM Serif Display", fontSize: 56, lineHeight: 1.05,
           color: theme.ink, letterSpacing: "-0.02em",
