@@ -33,7 +33,7 @@ export const RemotionRoot = () => (
     <Composition
       id="how-to-capture"
       component={HowToCapture}
-      durationInFrames={1024}
+      durationInFrames={1202}
       fps={30}
       width={1920}
       height={1080}
