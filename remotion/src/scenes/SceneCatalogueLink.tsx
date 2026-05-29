@@ -68,7 +68,7 @@ export const SceneCatalogueLink: React.FC = () => {
                   borderRadius: 4, fontFamily: "DM Sans", fontSize: 13, color: theme.ink,
                   transform: `scale(${0.6 + 0.4 * badgeS})`, opacity: badgeS, transformOrigin: "left center",
                 }}>
-                  <span>Vapor — A Survey (2026)</span>
+                  <span>Vapor (2026)</span>
                   <span style={{ color: theme.muted }}>·</span>
                   <span style={{ color: theme.muted, fontSize: 12 }}>p. 47</span>
                   <span style={{
@@ -115,9 +115,9 @@ export const SceneCatalogueLink: React.FC = () => {
             transformOrigin: "top right", opacity: pickerVis, padding: 8,
           }}>
             {[
-              { t: "Vapor — A Survey",         y: 2026, hit: true },
-              { t: "Slow Horizons",             y: 2024, hit: false },
-              { t: "Nocturnes",                 y: 2022, hit: false },
+              { t: "Vapor",                              y: 2026, hit: true },
+              { t: "With an Essay by Hanne De Wachter",  y: 2024, hit: false },
+              { t: "Marie Lefèvre / Elin Vandermeer",    y: 2022, hit: false },
             ].map((row) => (
               <div key={row.t} style={{
                 display: "flex", alignItems: "center", gap: 12, padding: "10px 12px",

@@ -67,7 +67,7 @@ export const SceneCatalogueCover: React.FC = () => {
               opacity: revealS,
               clipPath: `inset(${(1 - revealS) * 100}% 0 0 0)`,
             }}>
-              <Img src={staticFile("images/catalogue-cover.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <Img src={staticFile("images/cover-1.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
           )}
         </div>
@@ -83,7 +83,7 @@ export const SceneCatalogueCover: React.FC = () => {
             boxShadow: "0 20px 50px -10px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.08)",
             overflow: "hidden",
           }}>
-            <Img src={staticFile("images/catalogue-cover.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <Img src={staticFile("images/cover-1.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         )}
       </div>
