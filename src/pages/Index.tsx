@@ -3,7 +3,16 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
+import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
+
+const tutorials = [
+  { src: "/tutorials/how-to-register.mp4", title: "Register & verify", desc: "Create your account and complete ID verification." },
+  { src: "/tutorials/how-to-profile.mp4", title: "Set up your profile", desc: "Build your artist profile with biography and CV." },
+  { src: "/tutorials/how-to-capture.mp4", title: "Capture an artwork", desc: "Document a single work with archival metadata." },
+  { src: "/tutorials/how-to-bulk.mp4", title: "Bulk import", desc: "Upload your back-catalogue from an Excel template." },
+  { src: "/tutorials/how-to-exhibition.mp4", title: "Add an exhibition", desc: "Record exhibitions with installation views." },
+  { src: "/tutorials/how-to-catalogues.mp4", title: "Catalogues", desc: "Link publications and essays to your works." },
+];
 
 const features = [
   {
