@@ -129,9 +129,9 @@ export const SceneImagesMatch: React.FC = () => {
             display: "flex", alignItems: "center", justifyContent: "center",
             fontFamily: "DM Sans", fontSize: 10, letterSpacing: "0.1em", color: theme.muted,
           }}>
-            <div style={{
-              position: "absolute", inset: 6, background: ["#3a3a3a", "#c7c2ba", "#1a1a1a"][i],
-              borderRadius: 3,
+            <Img src={staticFile(["images/art1.jpg", "images/art2.jpg", "images/art3.jpg"][i])} style={{
+              position: "absolute", inset: 6, width: "calc(100% - 12px)", height: "calc(100% - 12px)",
+              objectFit: "cover", borderRadius: 3, filter: "grayscale(1)",
             }} />
             <span style={{ position: "relative", zIndex: 1, color: "#fff", mixBlendMode: "difference" }}>IMG</span>
           </div>
