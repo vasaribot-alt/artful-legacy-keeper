@@ -2,9 +2,9 @@ import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } fr
 import { theme } from "../theme";
 
 const PARAGRAPHS = [
-  "Vapor — A Survey gathers six years of Marit Solberg's painting practice, tracing the artist's pursuit of light as material. Working in oil on linen, Solberg builds her surfaces in transparent layers — each one veiling the last, until the painting reads as a slow exhalation rather than a fixed image.",
-  "Curated by Ida Holm, the exhibition opens with the earliest Vapor canvases (2021) and closes with three new large-scale works completed during a residency at Cité Internationale des Arts in Paris. A separate room presents preparatory studies and a film essay by the artist.",
-  "Vapor — A Survey is supported by the Norwegian Arts Council and Kunsthalle Bergen. A 96-page catalogue with essays by Marte Aas and Stian Gabrielsen accompanies the exhibition.",
+  "Vapor — A Survey gathers six years of Elin Vandermeer's painting practice, tracing the artist's pursuit of light as material. Working in oil on linen, Vandermeer builds her surfaces in transparent layers — each one veiling the last, until the painting reads as a slow exhalation rather than a fixed image.",
+  "Curated by Lior Hessel, the exhibition opens with the earliest Vapor canvases (2021) and closes with three new large-scale works completed during a residency at the Rijksakademie van beeldende kunsten in Amsterdam. A separate room presents preparatory studies and a film essay by the artist.",
+  "Vapor — A Survey is supported by the Mondriaan Fonds and Kunsthalle Köln. A 96-page catalogue with essays by Hanne De Wachter and Stefan Brüggemann accompanies the exhibition.",
 ];
 
 export const SceneExhibitionText: React.FC = () => {

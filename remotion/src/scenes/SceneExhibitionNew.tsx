@@ -13,9 +13,9 @@ export const SceneExhibitionNew: React.FC = () => {
   const cardS = spring({ frame, fps, config: { damping: 22, stiffness: 110 } });
 
   const title = typed("Vapor — A Survey", frame, 24);
-  const venue = typed("Kunsthalle Bergen", frame, 78);
-  const city = typed("Bergen, NO", frame, 122);
-  const curator = typed("Ida Holm", frame, 162);
+  const venue = typed("Kunsthalle Köln", frame, 78);
+  const city = typed("Köln, DE", frame, 122);
+  const curator = typed("Lior Hessel", frame, 162);
   const dateRange = typed("14 Mar — 02 Jun 2026", frame, 196);
 
   // Solo / Group toggle — picks "Solo" at frame 240

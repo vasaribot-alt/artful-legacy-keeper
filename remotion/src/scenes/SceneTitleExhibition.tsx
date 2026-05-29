@@ -58,7 +58,7 @@ export const SceneTitleExhibition: React.FC = () => {
           <div style={{
             marginTop: 4, fontFamily: "DM Sans", fontSize: 13, color: theme.muted, fontStyle: "italic",
           }}>
-            Photo: M. Reinholdt — Kunsthalle Bergen
+            Photo: M. Reinholdt — Kunsthalle Köln
           </div>
         </div>
       </div>
