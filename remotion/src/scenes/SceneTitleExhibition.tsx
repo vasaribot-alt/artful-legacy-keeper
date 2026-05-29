@@ -45,8 +45,8 @@ export const SceneTitleExhibition: React.FC = () => {
             position: "relative", aspectRatio: "4/3", background: theme.ink, overflow: "hidden",
             boxShadow: "0 50px 100px -30px rgba(0,0,0,0.35)",
           }}>
-            <Img src={staticFile("images/art3.jpg")} style={{
-              width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(100%)",
+            <Img src={staticFile("images/install5.jpg")} style={{
+              width: "100%", height: "100%", objectFit: "cover",
             }} />
           </div>
           <div style={{

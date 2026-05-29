@@ -1,7 +1,7 @@
 import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig, staticFile, Img } from "remotion";
 import { theme } from "../theme";
 
-const TILES = ["art1.jpg", "art2.jpg", "art3.jpg", "art4.jpg", "art5.jpg", "art1.jpg"];
+const TILES = ["install1.jpg", "install2.jpg", "install3.jpg", "install4.jpg", "install5.jpg", "install6.jpg"];
 
 export const SceneInstallationViews: React.FC = () => {
   const frame = useCurrentFrame();
@@ -76,7 +76,7 @@ export const SceneInstallationViews: React.FC = () => {
                 outlineOffset: 3,
               }}>
                 <Img src={staticFile(`images/${src}`)} style={{
-                  width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(100%)",
+                  width: "100%", height: "100%", objectFit: "cover",
                 }} />
                 {/* drop target indicator */}
                 {isTargetTile && dragging && dragP > 0.2 && (
