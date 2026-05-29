@@ -15,7 +15,7 @@ export const RemotionRoot = () => (
     <Composition
       id="how-to-profile"
       component={HowToProfile}
-      durationInFrames={1104}
+      durationInFrames={1378}
       fps={30}
       width={1920}
       height={1080}

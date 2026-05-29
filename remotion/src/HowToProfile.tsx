@@ -10,6 +10,8 @@ import { SceneProfileBasics } from "./scenes/SceneProfileBasics";
 import { SceneProfilePhoto } from "./scenes/SceneProfilePhoto";
 import { SceneGalleries } from "./scenes/SceneGalleries";
 import { SceneCV } from "./scenes/SceneCV";
+import { SceneProfilePreview } from "./scenes/SceneProfilePreview";
+
 
 loadSerif();
 loadSans();
@@ -73,6 +75,8 @@ export const HowToProfile: React.FC = () => {
         <TransitionSeries.Sequence durationInFrames={250}><SceneGalleries /></TransitionSeries.Sequence>
         <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
         <TransitionSeries.Sequence durationInFrames={320}><SceneCV /></TransitionSeries.Sequence>
+        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+        <TransitionSeries.Sequence durationInFrames={300}><SceneProfilePreview /></TransitionSeries.Sequence>
       </TransitionSeries>
       <Chrome />
     </AbsoluteFill>
