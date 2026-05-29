@@ -3,6 +3,7 @@ import { HowToRegister } from "./HowToRegister";
 import { HowToProfile } from "./HowToProfile";
 import { HowToBulk } from "./HowToBulk";
 import { HowToCapture } from "./HowToCapture";
+import { HowToExhibition } from "./HowToExhibition";
 
 export const RemotionRoot = () => (
   <>
@@ -34,6 +35,14 @@ export const RemotionRoot = () => (
       id="how-to-capture"
       component={HowToCapture}
       durationInFrames={1202}
+      fps={30}
+      width={1920}
+      height={1080}
+    />
+    <Composition
+      id="how-to-exhibition"
+      component={HowToExhibition}
+      durationInFrames={1350}
       fps={30}
       width={1920}
       height={1080}
