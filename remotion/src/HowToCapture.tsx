@@ -6,6 +6,7 @@ import { loadFont as loadSerif } from "@remotion/google-fonts/DMSerifDisplay";
 import { loadFont as loadSans } from "@remotion/google-fonts/DMSans";
 import { theme } from "./theme";
 import { SceneTitleCapture } from "./scenes/SceneTitleCapture";
+import { SceneOpenSidebar } from "./scenes/SceneOpenSidebar";
 import { SceneTakePhoto } from "./scenes/SceneTakePhoto";
 import { SceneFillForm } from "./scenes/SceneFillForm";
 import { SceneSaveLoop } from "./scenes/SceneSaveLoop";
