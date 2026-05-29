@@ -1,12 +1,12 @@
-import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
+import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig, staticFile, Img } from "remotion";
 import { theme } from "../theme";
 
 const ITEMS = [
-  { title: "Untitled (Vapor)", img: "IMG_2401.jpg", tone: "#3a3a3a" },
-  { title: "Nocturne IV",      img: "IMG_2402.jpg", tone: "#1a1a1a" },
-  { title: "Pale Field",       img: "IMG_2403.jpg", tone: "#c7c2ba" },
-  { title: "Slow Light",       img: "IMG_2404.jpg", tone: "#5a5a5a" },
-  { title: "Margin Study",     img: "IMG_2405.jpg", tone: "#e8e4dd" },
+  { title: "Untitled (Vapor)", img: "IMG_2401.jpg", src: "images/art1.jpg" },
+  { title: "Nocturne IV",      img: "IMG_2402.jpg", src: "images/art2.jpg" },
+  { title: "Pale Field",       img: "IMG_2403.jpg", src: "images/art3.jpg" },
+  { title: "Slow Light",       img: "IMG_2404.jpg", src: "images/art4.jpg" },
+  { title: "Margin Study",     img: "IMG_2405.jpg", src: "images/art5.jpg" },
 ];
 
 export const SceneImagesMatch: React.FC = () => {
@@ -72,10 +72,9 @@ export const SceneImagesMatch: React.FC = () => {
                   width: 56, height: 56, borderRadius: 4, overflow: "hidden",
                   background: "#F0EDE6", position: "relative", flexShrink: 0,
                 }}>
-                  <div style={{
-                    position: "absolute", inset: 0,
-                    background: it.tone, opacity: matchS,
-                    transform: `scale(${0.85 + matchS * 0.15})`,
+                  <Img src={staticFile(it.src)} style={{
+                    position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+                    opacity: matchS, transform: `scale(${0.85 + matchS * 0.15})`, filter: "grayscale(1)",
                   }} />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -130,9 +129,9 @@ export const SceneImagesMatch: React.FC = () => {
             display: "flex", alignItems: "center", justifyContent: "center",
             fontFamily: "DM Sans", fontSize: 10, letterSpacing: "0.1em", color: theme.muted,
           }}>
-            <div style={{
-              position: "absolute", inset: 6, background: ["#3a3a3a", "#c7c2ba", "#1a1a1a"][i],
-              borderRadius: 3,
+            <Img src={staticFile(["images/art1.jpg", "images/art2.jpg", "images/art3.jpg"][i])} style={{
+              position: "absolute", inset: 6, width: "calc(100% - 12px)", height: "calc(100% - 12px)",
+              objectFit: "cover", borderRadius: 3, filter: "grayscale(1)",
             }} />
             <span style={{ position: "relative", zIndex: 1, color: "#fff", mixBlendMode: "difference" }}>IMG</span>
           </div>

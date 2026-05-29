@@ -1,13 +1,13 @@
-import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig } from "remotion";
+import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig, staticFile, Img } from "remotion";
 import { theme } from "../theme";
 
 const GRID = [
-  { title: "Untitled (Vapor)", year: 2024, tone: "#3a3a3a", medium: "Oil on linen" },
-  { title: "Nocturne IV",      year: 2023, tone: "#1a1a1a", medium: "Photograph" },
-  { title: "Pale Field",       year: 2023, tone: "#c7c2ba", medium: "Acrylic" },
-  { title: "Slow Light",       year: 2022, tone: "#5a5a5a", medium: "Oil on canvas" },
-  { title: "Margin Study",     year: 2022, tone: "#e8e4dd", medium: "Graphite" },
-  { title: "Soft Inventory",   year: 2021, tone: "#6e6962", medium: "Mixed media" },
+  { title: "Untitled (Vapor)", year: 2024, img: "images/art1.jpg", medium: "Oil on linen" },
+  { title: "Nocturne IV",      year: 2023, img: "images/art2.jpg", medium: "Photograph" },
+  { title: "Pale Field",       year: 2023, img: "images/art3.jpg", medium: "Acrylic" },
+  { title: "Slow Light",       year: 2022, img: "images/art4.jpg", medium: "Oil on canvas" },
+  { title: "Margin Study",     year: 2022, img: "images/art5.jpg", medium: "Graphite" },
+  { title: "Soft Inventory",   year: 2021, img: "images/art1.jpg", medium: "Mixed media" },
 ];
 
 export const SceneCatalogueGrid: React.FC = () => {
@@ -65,9 +65,10 @@ export const SceneCatalogueGrid: React.FC = () => {
                 opacity: s, transform: `translateY(${(1 - s) * 14}px)`,
               }}>
                 <div style={{
-                  width: "100%", aspectRatio: "4/5", background: g.tone, borderRadius: 4,
+                  width: "100%", aspectRatio: "4/5", background: "#1a1a1a", borderRadius: 4,
                   position: "relative", overflow: "hidden",
                 }}>
+                  <Img src={staticFile(g.img)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(1)" }} />
                   <div style={{
                     position: "absolute", inset: 0,
                     background: `linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.12) 100%)`,
