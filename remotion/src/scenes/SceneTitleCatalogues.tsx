@@ -46,7 +46,7 @@ export const SceneTitleCatalogues: React.FC = () => {
         transform: `translateY(${(1 - platS) * 40}px) rotate(${(1 - platS) * 6}deg)`, opacity: platS,
         overflow: "hidden", position: "relative",
       }}>
-        <Img src={staticFile("images/catalogue-cover.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <Img src={staticFile("images/cover-1.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         <div style={{
           position: "absolute", left: 18, right: 18, bottom: 14,
           fontFamily: "DM Sans", fontSize: 9, color: theme.muted, letterSpacing: "0.25em", textTransform: "uppercase",
