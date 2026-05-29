@@ -65,16 +65,16 @@ export const SceneForm: React.FC = () => {
           <div style={{ fontFamily: "DM Serif Display", fontSize: 36, color: theme.ink }}>Create your vault</div>
           <div style={{ fontFamily: "DM Sans", fontSize: 16, color: theme.muted, marginTop: 6 }}>Register to start documenting and preserving art.</div>
         </div>
-        <Field label="Full name" value="Fredrik Værslev" delay={14} typeFrom={26} typeTo={54} />
-        <Field label="Email" value="fredrik@studio.no" delay={26} typeFrom={56} typeTo={80} />
-        <Field label="Password" value="••••••••••••" delay={38} typeFrom={82} typeTo={100} mask />
+        <Field label="Full name" value="Sasha Lindqvist" delay={20} typeFrom={40} typeTo={110} />
+        <Field label="Email" value="sasha@studio.example" delay={60} typeFrom={120} typeTo={180} />
+        <Field label="Password" value="••••••••••••" delay={100} typeFrom={188} typeTo={220} mask />
 
         <div>
           <div style={{ fontFamily: "DM Sans", fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>I am a</div>
           <div style={{ display: "flex", gap: 10 }}>
-            <RoleChip label="Artist" selected={frame >= 95} delay={50} />
-            <RoleChip label="Collector" selected={false} delay={56} />
-            <RoleChip label="Registrar" selected={false} delay={62} />
+            <RoleChip label="Artist" selected={frame >= 195} delay={130} />
+            <RoleChip label="Collector" selected={false} delay={140} />
+            <RoleChip label="Registrar" selected={false} delay={150} />
           </div>
         </div>
       </div>
