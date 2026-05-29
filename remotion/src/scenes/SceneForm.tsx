@@ -41,6 +41,13 @@ export const SceneForm: React.FC = () => {
   const cardS = spring({ frame, fps, config: { damping: 22, stiffness: 110 } });
   const sideO = interpolate(frame, [0, 26], [0, 1], { extrapolateRight: "clamp" });
 
+  // Cursor flies in toward the Artist chip and clicks around frame 195
+  const cursorO = interpolate(frame, [160, 178], [0, 1], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const cursorX = interpolate(frame, [160, 194], [1280, 980], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const cursorY = interpolate(frame, [160, 194], [880, 758], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const ringO = interpolate(frame, [195, 220], [1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const ringS = interpolate(frame, [195, 220], [0.5, 1.6], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+
   return (
     <AbsoluteFill style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 80 }}>
       {/* left side commentary */}
@@ -72,12 +79,27 @@ export const SceneForm: React.FC = () => {
         <div>
           <div style={{ fontFamily: "DM Sans", fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase", color: theme.muted, marginBottom: 12 }}>I am a</div>
           <div style={{ display: "flex", gap: 10 }}>
-            <RoleChip label="Artist" selected={frame >= 195} delay={130} />
+            <div style={{ flex: 1, position: "relative" }}>
+              <RoleChip label="Artist" selected={frame >= 195} delay={130} />
+              {/* click ripple */}
+              <div style={{
+                position: "absolute", inset: -10, borderRadius: 10, border: `2px solid ${theme.ink}`,
+                opacity: ringO, transform: `scale(${ringS})`, pointerEvents: "none",
+              }} />
+            </div>
             <RoleChip label="Collector" selected={false} delay={140} />
             <RoleChip label="Registrar" selected={false} delay={150} />
           </div>
         </div>
       </div>
+
+      {/* cursor */}
+      <svg width="32" height="32" viewBox="0 0 24 24" style={{
+        position: "absolute", left: cursorX, top: cursorY, opacity: cursorO,
+        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.25))",
+      }}>
+        <path d="M3 2 L3 20 L8 15 L11 22 L14 21 L11 14 L18 14 Z" fill="#fff" stroke="#000" strokeWidth="1.5" strokeLinejoin="round" />
+      </svg>
     </AbsoluteFill>
   );
 };
