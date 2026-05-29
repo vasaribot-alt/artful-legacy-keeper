@@ -29,7 +29,7 @@ const RoleChip: React.FC<{ label: string; selected: boolean; delay: number }> = 
       color: selected ? theme.bg : theme.ink,
       border: `1px solid ${selected ? theme.ink : theme.ink + "30"}`,
       fontFamily: "DM Sans", fontSize: 20, textAlign: "center",
-      transform: `translateY(${(1 - s) * 12}px) scale(${selected ? 1 + (1 - Math.min(1, Math.max(0,(frame-95)/12))) * 0.04 : 1})`,
+      transform: `translateY(${(1 - s) * 12}px) scale(${selected ? 1 + (1 - Math.min(1, Math.max(0,(frame-195)/12))) * 0.04 : 1})`,
       opacity: s,
     }}>{label}</div>
   );
