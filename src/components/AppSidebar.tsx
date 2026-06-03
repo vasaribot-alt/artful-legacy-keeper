@@ -137,7 +137,7 @@ export function AppSidebar() {
   const hasCollector = roles.includes("collector");
   const hasArtist = roles.includes("artist");
   const canAddCollector = roles.includes("artist") && !hasCollector;
-  const canAddArtist = !hasArtist;
+  const canAddArtist = !hasArtist && !hasCollector;
 
   const handleSignOut = async () => {
     localStorage.removeItem("activeRole");
