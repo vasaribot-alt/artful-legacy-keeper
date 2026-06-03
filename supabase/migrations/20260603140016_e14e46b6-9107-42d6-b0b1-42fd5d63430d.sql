@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS unit_preference text NOT NULL DEFAULT 'cm' CHECK (unit_preference IN ('cm','in'));
