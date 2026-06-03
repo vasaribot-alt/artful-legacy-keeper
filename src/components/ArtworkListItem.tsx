@@ -26,7 +26,7 @@ interface Artwork {
   verification_status?: string | null;
 }
 
-import { formatDimensions } from "@/lib/formatDimensions";
+import { useUnitPreference } from "@/hooks/useUnitPreference";
 
 interface ArtworkListItemProps {
   artwork: Artwork;
@@ -37,7 +37,8 @@ interface ArtworkListItemProps {
 
 export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange }: ArtworkListItemProps) => {
   const navigate = useNavigate();
-  const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
+  const { formatDims } = useUnitPreference();
+  const dims = formatDims(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
 
   useEffect(() => {

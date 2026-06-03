@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDimensions } from "@/lib/formatDimensions";
+import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
 import {
@@ -268,9 +268,10 @@ const PublicArtistProfile = () => {
     return null;
   };
 
+  const { formatDims: fmtDims } = useUnitPreference();
   const formatDims = (aw: ArtworkPublic) => {
     if (aw.dimensions) return aw.dimensions;
-    return formatDimensions(aw.height ?? null, aw.width ?? null, aw.depth ?? null);
+    return fmtDims(aw.height ?? null, aw.width ?? null, aw.depth ?? null);
   };
 
   const formatExDate = (d: string | null) => {

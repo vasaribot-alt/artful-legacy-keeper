@@ -1548,6 +1548,7 @@ export type Database = {
           phone_prefix: string | null
           social_media_links: Json | null
           studio_address: string | null
+          unit_preference: string
           updated_at: string
           updated_by: string | null
           user_id: string
@@ -1595,6 +1596,7 @@ export type Database = {
           phone_prefix?: string | null
           social_media_links?: Json | null
           studio_address?: string | null
+          unit_preference?: string
           updated_at?: string
           updated_by?: string | null
           user_id: string
@@ -1642,6 +1644,7 @@ export type Database = {
           phone_prefix?: string | null
           social_media_links?: Json | null
           studio_address?: string | null
+          unit_preference?: string
           updated_at?: string
           updated_by?: string | null
           user_id?: string

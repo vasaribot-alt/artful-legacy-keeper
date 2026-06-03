@@ -23,10 +23,11 @@ interface ArtworkRow {
   created_at: string;
 }
 
-import { formatDimensions } from "@/lib/formatDimensions";
+import { useUnitPreference } from "@/hooks/useUnitPreference";
 
 const Inventory = () => {
   const navigate = useNavigate();
+  const { formatDims } = useUnitPreference();
   const [artworks, setArtworks] = useState<ArtworkRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
@@ -241,9 +242,9 @@ const Inventory = () => {
                         </div>
                       </div>
                       <div className="hidden sm:flex items-center gap-2 shrink-0">
-                        {formatDimensions(art.height, art.width, art.depth) && (
+                        {formatDims(art.height, art.width, art.depth) && (
                           <span className="text-xs text-muted-foreground">
-                            {formatDimensions(art.height, art.width, art.depth)}
+                            {formatDims(art.height, art.width, art.depth)}
                           </span>
                         )}
                         {groupBy === "location" && (

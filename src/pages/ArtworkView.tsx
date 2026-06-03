@@ -13,11 +13,12 @@ interface ArtworkImage {
   publicUrl: string;
 }
 
-import { formatDimensions } from "@/lib/formatDimensions";
+import { useUnitPreference } from "@/hooks/useUnitPreference";
 
 const ArtworkView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { formatDims: formatDimensionsFn } = useUnitPreference();
   const [loading, setLoading] = useState(true);
   const [artwork, setArtwork] = useState<any>(null);
   const [images, setImages] = useState<ArtworkImage[]>([]);
@@ -143,7 +144,7 @@ const ArtworkView = () => {
 
   if (!artwork) return null;
 
-  const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
+  const dims = formatDimensionsFn(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const hasMultipleImages = images.length > 1;
 
   const headerActions = (
