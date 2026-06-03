@@ -29,13 +29,14 @@ interface Artwork {
   verification_status?: string | null;
 }
 
-import { formatDimensions } from "@/lib/formatDimensions";
+import { useUnitPreference } from "@/hooks/useUnitPreference";
 
 import { useNavigate } from "react-router-dom";
 
 export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDuplicate?: (data: ArtworkDuplicateData) => void }) => {
   const navigate = useNavigate();
-  const dims = formatDimensions(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
+  const { formatDims } = useUnitPreference();
+  const dims = formatDims(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [imageCount, setImageCount] = useState(0);
 

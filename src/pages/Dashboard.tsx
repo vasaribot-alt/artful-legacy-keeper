@@ -53,7 +53,7 @@ interface ArtworkWithImage {
   imageUrl: string | null;
 }
 
-import { formatDimensions } from "@/lib/formatDimensions";
+import { useUnitPreference } from "@/hooks/useUnitPreference";
 
 function VerifyIdBanner({ onVerified }: { onVerified: () => void }) {
   const [starting, setStarting] = useState(false);
@@ -498,7 +498,7 @@ const Dashboard = () => {
                     {art.medium && <span className="truncate">{art.medium}</span>}
                   </div>
                   {(() => {
-                    const dims = formatDimensions(art.height, art.width, art.depth);
+                    const dims = formatDims(art.height, art.width, art.depth);
                     return dims ? (
                       <p className="text-xs text-muted-foreground mt-0.5">{dims}</p>
                     ) : null;
