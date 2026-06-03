@@ -26,6 +26,7 @@ interface SeriesArtwork {
 }
 
 const Series = () => {
+  const { formatDims } = useUnitPreference();
   const navigate = useNavigate();
   const [series, setSeries] = useState<SeriesGroup[]>([]);
   const [loading, setLoading] = useState(true);

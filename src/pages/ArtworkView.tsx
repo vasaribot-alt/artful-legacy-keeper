@@ -18,6 +18,7 @@ import { useUnitPreference } from "@/hooks/useUnitPreference";
 const ArtworkView = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { formatDims: formatDimensionsFn } = useUnitPreference();
   const [loading, setLoading] = useState(true);
   const [artwork, setArtwork] = useState<any>(null);
   const [images, setImages] = useState<ArtworkImage[]>([]);

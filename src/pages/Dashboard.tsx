@@ -91,6 +91,7 @@ function VerifyIdBanner({ onVerified }: { onVerified: () => void }) {
 }
 
 const Dashboard = () => {
+  const { formatDims } = useUnitPreference();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [artworks, setArtworks] = useState<Artwork[]>([]);

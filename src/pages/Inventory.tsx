@@ -27,6 +27,7 @@ import { useUnitPreference } from "@/hooks/useUnitPreference";
 
 const Inventory = () => {
   const navigate = useNavigate();
+  const { formatDims } = useUnitPreference();
   const [artworks, setArtworks] = useState<ArtworkRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");

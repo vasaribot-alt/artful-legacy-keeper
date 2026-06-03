@@ -17,6 +17,7 @@ import { useUnitPreference } from "@/hooks/useUnitPreference";
 
 const PortfolioShared = () => {
   const { token } = useParams<{ token: string }>();
+  const { formatDims } = useUnitPreference();
   const [portfolioName, setPortfolioName] = useState("");
   const [artworks, setArtworks] = useState<SharedArtwork[]>([]);
   const [loading, setLoading] = useState(true);
