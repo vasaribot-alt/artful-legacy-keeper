@@ -1,0 +1,1 @@
+DELETE FROM public.founding_artists WHERE user_id = '0bce329f-8b9d-4ea2-8f67-e9f860676254';
