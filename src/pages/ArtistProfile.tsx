@@ -16,6 +16,7 @@ import { getPhonePrefixForCountry, COUNTRY_PHONE_CODES } from "@/lib/phoneCountr
 import { AppLayout } from "@/components/AppLayout";
 import { ProfilePresentationView, type ProfileViewData } from "@/components/ProfilePresentationView";
 import { ManageRegistrarAccess } from "@/components/ManageRegistrarAccess";
+import { UnitPreferenceSetting } from "@/components/UnitPreferenceSetting";
 
 interface SocialLink {
   platform: string;
@@ -361,6 +362,11 @@ const ArtistProfile = () => {
             <ManageRegistrarAccess />
           </section>
 
+          <Separator />
+
+          <UnitPreferenceSetting />
+
+
           <div className="pt-6">
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
               <Save className="w-4 h-4" />
@@ -438,6 +444,11 @@ const ArtistProfile = () => {
               </div>
             </div>
           </section>
+
+          <Separator />
+
+          <UnitPreferenceSetting />
+
 
           <div className="pt-2">
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
@@ -707,6 +718,10 @@ const ArtistProfile = () => {
           </p>
           <ManageRegistrarAccess />
         </section>
+
+        <Separator />
+
+        <UnitPreferenceSetting />
 
         <div className="pt-6">
           <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
