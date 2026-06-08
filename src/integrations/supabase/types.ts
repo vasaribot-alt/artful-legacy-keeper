@@ -1988,6 +1988,22 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_shared_portfolio: {
+        Args: { _token: string }
+        Returns: {
+          artwork_id: string
+          depth: number
+          display_order: number
+          height: number
+          image_path: string
+          medium: string
+          portfolio_id: string
+          portfolio_name: string
+          title: string
+          width: number
+          year: number
+        }[]
+      }
       get_user_storage_status: {
         Args: { _user_id: string }
         Returns: {
@@ -2044,6 +2060,16 @@ export type Database = {
           message: Json
           msg_id: number
           read_ct: number
+        }[]
+      }
+      validate_invite_code: {
+        Args: { _code: string }
+        Returns: {
+          already_used: boolean
+          id: string
+          inactive: boolean
+          is_valid: boolean
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
         }[]
       }
     }
