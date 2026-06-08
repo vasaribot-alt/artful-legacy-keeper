@@ -29,58 +29,60 @@ const PortfolioShared = () => {
   }, [token]);
 
   const fetchShared = async () => {
-    // Find portfolio by share token
-    const { data: pData, error: pError } = await supabase
-      .from("portfolios")
-      .select("id, name")
-      .eq("share_token", token!)
-      .single();
+    // Fetch shared portfolio + artworks via security-definer RPC.
+    // The portfolios / portfolio_artworks tables are no longer readable anonymously
+    // to prevent token enumeration.
+    const { data, error } = await supabase
+      .rpc("get_shared_portfolio", { _token: token! });
 
-    if (pError || !pData) { setNotFound(true); setLoading(false); return; }
-    setPortfolioName((pData as any).name);
+    if (error || !data || data.length === 0) {
+      // Distinguish empty portfolio from missing one by checking again with name only
+      if (error || !data) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+      setArtworks([]);
+      setLoading(false);
+      return;
+    }
 
-    const { data: paData } = await supabase
-      .from("portfolio_artworks")
-      .select("artwork_id")
-      .eq("portfolio_id", pData.id)
-      .order("display_order");
+    const rows = data as Array<{
+      portfolio_id: string;
+      portfolio_name: string;
+      artwork_id: string;
+      title: string;
+      year: number | null;
+      medium: string | null;
+      height: number | null;
+      width: number | null;
+      depth: number | null;
+      display_order: number;
+      image_path: string | null;
+    }>;
 
-    if (!paData || paData.length === 0) { setArtworks([]); setLoading(false); return; }
+    setPortfolioName(rows[0].portfolio_name);
 
-    const artworkIds = paData.map((pa) => pa.artwork_id);
-    const { data: artData } = await supabase
-      .from("artworks")
-      .select("id, title, year, medium, height, width, depth")
-      .in("id", artworkIds);
+    const enriched: SharedArtwork[] = rows.map((r) => {
+      let imageUrl: string | null = null;
+      if (r.image_path) {
+        const { data: urlData } = supabase.storage
+          .from("artwork-images")
+          .getPublicUrl(r.image_path);
+        imageUrl = urlData.publicUrl;
+      }
+      return {
+        id: r.artwork_id,
+        title: r.title || "Untitled",
+        year: r.year,
+        medium: r.medium,
+        height: r.height,
+        width: r.width,
+        depth: r.depth,
+        imageUrl,
+      };
+    });
 
-    const enriched: SharedArtwork[] = await Promise.all(
-      paData.map(async (pa) => {
-        const art = artData?.find((a) => a.id === pa.artwork_id);
-        const { data: imgs } = await supabase
-          .from("artwork_images")
-          .select("storage_path")
-          .eq("artwork_id", pa.artwork_id)
-          .order("display_order")
-          .limit(1);
-        let imageUrl: string | null = null;
-        if (imgs && imgs.length > 0) {
-          const { data: urlData } = supabase.storage
-            .from("artwork-images")
-            .getPublicUrl(imgs[0].storage_path);
-          imageUrl = urlData.publicUrl;
-        }
-        return {
-          id: pa.artwork_id,
-          title: art?.title || "Untitled",
-          year: art?.year || null,
-          medium: art?.medium || null,
-          height: art?.height || null,
-          width: art?.width || null,
-          depth: art?.depth || null,
-          imageUrl,
-        };
-      })
-    );
     setArtworks(enriched);
     setLoading(false);
   };

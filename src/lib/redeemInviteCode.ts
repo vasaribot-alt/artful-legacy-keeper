@@ -19,14 +19,12 @@ export async function redeemInviteCodeIfNeeded(userId: string) {
   const inviteCode = user?.user_metadata?.invite_code;
   if (!inviteCode) return;
 
-  // Find the code
-  const { data: codeData } = await supabase
-    .from("invite_codes")
-    .select("id, tier, used_by, is_active")
-    .eq("code", inviteCode)
-    .single();
+  // Validate the code via security-definer RPC (table is no longer publicly readable)
+  const { data: validation } = await supabase
+    .rpc("validate_invite_code", { _code: inviteCode });
 
-  if (!codeData || !codeData.is_active || codeData.used_by) return;
+  const codeData = Array.isArray(validation) ? validation[0] : validation;
+  if (!codeData || !codeData.is_valid) return;
 
   // Mark code as used
   await supabase

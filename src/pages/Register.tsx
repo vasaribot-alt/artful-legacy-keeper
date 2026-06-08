@@ -30,23 +30,21 @@ const Register = () => {
       return;
     }
 
-    // Validate invite code if provided
+    // Validate invite code if provided (via security-definer RPC)
     if (inviteCode.trim()) {
-      const { data: codeData } = await supabase
-        .from("invite_codes")
-        .select("id, code, tier, used_by, is_active")
-        .eq("code", inviteCode.trim().toUpperCase())
-        .single();
+      const { data: validation } = await supabase
+        .rpc("validate_invite_code", { _code: inviteCode.trim().toUpperCase() });
+      const codeData = Array.isArray(validation) ? validation[0] : validation;
 
       if (!codeData) {
         toast.error("Invalid invite code");
         return;
       }
-      if (!codeData.is_active) {
+      if (codeData.inactive) {
         toast.error("This invite code is no longer active");
         return;
       }
-      if (codeData.used_by) {
+      if (codeData.already_used) {
         toast.error("This invite code has already been used");
         return;
       }
