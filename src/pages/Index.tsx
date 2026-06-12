@@ -265,9 +265,68 @@ const Index = () => {
         </div>
       </section>
 
+      {/* About */}
+      <section id="about" className="py-20 px-6 border-t border-border">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl mb-8 text-center">About the Foundation</h2>
+          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
+            <p>
+              The Global Artist Registry Foundation (GARF) is an independent, non-profit foundation
+              dedicated to the long-term preservation of contemporary artistic documentation.
+            </p>
+            <p>
+              Throughout history, artists have created works that shape how societies understand
+              themselves and their time. Yet the documentation surrounding artistic creation—images,
+              records, catalogues, exhibition histories, and personal archives—has often been
+              fragile and easily lost. Today this documentation increasingly exists in digital form,
+              dispersed across private databases, gallery systems, personal websites, and commercial
+              platforms. When galleries close, services disappear, or artists lose access to
+              platforms, the documentation surrounding artworks can vanish with them.
+            </p>
+            <p>
+              GARF is independent in governance and purpose: not owned or controlled by commercial
+              interests and established solely to serve this cultural mission. The foundation seeks
+              to establish a long-term digital infrastructure through which artists themselves can
+              authenticate documentation relating to their work, exhibitions, and professional
+              histories—creating a durable, globally accessible record of contemporary artistic
+              production usable by institutions, researchers, collectors, and the public.
+            </p>
+            <p>
+              At the center of this effort is the belief that artists should have the ability not
+              only to preserve the record of their own work, but also to contribute directly to the
+              cultural memory of their time.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border">
-        <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-muted-foreground">
+        <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-3 text-sm text-muted-foreground">
+          <div>
+            <div className="font-medium text-foreground mb-2">Global Artist Registry Foundation</div>
+            <div>Jan Pieterszoon Coenstraat 7</div>
+            <div>2595 WP 's-Gravenhage</div>
+            <div>The Hague, Netherlands</div>
+          </div>
+          <div>
+            <div className="font-medium text-foreground mb-2">Contact</div>
+            <div>
+              <a href="mailto:contact@globalartistregistry.org" className="hover:text-foreground">
+                contact@globalartistregistry.org
+              </a>
+            </div>
+            <div>
+              <a href="tel:+31850600529" className="hover:text-foreground">+31 850 600 529</a>
+            </div>
+          </div>
+          <div>
+            <div className="font-medium text-foreground mb-2">Registration</div>
+            <div>KvK 42024490</div>
+            <div>Stichting under Dutch law</div>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>© 2026 Global Artist Registry Foundation</span>
           <span>Archival-grade art documentation</span>
         </div>
