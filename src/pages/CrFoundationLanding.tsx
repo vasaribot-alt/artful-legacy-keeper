@@ -178,9 +178,61 @@ const CrFoundationLanding = () => {
         </div>
       </section>
 
+      {/* About */}
+      <section id="about" className="py-20 px-6 border-t border-border">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl mb-8 text-center font-serif">About the Foundation</h2>
+          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
+            <p>
+              The Catalogue Raisonné Foundation operates under the Global Artist Registry Foundation
+              (GARF), an independent, non-profit foundation dedicated to the long-term preservation
+              of contemporary artistic documentation.
+            </p>
+            <p>
+              GARF is independent in governance and purpose: not owned or controlled by commercial
+              interests and established solely to serve this cultural mission. The foundation
+              provides a long-term digital infrastructure through which artists, scholars, and
+              committees can compile, review, and publish authoritative catalogues raisonnés—
+              creating a durable, globally accessible scholarly record of contemporary artistic
+              production.
+            </p>
+            <p>
+              Through artist-authenticated documentation, structured committee review, and
+              long-term preservation strategies, the foundation aims to make the scholarly record
+              of contemporary art accessible across generations—available to institutions,
+              researchers, collectors, and the public.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-border">
-        <div className="max-w-6xl mx-auto flex items-center justify-between text-sm text-muted-foreground">
+        <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-3 text-sm text-muted-foreground">
+          <div>
+            <div className="font-medium text-foreground mb-2">Global Artist Registry Foundation</div>
+            <div>Jan Pieterszoon Coenstraat 7</div>
+            <div>2595 WP 's-Gravenhage</div>
+            <div>The Hague, Netherlands</div>
+          </div>
+          <div>
+            <div className="font-medium text-foreground mb-2">Contact</div>
+            <div>
+              <a href="mailto:contact@globalartistregistry.org" className="hover:text-foreground">
+                contact@globalartistregistry.org
+              </a>
+            </div>
+            <div>
+              <a href="tel:+31850600529" className="hover:text-foreground">+31 850 600 529</a>
+            </div>
+          </div>
+          <div>
+            <div className="font-medium text-foreground mb-2">Registration</div>
+            <div>KvK 42024490</div>
+            <div>Stichting under Dutch law</div>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>© 2026 Catalogue Raisonné Foundation</span>
           <span>Scholarly record of artists' œuvres</span>
         </div>
