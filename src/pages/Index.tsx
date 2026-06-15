@@ -271,25 +271,24 @@ const Index = () => {
           <h2 className="text-3xl mb-8 text-center">About the Foundation</h2>
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              The Global Artist Registry Foundation (GARF) is an independent, non-profit foundation
-              dedicated to the long-term preservation of contemporary artistic documentation.
+              The Global Artist Registry Foundation (GARF) is an independent non-profit foundation
+              dedicated to preserving the documentation of contemporary artistic practice for future generations.
             </p>
             <p>
               Throughout history, artists have created works that shape how societies understand
-              themselves and their time. Yet the documentation surrounding artistic creation—images,
-              records, catalogues, exhibition histories, and personal archives—has often been
+              themselves and their time. Yet the documentation surrounding artistic creation, including images,
+              records, catalogues, exhibition history, and personal archives, has often been
               fragile and easily lost. Today this documentation increasingly exists in digital form,
               dispersed across private databases, gallery systems, personal websites, and commercial
               platforms. When galleries close, services disappear, or artists lose access to
               platforms, the documentation surrounding artworks can vanish with them.
             </p>
             <p>
-              GARF is independent in governance and purpose: not owned or controlled by commercial
-              interests and established solely to serve this cultural mission. The foundation seeks
-              to establish a long-term digital infrastructure through which artists themselves can
-              authenticate documentation relating to their work, exhibitions, and professional
-              histories—creating a durable, globally accessible record of contemporary artistic
-              production usable by institutions, researchers, collectors, and the public.
+              GARF was established to address this challenge. Independent in both governance and purpose,
+              the foundation operates without commercial ownership or influence and is dedicated
+              exclusively to this cultural mission. Its goal is to build a durable digital infrastructure
+              that enables artists to document and authenticate their work, exhibitions, and professional
+              histories, creating a trusted and accessible record of contemporary artistic production.
             </p>
             <p>
               At the center of this effort is the belief that artists should have the ability not
