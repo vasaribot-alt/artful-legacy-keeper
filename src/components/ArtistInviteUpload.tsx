@@ -185,33 +185,48 @@ export default function ArtistInviteUpload() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); return; }
 
-    const { data: createdCodes, error: codeErr } = await supabase
-      .from("invite_codes")
-      .insert(preview.map((r) => ({ code: r.code, tier: r.tier, created_by: user.id })))
-      .select("id, code");
-    if (codeErr || !createdCodes) { toast.error("Failed to create invite codes"); setLoading(false); return; }
-    const codeMap = new Map(createdCodes.map((c) => [c.code, c.id]));
+    const CHUNK = 500;
+    let imported = 0;
+    try {
+      for (let i = 0; i < preview.length; i += CHUNK) {
+        const slice = preview.slice(i, i + CHUNK);
+        const { data: createdCodes, error: codeErr } = await supabase
+          .from("invite_codes")
+          .insert(slice.map((r) => ({ code: r.code, tier: r.tier, created_by: user.id })))
+          .select("id, code");
+        if (codeErr || !createdCodes) throw new Error(codeErr?.message || "code insert failed");
+        const codeMap = new Map(createdCodes.map((c) => [c.code, c.id]));
 
-    const inserts = preview.map((r) => ({
-      artist_name: r.artist_name,
-      born: r.born,
-      died: r.died,
-      country: r.country || null,
-      ranking: r.ranking || null,
-      email: r.email || null,
-      phone: r.phone || null,
-      studio_address: r.studio_address || null,
-      galleries: r.galleries.length ? r.galleries : null,
-      cv_text: r.cv_text || null,
-      social_links: Object.keys(r.social_links).length ? r.social_links : null,
-      tier: r.tier,
-      notes: r.notes || null,
-      invite_code_id: codeMap.get(r.code) || null,
-      added_by: user.id,
-    }));
-    const { error } = await supabase.from("artist_invites").insert(inserts);
-    if (error) toast.error("Failed to save: " + error.message);
-    else { toast.success(`Imported ${preview.length} artist(s)`); setPreview([]); fetchSaved(); }
+        const inserts = slice.map((r) => ({
+          artist_name: r.artist_name,
+          born: r.born,
+          died: r.died,
+          country: r.country || null,
+          ranking: r.ranking || null,
+          email: r.email || null,
+          phone: r.phone || null,
+          studio_address: r.studio_address || null,
+          galleries: r.galleries.length ? r.galleries : null,
+          cv_text: r.cv_text || null,
+          social_links: Object.keys(r.social_links).length ? r.social_links : null,
+          tier: r.tier,
+          notes: r.notes || null,
+          invite_code_id: codeMap.get(r.code) || null,
+          added_by: user.id,
+        }));
+        const { error } = await supabase.from("artist_invites").insert(inserts);
+        if (error) throw new Error(error.message);
+        imported += slice.length;
+        if (preview.length > CHUNK) {
+          toast.message(`Importing… ${imported.toLocaleString()} / ${preview.length.toLocaleString()}`);
+        }
+      }
+      toast.success(`Imported ${imported.toLocaleString()} artist(s)`);
+      setPreview([]);
+      fetchSaved();
+    } catch (e: any) {
+      toast.error(`Failed after ${imported.toLocaleString()}: ${e.message}`);
+    }
     setLoading(false);
   };
 
