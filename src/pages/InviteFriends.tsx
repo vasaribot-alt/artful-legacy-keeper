@@ -59,8 +59,9 @@ export default function InviteFriends() {
 
   useEffect(() => { load(); }, []);
 
+  const maxInvites = BASE_INVITES + bonus;
   const activeCount = invites.filter(i => i.status === "sent" || i.status === "redeemed").length;
-  const remaining = Math.max(0, MAX_INVITES - activeCount);
+  const remaining = Math.max(0, maxInvites - activeCount);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
