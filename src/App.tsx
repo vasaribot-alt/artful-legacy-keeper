@@ -28,6 +28,7 @@ import Catalogues from "./pages/Catalogues";
 import FoundingArtists from "./pages/FoundingArtists";
 import PublicArtistProfile from "./pages/PublicArtistProfile";
 import FoundationDashboard from "./pages/FoundationDashboard";
+import FoundationPitch from "./pages/FoundationPitch";
 import Donors from "./pages/Donors";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
@@ -84,7 +85,8 @@ const App = () => (
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
           <Route path="/founding-artists" element={<FoundingArtists />} />
           <Route path="/artist/:id" element={<PublicArtistProfile />} />
-          <Route path="/foundation" element={<FoundationDashboard />} />
+          <Route path="/foundation" element={<FoundationPitch />} />
+          <Route path="/foundation/admin" element={<FoundationDashboard />} />
           <Route path="/donors" element={<Donors />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
