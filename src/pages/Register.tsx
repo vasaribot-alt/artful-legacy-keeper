@@ -16,12 +16,18 @@ const roles: { value: Role; label: string; description: string }[] = [
 
 const Register = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<Role>("artist");
   const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fromUrl = searchParams.get("invite");
+    if (fromUrl) setInviteCode(fromUrl.toUpperCase());
+  }, [searchParams]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
