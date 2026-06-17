@@ -84,7 +84,8 @@ const App = () => (
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
           <Route path="/founding-artists" element={<FoundingArtists />} />
           <Route path="/artist/:id" element={<PublicArtistProfile />} />
-          <Route path="/foundation" element={<FoundationDashboard />} />
+          <Route path="/foundation" element={<FoundationPitch />} />
+          <Route path="/foundation/admin" element={<FoundationDashboard />} />
           <Route path="/donors" element={<Donors />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
