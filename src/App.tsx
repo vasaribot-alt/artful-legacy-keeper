@@ -96,6 +96,7 @@ const App = () => (
           <Route path="/cr" element={<CrDirectory />} />
           <Route path="/cr/artist/:gar" element={<CrArtistProfile />} />
           <Route path="/cr/profile" element={<CrProfileEditor />} />
+          <Route path="/invite-friends" element={<InviteFriends />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
