@@ -5,6 +5,7 @@ import { wipe } from "@remotion/transitions/wipe";
 import { loadFont as loadSerif } from "@remotion/google-fonts/DMSerifDisplay";
 import { loadFont as loadSans } from "@remotion/google-fonts/DMSans";
 import { theme } from "./theme";
+import { SafeArea } from "./components/SafeArea";
 import { SceneTitleProfile } from "./scenes/SceneTitleProfile";
 import { SceneProfileBasics } from "./scenes/SceneProfileBasics";
 import { SceneProfilePhoto } from "./scenes/SceneProfilePhoto";
@@ -65,20 +66,22 @@ export const HowToProfile: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
-      <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={150}><SceneTitleProfile /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={260}><SceneProfileBasics /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={220}><SceneProfilePhoto /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={250}><SceneGalleries /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={320}><SceneCV /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={300}><SceneProfilePreview /></TransitionSeries.Sequence>
-      </TransitionSeries>
-      <Chrome />
+      <SafeArea>
+        <TransitionSeries>
+          <TransitionSeries.Sequence durationInFrames={150}><SceneTitleProfile /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
+          <TransitionSeries.Sequence durationInFrames={260}><SceneProfileBasics /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={220}><SceneProfilePhoto /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
+          <TransitionSeries.Sequence durationInFrames={250}><SceneGalleries /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={320}><SceneCV /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={300}><SceneProfilePreview /></TransitionSeries.Sequence>
+        </TransitionSeries>
+        <Chrome />
+      </SafeArea>
     </AbsoluteFill>
   );
 };

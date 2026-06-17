@@ -5,6 +5,7 @@ import { wipe } from "@remotion/transitions/wipe";
 import { loadFont as loadSerif } from "@remotion/google-fonts/DMSerifDisplay";
 import { loadFont as loadSans } from "@remotion/google-fonts/DMSans";
 import { theme } from "./theme";
+import { SafeArea } from "./components/SafeArea";
 import { SceneTitleCapture } from "./scenes/SceneTitleCapture";
 import { SceneOpenSidebar } from "./scenes/SceneOpenSidebar";
 import { SceneTakePhoto } from "./scenes/SceneTakePhoto";
@@ -64,20 +65,22 @@ export const HowToCapture: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
-      <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={160}><SceneTitleCapture /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={200}><SceneOpenSidebar /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={240}><SceneTakePhoto /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={260}><SceneFillForm /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={240}><SceneSaveLoop /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={220}><SceneAnyDevice /></TransitionSeries.Sequence>
-      </TransitionSeries>
-      <Chrome />
+      <SafeArea>
+        <TransitionSeries>
+          <TransitionSeries.Sequence durationInFrames={160}><SceneTitleCapture /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
+          <TransitionSeries.Sequence durationInFrames={200}><SceneOpenSidebar /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={240}><SceneTakePhoto /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
+          <TransitionSeries.Sequence durationInFrames={260}><SceneFillForm /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={240}><SceneSaveLoop /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
+          <TransitionSeries.Sequence durationInFrames={220}><SceneAnyDevice /></TransitionSeries.Sequence>
+        </TransitionSeries>
+        <Chrome />
+      </SafeArea>
     </AbsoluteFill>
   );
 };

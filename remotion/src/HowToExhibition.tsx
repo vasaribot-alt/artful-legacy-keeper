@@ -5,6 +5,7 @@ import { wipe } from "@remotion/transitions/wipe";
 import { loadFont as loadSerif } from "@remotion/google-fonts/DMSerifDisplay";
 import { loadFont as loadSans } from "@remotion/google-fonts/DMSans";
 import { theme } from "./theme";
+import { SafeArea } from "./components/SafeArea";
 import { SceneTitleExhibition } from "./scenes/SceneTitleExhibition";
 import { SceneExhibitionNew } from "./scenes/SceneExhibitionNew";
 import { SceneInstallationViews } from "./scenes/SceneInstallationViews";
@@ -64,20 +65,22 @@ export const HowToExhibition: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
-      <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={170}><SceneTitleExhibition /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={290}><SceneExhibitionNew /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={280}><SceneInstallationViews /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
-        <TransitionSeries.Sequence durationInFrames={250}><SceneLinkArtworks /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={250}><SceneExhibitionText /></TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
-        <TransitionSeries.Sequence durationInFrames={230}><SceneExhibitionCVSync /></TransitionSeries.Sequence>
-      </TransitionSeries>
-      <Chrome />
+      <SafeArea>
+        <TransitionSeries>
+          <TransitionSeries.Sequence durationInFrames={170}><SceneTitleExhibition /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
+          <TransitionSeries.Sequence durationInFrames={290}><SceneExhibitionNew /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={280}><SceneInstallationViews /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 22 })} />
+          <TransitionSeries.Sequence durationInFrames={250}><SceneLinkArtworks /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={wipe({ direction: "from-right" })} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={250}><SceneExhibitionText /></TransitionSeries.Sequence>
+          <TransitionSeries.Transition presentation={fade()} timing={springTiming({ config: { damping: 200 }, durationInFrames: 26 })} />
+          <TransitionSeries.Sequence durationInFrames={230}><SceneExhibitionCVSync /></TransitionSeries.Sequence>
+        </TransitionSeries>
+        <Chrome />
+      </SafeArea>
     </AbsoluteFill>
   );
 };
