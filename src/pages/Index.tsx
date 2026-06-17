@@ -76,9 +76,6 @@ const Index = () => {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-lg font-semibold tracking-tight">Global Artist Registry Foundation</span>
           <div className="flex items-center gap-6">
-            <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Founding Artists
-            </Link>
             <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Supporters
             </Link>
@@ -143,53 +140,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Founding Artists */}
-      {featuredArtists.length > 0 && (
-        <section className="py-20 px-6 border-t border-border">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-between mb-12">
-              <div>
-                <h2 className="text-3xl mb-2">Founding Artists</h2>
-                <p className="text-muted-foreground text-sm">
-                  Pioneers building a permanent, authenticated record of contemporary art.
-                </p>
-              </div>
-              <Link
-                to="/founding-artists"
-                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors shrink-0"
-              >
-                View all <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-              {featuredArtists.slice(0, 8).map((artist) => {
-                const avatarSrc = artist.avatar_url
-                  ? artist.avatar_url.startsWith("http")
-                    ? artist.avatar_url
-                    : supabase.storage.from("profile-photos").getPublicUrl(artist.avatar_url).data.publicUrl
-                  : undefined;
-                const location = [artist.city, artist.country].filter(Boolean).join(", ");
-                return (
-                  <Link
-                    key={artist.user_id}
-                    to={`/artist/${artist.user_id}`}
-                    className="text-center group"
-                  >
-                    <Avatar className="h-20 w-20 mx-auto mb-3 ring-2 ring-transparent group-hover:ring-foreground/20 transition-all">
-                      {avatarSrc && <AvatarImage src={avatarSrc} alt={artist.full_name || ""} />}
-                      <AvatarFallback className="text-lg bg-secondary text-secondary-foreground">
-                        {artist.full_name?.charAt(0)?.toUpperCase() || "?"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <p className="font-medium text-sm">{artist.full_name || "Artist"}</p>
-                    {location && <p className="text-xs text-muted-foreground mt-0.5">{location}</p>}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="py-20 px-6 bg-surface border-t border-border">
         <div className="max-w-3xl mx-auto">
