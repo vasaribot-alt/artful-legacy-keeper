@@ -1483,6 +1483,53 @@ export type Database = {
         }
         Relationships: []
       }
+      peer_invites: {
+        Row: {
+          created_at: string
+          id: string
+          invite_code_id: string | null
+          invitee_email: string | null
+          invitee_name: string
+          inviter_id: string
+          personal_message: string | null
+          redeemed_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invite_code_id?: string | null
+          invitee_email?: string | null
+          invitee_name: string
+          inviter_id: string
+          personal_message?: string | null
+          redeemed_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invite_code_id?: string | null
+          invitee_email?: string | null
+          invitee_name?: string
+          inviter_id?: string
+          personal_message?: string | null
+          redeemed_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "peer_invites_invite_code_id_fkey"
+            columns: ["invite_code_id"]
+            isOneToOne: false
+            referencedRelation: "invite_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_artworks: {
         Row: {
           artwork_id: string
@@ -1980,6 +2027,17 @@ export type Database = {
         }
         Returns: string
       }
+      create_peer_invite: {
+        Args: {
+          _invitee_email?: string
+          _invitee_name: string
+          _personal_message?: string
+        }
+        Returns: {
+          code: string
+          invite_id: string
+        }[]
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -2104,6 +2162,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      revoke_peer_invite: { Args: { _invite_id: string }; Returns: undefined }
       validate_invite_code: {
         Args: { _code: string }
         Returns: {
@@ -2122,6 +2181,7 @@ export type Database = {
         | "internationally_established"
         | "mid_career"
         | "emerging"
+        | "peer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2255,6 +2315,7 @@ export const Constants = {
         "internationally_established",
         "mid_career",
         "emerging",
+        "peer",
       ],
     },
   },

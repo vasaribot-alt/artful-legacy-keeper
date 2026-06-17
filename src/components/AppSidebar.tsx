@@ -1,4 +1,4 @@
-import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, Camera } from "lucide-react";
+import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, Camera, UserPlus } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,6 +54,7 @@ const getNavItems = (role: AppRole) => {
     { title: "Catalogues", url: "/catalogues", icon: BookOpen },
     { title: "Provenance", url: "/provenance", icon: ScrollText },
     { title: "Files", url: "/files", icon: FolderSearch },
+    { title: "Invite Friends", url: "/invite-friends", icon: UserPlus },
   ];
 };
 

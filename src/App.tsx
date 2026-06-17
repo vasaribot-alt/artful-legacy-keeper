@@ -43,6 +43,7 @@ import CrStatus from "./pages/CrStatus";
 import CrDirectory from "./pages/CrDirectory";
 import CrArtistProfile from "./pages/CrArtistProfile";
 import CrProfileEditor from "./pages/CrProfileEditor";
+import InviteFriends from "./pages/InviteFriends";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -95,6 +96,7 @@ const App = () => (
           <Route path="/cr" element={<CrDirectory />} />
           <Route path="/cr/artist/:gar" element={<CrArtistProfile />} />
           <Route path="/cr/profile" element={<CrProfileEditor />} />
+          <Route path="/invite-friends" element={<InviteFriends />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
