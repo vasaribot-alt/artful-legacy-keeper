@@ -133,8 +133,11 @@ export default function ArtistInviteUpload() {
     const reader = new FileReader();
     reader.onload = (evt) => {
       const wb = XLSX.read(evt.target?.result, { type: "binary" });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json<Record<string, any>>(ws);
+      const json: Record<string, any>[] = [];
+      for (const name of wb.SheetNames) {
+        const ws = wb.Sheets[name];
+        json.push(...XLSX.utils.sheet_to_json<Record<string, any>>(ws));
+      }
 
       const rows: InviteRow[] = json.map((row) => {
         const get = (...keys: string[]) => {
@@ -170,7 +173,7 @@ export default function ArtistInviteUpload() {
       }).filter((r) => r.artist_name);
 
       setPreview(rows);
-      toast.success(`Parsed ${rows.length} artist(s)`);
+      toast.success(`Parsed ${rows.length.toLocaleString()} artist(s) across ${wb.SheetNames.length} sheet(s)`);
     };
     reader.readAsBinaryString(file);
     if (fileRef.current) fileRef.current.value = "";
