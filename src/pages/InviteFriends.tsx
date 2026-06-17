@@ -166,11 +166,12 @@ ${sender || "A friend"}`;
         <div>
           <h2 className="text-2xl font-serif mb-2">Invite fellow artists</h2>
           <p className="text-muted-foreground">
-            As a verified artist, you can invite up to {MAX_INVITES} peers. We'll generate a personal invite — you send it from your own email so it arrives as a note from a friend.
+            You can invite up to {maxInvites} peers ({BASE_INVITES} base{bonus > 0 ? ` + ${bonus} earned` : ""}). We'll generate a personal invite — you send it from your own email so it arrives as a note from a friend. Each invited artist who completes ID verification earns you one extra invite.
           </p>
-          <p className="mt-3 text-sm">
-            <Badge variant="secondary">{activeCount} of {MAX_INVITES} used</Badge>
-            <span className="ml-2 text-muted-foreground">{remaining} remaining</span>
+          <p className="mt-3 text-sm flex items-center gap-2 flex-wrap">
+            <Badge variant="secondary">{activeCount} of {maxInvites} used</Badge>
+            <span className="text-muted-foreground">{remaining} remaining</span>
+            {bonus > 0 && <Badge>+{bonus} earned via referrals</Badge>}
           </p>
         </div>
 
