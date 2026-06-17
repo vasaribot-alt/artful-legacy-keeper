@@ -1483,6 +1483,60 @@ export type Database = {
         }
         Relationships: []
       }
+      major_gift_inquiries: {
+        Row: {
+          country: string | null
+          created_at: string
+          email: string
+          estimated_amount_eur: number | null
+          full_name: string
+          id: string
+          intended_frequency: string | null
+          internal_notes: string | null
+          message: string | null
+          organisation: string | null
+          phone: string | null
+          preferred_contact: string | null
+          source: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          email: string
+          estimated_amount_eur?: number | null
+          full_name: string
+          id?: string
+          intended_frequency?: string | null
+          internal_notes?: string | null
+          message?: string | null
+          organisation?: string | null
+          phone?: string | null
+          preferred_contact?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          email?: string
+          estimated_amount_eur?: number | null
+          full_name?: string
+          id?: string
+          intended_frequency?: string | null
+          internal_notes?: string | null
+          message?: string | null
+          organisation?: string | null
+          phone?: string | null
+          preferred_contact?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       peer_invites: {
         Row: {
           created_at: string
