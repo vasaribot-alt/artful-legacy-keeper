@@ -6,11 +6,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
 
 const tutorials = [
-  { src: "/tutorials/how-to-profile.mp4", title: "Build your profile." },
-  { src: "/tutorials/how-to-bulk.mp4", title: "Import your entire catalogue." },
-  { src: "/tutorials/how-to-capture.mp4", title: "Capture, from the studio." },
-  { src: "/tutorials/how-to-exhibition.mp4", title: "Document the exhibition." },
-  { src: "/tutorials/how-to-catalogues.mp4", title: "Build the publication record." },
+  { src: "/tutorials/how-to-profile-mac-safe.mp4", title: "Build your profile." },
+  { src: "/tutorials/how-to-bulk-mac-safe.mp4", title: "Import your entire catalogue." },
+  { src: "/tutorials/how-to-capture-mac-safe.mp4", title: "Capture, from the studio." },
+  { src: "/tutorials/how-to-exhibition-mac-safe.mp4", title: "Document the exhibition." },
+  { src: "/tutorials/how-to-catalogues-mac-safe.mp4", title: "Build the publication record." },
 ];
 
 const features = [
