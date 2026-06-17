@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Copy, Mail, X, UserPlus } from "lucide-react";
 
-const MAX_INVITES = 5;
+const BASE_INVITES = 5;
 
 type PeerInvite = {
   id: string;
