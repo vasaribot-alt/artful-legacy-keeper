@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Copy, Mail, X, UserPlus } from "lucide-react";
 
-const MAX_INVITES = 5;
+const BASE_INVITES = 5;
 
 type PeerInvite = {
   id: string;
@@ -28,6 +28,7 @@ export default function InviteFriends() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [verified, setVerified] = useState(false);
+  const [bonus, setBonus] = useState(0);
   const [invites, setInvites] = useState<PeerInvite[]>([]);
   const [inviterName, setInviterName] = useState("");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -39,11 +40,12 @@ export default function InviteFriends() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, id_verified")
+      .select("full_name, id_verified, bonus_invites")
       .eq("user_id", user.id)
       .maybeSingle();
 
     setVerified(!!profile?.id_verified);
+    setBonus((profile as any)?.bonus_invites || 0);
     setInviterName(profile?.full_name || "");
 
     const { data } = await supabase
@@ -57,8 +59,9 @@ export default function InviteFriends() {
 
   useEffect(() => { load(); }, []);
 
+  const maxInvites = BASE_INVITES + bonus;
   const activeCount = invites.filter(i => i.status === "sent" || i.status === "redeemed").length;
-  const remaining = Math.max(0, MAX_INVITES - activeCount);
+  const remaining = Math.max(0, maxInvites - activeCount);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,7 +148,7 @@ ${sender || "A friend"}`;
             <CardHeader>
               <CardTitle>ID verification required</CardTitle>
               <CardDescription>
-                Peer invitations are reserved for ID-verified artists. Once your Veriff verification is approved, you'll be able to invite up to {MAX_INVITES} fellow artists to join the registry.
+                Peer invitations are reserved for ID-verified artists. Once your Veriff verification is approved, you'll be able to invite up to {BASE_INVITES} fellow artists to join the registry — and earn one extra invite for every friend who also gets verified.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -163,11 +166,12 @@ ${sender || "A friend"}`;
         <div>
           <h2 className="text-2xl font-serif mb-2">Invite fellow artists</h2>
           <p className="text-muted-foreground">
-            As a verified artist, you can invite up to {MAX_INVITES} peers. We'll generate a personal invite — you send it from your own email so it arrives as a note from a friend.
+            You can invite up to {maxInvites} peers ({BASE_INVITES} base{bonus > 0 ? ` + ${bonus} earned` : ""}). We'll generate a personal invite — you send it from your own email so it arrives as a note from a friend. Each invited artist who completes ID verification earns you one extra invite.
           </p>
-          <p className="mt-3 text-sm">
-            <Badge variant="secondary">{activeCount} of {MAX_INVITES} used</Badge>
-            <span className="ml-2 text-muted-foreground">{remaining} remaining</span>
+          <p className="mt-3 text-sm flex items-center gap-2 flex-wrap">
+            <Badge variant="secondary">{activeCount} of {maxInvites} used</Badge>
+            <span className="text-muted-foreground">{remaining} remaining</span>
+            {bonus > 0 && <Badge>+{bonus} earned via referrals</Badge>}
           </p>
         </div>
 

@@ -1602,6 +1602,7 @@ export type Database = {
           biography: string | null
           birth_country: string | null
           birth_year: number | null
+          bonus_invites: number
           chronology: string | null
           city: string | null
           committee_connected: boolean
@@ -1650,6 +1651,7 @@ export type Database = {
           biography?: string | null
           birth_country?: string | null
           birth_year?: number | null
+          bonus_invites?: number
           chronology?: string | null
           city?: string | null
           committee_connected?: boolean
@@ -1698,6 +1700,7 @@ export type Database = {
           biography?: string | null
           birth_country?: string | null
           birth_year?: number | null
+          bonus_invites?: number
           chronology?: string | null
           city?: string | null
           committee_connected?: boolean
