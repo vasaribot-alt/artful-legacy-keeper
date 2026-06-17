@@ -117,6 +117,11 @@ export default function ArtistInviteUpload() {
   const [manualEmail, setManualEmail] = useState("");
   const [manualTier, setManualTier] = useState<Tier>("emerging");
 
+  // Sheet selection
+  const [availableSheets, setAvailableSheets] = useState<string[]>([]);
+  const [selectedSheets, setSelectedSheets] = useState<Set<string>>(new Set());
+  const [workbookBinary, setWorkbookBinary] = useState<string | ArrayBuffer | null>(null);
+
   const fetchSaved = async () => {
     const { data } = await supabase
       .from("artist_invites")
@@ -127,56 +132,91 @@ export default function ArtistInviteUpload() {
 
   useEffect(() => { fetchSaved(); }, []);
 
+  const parseRowsFromWorkbook = (wb: XLSX.WorkBook, sheetNames: string[]) => {
+    const json: Record<string, any>[] = [];
+    for (const name of sheetNames) {
+      const ws = wb.Sheets[name];
+      if (!ws) continue;
+      json.push(...XLSX.utils.sheet_to_json<Record<string, any>>(ws));
+    }
+
+    const rows: InviteRow[] = json.map((row) => {
+      const get = (...keys: string[]) => {
+        for (const k of keys) {
+          const found = Object.keys(row).find((rk) => rk.toLowerCase().trim() === k.toLowerCase());
+          if (found && row[found] !== undefined && row[found] !== "") return String(row[found]).trim();
+        }
+        return "";
+      };
+      const galleries = [
+        get("Representing gallery 1", "Gallery 1"),
+        get("Representing gallery 2", "Gallery 2"),
+        get("Representing gallery 3", "Gallery 3"),
+        get("Representing gallery 4", "Gallery 4"),
+      ].filter(Boolean);
+      const tier = parseTier(get("Tier"));
+      return {
+        artist_name: get("Artist name", "Name", "artist_name"),
+        born: num(get("Born", "Year of Birth", "birth_year")),
+        died: num(get("Died")),
+        country: get("Country"),
+        ranking: get("Ranking"),
+        email: get("Email"),
+        phone: get("Phone"),
+        studio_address: get("Studio address"),
+        galleries,
+        cv_text: get("CV"),
+        social_links: parseSocials(get("Social media links", "Social media")),
+        tier,
+        notes: get("Notes"),
+        code: generateCode(tier),
+      };
+    }).filter((r) => r.artist_name);
+
+    return rows;
+  };
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const wb = XLSX.read(evt.target?.result, { type: "binary" });
-      const json: Record<string, any>[] = [];
-      for (const name of wb.SheetNames) {
-        const ws = wb.Sheets[name];
-        json.push(...XLSX.utils.sheet_to_json<Record<string, any>>(ws));
+      const data = evt.target?.result;
+      if (!data) return;
+      const wb = XLSX.read(data, { type: "binary" });
+      setWorkbookBinary(data);
+      setAvailableSheets(wb.SheetNames);
+
+      // Default to 1A and 1B if present, otherwise first sheet
+      const defaults = new Set<string>();
+      const preferred = wb.SheetNames.filter((n) => /^1[AB]$/i.test(n.trim()));
+      if (preferred.length) {
+        preferred.forEach((n) => defaults.add(n));
+      } else if (wb.SheetNames.length > 0) {
+        defaults.add(wb.SheetNames[0]);
       }
-
-      const rows: InviteRow[] = json.map((row) => {
-        const get = (...keys: string[]) => {
-          for (const k of keys) {
-            const found = Object.keys(row).find((rk) => rk.toLowerCase().trim() === k.toLowerCase());
-            if (found && row[found] !== undefined && row[found] !== "") return String(row[found]).trim();
-          }
-          return "";
-        };
-        const galleries = [
-          get("Representing gallery 1", "Gallery 1"),
-          get("Representing gallery 2", "Gallery 2"),
-          get("Representing gallery 3", "Gallery 3"),
-          get("Representing gallery 4", "Gallery 4"),
-        ].filter(Boolean);
-        const tier = parseTier(get("Tier"));
-        return {
-          artist_name: get("Artist name", "Name", "artist_name"),
-          born: num(get("Born", "Year of Birth", "birth_year")),
-          died: num(get("Died")),
-          country: get("Country"),
-          ranking: get("Ranking"),
-          email: get("Email"),
-          phone: get("Phone"),
-          studio_address: get("Studio address"),
-          galleries,
-          cv_text: get("CV"),
-          social_links: parseSocials(get("Social media links", "Social media")),
-          tier,
-          notes: get("Notes"),
-          code: generateCode(tier),
-        };
-      }).filter((r) => r.artist_name);
-
-      setPreview(rows);
-      toast.success(`Parsed ${rows.length.toLocaleString()} artist(s) across ${wb.SheetNames.length} sheet(s)`);
+      setSelectedSheets(defaults);
+      setPreview([]);
     };
     reader.readAsBinaryString(file);
     if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const handleParseSelected = () => {
+    if (!workbookBinary || selectedSheets.size === 0) return;
+    const wb = XLSX.read(workbookBinary, { type: "binary" });
+    const rows = parseRowsFromWorkbook(wb, Array.from(selectedSheets));
+    setPreview(rows);
+    toast.success(`Parsed ${rows.length.toLocaleString()} artist(s) from sheet(s) ${Array.from(selectedSheets).join(", ")}`);
+  };
+
+  const toggleSheet = (name: string) => {
+    setSelectedSheets((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
   };
 
   const handleImport = async () => {
@@ -223,6 +263,9 @@ export default function ArtistInviteUpload() {
       }
       toast.success(`Imported ${imported.toLocaleString()} artist(s)`);
       setPreview([]);
+      setAvailableSheets([]);
+      setSelectedSheets(new Set());
+      setWorkbookBinary(null);
       fetchSaved();
     } catch (e: any) {
       toast.error(`Failed after ${imported.toLocaleString()}: ${e.message}`);
@@ -353,6 +396,33 @@ export default function ArtistInviteUpload() {
         </p>
         <Input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFile} className="max-w-xs" />
 
+        {availableSheets.length > 0 && preview.length === 0 && (
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Select sheet(s) to import ({availableSheets.length} found):</p>
+            <div className="flex flex-wrap gap-2">
+              {availableSheets.map((name) => (
+                <label key={name} className="inline-flex items-center gap-1.5 border border-border rounded-sm px-3 py-1.5 cursor-pointer hover:bg-accent/50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={selectedSheets.has(name)}
+                    onChange={() => toggleSheet(name)}
+                    className="h-3.5 w-3.5 accent-primary"
+                  />
+                  <span className="text-sm">{name}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleParseSelected} disabled={selectedSheets.size === 0}>
+                <Upload className="h-4 w-4 mr-1" /> Parse selected
+              </Button>
+              <Button variant="outline" onClick={() => { setAvailableSheets([]); setSelectedSheets(new Set()); setWorkbookBinary(null); }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
         {preview.length > 0 && (
           <div className="space-y-3">
             <p className="text-sm font-medium">{preview.length} artist(s) ready:</p>
@@ -380,7 +450,7 @@ export default function ArtistInviteUpload() {
               <Button onClick={handleImport} disabled={loading}>
                 <Upload className="h-4 w-4 mr-1" /> {loading ? "Importing..." : `Import ${preview.length}`}
               </Button>
-              <Button variant="outline" onClick={() => setPreview([])}>Cancel</Button>
+              <Button variant="outline" onClick={() => { setPreview([]); setAvailableSheets([]); setSelectedSheets(new Set()); setWorkbookBinary(null); }}>Cancel</Button>
             </div>
           </div>
         )}
