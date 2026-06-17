@@ -43,6 +43,7 @@ import CrStatus from "./pages/CrStatus";
 import CrDirectory from "./pages/CrDirectory";
 import CrArtistProfile from "./pages/CrArtistProfile";
 import CrProfileEditor from "./pages/CrProfileEditor";
+import InviteFriends from "./pages/InviteFriends";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
