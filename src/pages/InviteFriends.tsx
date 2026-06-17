@@ -28,6 +28,7 @@ export default function InviteFriends() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [verified, setVerified] = useState(false);
+  const [bonus, setBonus] = useState(0);
   const [invites, setInvites] = useState<PeerInvite[]>([]);
   const [inviterName, setInviterName] = useState("");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
