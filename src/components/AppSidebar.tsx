@@ -111,7 +111,7 @@ export function AppSidebar() {
     localStorage.setItem("activeRole", role);
     window.dispatchEvent(new Event("role-changed"));
     if (role === "registrar") navigate("/registrar");
-    else if (role === "foundation") navigate("/foundation");
+    else if (role === "foundation") navigate("/foundation/admin");
     else navigate("/dashboard");
   };
 
