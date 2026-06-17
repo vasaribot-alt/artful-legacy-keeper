@@ -40,11 +40,12 @@ export default function InviteFriends() {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, id_verified")
+      .select("full_name, id_verified, bonus_invites")
       .eq("user_id", user.id)
       .maybeSingle();
 
     setVerified(!!profile?.id_verified);
+    setBonus((profile as any)?.bonus_invites || 0);
     setInviterName(profile?.full_name || "");
 
     const { data } = await supabase
