@@ -396,6 +396,33 @@ export default function ArtistInviteUpload() {
         </p>
         <Input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleFile} className="max-w-xs" />
 
+        {availableSheets.length > 0 && preview.length === 0 && (
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Select sheet(s) to import ({availableSheets.length} found):</p>
+            <div className="flex flex-wrap gap-2">
+              {availableSheets.map((name) => (
+                <label key={name} className="inline-flex items-center gap-1.5 border border-border rounded-sm px-3 py-1.5 cursor-pointer hover:bg-accent/50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={selectedSheets.has(name)}
+                    onChange={() => toggleSheet(name)}
+                    className="h-3.5 w-3.5 accent-primary"
+                  />
+                  <span className="text-sm">{name}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleParseSelected} disabled={selectedSheets.size === 0}>
+                <Upload className="h-4 w-4 mr-1" /> Parse selected
+              </Button>
+              <Button variant="outline" onClick={() => { setAvailableSheets([]); setSelectedSheets(new Set()); setWorkbookBinary(null); }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
         {preview.length > 0 && (
           <div className="space-y-3">
             <p className="text-sm font-medium">{preview.length} artist(s) ready:</p>
@@ -423,7 +450,7 @@ export default function ArtistInviteUpload() {
               <Button onClick={handleImport} disabled={loading}>
                 <Upload className="h-4 w-4 mr-1" /> {loading ? "Importing..." : `Import ${preview.length}`}
               </Button>
-              <Button variant="outline" onClick={() => setPreview([])}>Cancel</Button>
+              <Button variant="outline" onClick={() => { setPreview([]); setAvailableSheets([]); setSelectedSheets(new Set()); setWorkbookBinary(null); }}>Cancel</Button>
             </div>
           </div>
         )}
