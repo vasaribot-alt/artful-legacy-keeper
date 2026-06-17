@@ -27,7 +27,7 @@ await renderMedia({
   outputLocation: `/mnt/documents/${outputName}`,
   puppeteerInstance: browser,
   muted: true,
-  concurrency: 1,
+  concurrency: 4,
 });
 
 await browser.close({ silent: false });
