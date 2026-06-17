@@ -21,7 +21,7 @@ type AppRole = "artist" | "collector" | "registrar" | "foundation";
 const getNavItems = (role: AppRole) => {
   if (role === "foundation") {
     return [
-      { title: "Foundation Dashboard", url: "/foundation", icon: Award },
+      { title: "Foundation Dashboard", url: "/foundation/admin", icon: Award },
       { title: "Founding Artists", url: "/founding-artists", icon: Users },
     ];
   }
