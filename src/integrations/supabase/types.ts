@@ -18,44 +18,86 @@ export type Database = {
         Row: {
           added_by: string
           artist_name: string
+          bio: string | null
           birth_year: number | null
+          born: number | null
           city: string | null
           country: string | null
           created_at: string
+          cv_text: string | null
+          died: number | null
           email: string | null
+          email_draft: string | null
+          enriched_at: string | null
+          enrichment_sources: Json | null
+          enrichment_status: string | null
+          galleries: string[] | null
           id: string
           invite_code_id: string | null
           notes: string | null
+          phone: string | null
+          ranking: string | null
+          social_links: Json | null
           status: string
+          studio_address: string | null
           tier: Database["public"]["Enums"]["founding_artist_tier"]
+          website: string | null
         }
         Insert: {
           added_by: string
           artist_name: string
+          bio?: string | null
           birth_year?: number | null
+          born?: number | null
           city?: string | null
           country?: string | null
           created_at?: string
+          cv_text?: string | null
+          died?: number | null
           email?: string | null
+          email_draft?: string | null
+          enriched_at?: string | null
+          enrichment_sources?: Json | null
+          enrichment_status?: string | null
+          galleries?: string[] | null
           id?: string
           invite_code_id?: string | null
           notes?: string | null
+          phone?: string | null
+          ranking?: string | null
+          social_links?: Json | null
           status?: string
+          studio_address?: string | null
           tier?: Database["public"]["Enums"]["founding_artist_tier"]
+          website?: string | null
         }
         Update: {
           added_by?: string
           artist_name?: string
+          bio?: string | null
           birth_year?: number | null
+          born?: number | null
           city?: string | null
           country?: string | null
           created_at?: string
+          cv_text?: string | null
+          died?: number | null
           email?: string | null
+          email_draft?: string | null
+          enriched_at?: string | null
+          enrichment_sources?: Json | null
+          enrichment_status?: string | null
+          galleries?: string[] | null
           id?: string
           invite_code_id?: string | null
           notes?: string | null
+          phone?: string | null
+          ranking?: string | null
+          social_links?: Json | null
           status?: string
+          studio_address?: string | null
           tier?: Database["public"]["Enums"]["founding_artist_tier"]
+          website?: string | null
         }
         Relationships: [
           {
