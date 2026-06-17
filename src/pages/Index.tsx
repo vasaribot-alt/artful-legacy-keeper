@@ -234,7 +234,7 @@ const Index = () => {
                     controls
                     preload="metadata"
                     playsInline
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-background"
                   />
                 </div>
                 <h4 className="text-base font-medium">{t.title}</h4>
