@@ -26,3 +26,6 @@ verify_jwt = true
 
 [functions.major-gift-inquiry]
 verify_jwt = false
+
+[functions.generate-donation-receipt]
+verify_jwt = false
