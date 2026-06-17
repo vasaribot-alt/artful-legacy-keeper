@@ -49,16 +49,16 @@ const TEAM = [
 ];
 
 export default function FoundationPitch() {
+  useEffect(() => {
+    document.title = "The Foundation — Global Artist Registry";
+    const desc = document.querySelector('meta[name="description"]');
+    const txt = "The Global Artist Registry Foundation: a Dutch stichting preserving the documentary record of contemporary art for at least one hundred years.";
+    if (desc) desc.setAttribute("content", txt);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Helmet>
-        <title>The Foundation — Global Artist Registry</title>
-        <meta
-          name="description"
-          content="The Global Artist Registry Foundation: a Dutch stichting preserving the documentary record of contemporary art for at least one hundred years."
-        />
-        <link rel="canonical" href="https://globalartistregistry.org/foundation" />
-      </Helmet>
+
 
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
