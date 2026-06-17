@@ -183,6 +183,19 @@ export default function Donate() {
                 Donations are gifts and not subject to VAT. A receipt will be emailed to you.
               </p>
 
+              <div className="mt-6 rounded-lg border border-dashed border-border bg-muted/30 p-4 text-center">
+                <p className="text-sm text-foreground">
+                  Considering a gift of <strong>€10,000 or more</strong>?
+                </p>
+                <Link
+                  to="/support"
+                  className="mt-1 inline-flex items-center gap-1 text-sm font-medium underline"
+                >
+                  Speak to the Foundation directly
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
               <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-[#7ac143]" />
                 Secure payment processed by Stripe

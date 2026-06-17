@@ -35,6 +35,7 @@ import Inventory from "./pages/Inventory";
 import Files from "./pages/Files";
 import StorageTiers from "./pages/StorageTiers";
 import Donate from "./pages/Donate";
+import Support from "./pages/Support";
 import DonateThanks from "./pages/DonateThanks";
 import CollectorAccess from "./pages/CollectorAccess";
 import Capture from "./pages/Capture";
@@ -88,6 +89,7 @@ const App = () => (
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/support" element={<Support />} />
           <Route path="/donate/thanks" element={<DonateThanks />} />
           <Route path="/collector-access" element={<CollectorAccess />} />
           <Route path="/capture" element={<Capture />} />
