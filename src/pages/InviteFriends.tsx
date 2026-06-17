@@ -148,7 +148,7 @@ ${sender || "A friend"}`;
             <CardHeader>
               <CardTitle>ID verification required</CardTitle>
               <CardDescription>
-                Peer invitations are reserved for ID-verified artists. Once your Veriff verification is approved, you'll be able to invite up to {MAX_INVITES} fellow artists to join the registry.
+                Peer invitations are reserved for ID-verified artists. Once your Veriff verification is approved, you'll be able to invite up to {BASE_INVITES} fellow artists to join the registry — and earn one extra invite for every friend who also gets verified.
               </CardDescription>
             </CardHeader>
             <CardContent>
