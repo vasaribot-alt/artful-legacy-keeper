@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Heart, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface Donor {
   id: string;
@@ -80,8 +78,7 @@ const Donors = () => {
       {/* Hero */}
       <section className="py-20 px-6 border-b border-border">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Heart className="h-6 w-6 text-foreground" />
+          <div className="flex items-center justify-center mb-6">
             <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Our Supporters</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6 text-balance">
@@ -169,11 +166,6 @@ const Donors = () => {
           Interested in supporting the preservation of art history? 
           Contact the foundation to learn more about our donor program.
         </p>
-        <Link to="/founding-artists">
-          <Button variant="outline" size="lg" className="gap-2">
-            View Founding Artists <ArrowRight className="w-4 h-4" />
-          </Button>
-        </Link>
       </section>
 
       {/* Footer */}
@@ -181,7 +173,6 @@ const Donors = () => {
         <div className="max-w-5xl mx-auto flex items-center justify-between text-sm text-muted-foreground">
           <span>© 2026 Global Artist Registry Foundation</span>
           <div className="flex items-center gap-6">
-            <Link to="/founding-artists" className="hover:text-foreground transition-colors">Founding Artists</Link>
             <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
           </div>
         </div>
