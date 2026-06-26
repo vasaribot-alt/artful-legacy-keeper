@@ -65,9 +65,6 @@ const Donors = () => {
             Global Artist Registry Foundation
           </Link>
           <div className="flex items-center gap-6 text-sm">
-            <Link to="/founding-artists" className="text-muted-foreground hover:text-foreground transition-colors">
-              Founding Artists
-            </Link>
             <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
               Sign in
             </Link>
