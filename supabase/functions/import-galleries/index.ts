@@ -6,16 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface GalleryRow {
-  name: string;
-  country: string | null;
-  city: string | null;
-  established_year: number | null;
-  rank: number | null;
-  email: string | null;
-  phone: string | null;
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -29,7 +19,6 @@ Deno.serve(async (req) => {
     const storagePath: string = body.storage_path || "galleries-import/Galleries_world_wide_ranked.xlsx";
     const maxRank: number | null = body.max_rank ?? 1000;
 
-    // Download from storage
     const { data: fileData, error: dlError } = await supabase.storage
       .from("artwork-documents")
       .download(storagePath);
@@ -46,7 +35,7 @@ Deno.serve(async (req) => {
     const sheet = wb.Sheets[wb.SheetNames[0]];
     const rows: any[] = XLSX.utils.sheet_to_json(sheet);
 
-    const parsed: GalleryRow[] = rows.map((r) => {
+    const parsed = rows.map((r) => {
       const norm: Record<string, any> = {};
       for (const k of Object.keys(r)) norm[k.trim().toLowerCase()] = r[k];
       const name = String(norm["gallery name"] || norm["name"] || "").trim();
@@ -56,81 +45,39 @@ Deno.serve(async (req) => {
       const rk = rankRaw ? parseInt(String(rankRaw)) : null;
       return {
         name,
-        country: norm["country"] ? String(norm["country"]).trim() : null,
-        city: norm["city"] ? String(norm["city"]).trim() : null,
-        established_year: y && !isNaN(y) ? y : null,
-        rank: rk && !isNaN(rk) ? rk : null,
-        email: norm["email"] ? String(norm["email"]).trim() : null,
-        phone: norm["phone"] ? String(norm["phone"]).trim() : null,
+        country: norm["country"] ? String(norm["country"]).trim() : "",
+        city: norm["city"] ? String(norm["city"]).trim() : "",
+        established_year: y && !isNaN(y) ? y : "",
+        rank: rk && !isNaN(rk) ? rk : "",
+        email: norm["email"] ? String(norm["email"]).trim() : "",
+        phone: norm["phone"] ? String(norm["phone"]).trim() : "",
       };
     }).filter((g) => g.name);
 
     const filtered = maxRank
-      ? parsed.filter((g) => g.rank !== null && g.rank <= maxRank)
+      ? parsed.filter((g) => typeof g.rank === "number" && g.rank <= maxRank)
       : parsed;
 
-    let updated = 0;
-    let inserted = 0;
-    const errors: string[] = [];
+    // Single bulk RPC call — DB does all matching in one query
+    const { data, error } = await supabase.rpc("bulk_upsert_galleries", {
+      _payload: filtered,
+    });
 
-    for (const g of filtered) {
-      // Try to match by lower(name) + lower(city)
-      const nameLower = g.name.toLowerCase().trim();
-      const cityLower = (g.city || "").toLowerCase().trim();
-
-      const { data: matches, error: findErr } = await supabase
-        .from("galleries")
-        .select("id, city")
-        .ilike("name", g.name);
-
-      if (findErr) {
-        errors.push(`${g.name}: ${findErr.message}`);
-        continue;
-      }
-
-      const exact = (matches || []).find(
-        (m: any) =>
-          (m.city || "").toLowerCase().trim() === cityLower ||
-          (!m.city && !g.city),
-      );
-
-      if (exact) {
-        const { error: updErr } = await supabase
-          .from("galleries")
-          .update({
-            rank: g.rank,
-            email: g.email,
-            phone: g.phone,
-            country: g.country,
-            city: g.city,
-            established_year: g.established_year,
-          })
-          .eq("id", exact.id);
-        if (updErr) errors.push(`${g.name}: update ${updErr.message}`);
-        else updated++;
-      } else {
-        const { error: insErr } = await supabase.from("galleries").insert({
-          name: g.name,
-          country: g.country,
-          city: g.city,
-          established_year: g.established_year,
-          rank: g.rank,
-          email: g.email,
-          phone: g.phone,
-        });
-        if (insErr) errors.push(`${g.name}: insert ${insErr.message}`);
-        else inserted++;
-      }
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
+
+    const result = Array.isArray(data) ? data[0] : data;
 
     return new Response(
       JSON.stringify({
         success: true,
         processed: filtered.length,
-        updated,
-        inserted,
-        error_count: errors.length,
-        errors: errors.slice(0, 20),
+        updated: result?.updated_count ?? 0,
+        inserted: result?.inserted_count ?? 0,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
