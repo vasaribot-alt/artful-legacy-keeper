@@ -2135,6 +2135,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bulk_upsert_galleries: {
+        Args: { _payload: Json }
+        Returns: {
+          inserted_count: number
+          updated_count: number
+        }[]
+      }
       create_cr_submission: {
         Args: {
           _artist_owner_id: string
