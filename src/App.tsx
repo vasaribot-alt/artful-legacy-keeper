@@ -89,6 +89,7 @@ const App = () => (
           <Route path="/foundation" element={<FoundationPitch />} />
           <Route path="/foundation/admin" element={<FoundationDashboard />} />
           <Route path="/donors" element={<Donors />} />
+          <Route path="/foundation/gallery-outreach" element={<GalleryOutreach />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
           <Route path="/donate" element={<Donate />} />
