@@ -73,6 +73,12 @@ const roleLabels: Record<AppRole, { nav: string; label: string }> = {
   foundation: { nav: "Foundation", label: "Foundation" },
 };
 
+const getRoleForPath = (path: string): AppRole | null => {
+  if (path.startsWith("/foundation")) return "foundation";
+  if (path.startsWith("/registrar")) return "registrar";
+  return null;
+};
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
@@ -94,6 +100,12 @@ export function AppSidebar() {
         if (data && data.length > 0) {
           const userRoles = data.map(d => d.role) as AppRole[];
           setRoles(userRoles);
+          const routeRole = getRoleForPath(location.pathname);
+          if (routeRole && userRoles.includes(routeRole)) {
+            setActiveRole(routeRole);
+            localStorage.setItem("activeRole", routeRole);
+            return;
+          }
           // Restore last active role from localStorage, or default to first
           const saved = localStorage.getItem("activeRole") as AppRole | null;
           if (saved && userRoles.includes(saved)) {
@@ -105,7 +117,7 @@ export function AppSidebar() {
       }
     };
     fetchRoles();
-  }, []);
+  }, [location.pathname]);
 
   const switchRole = (role: AppRole) => {
     setActiveRole(role);
