@@ -384,7 +384,7 @@ const GalleryOutreach = () => {
         {/* Table */}
         {loading ? (
           <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" /></div>
-        ) : accessMessage ? null
+        ) : accessMessage ? null :
         ) : filtered.length === 0 ? (
           <div className="border border-border rounded-sm px-4 py-12 text-center">
             <div className="font-medium">No galleries to show</div>
