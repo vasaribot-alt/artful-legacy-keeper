@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Sparkles, Download, Play, Pause, RefreshCw } from "lucide-react";
+import { Loader2, Sparkles, Download, Play, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface Gallery {
@@ -71,26 +71,55 @@ const GalleryOutreach = () => {
   const [enrichProgress, setEnrichProgress] = useState<{ processed: number; enriched: number; remaining: number } | null>(null);
   const [selected, setSelected] = useState<Gallery | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [usingFallbackList, setUsingFallbackList] = useState(false);
 
   const load = async () => {
     setLoading(true);
-    const { data: gs } = await (supabase as any)
-      .from("galleries")
-      .select("id, name, city, country, established_year, rank, email, phone, website, enrichment_status, enrichment_attempted_at")
-      .lte("rank", 1000)
-      .not("rank", "is", null)
-      .order("rank", { ascending: true });
+    setLoadError(null);
+    try {
+      const columns = "id, name, city, country, established_year, rank, email, phone, website, enrichment_status, enrichment_attempted_at";
+      let fallback = false;
+      let { data: gs, error: galleriesError } = await (supabase as any)
+        .from("galleries")
+        .select(columns)
+        .lte("rank", 1000)
+        .not("rank", "is", null)
+        .order("rank", { ascending: true });
 
-    const { data: os } = await (supabase as any)
-      .from("gallery_outreach")
-      .select("*");
+      if (galleriesError) throw galleriesError;
 
-    const orMap: Record<string, Outreach> = {};
-    (os || []).forEach((o: Outreach) => { orMap[o.gallery_id] = o; });
+      if (!gs || gs.length === 0) {
+        fallback = true;
+        const fallbackResult = await (supabase as any)
+          .from("galleries")
+          .select(columns)
+          .order("name", { ascending: true })
+          .limit(1000);
+        if (fallbackResult.error) throw fallbackResult.error;
+        gs = fallbackResult.data || [];
+      }
 
-    setGalleries(gs || []);
-    setOutreach(orMap);
-    setLoading(false);
+      const { data: os, error: outreachError } = await (supabase as any)
+        .from("gallery_outreach")
+        .select("*");
+
+      if (outreachError) throw outreachError;
+
+      const orMap: Record<string, Outreach> = {};
+      (os || []).forEach((o: Outreach) => { orMap[o.gallery_id] = o; });
+
+      setGalleries(gs || []);
+      setOutreach(orMap);
+      setUsingFallbackList(fallback);
+    } catch (e: any) {
+      setGalleries([]);
+      setOutreach({});
+      setUsingFallbackList(false);
+      setLoadError(e.message || "Unable to load gallery outreach data.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -244,7 +273,9 @@ const GalleryOutreach = () => {
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-2xl font-serif">Supporting Galleries Outreach</h1>
-            <p className="text-sm text-muted-foreground mt-1">Top 1,000 galleries by rank. Enrich contact info, track invitations.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {usingFallbackList ? "Imported gallery list. Add ranks to focus the top 1,000." : "Top 1,000 galleries by rank. Enrich contact info, track invitations."}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={load}><RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh</Button>
@@ -262,7 +293,7 @@ const GalleryOutreach = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <StatCard label="Total (top 1000)" value={stats.total} />
+          <StatCard label={usingFallbackList ? "Total shown" : "Total (top 1000)"} value={stats.total} />
           <StatCard label="Has email" value={`${stats.withEmail} / ${stats.total}`} />
           <StatCard label="Contacted" value={stats.contacted} />
           <StatCard label="Replied" value={stats.replied} />
@@ -272,6 +303,12 @@ const GalleryOutreach = () => {
         {enrichProgress && (
           <div className="text-xs text-muted-foreground border border-border rounded-sm px-3 py-2">
             Last batch: processed {enrichProgress.processed}, enriched {enrichProgress.enriched}. Remaining pending: {enrichProgress.remaining}.
+          </div>
+        )}
+
+        {loadError && (
+          <div className="text-sm border border-destructive/40 text-destructive rounded-sm px-3 py-2">
+            Could not load outreach data: {loadError}
           </div>
         )}
 
@@ -311,6 +348,11 @@ const GalleryOutreach = () => {
         {/* Table */}
         {loading ? (
           <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="border border-border rounded-sm px-4 py-12 text-center">
+            <div className="font-medium">No galleries to show</div>
+            <div className="text-sm text-muted-foreground mt-1">Refresh the import or clear filters to view the outreach list.</div>
+          </div>
         ) : (
           <div className="border border-border rounded-sm overflow-hidden">
             <Table>
