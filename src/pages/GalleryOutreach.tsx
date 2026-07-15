@@ -73,11 +73,38 @@ const GalleryOutreach = () => {
   const [noteDraft, setNoteDraft] = useState("");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [usingFallbackList, setUsingFallbackList] = useState(false);
+  const [accessMessage, setAccessMessage] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
     setLoadError(null);
+    setAccessMessage(null);
     try {
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData.user;
+      if (!user) {
+        setGalleries([]);
+        setOutreach({});
+        setAccessMessage("Sign in with a Foundation account to view the gallery outreach list.");
+        return;
+      }
+
+      const { data: roleRows, error: roleError } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "foundation")
+        .limit(1);
+
+      if (roleError) throw roleError;
+
+      if (!roleRows || roleRows.length === 0) {
+        setGalleries([]);
+        setOutreach({});
+        setAccessMessage("Foundation access is required for gallery outreach.");
+        return;
+      }
+
       const columns = "id, name, city, country, established_year, rank, email, phone, website, enrichment_status, enrichment_attempted_at";
       let fallback = false;
       let { data: gs, error: galleriesError } = await (supabase as any)
@@ -312,6 +339,15 @@ const GalleryOutreach = () => {
           </div>
         )}
 
+        {accessMessage && (
+          <div className="border border-border rounded-sm px-4 py-12 text-center">
+            <div className="font-medium">{accessMessage}</div>
+            <Button className="mt-4" variant="outline" onClick={() => { window.location.href = "/login"; }}>
+              Sign in
+            </Button>
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex items-center gap-2 flex-wrap">
           <Input
@@ -348,6 +384,7 @@ const GalleryOutreach = () => {
         {/* Table */}
         {loading ? (
           <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" /></div>
+        ) : accessMessage ? null
         ) : filtered.length === 0 ? (
           <div className="border border-border rounded-sm px-4 py-12 text-center">
             <div className="font-medium">No galleries to show</div>
