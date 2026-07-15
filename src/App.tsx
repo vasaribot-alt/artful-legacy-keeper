@@ -30,6 +30,7 @@ import PublicArtistProfile from "./pages/PublicArtistProfile";
 import FoundationDashboard from "./pages/FoundationDashboard";
 import FoundationPitch from "./pages/FoundationPitch";
 import Donors from "./pages/Donors";
+import GalleryOutreach from "./pages/GalleryOutreach";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
@@ -88,6 +89,7 @@ const App = () => (
           <Route path="/foundation" element={<FoundationPitch />} />
           <Route path="/foundation/admin" element={<FoundationDashboard />} />
           <Route path="/donors" element={<Donors />} />
+          <Route path="/foundation/gallery-outreach" element={<GalleryOutreach />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
           <Route path="/donate" element={<Donate />} />

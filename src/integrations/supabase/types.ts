@@ -1425,30 +1425,98 @@ export type Database = {
           city: string | null
           country: string | null
           created_at: string
+          email: string | null
+          enrichment_attempted_at: string | null
+          enrichment_notes: string | null
+          enrichment_status: string
           established_year: number | null
           id: string
           name: string
+          phone: string | null
+          rank: number | null
           website: string | null
         }
         Insert: {
           city?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
+          enrichment_attempted_at?: string | null
+          enrichment_notes?: string | null
+          enrichment_status?: string
           established_year?: number | null
           id?: string
           name: string
+          phone?: string | null
+          rank?: number | null
           website?: string | null
         }
         Update: {
           city?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
+          enrichment_attempted_at?: string | null
+          enrichment_notes?: string | null
+          enrichment_status?: string
           established_year?: number | null
           id?: string
           name?: string
+          phone?: string | null
+          rank?: number | null
           website?: string | null
         }
         Relationships: []
+      }
+      gallery_outreach: {
+        Row: {
+          assigned_to: string | null
+          campaign_tag: string | null
+          created_at: string
+          first_contacted_at: string | null
+          gallery_id: string
+          id: string
+          last_contacted_at: string | null
+          replied_at: string | null
+          reply_notes: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          campaign_tag?: string | null
+          created_at?: string
+          first_contacted_at?: string | null
+          gallery_id: string
+          id?: string
+          last_contacted_at?: string | null
+          replied_at?: string | null
+          reply_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          campaign_tag?: string | null
+          created_at?: string
+          first_contacted_at?: string | null
+          gallery_id?: string
+          id?: string
+          last_contacted_at?: string | null
+          replied_at?: string | null
+          reply_notes?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_outreach_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "galleries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invite_codes: {
         Row: {
@@ -2067,6 +2135,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bulk_upsert_galleries: {
+        Args: { _payload: Json }
+        Returns: {
+          inserted_count: number
+          updated_count: number
+        }[]
+      }
       create_cr_submission: {
         Args: {
           _artist_owner_id: string

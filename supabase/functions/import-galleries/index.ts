@@ -7,82 +7,81 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
-    const body = await req.json();
-    let galleries: { name: string; website: string | null; established_year: number | null; country: string | null; city: string | null }[] = [];
+    const body = await req.json().catch(() => ({}));
+    const storagePath: string = body.storage_path || "galleries-import/Galleries_world_wide_ranked.xlsx";
+    const maxRank: number | null = body.max_rank ?? 1000;
 
-    if (body.from_storage) {
-      // Download XLSX from storage and parse
-      const { data: fileData, error: dlError } = await supabase.storage
-        .from("artwork-documents")
-        .download("galleries-import/Galleries_world_wide.xlsx");
+    const { data: fileData, error: dlError } = await supabase.storage
+      .from("artwork-documents")
+      .download(storagePath);
 
-      if (dlError || !fileData) {
-        return new Response(JSON.stringify({ error: "Failed to download file: " + (dlError?.message || "unknown") }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const arrayBuffer = await fileData.arrayBuffer();
-      const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: "array" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows: any[] = XLSX.utils.sheet_to_json(sheet);
-
-      galleries = rows.map((row: any) => {
-        const name = row["Gallery Name"] || row["Name"] || "";
-        const country = row["Country"] || null;
-        const city = row["City"] || null;
-        const yearRaw = row["Establishe Year"] || row["Established Year"] || null;
-        const established_year = yearRaw ? parseInt(String(yearRaw)) : null;
-        return { name, country, city, established_year: (established_year && !isNaN(established_year)) ? established_year : null, website: null };
-      }).filter((g) => g.name);
-    } else if (Array.isArray(body.galleries)) {
-      galleries = body.galleries.map((g: any) => ({
-        name: g.name,
-        country: g.country || null,
-        city: g.city || null,
-        established_year: g.established_year || null,
-        website: g.website || null,
-      }));
+    if (dlError || !fileData) {
+      return new Response(
+        JSON.stringify({ error: "Download failed: " + (dlError?.message || "unknown") }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
-    if (galleries.length === 0) {
-      return new Response(JSON.stringify({ error: "No galleries parsed" }), {
-        status: 400,
+    const buf = await fileData.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(buf), { type: "array" });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const rows: any[] = XLSX.utils.sheet_to_json(sheet);
+
+    const parsed = rows.map((r) => {
+      const norm: Record<string, any> = {};
+      for (const k of Object.keys(r)) norm[k.trim().toLowerCase()] = r[k];
+      const name = String(norm["gallery name"] || norm["name"] || "").trim();
+      const yearRaw = norm["establishe year"] ?? norm["established year"] ?? null;
+      const rankRaw = norm["rank"] ?? null;
+      const y = yearRaw ? parseInt(String(yearRaw)) : null;
+      const rk = rankRaw ? parseInt(String(rankRaw)) : null;
+      return {
+        name,
+        country: norm["country"] ? String(norm["country"]).trim() : "",
+        city: norm["city"] ? String(norm["city"]).trim() : "",
+        established_year: y && !isNaN(y) ? y : "",
+        rank: rk && !isNaN(rk) ? rk : "",
+        email: norm["email"] ? String(norm["email"]).trim() : "",
+        phone: norm["phone"] ? String(norm["phone"]).trim() : "",
+      };
+    }).filter((g) => g.name);
+
+    const filtered = maxRank
+      ? parsed.filter((g) => typeof g.rank === "number" && g.rank <= maxRank)
+      : parsed;
+
+    // Single bulk RPC call — DB does all matching in one query
+    const { data, error } = await supabase.rpc("bulk_upsert_galleries", {
+      _payload: filtered,
+    });
+
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Insert in batches of 500
-    const batchSize = 500;
-    let inserted = 0;
+    const result = Array.isArray(data) ? data[0] : data;
 
-    for (let i = 0; i < galleries.length; i += batchSize) {
-      const batch = galleries.slice(i, i + batchSize);
-      const { error } = await supabase.from("galleries").insert(batch);
-      if (error) {
-        console.error("Batch insert error:", error);
-        return new Response(JSON.stringify({ error: error.message, inserted }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      inserted += batch.length;
-    }
-
-    return new Response(JSON.stringify({ success: true, inserted }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (err) {
+    return new Response(
+      JSON.stringify({
+        success: true,
+        processed: filtered.length,
+        updated: result?.updated_count ?? 0,
+        inserted: result?.inserted_count ?? 0,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  } catch (err: any) {
     console.error("Import error:", err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
