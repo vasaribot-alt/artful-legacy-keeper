@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anon can view images in shared portfolios" ON public.artwork_images;
