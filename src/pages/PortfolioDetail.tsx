@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil } from "lucide-react";
+import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil, Download } from "lucide-react";
+import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import {
@@ -219,10 +220,33 @@ const PortfolioDetail = () => {
     }
   };
 
+  const [exporting, setExporting] = useState(false);
+  const handleExport = async () => {
+    if (artworks.length === 0) {
+      toast.error("Portfolio is empty");
+      return;
+    }
+    setExporting(true);
+    try {
+      const { count, filename } = await exportArtworksToArtlogic({
+        artworkIds: artworks.map((a) => a.artwork_id),
+        filenameBase: `GARF_${portfolioName || "portfolio"}`,
+      });
+      toast.success(`Exported ${count} work${count === 1 ? "" : "s"} to ${filename}`);
+    } catch (e: any) {
+      toast.error(e.message || "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const headerActions = (
     <>
       <Button variant="outline" size="sm" onClick={openRename} className="gap-1.5">
         <Pencil className="w-3.5 h-3.5" /> Rename
+      </Button>
+      <Button variant="outline" size="sm" onClick={handleExport} disabled={exporting} className="gap-1.5">
+        <Download className="w-3.5 h-3.5" /> Export
       </Button>
       <Button variant="outline" size="sm" onClick={copyShareLink} className="gap-1.5">
         <LinkIcon className="w-3.5 h-3.5" /> Share
