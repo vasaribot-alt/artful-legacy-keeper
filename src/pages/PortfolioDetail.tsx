@@ -230,7 +230,7 @@ const PortfolioDetail = () => {
     try {
       const { count, filename } = await exportArtworksToArtlogic({
         artworkIds: artworks.map((a) => a.artwork_id),
-        filenameBase: `GARF_${portfolioName || "portfolio"}`,
+        filenameBase: portfolioName || "portfolio",
       });
       toast.success(`Exported ${count} work${count === 1 ? "" : "s"} to ${filename}`);
     } catch (e: any) {

@@ -60,17 +60,17 @@ export interface ArtlogicExportOptions {
 
 export async function exportArtworksToArtlogic({
   artworkIds,
-  filenameBase = "GARF_export",
+  filenameBase,
 }: ArtlogicExportOptions): Promise<{ count: number; filename: string }> {
   if (artworkIds.length === 0) {
     throw new Error("No artworks selected for export.");
   }
 
-  // Fetch artwork rows
+  // Fetch artwork rows (include owner_id to resolve fallback artist name)
   const { data: artworks, error } = await supabase
     .from("artworks")
     .select(
-      "id, global_artwork_id, cr_number, catalogue_number, artist_name, title, year, medium, support, dimensions, height, width, depth, signed, series, is_unique, edition_number, edition_count, artist_proofs, status, artwork_location, currency, price, provenance, exhibition_history, description, buyer_name, sold_date"
+      "id, owner_id, global_artwork_id, cr_number, catalogue_number, artist_name, title, year, medium, support, dimensions, height, width, depth, signed, series, is_unique, edition_number, edition_count, artist_proofs, status, artwork_location, currency, price, provenance, exhibition_history, description, buyer_name, sold_date"
     )
     .in("id", artworkIds);
 
@@ -78,6 +78,29 @@ export async function exportArtworksToArtlogic({
   if (!artworks || artworks.length === 0) {
     throw new Error("No artworks found.");
   }
+
+  // Resolve owner profile names → fallback for missing artist_name and for filename
+  const ownerIds = Array.from(new Set(artworks.map((a: any) => a.owner_id).filter(Boolean)));
+  const namesByOwner = new Map<string, string>();
+  if (ownerIds.length > 0) {
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select("user_id, full_name")
+      .in("user_id", ownerIds);
+    (profs || []).forEach((p: any) => {
+      if (p.full_name) namesByOwner.set(p.user_id, p.full_name);
+    });
+  }
+
+  // Distinct artist names across the selection (prefer artwork.artist_name, else owner profile)
+  const distinctArtists = Array.from(
+    new Set(
+      artworks
+        .map((a: any) => a.artist_name || namesByOwner.get(a.owner_id) || "")
+        .filter(Boolean)
+    )
+  );
+  const primaryArtist = distinctArtists.length === 1 ? distinctArtists[0] : "";
 
   // Fetch images for all artworks in one query
   const { data: imageRows } = await supabase
@@ -110,10 +133,11 @@ export async function exportArtworksToArtlogic({
     const availability =
       a.status === "sold" ? "Sold" : a.status === "available" ? "For sale" : a.status || "";
     const isEdition = a.is_unique === false ? "Yes" : "No";
+    const artistName = a.artist_name || namesByOwner.get(a.owner_id) || "";
 
     return {
       "Stock number": stockNumber,
-      Artist: a.artist_name || "",
+      Artist: artistName,
       Title: a.title || "",
       Year: a.year ?? "",
       "Medium and support": mediumAndSupport,
@@ -133,7 +157,7 @@ export async function exportArtworksToArtlogic({
       Exhibitions: a.exhibition_history || "",
       "Catalogue raisonné": a.cr_number ? `CR ${a.cr_number}` : "",
       "Commentary or description": a.description || "",
-      "Copyright line": a.artist_name ? `© ${a.artist_name}` : "",
+      "Copyright line": artistName ? `© ${artistName}` : "",
       "Sold to": a.buyer_name || "",
       "Sale date": a.sold_date || "",
       "Main image URL (large)": images[0] || "",
@@ -156,7 +180,9 @@ export async function exportArtworksToArtlogic({
   XLSX.utils.book_append_sheet(workbook, worksheet, "Artworks");
 
   const date = new Date().toISOString().slice(0, 10);
-  const filename = `${sanitize(filenameBase)}_${date}.xlsx`;
+  const artistPart = primaryArtist ? sanitize(primaryArtist) : "various_artists";
+  const suffix = filenameBase ? `_${sanitize(filenameBase)}` : "";
+  const filename = `${artistPart}_GARF${suffix}_${date}.xlsx`;
   XLSX.writeFile(workbook, filename);
 
   return { count: rows.length, filename };

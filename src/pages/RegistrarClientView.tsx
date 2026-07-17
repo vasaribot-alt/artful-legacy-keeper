@@ -69,7 +69,7 @@ function ArtworksSection({ ownerId, clientRole }: { ownerId: string; clientRole:
     try {
       const { count, filename } = await exportArtworksToArtlogic({
         artworkIds: artworks.map((a) => a.id),
-        filenameBase: `GARF_client_${ownerId.slice(0, 8)}`,
+        filenameBase: "",
       });
       toast.success(`Exported ${count} work${count === 1 ? "" : "s"} to ${filename}`);
     } catch (e: any) {
