@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter, ShieldCheck, Loader2, Search } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter, ShieldCheck, Loader2, Search, Copy } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -231,6 +231,24 @@ const Dashboard = () => {
     setDeleting(false);
     setDeleteConfirmOpen(false);
   };
+
+  const createDuplicateData = (artwork: Artwork): ArtworkDuplicateData => ({
+    title: artwork.title + " (copy)",
+    artworkType: artwork.artwork_type || "",
+    medium: artwork.medium || "",
+    year: artwork.year ? String(artwork.year) : "",
+    description: artwork.description || "",
+    isUnique: artwork.is_unique,
+    series: artwork.series || "",
+    subCategory: artwork.sub_category || "",
+    support: artwork.support || "",
+    height: artwork.height ? String(artwork.height) : "",
+    width: artwork.width ? String(artwork.width) : "",
+    depth: artwork.depth ? String(artwork.depth) : "",
+    price: artwork.price ? String(artwork.price) : "",
+    currency: artwork.currency || "EUR",
+    artworkLocation: artwork.artwork_location || "",
+  });
 
   if (!user) return null;
 
@@ -472,40 +490,59 @@ const Dashboard = () => {
             </div>
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredGalleryArtworks.map((art) => (
-                <div
-                  key={art.id}
-                  className="group cursor-pointer"
-                  onClick={() => navigate(`/artwork/${art.id}/view`)}
-                >
-                  <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
-                    {art.imageUrl ? (
-                      <img
-                        src={art.imageUrl}
-                        alt={art.title}
-                        className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                        No image
-                      </div>
-                    )}
+              {filteredGalleryArtworks.map((art) => {
+                const fullArtwork = artworks.find((aw) => aw.id === art.id);
+                return (
+                  <div
+                    key={art.id}
+                    className="group cursor-pointer"
+                    onClick={() => navigate(`/artwork/${art.id}/view`)}
+                  >
+                    <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3 relative">
+                      {art.imageUrl ? (
+                        <img
+                          src={art.imageUrl}
+                          alt={art.title}
+                          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
+                          No image
+                        </div>
+                      )}
+                      {fullArtwork && (
+                        <Button
+                          variant="default"
+                          size="icon"
+                          className="absolute top-2 right-2 z-20 h-9 w-9 border border-background/90 bg-foreground text-background shadow-md hover:bg-foreground/90"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDuplicateData(createDuplicateData(fullArtwork));
+                            setDialogOpen(true);
+                          }}
+                          aria-label="Duplicate artwork"
+                          title="Duplicate artwork"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                    <h3 className="text-sm font-medium italic">{art.title}</h3>
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                      {art.year && <span>{art.year}</span>}
+                      {art.year && art.medium && <span>·</span>}
+                      {art.medium && <span className="truncate">{art.medium}</span>}
+                    </div>
+                    {(() => {
+                      const dims = formatDims(art.height, art.width, art.depth);
+                      return dims ? (
+                        <p className="text-xs text-muted-foreground mt-0.5">{dims}</p>
+                      ) : null;
+                    })()}
                   </div>
-                  <h3 className="text-sm font-medium italic">{art.title}</h3>
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-                    {art.year && <span>{art.year}</span>}
-                    {art.year && art.medium && <span>·</span>}
-                    {art.medium && <span className="truncate">{art.medium}</span>}
-                  </div>
-                  {(() => {
-                    const dims = formatDims(art.height, art.width, art.depth);
-                    return dims ? (
-                      <p className="text-xs text-muted-foreground mt-0.5">{dims}</p>
-                    ) : null;
-                  })()}
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="space-y-1">
