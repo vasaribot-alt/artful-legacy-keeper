@@ -133,10 +133,11 @@ export async function exportArtworksToArtlogic({
     const availability =
       a.status === "sold" ? "Sold" : a.status === "available" ? "For sale" : a.status || "";
     const isEdition = a.is_unique === false ? "Yes" : "No";
+    const artistName = a.artist_name || namesByOwner.get(a.owner_id) || "";
 
     return {
       "Stock number": stockNumber,
-      Artist: a.artist_name || "",
+      Artist: artistName,
       Title: a.title || "",
       Year: a.year ?? "",
       "Medium and support": mediumAndSupport,
@@ -156,7 +157,7 @@ export async function exportArtworksToArtlogic({
       Exhibitions: a.exhibition_history || "",
       "Catalogue raisonné": a.cr_number ? `CR ${a.cr_number}` : "",
       "Commentary or description": a.description || "",
-      "Copyright line": a.artist_name ? `© ${a.artist_name}` : "",
+      "Copyright line": artistName ? `© ${artistName}` : "",
       "Sold to": a.buyer_name || "",
       "Sale date": a.sold_date || "",
       "Main image URL (large)": images[0] || "",
