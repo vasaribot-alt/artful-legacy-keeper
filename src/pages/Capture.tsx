@@ -71,6 +71,12 @@ const Capture = () => {
   // Recently captured this session
   const [recent, setRecent] = useState<CapturedItem[]>([]);
 
+  // Duplicate picker
+  const [duplicateOpen, setDuplicateOpen] = useState(false);
+  const [duplicateLoading, setDuplicateLoading] = useState(false);
+  const [duplicateQuery, setDuplicateQuery] = useState("");
+  const [duplicateList, setDuplicateList] = useState<any[]>([]);
+
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
