@@ -13,9 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Camera, X, Check, ArrowLeft, ImagePlus, Loader2, Copy, Search } from "lucide-react";
+import { Camera, X, Check, ArrowLeft, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type AppRole = "artist" | "collector" | "registrar";
 
@@ -71,11 +70,6 @@ const Capture = () => {
   // Recently captured this session
   const [recent, setRecent] = useState<CapturedItem[]>([]);
 
-  // Duplicate picker
-  const [duplicateOpen, setDuplicateOpen] = useState(false);
-  const [duplicateLoading, setDuplicateLoading] = useState(false);
-  const [duplicateQuery, setDuplicateQuery] = useState("");
-  const [duplicateList, setDuplicateList] = useState<any[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -135,58 +129,6 @@ const Capture = () => {
     activeRole === "registrar" ? (selectedClient?.role || "artist") : (activeRole as "artist" | "collector");
   const isCollectorContext = effectiveRoleContext === "collector";
 
-  const openDuplicatePicker = async () => {
-    if (!effectiveOwnerId) {
-      toast.error(activeRole === "registrar" ? "Pick a client first" : "Not ready yet");
-      return;
-    }
-    setDuplicateOpen(true);
-    setDuplicateLoading(true);
-    const { data } = await supabase
-      .from("artworks")
-      .select("id, title, year, artwork_type, medium, support, series, sub_category, height, width, depth, is_unique, description, artist_name, image_url")
-      .eq("owner_id", effectiveOwnerId)
-      .eq("role_context", effectiveRoleContext)
-      .order("created_at", { ascending: false })
-      .limit(200);
-    const list = data || [];
-    // Fetch a thumbnail for each (first image)
-    const ids = list.map((a: any) => a.id);
-    let thumbs: Record<string, string> = {};
-    if (ids.length) {
-      const { data: imgs } = await supabase
-        .from("artwork_images")
-        .select("artwork_id, storage_path, display_order")
-        .in("artwork_id", ids)
-        .order("display_order");
-      (imgs || []).forEach((im: any) => {
-        if (thumbs[im.artwork_id]) return;
-        const { data: u } = supabase.storage.from("artwork-images").getPublicUrl(im.storage_path);
-        thumbs[im.artwork_id] = u?.publicUrl || "";
-      });
-    }
-    setDuplicateList(list.map((a: any) => ({ ...a, _thumb: thumbs[a.id] || a.image_url || "" })));
-    setDuplicateLoading(false);
-  };
-
-  const applyDuplicate = (a: any) => {
-    setTitle((a.title || "") + " (copy)");
-    setArtistName(a.artist_name || "");
-    setYear(a.year ? String(a.year) : "");
-    setArtworkType(a.artwork_type || "");
-    setSubCategory(a.sub_category || "");
-    setSeries(a.series || "");
-    setIsUnique(a.is_unique ?? true);
-    setMedium(a.medium || "");
-    setSupport(a.support || "");
-    setHeight(a.height ? String(a.height) : "");
-    setWidth(a.width ? String(a.width) : "");
-    setDepth(a.depth ? String(a.depth) : "");
-    setNotes(a.description || "");
-    setDuplicateOpen(false);
-    setDuplicateQuery("");
-    toast.success("Metadata copied — add fresh photos");
-  };
 
 
   const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -384,19 +326,6 @@ const Capture = () => {
           </div>
         )}
 
-        {/* Duplicate from existing */}
-        <div className="mb-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full h-11 justify-center gap-2"
-            onClick={openDuplicatePicker}
-            disabled={!effectiveOwnerId}
-          >
-            <Copy className="w-4 h-4" />
-            Duplicate from existing artwork
-          </Button>
-        </div>
 
         {/* Photo capture area */}
         <div className="mb-5">
@@ -698,69 +627,6 @@ const Capture = () => {
         )}
       </main>
 
-      {/* Duplicate picker dialog */}
-      <Dialog open={duplicateOpen} onOpenChange={setDuplicateOpen}>
-        <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Duplicate from existing</DialogTitle>
-          </DialogHeader>
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={duplicateQuery}
-              onChange={(e) => setDuplicateQuery(e.target.value)}
-              placeholder="Search by title, year, medium…"
-              className="pl-9 h-11"
-              autoComplete="off"
-            />
-          </div>
-          <div className="flex-1 overflow-y-auto -mx-6 px-6">
-            {duplicateLoading ? (
-              <div className="py-10 flex justify-center">
-                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-              </div>
-            ) : duplicateList.length === 0 ? (
-              <p className="py-10 text-sm text-center text-muted-foreground">No artworks to duplicate yet.</p>
-            ) : (
-              <ul className="divide-y divide-border">
-                {duplicateList
-                  .filter((a) => {
-                    const q = duplicateQuery.trim().toLowerCase();
-                    if (!q) return true;
-                    return [a.title, a.year, a.medium, a.series, a.artwork_type]
-                      .filter(Boolean)
-                      .some((v: any) => String(v).toLowerCase().includes(q));
-                  })
-                  .map((a) => (
-                    <li key={a.id}>
-                      <button
-                        type="button"
-                        onClick={() => applyDuplicate(a)}
-                        className="w-full flex items-center gap-3 py-2.5 text-left hover:bg-accent/40 rounded-md px-2 -mx-2"
-                      >
-                        <div className="w-12 h-12 rounded-sm bg-secondary overflow-hidden shrink-0">
-                          {a._thumb && (
-                            <img src={a._thumb} alt="" className="w-full h-full object-cover" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium truncate">{a.title}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {[a.year, a.artwork_type, a.medium].filter(Boolean).join(" · ")}
-                          </p>
-                        </div>
-                        <Copy className="w-4 h-4 text-muted-foreground shrink-0" />
-                      </button>
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Metadata will be copied. Photos stay empty — add fresh ones.
-          </p>
-        </DialogContent>
-      </Dialog>
 
       {/* Sticky bottom action bar */}
       <div className="fixed bottom-0 inset-x-0 z-20 bg-background/95 backdrop-blur border-t border-border">

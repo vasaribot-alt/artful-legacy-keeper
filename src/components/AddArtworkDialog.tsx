@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Plus, ImagePlus, X, Folder } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, ImagePlus, X, Folder, Camera } from "lucide-react";
 import { UnlinkedFilesPicker } from "@/components/UnlinkedFilesPicker";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -117,6 +117,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [images, setImages] = useState<ImagePreview[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open && !ownerId) {
@@ -422,6 +423,14 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               </button>
               <button
                 type="button"
+                onClick={() => cameraInputRef.current?.click()}
+                className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
+              >
+                <Camera className="w-5 h-5 mb-0.5" />
+                <span className="text-[10px]">Capture</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setPickerOpen(true)}
                 className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
               >
@@ -433,6 +442,15 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               ref={fileInputRef}
               type="file"
               accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
               multiple
               onChange={handleFileSelect}
               className="hidden"
