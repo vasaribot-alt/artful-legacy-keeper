@@ -384,6 +384,20 @@ const Capture = () => {
           </div>
         )}
 
+        {/* Duplicate from existing */}
+        <div className="mb-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-11 justify-center gap-2"
+            onClick={openDuplicatePicker}
+            disabled={!effectiveOwnerId}
+          >
+            <Copy className="w-4 h-4" />
+            Duplicate from existing artwork
+          </Button>
+        </div>
+
         {/* Photo capture area */}
         <div className="mb-5">
           {photos.length === 0 ? (
