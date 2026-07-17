@@ -38,6 +38,9 @@ const Inventory = () => {
   const [sortBy, setSortBy] = useState<"title" | "year" | "date_added">("title");
   const [searchQuery, setSearchQuery] = useState("");
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [exporting, setExporting] = useState(false);
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
   useEffect(() => {
