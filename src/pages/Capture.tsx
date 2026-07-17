@@ -13,9 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Camera, X, Check, ArrowLeft, ImagePlus, Loader2, Copy, Search } from "lucide-react";
+import { Camera, X, Check, ArrowLeft, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type AppRole = "artist" | "collector" | "registrar";
 
