@@ -180,7 +180,9 @@ export async function exportArtworksToArtlogic({
   XLSX.utils.book_append_sheet(workbook, worksheet, "Artworks");
 
   const date = new Date().toISOString().slice(0, 10);
-  const filename = `${sanitize(filenameBase)}_${date}.xlsx`;
+  const artistPart = primaryArtist ? sanitize(primaryArtist) : "various_artists";
+  const suffix = filenameBase ? `_${sanitize(filenameBase)}` : "";
+  const filename = `${artistPart}_GARF${suffix}_${date}.xlsx`;
   XLSX.writeFile(workbook, filename);
 
   return { count: rows.length, filename };
