@@ -106,13 +106,14 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
         )}
         {onDuplicate && (
           <Button
-            variant="secondary"
+            variant="default"
             size="icon"
-            className="absolute top-2 right-2 h-8 w-8 bg-background/95 hover:bg-background border border-border shadow-sm"
+            className="absolute top-2 right-2 z-20 h-9 w-9 border border-background/90 bg-foreground text-background shadow-md hover:bg-foreground/90"
             onClick={handleDuplicate}
+            aria-label="Duplicate artwork"
             title="Duplicate artwork"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="h-4 w-4" />
           </Button>
         )}
       </div>
