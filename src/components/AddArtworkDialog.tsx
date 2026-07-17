@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Plus, ImagePlus, X, Folder } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, ImagePlus, X, Folder, Camera } from "lucide-react";
 import { UnlinkedFilesPicker } from "@/components/UnlinkedFilesPicker";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
