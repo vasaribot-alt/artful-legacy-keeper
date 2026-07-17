@@ -627,69 +627,6 @@ const Capture = () => {
         )}
       </main>
 
-      {/* Duplicate picker dialog */}
-      <Dialog open={duplicateOpen} onOpenChange={setDuplicateOpen}>
-        <DialogContent className="max-w-md max-h-[85vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Duplicate from existing</DialogTitle>
-          </DialogHeader>
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={duplicateQuery}
-              onChange={(e) => setDuplicateQuery(e.target.value)}
-              placeholder="Search by title, year, medium…"
-              className="pl-9 h-11"
-              autoComplete="off"
-            />
-          </div>
-          <div className="flex-1 overflow-y-auto -mx-6 px-6">
-            {duplicateLoading ? (
-              <div className="py-10 flex justify-center">
-                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-              </div>
-            ) : duplicateList.length === 0 ? (
-              <p className="py-10 text-sm text-center text-muted-foreground">No artworks to duplicate yet.</p>
-            ) : (
-              <ul className="divide-y divide-border">
-                {duplicateList
-                  .filter((a) => {
-                    const q = duplicateQuery.trim().toLowerCase();
-                    if (!q) return true;
-                    return [a.title, a.year, a.medium, a.series, a.artwork_type]
-                      .filter(Boolean)
-                      .some((v: any) => String(v).toLowerCase().includes(q));
-                  })
-                  .map((a) => (
-                    <li key={a.id}>
-                      <button
-                        type="button"
-                        onClick={() => applyDuplicate(a)}
-                        className="w-full flex items-center gap-3 py-2.5 text-left hover:bg-accent/40 rounded-md px-2 -mx-2"
-                      >
-                        <div className="w-12 h-12 rounded-sm bg-secondary overflow-hidden shrink-0">
-                          {a._thumb && (
-                            <img src={a._thumb} alt="" className="w-full h-full object-cover" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium truncate">{a.title}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {[a.year, a.artwork_type, a.medium].filter(Boolean).join(" · ")}
-                          </p>
-                        </div>
-                        <Copy className="w-4 h-4 text-muted-foreground shrink-0" />
-                      </button>
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Metadata will be copied. Photos stay empty — add fresh ones.
-          </p>
-        </DialogContent>
-      </Dialog>
 
       {/* Sticky bottom action bar */}
       <div className="fixed bottom-0 inset-x-0 z-20 bg-background/95 backdrop-blur border-t border-border">
