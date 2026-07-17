@@ -60,17 +60,17 @@ export interface ArtlogicExportOptions {
 
 export async function exportArtworksToArtlogic({
   artworkIds,
-  filenameBase = "GARF_export",
+  filenameBase,
 }: ArtlogicExportOptions): Promise<{ count: number; filename: string }> {
   if (artworkIds.length === 0) {
     throw new Error("No artworks selected for export.");
   }
 
-  // Fetch artwork rows
+  // Fetch artwork rows (include owner_id to resolve fallback artist name)
   const { data: artworks, error } = await supabase
     .from("artworks")
     .select(
-      "id, global_artwork_id, cr_number, catalogue_number, artist_name, title, year, medium, support, dimensions, height, width, depth, signed, series, is_unique, edition_number, edition_count, artist_proofs, status, artwork_location, currency, price, provenance, exhibition_history, description, buyer_name, sold_date"
+      "id, owner_id, global_artwork_id, cr_number, catalogue_number, artist_name, title, year, medium, support, dimensions, height, width, depth, signed, series, is_unique, edition_number, edition_count, artist_proofs, status, artwork_location, currency, price, provenance, exhibition_history, description, buyer_name, sold_date"
     )
     .in("id", artworkIds);
 
@@ -78,6 +78,29 @@ export async function exportArtworksToArtlogic({
   if (!artworks || artworks.length === 0) {
     throw new Error("No artworks found.");
   }
+
+  // Resolve owner profile names → fallback for missing artist_name and for filename
+  const ownerIds = Array.from(new Set(artworks.map((a: any) => a.owner_id).filter(Boolean)));
+  const namesByOwner = new Map<string, string>();
+  if (ownerIds.length > 0) {
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select("user_id, full_name")
+      .in("user_id", ownerIds);
+    (profs || []).forEach((p: any) => {
+      if (p.full_name) namesByOwner.set(p.user_id, p.full_name);
+    });
+  }
+
+  // Distinct artist names across the selection (prefer artwork.artist_name, else owner profile)
+  const distinctArtists = Array.from(
+    new Set(
+      artworks
+        .map((a: any) => a.artist_name || namesByOwner.get(a.owner_id) || "")
+        .filter(Boolean)
+    )
+  );
+  const primaryArtist = distinctArtists.length === 1 ? distinctArtists[0] : "";
 
   // Fetch images for all artworks in one query
   const { data: imageRows } = await supabase
