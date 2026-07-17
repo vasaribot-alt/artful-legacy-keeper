@@ -123,38 +123,116 @@ const Inventory = () => {
   const statusLabel = (s: string) => s === "sold" ? "Sold" : "Available";
   const statusColor = (s: string) => s === "sold" ? "secondary" : "default";
 
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const handleExport = async (scope: "selected" | "all") => {
+    const ids = scope === "all"
+      ? filteredArtworks.map((a) => a.id)
+      : Array.from(selected);
+    if (ids.length === 0) {
+      toast.error("Select at least one artwork");
+      return;
+    }
+    setExporting(true);
+    try {
+      const { count, filename } = await exportArtworksToArtlogic({
+        artworkIds: ids,
+        filenameBase: `GARF_inventory_${activeRole}`,
+      });
+      toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
+      if (scope === "selected") {
+        setSelected(new Set());
+        setSelectMode(false);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const headerActions = (
     <div className="flex items-center gap-3">
-      <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-        <SelectTrigger className="w-[140px] h-8 text-xs">
-          <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="title">Sort by title</SelectItem>
-          <SelectItem value="year">Sort by year</SelectItem>
-          <SelectItem value="date_added">Date added</SelectItem>
-        </SelectContent>
-      </Select>
-      <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
-        <SelectTrigger className="w-[130px] h-8 text-xs">
-          <Filter className="w-3.5 h-3.5 mr-1.5" />
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All statuses</SelectItem>
-          <SelectItem value="available">Available</SelectItem>
-          <SelectItem value="sold">Sold</SelectItem>
-        </SelectContent>
-      </Select>
-      <ToggleGroup type="single" value={groupBy} onValueChange={(v) => v && setGroupBy(v as any)} size="sm">
-        <ToggleGroupItem value="location" aria-label="Group by location" className="gap-1.5">
-          <MapPin className="w-3.5 h-3.5" /> Location
-        </ToggleGroupItem>
-        <ToggleGroupItem value="status" aria-label="Group by status" className="gap-1.5">
-          <CheckCircle className="w-3.5 h-3.5" /> Status
-        </ToggleGroupItem>
-      </ToggleGroup>
+      {selectMode ? (
+        <>
+          <span className="text-xs text-muted-foreground">
+            {selected.size} selected
+          </span>
+          <Button
+            size="sm"
+            variant="default"
+            onClick={() => handleExport("selected")}
+            disabled={exporting || selected.size === 0}
+            className="gap-1.5 h-8"
+          >
+            <Download className="w-3.5 h-3.5" /> Export selected
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => { setSelectMode(false); setSelected(new Set()); }}
+            className="gap-1.5 h-8"
+          >
+            <X className="w-3.5 h-3.5" /> Cancel
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setSelectMode(true)}
+            className="gap-1.5 h-8"
+          >
+            <CheckSquare className="w-3.5 h-3.5" /> Select
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleExport("all")}
+            disabled={exporting || filteredArtworks.length === 0}
+            className="gap-1.5 h-8"
+          >
+            <Download className="w-3.5 h-3.5" /> Export to gallery
+          </Button>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+            <SelectTrigger className="w-[140px] h-8 text-xs">
+              <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="title">Sort by title</SelectItem>
+              <SelectItem value="year">Sort by year</SelectItem>
+              <SelectItem value="date_added">Date added</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+            <SelectTrigger className="w-[130px] h-8 text-xs">
+              <Filter className="w-3.5 h-3.5 mr-1.5" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All statuses</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="sold">Sold</SelectItem>
+            </SelectContent>
+          </Select>
+          <ToggleGroup type="single" value={groupBy} onValueChange={(v) => v && setGroupBy(v as any)} size="sm">
+            <ToggleGroupItem value="location" aria-label="Group by location" className="gap-1.5">
+              <MapPin className="w-3.5 h-3.5" /> Location
+            </ToggleGroupItem>
+            <ToggleGroupItem value="status" aria-label="Group by status" className="gap-1.5">
+              <CheckCircle className="w-3.5 h-3.5" /> Status
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </>
+      )}
     </div>
   );
 
