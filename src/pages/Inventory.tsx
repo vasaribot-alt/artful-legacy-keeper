@@ -307,8 +307,15 @@ const Inventory = () => {
                     <div
                       key={art.id}
                       className="flex items-center gap-4 p-3 rounded-sm border border-border hover:bg-accent/50 cursor-pointer transition-colors"
-                      onClick={() => navigate(`/artwork/${art.id}`)}
+                      onClick={() => selectMode ? toggleSelect(art.id) : navigate(`/artwork/${art.id}`)}
                     >
+                      {selectMode && (
+                        <Checkbox
+                          checked={selected.has(art.id)}
+                          onCheckedChange={() => toggleSelect(art.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      )}
                       <div className="w-12 h-12 bg-secondary rounded-sm overflow-hidden shrink-0">
                         {thumbnails[art.id] ? (
                           <img src={thumbnails[art.id]} alt="" className="w-full h-full object-cover" loading="lazy" />
