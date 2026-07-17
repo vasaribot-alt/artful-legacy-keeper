@@ -5,6 +5,7 @@ import { HowToBulk } from "./HowToBulk";
 import { HowToCapture } from "./HowToCapture";
 import { HowToExhibition } from "./HowToExhibition";
 import { HowToCatalogues } from "./HowToCatalogues";
+import { HowToDuplicate } from "./HowToDuplicate";
 
 export const RemotionRoot = () => (
   <>
@@ -52,6 +53,14 @@ export const RemotionRoot = () => (
       id="how-to-catalogues"
       component={HowToCatalogues}
       durationInFrames={1114}
+      fps={30}
+      width={1920}
+      height={1080}
+    />
+    <Composition
+      id="how-to-duplicate"
+      component={HowToDuplicate}
+      durationInFrames={944}
       fps={30}
       width={1920}
       height={1080}
