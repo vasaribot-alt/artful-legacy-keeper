@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search } from "lucide-react";
+import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search, Download, CheckSquare, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
 
 interface ArtworkRow {
   id: string;
