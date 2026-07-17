@@ -424,7 +424,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
               <button
                 type="button"
                 onClick={() => cameraInputRef.current?.click()}
-                className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
+                className="md:hidden w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
               >
                 <Camera className="w-5 h-5 mb-0.5" />
                 <span className="text-[10px]">Capture</span>
