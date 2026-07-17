@@ -59,6 +59,26 @@ function ArtworksSection({ ownerId, clientRole }: { ownerId: string; clientRole:
 
   useEffect(() => { fetchArtworks(); }, [ownerId]);
 
+  const [exporting, setExporting] = useState(false);
+  const handleExport = async () => {
+    if (artworks.length === 0) {
+      toast.error("No artworks to export");
+      return;
+    }
+    setExporting(true);
+    try {
+      const { count, filename } = await exportArtworksToArtlogic({
+        artworkIds: artworks.map((a) => a.id),
+        filenameBase: `GARF_client_${ownerId.slice(0, 8)}`,
+      });
+      toast.success(`Exported ${count} work${count === 1 ? "" : "s"} to ${filename}`);
+    } catch (e: any) {
+      toast.error(e.message || "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <RegistrarWorkspaceLayout
       headerActions={
@@ -68,6 +88,9 @@ function ArtworksSection({ ownerId, clientRole }: { ownerId: string; clientRole:
           </Button>
           <Button variant="outline" size="sm" onClick={() => setBulkOpen(true)} className="gap-1.5 h-8">
             <Upload className="w-3.5 h-3.5" /> Import
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExport} disabled={exporting} className="gap-1.5 h-8">
+            <Download className="w-3.5 h-3.5" /> Export
           </Button>
         </>
       }
