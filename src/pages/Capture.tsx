@@ -135,6 +135,60 @@ const Capture = () => {
     activeRole === "registrar" ? (selectedClient?.role || "artist") : (activeRole as "artist" | "collector");
   const isCollectorContext = effectiveRoleContext === "collector";
 
+  const openDuplicatePicker = async () => {
+    if (!effectiveOwnerId) {
+      toast.error(activeRole === "registrar" ? "Pick a client first" : "Not ready yet");
+      return;
+    }
+    setDuplicateOpen(true);
+    setDuplicateLoading(true);
+    const { data } = await supabase
+      .from("artworks")
+      .select("id, title, year, artwork_type, medium, support, series, sub_category, height, width, depth, is_unique, description, artist_name, image_url")
+      .eq("owner_id", effectiveOwnerId)
+      .eq("role_context", effectiveRoleContext)
+      .order("created_at", { ascending: false })
+      .limit(200);
+    const list = data || [];
+    // Fetch a thumbnail for each (first image)
+    const ids = list.map((a: any) => a.id);
+    let thumbs: Record<string, string> = {};
+    if (ids.length) {
+      const { data: imgs } = await supabase
+        .from("artwork_images")
+        .select("artwork_id, storage_path, display_order")
+        .in("artwork_id", ids)
+        .order("display_order");
+      (imgs || []).forEach((im: any) => {
+        if (thumbs[im.artwork_id]) return;
+        const { data: u } = supabase.storage.from("artwork-images").getPublicUrl(im.storage_path);
+        thumbs[im.artwork_id] = u?.publicUrl || "";
+      });
+    }
+    setDuplicateList(list.map((a: any) => ({ ...a, _thumb: thumbs[a.id] || a.image_url || "" })));
+    setDuplicateLoading(false);
+  };
+
+  const applyDuplicate = (a: any) => {
+    setTitle((a.title || "") + " (copy)");
+    setArtistName(a.artist_name || "");
+    setYear(a.year ? String(a.year) : "");
+    setArtworkType(a.artwork_type || "");
+    setSubCategory(a.sub_category || "");
+    setSeries(a.series || "");
+    setIsUnique(a.is_unique ?? true);
+    setMedium(a.medium || "");
+    setSupport(a.support || "");
+    setHeight(a.height ? String(a.height) : "");
+    setWidth(a.width ? String(a.width) : "");
+    setDepth(a.depth ? String(a.depth) : "");
+    setNotes(a.description || "");
+    setDuplicateOpen(false);
+    setDuplicateQuery("");
+    toast.success("Metadata copied — add fresh photos");
+  };
+
+
   const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const next = files.map((file) => ({ file, preview: URL.createObjectURL(file) }));
