@@ -117,6 +117,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [images, setImages] = useState<ImagePreview[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open && !ownerId) {
