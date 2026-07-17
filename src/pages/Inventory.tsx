@@ -143,7 +143,7 @@ const Inventory = () => {
     try {
       const { count, filename } = await exportArtworksToArtlogic({
         artworkIds: ids,
-        filenameBase: `GARF_inventory_${activeRole}`,
+        filenameBase: `inventory_${activeRole}`,
       });
       toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
       if (scope === "selected") {
