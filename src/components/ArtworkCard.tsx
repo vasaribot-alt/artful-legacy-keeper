@@ -106,13 +106,13 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
         )}
         {onDuplicate && (
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon"
-            className="absolute top-2 right-2 h-7 w-7 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 h-8 w-8 bg-background/95 hover:bg-background border border-border shadow-sm"
             onClick={handleDuplicate}
             title="Duplicate artwork"
           >
-            <Copy className="w-3.5 h-3.5" />
+            <Copy className="w-4 h-4" />
           </Button>
         )}
       </div>
