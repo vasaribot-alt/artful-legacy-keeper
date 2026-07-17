@@ -5,6 +5,7 @@ import { HowToBulk } from "./HowToBulk";
 import { HowToCapture } from "./HowToCapture";
 import { HowToExhibition } from "./HowToExhibition";
 import { HowToCatalogues } from "./HowToCatalogues";
+import { HowToDuplicate } from "./HowToDuplicate";
 
 export const RemotionRoot = () => (
   <>
