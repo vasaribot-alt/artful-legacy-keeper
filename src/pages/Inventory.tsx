@@ -142,7 +142,11 @@ const Inventory = () => {
     });
   };
 
-  const handleExport = async (scope: "selected" | "all") => {
+  const handleExport = async (
+    scope: "selected" | "all",
+    kind: "artlogic" | "insurance" = "artlogic",
+    basis: "replacement_value" | "appraised_value" | "current_market_value" | "purchase_price" = "replacement_value",
+  ) => {
     const ids = scope === "all"
       ? filteredArtworks.map((a) => a.id)
       : Array.from(selected);
@@ -152,11 +156,21 @@ const Inventory = () => {
     }
     setExporting(true);
     try {
-      const { count, filename } = await exportArtworksToArtlogic({
-        artworkIds: ids,
-        filenameBase: `inventory_${activeRole}`,
-      });
-      toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
+      if (kind === "insurance") {
+        const { count, filename, total } = await exportInsuranceSchedule({
+          artworkIds: ids,
+          filenameBase: activeRole,
+          totalBasis: basis,
+        });
+        const totalStr = total ? ` · Total: ${total.toLocaleString()}` : "";
+        toast.success(`Insurance schedule: ${count} work${count === 1 ? "" : "s"}${totalStr}`);
+      } else {
+        const { count, filename } = await exportArtworksToArtlogic({
+          artworkIds: ids,
+          filenameBase: `inventory_${activeRole}`,
+        });
+        toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
+      }
       if (scope === "selected") {
         setSelected(new Set());
         setSelectMode(false);
