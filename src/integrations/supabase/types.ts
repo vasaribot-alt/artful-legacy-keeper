@@ -278,24 +278,45 @@ export type Database = {
           created_at: string
           id: string
           location: string
+          moved_by: string | null
           moved_date: string | null
           notes: string | null
+          reason: string | null
+          to_box: string | null
+          to_cabinet: string | null
+          to_facility: string | null
+          to_room: string | null
+          to_shelf: string | null
         }
         Insert: {
           artwork_id: string
           created_at?: string
           id?: string
           location: string
+          moved_by?: string | null
           moved_date?: string | null
           notes?: string | null
+          reason?: string | null
+          to_box?: string | null
+          to_cabinet?: string | null
+          to_facility?: string | null
+          to_room?: string | null
+          to_shelf?: string | null
         }
         Update: {
           artwork_id?: string
           created_at?: string
           id?: string
           location?: string
+          moved_by?: string | null
           moved_date?: string | null
           notes?: string | null
+          reason?: string | null
+          to_box?: string | null
+          to_cabinet?: string | null
+          to_facility?: string | null
+          to_room?: string | null
+          to_shelf?: string | null
         }
         Relationships: [
           {
@@ -432,8 +453,12 @@ export type Database = {
       }
       artworks: {
         Row: {
+          acquisition_cost: number | null
           ai_described_at: string | null
           ai_description: string | null
+          appraised_at: string | null
+          appraised_by: string | null
+          appraised_value: number | null
           artist_name: string | null
           artist_proofs: number | null
           artwork_location: string | null
@@ -444,21 +469,39 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string | null
+          current_market_value: number | null
           depth: number | null
           description: string | null
           dimensions: string | null
           edition_count: number | null
           edition_number: string | null
+          env_humidity_note: string | null
+          env_light_note: string | null
+          env_temperature_note: string | null
+          estimated_value: number | null
           exhibition_history: string | null
           global_artwork_id: number
+          hazard_notes: string | null
           height: number | null
           id: string
           image_url: string | null
           is_unique: boolean
+          last_sold_at: string | null
+          last_sold_price: number | null
+          location_box: string | null
+          location_cabinet: string | null
+          location_facility: string | null
+          location_room: string | null
+          location_shelf: string | null
           medium: string | null
+          original_retail_price: number | null
           owner_id: string
           price: number | null
           provenance: string | null
+          purchase_price: number | null
+          replacement_value: number | null
+          reserve_price: number | null
+          restoration_cost: number | null
           role_context: string
           series: string | null
           signed: string | null
@@ -476,8 +519,12 @@ export type Database = {
           year: number | null
         }
         Insert: {
+          acquisition_cost?: number | null
           ai_described_at?: string | null
           ai_description?: string | null
+          appraised_at?: string | null
+          appraised_by?: string | null
+          appraised_value?: number | null
           artist_name?: string | null
           artist_proofs?: number | null
           artwork_location?: string | null
@@ -488,21 +535,39 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          current_market_value?: number | null
           depth?: number | null
           description?: string | null
           dimensions?: string | null
           edition_count?: number | null
           edition_number?: string | null
+          env_humidity_note?: string | null
+          env_light_note?: string | null
+          env_temperature_note?: string | null
+          estimated_value?: number | null
           exhibition_history?: string | null
           global_artwork_id?: number
+          hazard_notes?: string | null
           height?: number | null
           id?: string
           image_url?: string | null
           is_unique?: boolean
+          last_sold_at?: string | null
+          last_sold_price?: number | null
+          location_box?: string | null
+          location_cabinet?: string | null
+          location_facility?: string | null
+          location_room?: string | null
+          location_shelf?: string | null
           medium?: string | null
+          original_retail_price?: number | null
           owner_id: string
           price?: number | null
           provenance?: string | null
+          purchase_price?: number | null
+          replacement_value?: number | null
+          reserve_price?: number | null
+          restoration_cost?: number | null
           role_context?: string
           series?: string | null
           signed?: string | null
@@ -520,8 +585,12 @@ export type Database = {
           year?: number | null
         }
         Update: {
+          acquisition_cost?: number | null
           ai_described_at?: string | null
           ai_description?: string | null
+          appraised_at?: string | null
+          appraised_by?: string | null
+          appraised_value?: number | null
           artist_name?: string | null
           artist_proofs?: number | null
           artwork_location?: string | null
@@ -532,21 +601,39 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string | null
+          current_market_value?: number | null
           depth?: number | null
           description?: string | null
           dimensions?: string | null
           edition_count?: number | null
           edition_number?: string | null
+          env_humidity_note?: string | null
+          env_light_note?: string | null
+          env_temperature_note?: string | null
+          estimated_value?: number | null
           exhibition_history?: string | null
           global_artwork_id?: number
+          hazard_notes?: string | null
           height?: number | null
           id?: string
           image_url?: string | null
           is_unique?: boolean
+          last_sold_at?: string | null
+          last_sold_price?: number | null
+          location_box?: string | null
+          location_cabinet?: string | null
+          location_facility?: string | null
+          location_room?: string | null
+          location_shelf?: string | null
           medium?: string | null
+          original_retail_price?: number | null
           owner_id?: string
           price?: number | null
           provenance?: string | null
+          purchase_price?: number | null
+          replacement_value?: number | null
+          reserve_price?: number | null
+          restoration_cost?: number | null
           role_context?: string
           series?: string | null
           signed?: string | null
@@ -1753,6 +1840,7 @@ export type Database = {
           id: string
           id_verified: boolean
           is_deceased: boolean
+          lending_notes: string | null
           nationality: string | null
           period_activity_end: number | null
           period_activity_start: number | null
@@ -1767,6 +1855,7 @@ export type Database = {
           verification_status: string
           verified_at: string | null
           website: string | null
+          willing_to_lend: boolean
         }
         Insert: {
           avatar_url?: string | null
@@ -1802,6 +1891,7 @@ export type Database = {
           id?: string
           id_verified?: boolean
           is_deceased?: boolean
+          lending_notes?: string | null
           nationality?: string | null
           period_activity_end?: number | null
           period_activity_start?: number | null
@@ -1816,6 +1906,7 @@ export type Database = {
           verification_status?: string
           verified_at?: string | null
           website?: string | null
+          willing_to_lend?: boolean
         }
         Update: {
           avatar_url?: string | null
@@ -1851,6 +1942,7 @@ export type Database = {
           id?: string
           id_verified?: boolean
           is_deceased?: boolean
+          lending_notes?: string | null
           nationality?: string | null
           period_activity_end?: number | null
           period_activity_start?: number | null
@@ -1865,6 +1957,7 @@ export type Database = {
           verification_status?: string
           verified_at?: string | null
           website?: string | null
+          willing_to_lend?: boolean
         }
         Relationships: []
       }
