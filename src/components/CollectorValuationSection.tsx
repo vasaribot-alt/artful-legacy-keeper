@@ -72,7 +72,7 @@ export const CollectorValuationSection = ({ artworkId, currency }: Props) => {
     payload.appraised_at = appraisedAt || null;
     payload.appraised_by = appraisedBy.trim() || null;
     payload.last_sold_at = lastSoldAt || null;
-    const { error } = await supabase.from("artworks").update(payload).eq("id", artworkId);
+    const { error } = await supabase.from("artworks").update(payload as any).eq("id", artworkId);
     setSaving(false);
     if (error) toast.error("Failed to save valuation");
     else toast.success("Valuation saved");
