@@ -813,28 +813,34 @@ const ArtworkDetail = () => {
             <Separator />
             <StructuredLocationSection artworkId={id} />
             <Separator />
-            <CollectorValuationSection artworkId={id} currency={currency} />
+            <CollectorValuationSection
+              artworkId={id}
+              currency={currency}
+              onCurrencyChange={setCurrency}
+            />
           </>
         )}
 
         <Separator />
 
 
-        {/* Price */}
-        <div>
-          <Label className="mb-1.5 block">Price</Label>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
-              <Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Amount" />
+        {/* Price (hidden for collectors — moved into Valuation & costs) */}
+        {localStorage.getItem("activeRole") !== "collector" && (
+          <div>
+            <Label className="mb-1.5 block">Price</Label>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2">
+                <Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Amount" />
+              </div>
+              <Select value={currency} onValueChange={setCurrency}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {currencies.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={currency} onValueChange={setCurrency}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {currencies.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
           </div>
-        </div>
+        )}
 
         <div>
           <Label htmlFor="description">Description</Label>
