@@ -222,6 +222,7 @@ const Inventory = () => {
             <SelectContent>
               <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="considering">Considering sale</SelectItem>
               <SelectItem value="sold">Sold</SelectItem>
             </SelectContent>
           </Select>
