@@ -807,7 +807,18 @@ const ArtworkDetail = () => {
           />
         )}
 
+        {/* Collector-only: structured location + valuation */}
+        {id && localStorage.getItem("activeRole") === "collector" && (
+          <>
+            <Separator />
+            <StructuredLocationSection artworkId={id} />
+            <Separator />
+            <CollectorValuationSection artworkId={id} currency={currency} />
+          </>
+        )}
+
         <Separator />
+
 
         {/* Price */}
         <div>
