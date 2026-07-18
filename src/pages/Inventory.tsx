@@ -11,6 +11,15 @@ import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search, Download
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
+import { exportInsuranceSchedule } from "@/lib/insuranceExport";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface ArtworkRow {
   id: string;
