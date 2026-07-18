@@ -460,6 +460,13 @@ const Inventory = () => {
           </div>
         )}
       </div>
+      <CollectionExportDialog
+        open={collectionDialogOpen}
+        onOpenChange={setCollectionDialogOpen}
+        count={(collectionScope === "all" ? filteredArtworks.length : selected.size)}
+        onConfirm={handleCollectionExport}
+        loading={exporting}
+      />
     </AppLayout>
   );
 };
