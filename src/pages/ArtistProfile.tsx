@@ -163,6 +163,8 @@ const ArtistProfile = () => {
       setBiography((data as any).biography || "");
       setCv((data as any).cv || "");
       setChronology((data as any).chronology || "");
+      setWillingToLend((data as any).willing_to_lend || false);
+      setLendingNotes((data as any).lending_notes || "");
       const cv = (data as any).contact_visibility;
       if (cv && typeof cv === "object") {
         setContactVisibility({
