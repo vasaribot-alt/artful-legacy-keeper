@@ -81,6 +81,8 @@ const COLUMN_MAP: Record<string, keyof Pick<ParsedRow, "title" | "artworkType" |
   "depth": "depth",
   "size depth cm": "depth",
   "signed": "signed",
+  "signature": "signed",
+  "signed and dated": "signed",
   "location": "location",
   "provenance": "provenance",
   "exhibition history": "exhibitionHistory",
@@ -181,13 +183,13 @@ const ARTIST_EDITIONS_HEADERS = [
 
 const COLLECTOR_UNIQUE_HEADERS = [
   "Title", "Artist Name", "Category", "Year", "Medium", "Support",
-  "Height", "Width", "Depth", "Signed", "Location", "Provenance",
+  "Height", "Width", "Depth", "Signature", "Location", "Provenance",
   "Description", "Image ID", "Price", "Currency"
 ];
 
 const COLLECTOR_EDITIONS_HEADERS = [
   "Title", "Artist Name", "Category", "Year", "Medium", "Support",
-  "Signed", "Location", "Provenance", "Description", "Image ID",
+  "Signature", "Location", "Provenance", "Description", "Image ID",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
@@ -620,7 +622,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, "collector-unique-template.xlsx")}
+                    onClick={() => downloadTemplate(COLLECTOR_UNIQUE_HEADERS, "collector-unique-template-with-signature.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Collector – Unique Works
                   </Button>
@@ -628,7 +630,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     variant="ghost"
                     size="sm"
                     className="gap-1.5 text-xs h-7"
-                    onClick={() => downloadTemplate(COLLECTOR_EDITIONS_HEADERS, "collector-editions-template.xlsx")}
+                    onClick={() => downloadTemplate(COLLECTOR_EDITIONS_HEADERS, "collector-editions-template-with-signature.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Collector – Editions
                   </Button>
