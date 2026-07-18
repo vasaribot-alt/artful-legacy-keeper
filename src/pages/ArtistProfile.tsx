@@ -98,6 +98,8 @@ const ArtistProfile = () => {
   const [biography, setBiography] = useState("");
   const [cv, setCv] = useState("");
   const [chronology, setChronology] = useState("");
+  const [willingToLend, setWillingToLend] = useState(false);
+  const [lendingNotes, setLendingNotes] = useState("");
   const [globalArtistId, setGlobalArtistId] = useState<number | null>(null);
   const [contactVisibility, setContactVisibility] = useState<{
     studio_address: boolean;
