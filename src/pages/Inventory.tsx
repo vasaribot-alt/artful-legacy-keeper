@@ -198,6 +198,33 @@ const Inventory = () => {
     setCollectionDialogOpen(true);
   };
 
+  const handleFullCollectionExport = async (scope: "selected" | "all") => {
+    const ids = scope === "all" ? filteredArtworks.map((a) => a.id) : Array.from(selected);
+    if (ids.length === 0) {
+      toast.error("Select at least one artwork");
+      return;
+    }
+    setExporting(true);
+    try {
+      const { count, filename } = await exportInsuranceSchedule({
+        artworkIds: ids,
+        filenameBase: `${activeRole}_full_inventory`,
+        totalBasis: null,
+        includeValueColumns: [...OPTIONAL_VALUE_COLUMNS] as OptionalValueColumn[],
+      });
+      toast.success(`${count} work${count === 1 ? "" : "s"} exported to ${filename}`);
+      if (scope === "selected") {
+        setSelected(new Set());
+        setSelectMode(false);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+
   const handleCollectionExport = async ({
     columns,
     totalBasis,
