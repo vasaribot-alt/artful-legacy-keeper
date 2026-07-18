@@ -34,7 +34,7 @@ const Inventory = () => {
   const [artworks, setArtworks] = useState<ArtworkRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
-  const [statusFilter, setStatusFilter] = useState<"all" | "available" | "sold">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "available" | "considering" | "sold">("all");
   const [sortBy, setSortBy] = useState<"title" | "year" | "date_added">("title");
   const [searchQuery, setSearchQuery] = useState("");
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
