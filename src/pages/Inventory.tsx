@@ -123,8 +123,9 @@ const Inventory = () => {
   });
 
   const grouped = filteredArtworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
+    const loc = composeLocation(art);
     const key = groupBy === "location"
-      ? (art.artwork_location || "No location set")
+      ? (loc || "No location set")
       : (art.status || "available");
     if (!acc[key]) acc[key] = [];
     acc[key].push(art);
