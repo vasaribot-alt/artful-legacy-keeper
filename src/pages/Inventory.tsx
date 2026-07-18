@@ -189,15 +189,37 @@ const Inventory = () => {
           <span className="text-xs text-muted-foreground">
             {selected.size} selected
           </span>
-          <Button
-            size="sm"
-            variant="default"
-            onClick={() => handleExport("selected")}
-            disabled={exporting || selected.size === 0}
-            className="gap-1.5 h-8"
-          >
-            <Download className="w-3.5 h-3.5" /> Export selected
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="default" disabled={exporting || selected.size === 0} className="gap-1.5 h-8">
+                <Download className="w-3.5 h-3.5" /> Export selected
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel>Gallery format</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleExport("selected", "artlogic")}>
+                Artlogic / gallery (.xlsx)
+              </DropdownMenuItem>
+              {activeRole === "collector" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Insurance schedule — total by</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "replacement_value")}>
+                    Replacement value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "appraised_value")}>
+                    Appraised value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "current_market_value")}>
+                    Current market value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "purchase_price")}>
+                    Purchase price
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             size="sm"
             variant="ghost"
