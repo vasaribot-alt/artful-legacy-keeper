@@ -32,7 +32,6 @@ const HEADERS = [
   // Valuation
   "Currency",
   "Purchase price",
-  "Purchase date",
   "Acquisition cost (all-in)",
   "Original retail (MSRP)",
   "Current market value",
@@ -119,7 +118,6 @@ export async function exportInsuranceSchedule({
         "hazard_notes",
         "currency",
         "purchase_price",
-        "purchase_date",
         "acquisition_cost",
         "original_retail_price",
         "current_market_value",
@@ -218,7 +216,6 @@ export async function exportInsuranceSchedule({
       "Hazard notes": a.hazard_notes || "",
       Currency: a.currency || "",
       "Purchase price": a.purchase_price ?? "",
-      "Purchase date": a.purchase_date || "",
       "Acquisition cost (all-in)": a.acquisition_cost ?? "",
       "Original retail (MSRP)": a.original_retail_price ?? "",
       "Current market value": a.current_market_value ?? "",
