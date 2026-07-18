@@ -281,7 +281,7 @@ export async function exportInsuranceSchedule({
     purchase_price: "Purchase price",
   };
   const sheetData = [...filteredRows];
-  if (totalBasis && finalHeaders.includes(basisLabel[totalBasis])) {
+  if (totalBasis && (finalHeaders as string[]).includes(basisLabel[totalBasis])) {
     const totalRow: Record<string, any> = {};
     finalHeaders.forEach((h) => (totalRow[h] = ""));
     totalRow["Stock number"] = `TOTAL (${basisLabel[totalBasis]})`;
