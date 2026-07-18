@@ -255,18 +255,9 @@ const Inventory = () => {
               {activeRole === "collector" && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Insurance schedule — total by</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "replacement_value")}>
-                    Replacement value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "appraised_value")}>
-                    Appraised value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "current_market_value")}>
-                    Current market value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "purchase_price")}>
-                    Purchase price
+                  <DropdownMenuLabel>Collection format</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => openCollectionDialog("selected")}>
+                    GARF – full collection list (.xlsx)
                   </DropdownMenuItem>
                 </>
               )}
