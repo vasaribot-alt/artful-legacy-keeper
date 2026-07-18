@@ -28,12 +28,25 @@ interface ArtworkRow {
   medium: string | null;
   year: number | null;
   artwork_location: string | null;
+  location_facility: string | null;
+  location_room: string | null;
+  location_cabinet: string | null;
+  location_shelf: string | null;
+  location_box: string | null;
   status: string;
   height: number | null;
   width: number | null;
   depth: number | null;
   created_at: string;
 }
+
+const composeLocation = (a: ArtworkRow): string => {
+  if (a.artwork_location && a.artwork_location.trim()) return a.artwork_location.trim();
+  const parts = [a.location_facility, a.location_room, a.location_cabinet, a.location_shelf, a.location_box]
+    .map((p) => (p || "").trim())
+    .filter(Boolean);
+  return parts.join(" — ");
+};
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 
