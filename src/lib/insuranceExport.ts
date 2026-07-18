@@ -17,7 +17,7 @@ const HEADERS = [
   "Medium",
   "Dimensions",
   "Edition",
-  "Signed",
+  "Signature",
   "Status",
   // Location
   "Facility",
@@ -227,7 +227,7 @@ export async function exportInsuranceSchedule({
       Medium: [a.medium, a.support].filter(Boolean).join(", "),
       Dimensions: dimensions,
       Edition: edition,
-      Signed: a.signed || "",
+      Signature: a.signed || "",
       Status: a.status || "",
       Facility: a.location_facility || "",
       Room: a.location_room || "",
