@@ -31,6 +31,7 @@ import { format } from "date-fns";
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
 const artworkStatuses = [
   { value: "available", label: "Available" },
+  { value: "considering", label: "Considering sale" },
   { value: "sold", label: "Sold" },
 ];
 const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
