@@ -370,11 +370,42 @@ const ArtistProfile = () => {
 
           <Separator />
 
+          <section className="space-y-4">
+            <h2 className="text-2xl">Museum Lending</h2>
+            <p className="text-sm text-muted-foreground">
+              Let museums know whether you are open to lending works from your collection for exhibitions.
+            </p>
+            <div className="flex items-center justify-between p-4 border border-border rounded-sm bg-secondary/30">
+              <div>
+                <Label className="text-base">Open to museum loans</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Displays a small badge on your collector profile.
+                </p>
+              </div>
+              <Switch checked={willingToLend} onCheckedChange={setWillingToLend} />
+            </div>
+            {willingToLend && (
+              <div>
+                <Label>Lending notes (optional)</Label>
+                <Textarea
+                  value={lendingNotes}
+                  onChange={(e) => setLendingNotes(e.target.value)}
+                  placeholder="e.g. EU only, minimum 3 months notice, insurance required"
+                  rows={2}
+                  className="mt-1"
+                />
+              </div>
+            )}
+          </section>
+
+          <Separator />
+
           <UnitPreferenceSetting />
 
 
           <div className="pt-6">
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
+
               <Save className="w-4 h-4" />
               {saving ? "Saving…" : "Save Profile"}
             </Button>
