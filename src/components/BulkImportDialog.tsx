@@ -181,13 +181,13 @@ const ARTIST_EDITIONS_HEADERS = [
 
 const COLLECTOR_UNIQUE_HEADERS = [
   "Title", "Artist Name", "Category", "Year", "Medium", "Support",
-  "Height", "Width", "Depth", "Location", "Provenance",
+  "Height", "Width", "Depth", "Signed", "Location", "Provenance",
   "Description", "Image ID", "Price", "Currency"
 ];
 
 const COLLECTOR_EDITIONS_HEADERS = [
   "Title", "Artist Name", "Category", "Year", "Medium", "Support",
-  "Location", "Provenance", "Description", "Image ID",
+  "Signed", "Location", "Provenance", "Description", "Image ID",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme",
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
