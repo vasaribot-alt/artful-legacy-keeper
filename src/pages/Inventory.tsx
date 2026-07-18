@@ -427,8 +427,9 @@ const Inventory = () => {
                             {statusLabel(art.status || "available")}
                           </Badge>
                         )}
-                        {groupBy === "status" && art.artwork_location && (
-                          <span className="text-xs text-muted-foreground">📍 {art.artwork_location}</span>
+                        {groupBy === "status" && composeLocation(art) && (
+                          <span className="text-xs text-muted-foreground">📍 {composeLocation(art)}</span>
+
                         )}
                       </div>
                     </div>
