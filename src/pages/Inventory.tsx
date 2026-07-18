@@ -64,6 +64,8 @@ const Inventory = () => {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [exporting, setExporting] = useState(false);
+  const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
+  const [collectionScope, setCollectionScope] = useState<"selected" | "all">("all");
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
   useEffect(() => {
