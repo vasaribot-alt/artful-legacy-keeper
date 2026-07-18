@@ -34,7 +34,7 @@ const Inventory = () => {
   const [artworks, setArtworks] = useState<ArtworkRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
-  const [statusFilter, setStatusFilter] = useState<"all" | "available" | "sold">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "available" | "considering" | "sold">("all");
   const [sortBy, setSortBy] = useState<"title" | "year" | "date_added">("title");
   const [searchQuery, setSearchQuery] = useState("");
   const [thumbnails, setThumbnails] = useState<Record<string, string>>({});
@@ -112,16 +112,18 @@ const Inventory = () => {
   // Sort groups
   const sortedKeys = Object.keys(grouped).sort((a, b) => {
     if (groupBy === "status") {
-      const order: Record<string, number> = { available: 0, sold: 1 };
-      return (order[a] ?? 2) - (order[b] ?? 2);
+      const order: Record<string, number> = { available: 0, considering: 1, sold: 2 };
+      return (order[a] ?? 3) - (order[b] ?? 3);
     }
     if (a === "No location set") return 1;
     if (b === "No location set") return -1;
     return a.localeCompare(b);
   });
 
-  const statusLabel = (s: string) => s === "sold" ? "Sold" : "Available";
-  const statusColor = (s: string) => s === "sold" ? "secondary" : "default";
+  const statusLabel = (s: string) =>
+    s === "sold" ? "Sold" : s === "considering" ? "Considering sale" : "Available";
+  const statusColor = (s: string) =>
+    s === "sold" ? "secondary" : s === "considering" ? "outline" : "default";
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
@@ -220,6 +222,7 @@ const Inventory = () => {
             <SelectContent>
               <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="available">Available</SelectItem>
+              <SelectItem value="considering">Considering sale</SelectItem>
               <SelectItem value="sold">Sold</SelectItem>
             </SelectContent>
           </Select>

@@ -20,6 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, ShieldCheck, ShieldOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
+import { CollectorValuationSection } from "@/components/CollectorValuationSection";
+import { StructuredLocationSection } from "@/components/StructuredLocationSection";
 import { PhotographySizesManager } from "@/components/PhotographySizesManager";
 import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { VerificationBadge } from "@/components/VerificationBadge";
@@ -29,6 +31,7 @@ import { format } from "date-fns";
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
 const artworkStatuses = [
   { value: "available", label: "Available" },
+  { value: "considering", label: "Considering sale" },
   { value: "sold", label: "Sold" },
 ];
 const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
@@ -804,7 +807,18 @@ const ArtworkDetail = () => {
           />
         )}
 
+        {/* Collector-only: structured location + valuation */}
+        {id && localStorage.getItem("activeRole") === "collector" && (
+          <>
+            <Separator />
+            <StructuredLocationSection artworkId={id} />
+            <Separator />
+            <CollectorValuationSection artworkId={id} currency={currency} />
+          </>
+        )}
+
         <Separator />
+
 
         {/* Price */}
         <div>
