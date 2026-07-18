@@ -369,7 +369,7 @@ const Inventory = () => {
                 <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
                 <span className="text-muted-foreground">Locations:</span>
                 <span className="font-medium">
-                  {new Set(artworks.map(a => a.artwork_location).filter(Boolean)).size}
+                  {new Set(artworks.map(a => composeLocation(a)).filter(Boolean)).size}
                 </span>
               </div>
             </div>
