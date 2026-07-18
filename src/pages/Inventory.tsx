@@ -11,7 +11,8 @@ import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search, Download
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
-import { exportInsuranceSchedule } from "@/lib/insuranceExport";
+import { exportInsuranceSchedule, type OptionalValueColumn } from "@/lib/insuranceExport";
+import { CollectionExportDialog, type TotalBasis } from "@/components/CollectionExportDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
