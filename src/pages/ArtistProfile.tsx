@@ -207,6 +207,8 @@ const ArtistProfile = () => {
         cv: cv || null,
         chronology: chronology || null,
         contact_visibility: contactVisibility,
+        willing_to_lend: willingToLend,
+        lending_notes: lendingNotes || null,
       } as any)
       .eq("id", profileId);
     setSaving(false);
