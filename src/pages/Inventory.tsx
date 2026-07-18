@@ -112,16 +112,18 @@ const Inventory = () => {
   // Sort groups
   const sortedKeys = Object.keys(grouped).sort((a, b) => {
     if (groupBy === "status") {
-      const order: Record<string, number> = { available: 0, sold: 1 };
-      return (order[a] ?? 2) - (order[b] ?? 2);
+      const order: Record<string, number> = { available: 0, considering: 1, sold: 2 };
+      return (order[a] ?? 3) - (order[b] ?? 3);
     }
     if (a === "No location set") return 1;
     if (b === "No location set") return -1;
     return a.localeCompare(b);
   });
 
-  const statusLabel = (s: string) => s === "sold" ? "Sold" : "Available";
-  const statusColor = (s: string) => s === "sold" ? "secondary" : "default";
+  const statusLabel = (s: string) =>
+    s === "sold" ? "Sold" : s === "considering" ? "Considering sale" : "Available";
+  const statusColor = (s: string) =>
+    s === "sold" ? "secondary" : s === "considering" ? "outline" : "default";
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
