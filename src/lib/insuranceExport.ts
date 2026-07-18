@@ -63,21 +63,44 @@ const fmtDims = (h?: number | null, w?: number | null, d?: number | null) => {
   return parts.length ? `${parts.join(" × ")} cm` : "";
 };
 
+/** Optional value/appraisal columns the user can toggle on/off. */
+export const OPTIONAL_VALUE_COLUMNS = [
+  "Purchase price",
+  "Acquisition cost (all-in)",
+  "Original retail (MSRP)",
+  "Current market value",
+  "Estimated value",
+  "Appraised value",
+  "Appraised on",
+  "Appraised by",
+  "Last sold price",
+  "Last sold on",
+  "Replacement value",
+  "Reserve price",
+  "Restoration cost",
+] as const;
+
+export type OptionalValueColumn = (typeof OPTIONAL_VALUE_COLUMNS)[number];
+
 export interface InsuranceExportOptions {
   artworkIds: string[];
   filenameBase?: string;
-  /** Which value column to use for the totals row. Defaults to replacement_value. */
+  /** Which value column to use for the totals row. Defaults to replacement_value. Pass null to omit totals row. */
   totalBasis?:
     | "replacement_value"
     | "appraised_value"
     | "current_market_value"
-    | "purchase_price";
+    | "purchase_price"
+    | null;
+  /** Subset of optional value columns to include. Defaults to all. */
+  includeValueColumns?: OptionalValueColumn[];
 }
 
 export async function exportInsuranceSchedule({
   artworkIds,
   filenameBase,
   totalBasis = "replacement_value",
+  includeValueColumns,
 }: InsuranceExportOptions): Promise<{ count: number; filename: string; total: number }> {
   if (artworkIds.length === 0) {
     throw new Error("No artworks selected for export.");
