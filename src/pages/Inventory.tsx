@@ -239,15 +239,37 @@ const Inventory = () => {
           >
             <CheckSquare className="w-3.5 h-3.5" /> Select
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleExport("all")}
-            disabled={exporting || filteredArtworks.length === 0}
-            className="gap-1.5 h-8"
-          >
-            <Download className="w-3.5 h-3.5" /> Export to gallery
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" disabled={exporting || filteredArtworks.length === 0} className="gap-1.5 h-8">
+                <Download className="w-3.5 h-3.5" /> Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel>Gallery format</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleExport("all", "artlogic")}>
+                Artlogic / gallery (.xlsx)
+              </DropdownMenuItem>
+              {activeRole === "collector" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Insurance schedule — total by</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "replacement_value")}>
+                    Replacement value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "appraised_value")}>
+                    Appraised value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "current_market_value")}>
+                    Current market value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "purchase_price")}>
+                    Purchase price
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
             <SelectTrigger className="w-[140px] h-8 text-xs">
               <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
