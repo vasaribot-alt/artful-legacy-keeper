@@ -28,12 +28,25 @@ interface ArtworkRow {
   medium: string | null;
   year: number | null;
   artwork_location: string | null;
+  location_facility: string | null;
+  location_room: string | null;
+  location_cabinet: string | null;
+  location_shelf: string | null;
+  location_box: string | null;
   status: string;
   height: number | null;
   width: number | null;
   depth: number | null;
   created_at: string;
 }
+
+const composeLocation = (a: ArtworkRow): string => {
+  if (a.artwork_location && a.artwork_location.trim()) return a.artwork_location.trim();
+  const parts = [a.location_facility, a.location_room, a.location_cabinet, a.location_shelf, a.location_box]
+    .map((p) => (p || "").trim())
+    .filter(Boolean);
+  return parts.join(" — ");
+};
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 
@@ -63,7 +76,7 @@ const Inventory = () => {
 
     const { data } = await supabase
       .from("artworks")
-      .select("id, title, artwork_type, medium, year, artwork_location, status, height, width, depth, created_at")
+      .select("id, title, artwork_type, medium, year, artwork_location, location_facility, location_room, location_cabinet, location_shelf, location_box, status, height, width, depth, created_at")
       .eq("owner_id", user.id)
       .eq("role_context", activeRole)
       .order("title");
@@ -101,7 +114,7 @@ const Inventory = () => {
     if (!searchLower) return true;
     return (a.title || "").toLowerCase().includes(searchLower)
       || (a.medium || "").toLowerCase().includes(searchLower)
-      || (a.artwork_location || "").toLowerCase().includes(searchLower);
+      || composeLocation(a).toLowerCase().includes(searchLower);
   }).sort((a, b) => {
     if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
     if (sortBy === "year") return (b.year || 0) - (a.year || 0);
@@ -110,8 +123,9 @@ const Inventory = () => {
   });
 
   const grouped = filteredArtworks.reduce<Record<string, ArtworkRow[]>>((acc, art) => {
+    const loc = composeLocation(art);
     const key = groupBy === "location"
-      ? (art.artwork_location || "No location set")
+      ? (loc || "No location set")
       : (art.status || "available");
     if (!acc[key]) acc[key] = [];
     acc[key].push(art);
@@ -355,7 +369,7 @@ const Inventory = () => {
                 <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
                 <span className="text-muted-foreground">Locations:</span>
                 <span className="font-medium">
-                  {new Set(artworks.map(a => a.artwork_location).filter(Boolean)).size}
+                  {new Set(artworks.map(a => composeLocation(a)).filter(Boolean)).size}
                 </span>
               </div>
             </div>
@@ -413,8 +427,9 @@ const Inventory = () => {
                             {statusLabel(art.status || "available")}
                           </Badge>
                         )}
-                        {groupBy === "status" && art.artwork_location && (
-                          <span className="text-xs text-muted-foreground">📍 {art.artwork_location}</span>
+                        {groupBy === "status" && composeLocation(art) && (
+                          <span className="text-xs text-muted-foreground">📍 {composeLocation(art)}</span>
+
                         )}
                       </div>
                     </div>
