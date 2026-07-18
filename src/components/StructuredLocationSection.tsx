@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -73,21 +73,28 @@ export const StructuredLocationSection = ({ artworkId }: Props) => {
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger asChild>
-        <button
-          type="button"
-          className="w-full flex items-center justify-between py-2 text-left hover:opacity-80 transition-opacity"
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
-            <Label className="text-base font-medium cursor-pointer">Structured location</Label>
-            {summary && (
-              <span className="text-xs text-muted-foreground truncate">— {summary}</span>
-            )}
-          </div>
-          <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${open ? "rotate-180" : ""}`} />
-        </button>
-      </CollapsibleTrigger>
+      <div className="flex items-center justify-between gap-2">
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="flex-1 flex items-center justify-between py-2 text-left hover:opacity-80 transition-opacity"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+              <Label className="text-base font-medium cursor-pointer">Structured location</Label>
+              {summary && (
+                <span className="text-xs text-muted-foreground truncate">— {summary}</span>
+              )}
+            </div>
+            <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${open ? "rotate-180" : ""}`} />
+          </button>
+        </CollapsibleTrigger>
+        {open && (
+          <Button type="button" size="sm" onClick={save} disabled={saving} className="gap-1.5 shrink-0">
+            <Save className="w-3.5 h-3.5" /> {saving ? "Saving…" : "Save location"}
+          </Button>
+        )}
+      </div>
       <CollapsibleContent className="pt-3 space-y-4">
         <p className="text-xs text-muted-foreground">
           Map where this work lives — from facility down to the exact box or shelf.
@@ -149,13 +156,6 @@ export const StructuredLocationSection = ({ artworkId }: Props) => {
             rows={2}
             className="mt-1"
           />
-        </div>
-
-        <Separator />
-        <div className="flex justify-end">
-          <Button type="button" size="sm" onClick={save} disabled={saving} className="gap-1.5">
-            <Save className="w-3.5 h-3.5" /> {saving ? "Saving…" : "Save location"}
-          </Button>
         </div>
       </CollapsibleContent>
     </Collapsible>

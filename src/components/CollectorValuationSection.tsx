@@ -3,7 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -15,6 +21,8 @@ import { toast } from "sonner";
 interface Props {
   artworkId: string;
   currency: string;
+  onCurrencyChange?: (c: string) => void;
+  currencies?: string[];
 }
 
 const FIELDS: { key: string; label: string; group: string; hint?: string }[] = [
@@ -30,7 +38,9 @@ const FIELDS: { key: string; label: string; group: string; hint?: string }[] = [
   { key: "restoration_cost", label: "Restoration cost", group: "Restoration" },
 ];
 
-export const CollectorValuationSection = ({ artworkId, currency }: Props) => {
+const DEFAULT_CURRENCIES = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF", "JPY"];
+
+export const CollectorValuationSection = ({ artworkId, currency, onCurrencyChange, currencies = DEFAULT_CURRENCIES }: Props) => {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
   const [appraisedAt, setAppraisedAt] = useState("");
@@ -72,6 +82,7 @@ export const CollectorValuationSection = ({ artworkId, currency }: Props) => {
     payload.appraised_at = appraisedAt || null;
     payload.appraised_by = appraisedBy.trim() || null;
     payload.last_sold_at = lastSoldAt || null;
+    if (onCurrencyChange) payload.currency = currency;
     const { error } = await supabase.from("artworks").update(payload as any).eq("id", artworkId);
     setSaving(false);
     if (error) toast.error("Failed to save valuation");
@@ -83,27 +94,45 @@ export const CollectorValuationSection = ({ artworkId, currency }: Props) => {
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger asChild>
-        <button
-          type="button"
-          className="w-full flex items-center justify-between py-2 text-left hover:opacity-80 transition-opacity"
-        >
-          <div className="flex items-center gap-2">
-            <Wallet className="w-4 h-4 text-muted-foreground" />
-            <Label className="text-base font-medium cursor-pointer">Valuation & costs</Label>
-            {totalFilled > 0 && (
-              <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-primary/10 text-primary font-medium">
-                {totalFilled} recorded
-              </span>
-            )}
-          </div>
-          <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
-        </button>
-      </CollapsibleTrigger>
+      <div className="flex items-center justify-between gap-2">
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="flex-1 flex items-center justify-between py-2 text-left hover:opacity-80 transition-opacity"
+          >
+            <div className="flex items-center gap-2">
+              <Wallet className="w-4 h-4 text-muted-foreground" />
+              <Label className="text-base font-medium cursor-pointer">Valuation & costs</Label>
+              {totalFilled > 0 && (
+                <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-primary/10 text-primary font-medium">
+                  {totalFilled} recorded
+                </span>
+              )}
+            </div>
+            <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+        </CollapsibleTrigger>
+        {open && (
+          <Button type="button" size="sm" onClick={save} disabled={saving} className="gap-1.5 shrink-0">
+            <Save className="w-3.5 h-3.5" /> {saving ? "Saving…" : "Save valuation"}
+          </Button>
+        )}
+      </div>
       <CollapsibleContent className="pt-3 space-y-5">
-        <p className="text-xs text-muted-foreground">
-          All amounts in {currency}. Leave blank to skip.
-        </p>
+        <div className="flex items-center gap-3">
+          <Label className="text-xs shrink-0">Currency</Label>
+          <Select
+            value={currency}
+            onValueChange={(v) => onCurrencyChange?.(v)}
+            disabled={!onCurrencyChange}
+          >
+            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {currencies.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">Applies to all amounts below. Leave fields blank to skip.</p>
+        </div>
 
         {groups.map((g) => (
           <div key={g}>
@@ -143,14 +172,8 @@ export const CollectorValuationSection = ({ artworkId, currency }: Props) => {
             )}
           </div>
         ))}
-
-        <Separator />
-        <div className="flex justify-end">
-          <Button type="button" size="sm" onClick={save} disabled={saving} className="gap-1.5">
-            <Save className="w-3.5 h-3.5" /> {saving ? "Saving…" : "Save valuation"}
-          </Button>
-        </div>
       </CollapsibleContent>
     </Collapsible>
   );
 };
+
