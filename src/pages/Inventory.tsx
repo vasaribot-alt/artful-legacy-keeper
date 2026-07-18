@@ -11,7 +11,7 @@ import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search, Download
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
-import { exportInsuranceSchedule, type OptionalValueColumn } from "@/lib/insuranceExport";
+import { exportInsuranceSchedule, OPTIONAL_VALUE_COLUMNS, type OptionalValueColumn } from "@/lib/insuranceExport";
 import { CollectionExportDialog, type TotalBasis } from "@/components/CollectionExportDialog";
 import {
   DropdownMenu,
@@ -198,6 +198,33 @@ const Inventory = () => {
     setCollectionDialogOpen(true);
   };
 
+  const handleFullCollectionExport = async (scope: "selected" | "all") => {
+    const ids = scope === "all" ? filteredArtworks.map((a) => a.id) : Array.from(selected);
+    if (ids.length === 0) {
+      toast.error("Select at least one artwork");
+      return;
+    }
+    setExporting(true);
+    try {
+      const { count, filename } = await exportInsuranceSchedule({
+        artworkIds: ids,
+        filenameBase: `${activeRole}_full_inventory`,
+        totalBasis: null,
+        includeValueColumns: [...OPTIONAL_VALUE_COLUMNS] as OptionalValueColumn[],
+      });
+      toast.success(`${count} work${count === 1 ? "" : "s"} exported to ${filename}`);
+      if (scope === "selected") {
+        setSelected(new Set());
+        setSelectMode(false);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+
   const handleCollectionExport = async ({
     columns,
     totalBasis,
@@ -256,8 +283,13 @@ const Inventory = () => {
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>Collection format</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleFullCollectionExport("selected")}>
+                    Collection full inventory list (.xlsx)
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Collection economic format</DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => openCollectionDialog("selected")}>
-                    GARF – full collection list (.xlsx)
+                    Selective lists (.xlsx)
                   </DropdownMenuItem>
                 </>
               )}
@@ -297,8 +329,13 @@ const Inventory = () => {
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>Collection format</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleFullCollectionExport("all")}>
+                    Collection full inventory list (.xlsx)
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Collection economic format</DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => openCollectionDialog("all")}>
-                    GARF – full collection list (.xlsx)
+                    Selective lists (.xlsx)
                   </DropdownMenuItem>
                 </>
               )}
