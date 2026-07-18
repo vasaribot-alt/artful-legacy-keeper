@@ -11,7 +11,8 @@ import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search, Download
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
-import { exportInsuranceSchedule } from "@/lib/insuranceExport";
+import { exportInsuranceSchedule, type OptionalValueColumn } from "@/lib/insuranceExport";
+import { CollectionExportDialog, type TotalBasis } from "@/components/CollectionExportDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,6 +64,8 @@ const Inventory = () => {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [exporting, setExporting] = useState(false);
+  const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
+  const [collectionScope, setCollectionScope] = useState<"selected" | "all">("all");
   const activeRole = localStorage.getItem("activeRole") || "artist";
 
   useEffect(() => {
@@ -158,8 +161,7 @@ const Inventory = () => {
 
   const handleExport = async (
     scope: "selected" | "all",
-    kind: "artlogic" | "insurance" = "artlogic",
-    basis: "replacement_value" | "appraised_value" | "current_market_value" | "purchase_price" = "replacement_value",
+    kind: "artlogic" = "artlogic",
   ) => {
     const ids = scope === "all"
       ? filteredArtworks.map((a) => a.id)
@@ -170,22 +172,58 @@ const Inventory = () => {
     }
     setExporting(true);
     try {
-      if (kind === "insurance") {
-        const { count, filename, total } = await exportInsuranceSchedule({
-          artworkIds: ids,
-          filenameBase: activeRole,
-          totalBasis: basis,
-        });
-        const totalStr = total ? ` · Total: ${total.toLocaleString()}` : "";
-        toast.success(`Insurance schedule: ${count} work${count === 1 ? "" : "s"}${totalStr}`);
-      } else {
-        const { count, filename } = await exportArtworksToArtlogic({
-          artworkIds: ids,
-          filenameBase: `inventory_${activeRole}`,
-        });
-        toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
-      }
+      const { count, filename } = await exportArtworksToArtlogic({
+        artworkIds: ids,
+        filenameBase: `inventory_${activeRole}`,
+      });
+      toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
       if (scope === "selected") {
+        setSelected(new Set());
+        setSelectMode(false);
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const openCollectionDialog = (scope: "selected" | "all") => {
+    const ids = scope === "all" ? filteredArtworks.map((a) => a.id) : Array.from(selected);
+    if (ids.length === 0) {
+      toast.error("Select at least one artwork");
+      return;
+    }
+    setCollectionScope(scope);
+    setCollectionDialogOpen(true);
+  };
+
+  const handleCollectionExport = async ({
+    columns,
+    totalBasis,
+  }: {
+    columns: OptionalValueColumn[];
+    totalBasis: TotalBasis;
+  }) => {
+    const ids = collectionScope === "all"
+      ? filteredArtworks.map((a) => a.id)
+      : Array.from(selected);
+    if (ids.length === 0) {
+      toast.error("Select at least one artwork");
+      return;
+    }
+    setExporting(true);
+    try {
+      const { count, filename, total } = await exportInsuranceSchedule({
+        artworkIds: ids,
+        filenameBase: activeRole,
+        totalBasis: totalBasis === "none" ? null : totalBasis,
+        includeValueColumns: columns,
+      });
+      const totalStr = total ? ` · Total: ${total.toLocaleString()}` : "";
+      toast.success(`${count} work${count === 1 ? "" : "s"} exported to ${filename}${totalStr}`);
+      setCollectionDialogOpen(false);
+      if (collectionScope === "selected") {
         setSelected(new Set());
         setSelectMode(false);
       }
@@ -217,18 +255,9 @@ const Inventory = () => {
               {activeRole === "collector" && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Insurance schedule — total by</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "replacement_value")}>
-                    Replacement value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "appraised_value")}>
-                    Appraised value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "current_market_value")}>
-                    Current market value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "purchase_price")}>
-                    Purchase price
+                  <DropdownMenuLabel>Collection format</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => openCollectionDialog("selected")}>
+                    GARF – full collection list (.xlsx)
                   </DropdownMenuItem>
                 </>
               )}
@@ -267,18 +296,9 @@ const Inventory = () => {
               {activeRole === "collector" && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Insurance schedule — total by</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "replacement_value")}>
-                    Replacement value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "appraised_value")}>
-                    Appraised value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "current_market_value")}>
-                    Current market value
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "purchase_price")}>
-                    Purchase price
+                  <DropdownMenuLabel>Collection format</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => openCollectionDialog("all")}>
+                    GARF – full collection list (.xlsx)
                   </DropdownMenuItem>
                 </>
               )}
@@ -440,6 +460,13 @@ const Inventory = () => {
           </div>
         )}
       </div>
+      <CollectionExportDialog
+        open={collectionDialogOpen}
+        onOpenChange={setCollectionDialogOpen}
+        count={(collectionScope === "all" ? filteredArtworks.length : selected.size)}
+        onConfirm={handleCollectionExport}
+        loading={exporting}
+      />
     </AppLayout>
   );
 };
