@@ -114,7 +114,7 @@ const Inventory = () => {
     if (!searchLower) return true;
     return (a.title || "").toLowerCase().includes(searchLower)
       || (a.medium || "").toLowerCase().includes(searchLower)
-      || (a.artwork_location || "").toLowerCase().includes(searchLower);
+      || composeLocation(a).toLowerCase().includes(searchLower);
   }).sort((a, b) => {
     if (sortBy === "title") return (a.title || "").localeCompare(b.title || "");
     if (sortBy === "year") return (b.year || 0) - (a.year || 0);
