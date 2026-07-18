@@ -258,23 +258,40 @@ export async function exportInsuranceSchedule({
     };
   });
 
-  // Add a totals row for the chosen basis
+  // Determine which columns to include: base + selected optional value columns
+  const includeSet = new Set<string>(
+    includeValueColumns ? includeValueColumns : OPTIONAL_VALUE_COLUMNS
+  );
+  const finalHeaders = HEADERS.filter(
+    (h) => !OPTIONAL_VALUE_COLUMNS.includes(h as OptionalValueColumn) || includeSet.has(h)
+  );
+
+  // Filter rows to only include selected columns
+  const filteredRows = rows.map((r) => {
+    const out: Record<string, any> = {};
+    finalHeaders.forEach((h) => (out[h] = (r as any)[h]));
+    return out;
+  });
+
+  // Add a totals row for the chosen basis (only if basis column is included)
   const basisLabel: Record<string, string> = {
     replacement_value: "Replacement value",
     appraised_value: "Appraised value",
     current_market_value: "Current market value",
     purchase_price: "Purchase price",
   };
-  const totalRow: Record<string, any> = {};
-  HEADERS.forEach((h) => (totalRow[h] = ""));
-  totalRow["Stock number"] = `TOTAL (${basisLabel[totalBasis]})`;
-  totalRow[basisLabel[totalBasis]] = total;
+  const sheetData = [...filteredRows];
+  if (totalBasis && finalHeaders.includes(basisLabel[totalBasis])) {
+    const totalRow: Record<string, any> = {};
+    finalHeaders.forEach((h) => (totalRow[h] = ""));
+    totalRow["Stock number"] = `TOTAL (${basisLabel[totalBasis]})`;
+    totalRow[basisLabel[totalBasis]] = total;
+    sheetData.push(totalRow);
+  }
 
-  const worksheet = XLSX.utils.json_to_sheet([...rows, totalRow], {
-    header: [...HEADERS],
-  });
+  const worksheet = XLSX.utils.json_to_sheet(sheetData, { header: finalHeaders });
 
-  worksheet["!cols"] = HEADERS.map((h) => {
+  worksheet["!cols"] = finalHeaders.map((h) => {
     if (h === "Title" || h === "Provenance" || h === "Notes") return { wch: 40 };
     if (h.includes("URL")) return { wch: 60 };
     if (h === "Medium" || h === "Dimensions" || h === "Free-text location")
@@ -284,13 +301,13 @@ export async function exportInsuranceSchedule({
   });
 
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Insurance Schedule");
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Collection");
 
   const date = new Date().toISOString().slice(0, 10);
   const namePart = collectorName ? sanitize(collectorName) : "collection";
   const suffix = filenameBase ? `_${sanitize(filenameBase)}` : "";
-  const filename = `${namePart}_GARF_insurance${suffix}_${date}.xlsx`;
+  const filename = `${namePart}_GARF_collection${suffix}_${date}.xlsx`;
   XLSX.writeFile(workbook, filename);
 
-  return { count: rows.length, filename, total };
+  return { count: filteredRows.length, filename, total };
 }
