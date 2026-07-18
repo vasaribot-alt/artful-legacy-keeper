@@ -329,8 +329,13 @@ const Inventory = () => {
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>Collection format</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleFullCollectionExport("all")}>
+                    Collection full inventory list (.xlsx)
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Collection economic format</DropdownMenuLabel>
                   <DropdownMenuItem onClick={() => openCollectionDialog("all")}>
-                    GARF – full collection list (.xlsx)
+                    Selective lists (.xlsx)
                   </DropdownMenuItem>
                 </>
               )}
