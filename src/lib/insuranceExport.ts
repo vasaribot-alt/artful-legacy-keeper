@@ -216,7 +216,7 @@ export async function exportInsuranceSchedule({
       .filter(Boolean)
       .join(" · ");
 
-    const basisVal = Number(a[totalBasis]) || 0;
+    const basisVal = totalBasis ? Number(a[totalBasis]) || 0 : 0;
     total += basisVal;
 
     return {
