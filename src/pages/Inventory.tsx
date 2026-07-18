@@ -11,6 +11,15 @@ import { MapPin, CheckCircle, ShoppingBag, Filter, ArrowUpDown, Search, Download
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
+import { exportInsuranceSchedule } from "@/lib/insuranceExport";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface ArtworkRow {
   id: string;
@@ -133,7 +142,11 @@ const Inventory = () => {
     });
   };
 
-  const handleExport = async (scope: "selected" | "all") => {
+  const handleExport = async (
+    scope: "selected" | "all",
+    kind: "artlogic" | "insurance" = "artlogic",
+    basis: "replacement_value" | "appraised_value" | "current_market_value" | "purchase_price" = "replacement_value",
+  ) => {
     const ids = scope === "all"
       ? filteredArtworks.map((a) => a.id)
       : Array.from(selected);
@@ -143,11 +156,21 @@ const Inventory = () => {
     }
     setExporting(true);
     try {
-      const { count, filename } = await exportArtworksToArtlogic({
-        artworkIds: ids,
-        filenameBase: `inventory_${activeRole}`,
-      });
-      toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
+      if (kind === "insurance") {
+        const { count, filename, total } = await exportInsuranceSchedule({
+          artworkIds: ids,
+          filenameBase: activeRole,
+          totalBasis: basis,
+        });
+        const totalStr = total ? ` · Total: ${total.toLocaleString()}` : "";
+        toast.success(`Insurance schedule: ${count} work${count === 1 ? "" : "s"}${totalStr}`);
+      } else {
+        const { count, filename } = await exportArtworksToArtlogic({
+          artworkIds: ids,
+          filenameBase: `inventory_${activeRole}`,
+        });
+        toast.success(`Exported ${count} artwork${count === 1 ? "" : "s"} to ${filename}`);
+      }
       if (scope === "selected") {
         setSelected(new Set());
         setSelectMode(false);
@@ -166,15 +189,37 @@ const Inventory = () => {
           <span className="text-xs text-muted-foreground">
             {selected.size} selected
           </span>
-          <Button
-            size="sm"
-            variant="default"
-            onClick={() => handleExport("selected")}
-            disabled={exporting || selected.size === 0}
-            className="gap-1.5 h-8"
-          >
-            <Download className="w-3.5 h-3.5" /> Export selected
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="default" disabled={exporting || selected.size === 0} className="gap-1.5 h-8">
+                <Download className="w-3.5 h-3.5" /> Export selected
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel>Gallery format</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleExport("selected", "artlogic")}>
+                Artlogic / gallery (.xlsx)
+              </DropdownMenuItem>
+              {activeRole === "collector" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Insurance schedule — total by</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "replacement_value")}>
+                    Replacement value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "appraised_value")}>
+                    Appraised value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "current_market_value")}>
+                    Current market value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("selected", "insurance", "purchase_price")}>
+                    Purchase price
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             size="sm"
             variant="ghost"
@@ -194,15 +239,37 @@ const Inventory = () => {
           >
             <CheckSquare className="w-3.5 h-3.5" /> Select
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleExport("all")}
-            disabled={exporting || filteredArtworks.length === 0}
-            className="gap-1.5 h-8"
-          >
-            <Download className="w-3.5 h-3.5" /> Export to gallery
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" disabled={exporting || filteredArtworks.length === 0} className="gap-1.5 h-8">
+                <Download className="w-3.5 h-3.5" /> Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel>Gallery format</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleExport("all", "artlogic")}>
+                Artlogic / gallery (.xlsx)
+              </DropdownMenuItem>
+              {activeRole === "collector" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Insurance schedule — total by</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "replacement_value")}>
+                    Replacement value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "appraised_value")}>
+                    Appraised value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "current_market_value")}>
+                    Current market value
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport("all", "insurance", "purchase_price")}>
+                    Purchase price
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
             <SelectTrigger className="w-[140px] h-8 text-xs">
               <ArrowUpDown className="w-3.5 h-3.5 mr-1.5" />
