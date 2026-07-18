@@ -20,6 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, ShieldCheck, ShieldOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
+import { CollectorValuationSection } from "@/components/CollectorValuationSection";
+import { StructuredLocationSection } from "@/components/StructuredLocationSection";
 import { PhotographySizesManager } from "@/components/PhotographySizesManager";
 import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { VerificationBadge } from "@/components/VerificationBadge";
