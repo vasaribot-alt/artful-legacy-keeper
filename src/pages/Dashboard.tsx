@@ -109,6 +109,7 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [verificationFilter, setVerificationFilter] = useState<string>("all");
+  const [imageFilter, setImageFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRole, setActiveRole] = useState<"artist" | "collector" | "registrar">(
     (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist"
