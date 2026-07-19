@@ -212,7 +212,7 @@ const Dashboard = () => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(new Set(artworks.map(a => a.id)));
+      setSelectedIds(new Set(filteredArtworks.map(a => a.id)));
     } else {
       setSelectedIds(new Set());
     }
