@@ -505,6 +505,7 @@ const ArtworkDetail = () => {
     setTimeout(() => setJustSaved(false), 3000);
     // Reload to refresh state
     setDeletedImageIds([]);
+    setImagesReordered(false);
     setDeletedDocIds([]);
     newImages.forEach((img) => URL.revokeObjectURL(img.preview));
     setNewImages([]);
