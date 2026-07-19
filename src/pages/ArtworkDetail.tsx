@@ -403,6 +403,17 @@ const ArtworkDetail = () => {
       }
     }
 
+    // Persist reordering of existing images
+    if (imagesReordered) {
+      const remaining = existingImages.filter((i) => !deletedImageIds.includes(i.id));
+      await Promise.all(
+        remaining.map((img, idx) =>
+          supabase.from("artwork_images").update({ display_order: idx }).eq("id", img.id)
+        )
+      );
+    }
+
+
     // Upload new images (with web-optimized derivative)
     const { uploadOptimizedImage } = await import("@/lib/uploadOptimizedImage");
     const currentMax = existingImages.filter((i) => !deletedImageIds.includes(i.id)).length;
