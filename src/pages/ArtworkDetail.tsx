@@ -121,7 +121,9 @@ const ArtworkDetail = () => {
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
   const [newImages, setNewImages] = useState<{ file: File; preview: string }[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
+  const [imagesReordered, setImagesReordered] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const photoSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   // Documents
   const [documents, setDocuments] = useState<ArtworkDocument[]>([]);
