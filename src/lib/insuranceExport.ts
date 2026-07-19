@@ -221,7 +221,7 @@ export async function exportInsuranceSchedule({
 
     return {
       "Stock number": stockNumber,
-      Artist: a.artist_name || namesByOwner.get(a.owner_id) || "",
+      Artist: a.artist_name || "",
       Title: a.title || "",
       Year: a.year ?? "",
       Medium: [a.medium, a.support].filter(Boolean).join(", "),
