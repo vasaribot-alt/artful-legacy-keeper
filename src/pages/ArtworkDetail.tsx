@@ -684,8 +684,9 @@ const ArtworkDetail = () => {
 
         {localStorage.getItem("activeRole") === "collector" && (
           <div>
-            <Label htmlFor="artistName">Artist name</Label>
+            <Label htmlFor="artistName">Artist name <span className="text-muted-foreground font-normal">(recommended)</span></Label>
             <Input id="artistName" value={artistName} onChange={(e) => setArtistName(e.target.value)} placeholder="e.g. Henry Moore" className="mt-1.5" autoComplete="off" />
+            <p className="text-[11px] text-muted-foreground mt-1">Shown as the "Artist" column in collection exports.</p>
           </div>
         )}
 
