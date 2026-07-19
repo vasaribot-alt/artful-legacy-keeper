@@ -266,6 +266,8 @@ const Dashboard = () => {
       || String(a.year || "").includes(searchLower);
   };
 
+  const imagelessIds = new Set(galleryArtworks.filter(g => !g.imageUrl).map(g => g.id));
+
   const filteredArtworks = artworks.filter(a => {
     if (!matchesSearch(a)) return false;
     if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
@@ -274,6 +276,8 @@ const Dashboard = () => {
       if (locationFilter !== "none" && a.artwork_location !== locationFilter) return false;
     }
     if (verificationFilter !== "all" && (a.verification_status || "pending") !== verificationFilter) return false;
+    if (imageFilter === "none" && !imagelessIds.has(a.id)) return false;
+    if (imageFilter === "has" && imagelessIds.has(a.id)) return false;
     return true;
   });
 
