@@ -3,14 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { X, Plus, ChevronsUpDown } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { ChevronsUpDown } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface PickerEntry {
   id: string;
@@ -32,6 +33,16 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: Ex
   const [entries, setEntries] = useState<PickerEntry[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Quick-add form state
+  const [qTitle, setQTitle] = useState("");
+  const [qVenue, setQVenue] = useState("");
+  const [qCity, setQCity] = useState("");
+  const [qCountry, setQCountry] = useState("");
+  const [qYear, setQYear] = useState("");
+  const [qType, setQType] = useState<"solo" | "group">("group");
 
   useEffect(() => {
     fetchExhibitionEntries();
@@ -53,28 +64,27 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: Ex
       .eq("user_id", targetUserId)
       .single();
 
-    if (!profile) { setLoading(false); return; }
+    const cvEntries: PickerEntry[] = [];
+    if (profile) {
+      const { data: cvData } = await supabase
+        .from("cv_entries")
+        .select("id, entry_text, year, section")
+        .eq("profile_id", profile.id)
+        .order("year", { ascending: false });
 
-    // 1. Fetch CV entries (legacy / manually entered)
-    const { data: cvData } = await supabase
-      .from("cv_entries")
-      .select("id, entry_text, year, section")
-      .eq("profile_id", profile.id)
-      .order("year", { ascending: false });
+      (cvData || [])
+        .filter((e) =>
+          EXHIBITION_SECTIONS.some((s) => e.section.toLowerCase().includes(s)) ||
+          e.section.toLowerCase().includes("exhibit")
+        )
+        .forEach((e) => cvEntries.push({
+          id: e.id,
+          entry_text: e.entry_text,
+          year: e.year,
+          source: "cv",
+        }));
+    }
 
-    const cvEntries: PickerEntry[] = (cvData || [])
-      .filter((e) =>
-        EXHIBITION_SECTIONS.some((s) => e.section.toLowerCase().includes(s)) ||
-        e.section.toLowerCase().includes("exhibit")
-      )
-      .map((e) => ({
-        id: e.id,
-        entry_text: e.entry_text,
-        year: e.year,
-        source: "cv" as const,
-      }));
-
-    // 2. Fetch exhibitions from the new exhibitions table
     const { data: exhData } = await supabase
       .from("exhibitions")
       .select("id, title, venue, city, country, opening_date")
@@ -95,9 +105,7 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: Ex
       };
     });
 
-    // Merge — exhibitions first (newest authoritative source), then CV entries
-    const merged = [...exhEntries, ...cvEntries];
-    setEntries(merged);
+    setEntries([...exhEntries, ...cvEntries]);
     setLoading(false);
   };
 
@@ -109,13 +117,62 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: Ex
     }
   };
 
+  const resetForm = () => {
+    setQTitle(""); setQVenue(""); setQCity(""); setQCountry(""); setQYear(""); setQType("group");
+  };
+
+  const handleQuickAdd = async () => {
+    if (!qTitle.trim()) {
+      toast({ title: "Title required", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    let targetUserId = ownerId;
+    if (!targetUserId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setSaving(false); return; }
+      targetUserId = user.id;
+    }
+
+    const opening_date = qYear && /^\d{4}$/.test(qYear.trim()) ? `${qYear.trim()}-01-01` : null;
+
+    const { data, error } = await supabase
+      .from("exhibitions")
+      .insert({
+        user_id: targetUserId,
+        title: qTitle.trim(),
+        venue: qVenue.trim() || null,
+        city: qCity.trim() || null,
+        country: qCountry.trim() || null,
+        opening_date,
+        exhibition_type: qType,
+        hide_from_cv: true,
+      })
+      .select("id, title, venue, city, country, opening_date")
+      .single();
+
+    setSaving(false);
+    if (error || !data) {
+      toast({ title: "Could not save exhibition", description: error?.message, variant: "destructive" });
+      return;
+    }
+
+    const parts = [data.title, data.venue, data.city, data.country].filter(Boolean);
+    const year = data.opening_date ? new Date(data.opening_date).getFullYear().toString() : null;
+    const newId = `exh:${data.id}`;
+    setEntries((prev) => [{ id: newId, entry_text: parts.join(", "), year, source: "exhibition" }, ...prev]);
+    onSelectionChange([...selectedIds, newId]);
+    resetForm();
+    setAddOpen(false);
+    toast({ title: "Exhibition added" });
+  };
+
   const selectedEntries = entries.filter((e) => selectedIds.includes(e.id));
 
   return (
     <div>
       <Label className="mb-1.5 block">Exhibition History</Label>
 
-      {/* Selected badges */}
       {selectedEntries.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-2">
           {selectedEntries.map((entry) => (
@@ -147,11 +204,11 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: Ex
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[380px] p-0" align="start">
+        <PopoverContent className="w-[420px] p-0" align="start">
           <div className="max-h-64 overflow-y-auto p-2 space-y-0.5">
-            {entries.length === 0 && (
+            {entries.length === 0 && !addOpen && (
               <p className="text-xs text-muted-foreground p-3 text-center">
-                No exhibitions found. Add exhibitions in the Exhibitions section or to the CV first.
+                No exhibitions yet. Use "Add exhibition" below.
               </p>
             )}
             {entries.map((entry) => (
@@ -174,6 +231,52 @@ export const ExhibitionPicker = ({ selectedIds, onSelectionChange, ownerId }: Ex
                 </div>
               </button>
             ))}
+          </div>
+
+          <div className="border-t p-2">
+            {!addOpen ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start text-sm font-normal"
+                onClick={() => setAddOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add exhibition
+              </Button>
+            ) : (
+              <div className="space-y-2 p-1">
+                <Input placeholder="Title *" value={qTitle} onChange={(e) => setQTitle(e.target.value)} />
+                <Input placeholder="Venue" value={qVenue} onChange={(e) => setQVenue(e.target.value)} />
+                <div className="grid grid-cols-2 gap-2">
+                  <Input placeholder="City" value={qCity} onChange={(e) => setQCity(e.target.value)} />
+                  <Input placeholder="Country" value={qCountry} onChange={(e) => setQCountry(e.target.value)} />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input placeholder="Year (e.g. 2024)" value={qYear} onChange={(e) => setQYear(e.target.value)} />
+                  <div className="flex border rounded-md overflow-hidden text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setQType("solo")}
+                      className={`flex-1 py-2 ${qType === "solo" ? "bg-foreground text-background" : "bg-background"}`}
+                    >Solo</button>
+                    <button
+                      type="button"
+                      onClick={() => setQType("group")}
+                      className={`flex-1 py-2 ${qType === "group" ? "bg-foreground text-background" : "bg-background"}`}
+                    >Group</button>
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <Button type="button" size="sm" onClick={handleQuickAdd} disabled={saving} className="flex-1">
+                    {saving ? "Saving..." : "Save & select"}
+                  </Button>
+                  <Button type="button" size="sm" variant="ghost" onClick={() => { setAddOpen(false); resetForm(); }}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </PopoverContent>
       </Popover>
