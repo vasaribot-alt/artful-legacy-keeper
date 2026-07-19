@@ -197,13 +197,13 @@ const ArtworkDetail = () => {
       (soldDate ? soldDate.toISOString() : "") !== o.soldDate ||
       selectedExhibitionIds.sort().join(",") !== o.selectedExhibitionIds ||
       selectedCatalogueIds.sort().join(",") !== o.selectedCatalogueIds ||
-      newImages.length > 0 || deletedImageIds.length > 0 ||
+      newImages.length > 0 || deletedImageIds.length > 0 || imagesReordered ||
       newDocuments.length > 0 || deletedDocIds.length > 0;
     setHasUnsavedChanges(changed);
   }, [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
     signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
     artistProofs, exhibitionHistory, provenance, artistName, editionNumber, status, buyerName, soldDate,
-    selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, newDocuments, deletedDocIds, loading]);
+    selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, imagesReordered, newDocuments, deletedDocIds, loading]);
 
   const loadArtwork = async () => {
     setLoading(true);
