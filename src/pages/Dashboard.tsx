@@ -402,6 +402,16 @@ const Dashboard = () => {
                   </SelectContent>
                 </Select>
               )}
+              <Select value={imageFilter} onValueChange={setImageFilter}>
+                <SelectTrigger className="h-8 w-[140px] text-xs">
+                  <SelectValue placeholder="Images" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All artworks</SelectItem>
+                  <SelectItem value="none">No image</SelectItem>
+                  <SelectItem value="has">Has image</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             </div>
           </div>
