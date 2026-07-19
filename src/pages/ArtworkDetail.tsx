@@ -618,6 +618,32 @@ const ArtworkDetail = () => {
                 </button>
               </div>
             ))}
+          <div className="flex flex-wrap gap-2">
+            <DndContext
+              sensors={photoSensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event: DragEndEvent) => {
+                const { active, over } = event;
+                if (!over || active.id === over.id) return;
+                const oldIndex = visibleExistingImages.findIndex((i) => i.id === active.id);
+                const newIndex = visibleExistingImages.findIndex((i) => i.id === over.id);
+                if (oldIndex === -1 || newIndex === -1) return;
+                const reorderedVisible = arrayMove(visibleExistingImages, oldIndex, newIndex);
+                const deletedList = existingImages.filter((i) => deletedImageIds.includes(i.id));
+                setExistingImages([...reorderedVisible, ...deletedList]);
+                setImagesReordered(true);
+              }}
+            >
+              <SortableContext items={visibleExistingImages.map((i) => i.id)} strategy={rectSortingStrategy}>
+                {visibleExistingImages.map((img) => (
+                  <SortablePhoto
+                    key={img.id}
+                    img={img}
+                    onDelete={() => setDeletedImageIds((prev) => [...prev, img.id])}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
             {newImages.map((img, i) => (
               <div key={`new-${i}`} className="relative w-24 h-24 rounded-sm overflow-hidden border border-dashed border-border">
                 <img src={img.preview} alt="" className="w-full h-full object-cover" />
@@ -642,6 +668,7 @@ const ArtworkDetail = () => {
               <span className="text-[10px]">Add</span>
             </button>
           </div>
+          <p className="text-[11px] text-muted-foreground mt-1.5">Drag photos to reorder. The first photo is the main image.</p>
           <input ref={imageInputRef} type="file" accept="image/*" multiple onChange={handleAddImages} className="hidden" />
         </div>
 
