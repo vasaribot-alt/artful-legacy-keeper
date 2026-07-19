@@ -109,6 +109,7 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [verificationFilter, setVerificationFilter] = useState<string>("all");
+  const [imageFilter, setImageFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRole, setActiveRole] = useState<"artist" | "collector" | "registrar">(
     (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist"
@@ -211,7 +212,7 @@ const Dashboard = () => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(new Set(artworks.map(a => a.id)));
+      setSelectedIds(new Set(filteredArtworks.map(a => a.id)));
     } else {
       setSelectedIds(new Set());
     }
@@ -265,6 +266,8 @@ const Dashboard = () => {
       || String(a.year || "").includes(searchLower);
   };
 
+  const imagelessIds = new Set(galleryArtworks.filter(g => !g.imageUrl).map(g => g.id));
+
   const filteredArtworks = artworks.filter(a => {
     if (!matchesSearch(a)) return false;
     if (statusFilter !== "all" && (a.status || "available") !== statusFilter) return false;
@@ -273,6 +276,8 @@ const Dashboard = () => {
       if (locationFilter !== "none" && a.artwork_location !== locationFilter) return false;
     }
     if (verificationFilter !== "all" && (a.verification_status || "pending") !== verificationFilter) return false;
+    if (imageFilter === "none" && !imagelessIds.has(a.id)) return false;
+    if (imageFilter === "has" && imagelessIds.has(a.id)) return false;
     return true;
   });
 
@@ -397,6 +402,16 @@ const Dashboard = () => {
                   </SelectContent>
                 </Select>
               )}
+              <Select value={imageFilter} onValueChange={setImageFilter}>
+                <SelectTrigger className="h-8 w-[140px] text-xs">
+                  <SelectValue placeholder="Images" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All artworks</SelectItem>
+                  <SelectItem value="none">No image</SelectItem>
+                  <SelectItem value="has">Has image</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             </div>
           </div>
