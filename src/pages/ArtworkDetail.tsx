@@ -606,19 +606,7 @@ const ArtworkDetail = () => {
         <div>
           <Label className="mb-2 block text-base font-medium">Photos</Label>
           <div className="flex flex-wrap gap-2">
-            {visibleExistingImages.map((img) => (
-              <div key={img.id} className="relative w-24 h-24 rounded-sm overflow-hidden border border-border">
-                <img src={img.publicUrl} alt="" className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => setDeletedImageIds((prev) => [...prev, img.id])}
-                  className="absolute top-0.5 right-0.5 bg-background/80 rounded-full p-0.5"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          <div className="flex flex-wrap gap-2">
+
             <DndContext
               sensors={photoSensors}
               collisionDetection={closestCenter}
