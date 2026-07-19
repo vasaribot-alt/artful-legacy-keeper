@@ -27,6 +27,22 @@ import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { VerificationBadge } from "@/components/VerificationBadge";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, useSortable, rectSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+const SortablePhoto = ({ img, onDelete }: { img: { id: string; publicUrl: string }; onDelete: () => void }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: img.id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1, zIndex: isDragging ? 10 : undefined };
+  return (
+    <div ref={setNodeRef} style={style} className="relative w-24 h-24 rounded-sm overflow-hidden border border-border">
+      <img src={img.publicUrl} alt="" className="w-full h-full object-cover cursor-grab active:cursor-grabbing" {...attributes} {...listeners} />
+      <button type="button" onClick={onDelete} className="absolute top-0.5 right-0.5 bg-background/80 rounded-full p-0.5 z-10">
+        <X className="w-3 h-3" />
+      </button>
+    </div>
+  );
+};
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
 const artworkStatuses = [
