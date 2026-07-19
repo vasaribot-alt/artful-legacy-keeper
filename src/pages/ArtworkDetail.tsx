@@ -27,6 +27,22 @@ import { SaleDatePicker } from "@/components/SaleDatePicker";
 import { VerificationBadge } from "@/components/VerificationBadge";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, useSortable, rectSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+const SortablePhoto = ({ img, onDelete }: { img: { id: string; publicUrl: string }; onDelete: () => void }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: img.id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1, zIndex: isDragging ? 10 : undefined };
+  return (
+    <div ref={setNodeRef} style={style} className="relative w-24 h-24 rounded-sm overflow-hidden border border-border">
+      <img src={img.publicUrl} alt="" className="w-full h-full object-cover cursor-grab active:cursor-grabbing" {...attributes} {...listeners} />
+      <button type="button" onClick={onDelete} className="absolute top-0.5 right-0.5 bg-background/80 rounded-full p-0.5 z-10">
+        <X className="w-3 h-3" />
+      </button>
+    </div>
+  );
+};
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
 const artworkStatuses = [
@@ -105,7 +121,9 @@ const ArtworkDetail = () => {
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
   const [newImages, setNewImages] = useState<{ file: File; preview: string }[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
+  const [imagesReordered, setImagesReordered] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const photoSensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   // Documents
   const [documents, setDocuments] = useState<ArtworkDocument[]>([]);
@@ -179,13 +197,13 @@ const ArtworkDetail = () => {
       (soldDate ? soldDate.toISOString() : "") !== o.soldDate ||
       selectedExhibitionIds.sort().join(",") !== o.selectedExhibitionIds ||
       selectedCatalogueIds.sort().join(",") !== o.selectedCatalogueIds ||
-      newImages.length > 0 || deletedImageIds.length > 0 ||
+      newImages.length > 0 || deletedImageIds.length > 0 || imagesReordered ||
       newDocuments.length > 0 || deletedDocIds.length > 0;
     setHasUnsavedChanges(changed);
   }, [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
     signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
     artistProofs, exhibitionHistory, provenance, artistName, editionNumber, status, buyerName, soldDate,
-    selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, newDocuments, deletedDocIds, loading]);
+    selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, imagesReordered, newDocuments, deletedDocIds, loading]);
 
   const loadArtwork = async () => {
     setLoading(true);
@@ -385,6 +403,17 @@ const ArtworkDetail = () => {
       }
     }
 
+    // Persist reordering of existing images
+    if (imagesReordered) {
+      const remaining = existingImages.filter((i) => !deletedImageIds.includes(i.id));
+      await Promise.all(
+        remaining.map((img, idx) =>
+          supabase.from("artwork_images").update({ display_order: idx }).eq("id", img.id)
+        )
+      );
+    }
+
+
     // Upload new images (with web-optimized derivative)
     const { uploadOptimizedImage } = await import("@/lib/uploadOptimizedImage");
     const currentMax = existingImages.filter((i) => !deletedImageIds.includes(i.id)).length;
@@ -476,6 +505,7 @@ const ArtworkDetail = () => {
     setTimeout(() => setJustSaved(false), 3000);
     // Reload to refresh state
     setDeletedImageIds([]);
+    setImagesReordered(false);
     setDeletedDocIds([]);
     newImages.forEach((img) => URL.revokeObjectURL(img.preview));
     setNewImages([]);
@@ -590,18 +620,32 @@ const ArtworkDetail = () => {
         <div>
           <Label className="mb-2 block text-base font-medium">Photos</Label>
           <div className="flex flex-wrap gap-2">
-            {visibleExistingImages.map((img) => (
-              <div key={img.id} className="relative w-24 h-24 rounded-sm overflow-hidden border border-border">
-                <img src={img.publicUrl} alt="" className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => setDeletedImageIds((prev) => [...prev, img.id])}
-                  className="absolute top-0.5 right-0.5 bg-background/80 rounded-full p-0.5"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
+
+            <DndContext
+              sensors={photoSensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event: DragEndEvent) => {
+                const { active, over } = event;
+                if (!over || active.id === over.id) return;
+                const oldIndex = visibleExistingImages.findIndex((i) => i.id === active.id);
+                const newIndex = visibleExistingImages.findIndex((i) => i.id === over.id);
+                if (oldIndex === -1 || newIndex === -1) return;
+                const reorderedVisible = arrayMove(visibleExistingImages, oldIndex, newIndex);
+                const deletedList = existingImages.filter((i) => deletedImageIds.includes(i.id));
+                setExistingImages([...reorderedVisible, ...deletedList]);
+                setImagesReordered(true);
+              }}
+            >
+              <SortableContext items={visibleExistingImages.map((i) => i.id)} strategy={rectSortingStrategy}>
+                {visibleExistingImages.map((img) => (
+                  <SortablePhoto
+                    key={img.id}
+                    img={img}
+                    onDelete={() => setDeletedImageIds((prev) => [...prev, img.id])}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
             {newImages.map((img, i) => (
               <div key={`new-${i}`} className="relative w-24 h-24 rounded-sm overflow-hidden border border-dashed border-border">
                 <img src={img.preview} alt="" className="w-full h-full object-cover" />
@@ -626,6 +670,7 @@ const ArtworkDetail = () => {
               <span className="text-[10px]">Add</span>
             </button>
           </div>
+          <p className="text-[11px] text-muted-foreground mt-1.5">Drag photos to reorder. The first photo is the main image.</p>
           <input ref={imageInputRef} type="file" accept="image/*" multiple onChange={handleAddImages} className="hidden" />
         </div>
 
