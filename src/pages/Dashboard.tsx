@@ -697,21 +697,24 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {showBackToTop && (
-        <Button
-          variant="default"
-          size="icon"
-          onClick={() => {
-            sessionStorage.removeItem(scrollKey);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          className="fixed bottom-6 right-6 z-40 h-11 w-11 rounded-full shadow-lg"
-          aria-label="Back to top"
-          title="Back to top"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </Button>
-      )}
+      {showBackToTop &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <Button
+            variant="default"
+            size="icon"
+            onClick={() => {
+              sessionStorage.removeItem(scrollKey);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="fixed bottom-8 right-8 z-[100] h-12 w-12 rounded-full shadow-xl border border-background/20 bg-foreground text-background hover:bg-foreground/90"
+            aria-label="Back to top"
+            title="Back to top"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </Button>,
+          document.body
+        )}
     </AppLayout>
   );
 };
