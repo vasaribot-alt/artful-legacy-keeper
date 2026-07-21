@@ -184,6 +184,7 @@ const Files = () => {
           source: "artwork-image",
           linked_id: a.id,
           linked_title: a.title,
+          artist_name: a.artist_name,
           linked_route: `/artwork/${a.id}`,
           year: a.year,
           medium: a.medium,
