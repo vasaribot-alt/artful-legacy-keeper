@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -133,13 +134,20 @@ const Dashboard = () => {
 
   // Save scroll position + toggle back-to-top button (only after restore completes)
   useEffect(() => {
+    const getScrollY = () =>
+      window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
     const onScroll = () => {
-      const y = window.scrollY;
-      setShowBackToTop(y > 400);
+      const y = getScrollY();
+      setShowBackToTop(y > 300);
       if (!restoredRef.current) return; // don't overwrite saved value before restoring
       sessionStorage.setItem(scrollKey, String(y));
     };
+
     window.addEventListener("scroll", onScroll, { passive: true });
+    // Initial check in case page is already scrolled when component mounts
+    onScroll();
+
     return () => window.removeEventListener("scroll", onScroll);
   }, [scrollKey]);
 
@@ -689,21 +697,24 @@ const Dashboard = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {showBackToTop && (
-        <Button
-          variant="default"
-          size="icon"
-          onClick={() => {
-            sessionStorage.removeItem(scrollKey);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          className="fixed bottom-6 right-6 z-40 h-11 w-11 rounded-full shadow-lg"
-          aria-label="Back to top"
-          title="Back to top"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </Button>
-      )}
+      {showBackToTop &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <Button
+            variant="default"
+            size="icon"
+            onClick={() => {
+              sessionStorage.removeItem(scrollKey);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="fixed bottom-8 right-8 z-[100] h-12 w-12 rounded-full shadow-xl border border-background/20 bg-foreground text-background hover:bg-foreground/90"
+            aria-label="Back to top"
+            title="Back to top"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </Button>,
+          document.body
+        )}
     </AppLayout>
   );
 };
