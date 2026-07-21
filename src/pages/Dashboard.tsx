@@ -628,8 +628,25 @@ const Dashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {showBackToTop && (
+        <Button
+          variant="default"
+          size="icon"
+          onClick={() => {
+            sessionStorage.removeItem(scrollKey);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="fixed bottom-6 right-6 z-40 h-11 w-11 rounded-full shadow-lg"
+          aria-label="Back to top"
+          title="Back to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </Button>
+      )}
     </AppLayout>
   );
 };
+
 
 export default Dashboard;
