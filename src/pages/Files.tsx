@@ -464,6 +464,7 @@ const Files = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
     const yFrom = yearFrom ? Number(yearFrom) : null;
     const yTo = yearTo ? Number(yearTo) : null;
     let arr = files.filter(f => {
@@ -476,15 +477,19 @@ const Files = () => {
       if (extension !== "all" && f.extension !== extension) return false;
       if (yFrom !== null && (f.year == null || f.year < yFrom)) return false;
       if (yTo !== null && (f.year == null || f.year > yTo)) return false;
-      if (!q) return true;
-      return (
-        (f.file_name || "").toLowerCase().includes(q) ||
-        (f.linked_title || "").toLowerCase().includes(q) ||
-        (f.medium || "").toLowerCase().includes(q) ||
-        (f.series || "").toLowerCase().includes(q) ||
-        (f.caption || "").toLowerCase().includes(q) ||
-        (f.year ? String(f.year).includes(q) : false)
-      );
+      if (!tokens.length) return true;
+      const haystack = [
+        f.file_name,
+        f.linked_title,
+        f.artist_name,
+        f.medium,
+        f.series,
+        f.caption,
+        f.year != null ? String(f.year) : "",
+        f.extension,
+        f.source,
+      ].filter(Boolean).join(" ").toLowerCase();
+      return tokens.every(t => haystack.includes(t));
     });
     arr = [...arr].sort((a, b) => {
       if (sortBy === "name") return (a.file_name || "").localeCompare(b.file_name || "");
