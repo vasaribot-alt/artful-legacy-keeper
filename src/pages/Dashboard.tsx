@@ -116,6 +116,33 @@ const Dashboard = () => {
     (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist"
   );
   const [idVerified, setIdVerified] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  const scrollKey = `dashboardScroll:${activeRole}`;
+
+  // Save scroll position + toggle back-to-top button
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      sessionStorage.setItem(scrollKey, String(y));
+      setShowBackToTop(y > 400);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollKey]);
+
+  // Restore scroll after artworks load
+  useEffect(() => {
+    if (loading) return;
+    const saved = sessionStorage.getItem(scrollKey);
+    if (saved) {
+      const y = parseInt(saved, 10);
+      requestAnimationFrame(() => window.scrollTo(0, y));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, artworks.length]);
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
