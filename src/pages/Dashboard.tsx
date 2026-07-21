@@ -122,6 +122,15 @@ const Dashboard = () => {
   const restoredRef = useRef(false);
   const targetScrollRef = useRef<number | null>(null);
 
+  // Disable browser's native scroll restoration so it doesn't fight our logic
+  useEffect(() => {
+    const prev = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+    return () => {
+      window.history.scrollRestoration = prev;
+    };
+  }, []);
+
   // Save scroll position + toggle back-to-top button (only after restore completes)
   useEffect(() => {
     const onScroll = () => {
@@ -153,23 +162,45 @@ const Dashboard = () => {
 
     let cancelled = false;
     let attempts = 0;
+    const start = Date.now();
+
+    // Cancel restore attempts as soon as the user interacts, so we don't fight them
+    const cancelOnUserAction = () => {
+      cancelled = true;
+      restoredRef.current = true;
+      cleanup();
+    };
+    const cleanup = () => {
+      window.removeEventListener("wheel", cancelOnUserAction);
+      window.removeEventListener("touchstart", cancelOnUserAction);
+      window.removeEventListener("keydown", cancelOnUserAction);
+    };
+    window.addEventListener("wheel", cancelOnUserAction, { passive: true, once: true });
+    window.addEventListener("touchstart", cancelOnUserAction, { passive: true, once: true });
+    window.addEventListener("keydown", cancelOnUserAction, { once: true });
+
     const tryRestore = () => {
       if (cancelled) return;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      window.scrollTo(0, Math.min(target, Math.max(maxScroll, 0)));
+      const goal = Math.min(target, Math.max(maxScroll, 0));
+      window.scrollTo(0, goal);
       attempts++;
-      // Retry for ~2s so images can load and expand the page
-      if (Math.abs(window.scrollY - target) > 4 && attempts < 40) {
-        setTimeout(tryRestore, 50);
+      const reached = Math.abs(window.scrollY - target) <= 4;
+      const timedOut = Date.now() - start > 5000;
+      if (!reached && !timedOut) {
+        setTimeout(tryRestore, 60);
       } else {
         restoredRef.current = true;
+        cleanup();
       }
     };
     requestAnimationFrame(tryRestore);
     return () => {
       cancelled = true;
+      cleanup();
     };
   }, [loading, artworks.length, scrollKey]);
+
 
 
 
