@@ -133,13 +133,20 @@ const Dashboard = () => {
 
   // Save scroll position + toggle back-to-top button (only after restore completes)
   useEffect(() => {
+    const getScrollY = () =>
+      window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
     const onScroll = () => {
-      const y = window.scrollY;
-      setShowBackToTop(y > 400);
+      const y = getScrollY();
+      setShowBackToTop(y > 300);
       if (!restoredRef.current) return; // don't overwrite saved value before restoring
       sessionStorage.setItem(scrollKey, String(y));
     };
+
     window.addEventListener("scroll", onScroll, { passive: true });
+    // Initial check in case page is already scrolled when component mounts
+    onScroll();
+
     return () => window.removeEventListener("scroll", onScroll);
   }, [scrollKey]);
 
