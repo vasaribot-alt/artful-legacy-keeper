@@ -149,9 +149,10 @@ const ArtworkView = () => {
 
   const headerActions = (
     <>
-      <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
+      <Button variant="ghost" size="sm" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/dashboard"))}>
         <ArrowLeft className="w-4 h-4 mr-1" /> Back
       </Button>
+
       <div className="flex items-center gap-1">
         <Button
           variant="ghost"

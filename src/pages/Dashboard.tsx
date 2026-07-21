@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter, ShieldCheck, Loader2, Search, Copy } from "lucide-react";
+import { Plus, Shield, LayoutGrid, List, Pencil, Eye, Upload, Trash2, Filter, ShieldCheck, Loader2, Search, Copy, ArrowUp } from "lucide-react";
+
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -115,6 +116,33 @@ const Dashboard = () => {
     (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist"
   );
   const [idVerified, setIdVerified] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  const scrollKey = `dashboardScroll:${activeRole}`;
+
+  // Save scroll position + toggle back-to-top button
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY;
+      sessionStorage.setItem(scrollKey, String(y));
+      setShowBackToTop(y > 400);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollKey]);
+
+  // Restore scroll after artworks load
+  useEffect(() => {
+    if (loading) return;
+    const saved = sessionStorage.getItem(scrollKey);
+    if (saved) {
+      const y = parseInt(saved, 10);
+      requestAnimationFrame(() => window.scrollTo(0, y));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, artworks.length]);
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -600,8 +628,25 @@ const Dashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {showBackToTop && (
+        <Button
+          variant="default"
+          size="icon"
+          onClick={() => {
+            sessionStorage.removeItem(scrollKey);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="fixed bottom-6 right-6 z-40 h-11 w-11 rounded-full shadow-lg"
+          aria-label="Back to top"
+          title="Back to top"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </Button>
+      )}
     </AppLayout>
   );
 };
+
 
 export default Dashboard;

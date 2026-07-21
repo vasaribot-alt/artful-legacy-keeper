@@ -551,7 +551,7 @@ const ArtworkDetail = () => {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 bg-background border-b border-border">
         <div className="max-w-3xl mx-auto px-6 h-14 flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
+          <Button variant="ghost" size="sm" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/dashboard"))}>
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
           </Button>
           <div className="flex items-center gap-1">
