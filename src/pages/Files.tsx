@@ -29,6 +29,7 @@ interface FileRow {
   // metadata for filtering
   linked_id: string;
   linked_title: string;
+  artist_name?: string | null;
   linked_route?: string;
   year: number | null;
   medium: string | null;
