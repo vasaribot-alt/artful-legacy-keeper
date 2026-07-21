@@ -517,7 +517,7 @@ const Dashboard = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by title, series, medium, or year…"
+                placeholder="Search by artist, title, series, medium, or year…"
                 className="pl-9"
               />
             </div>
@@ -646,7 +646,7 @@ const Dashboard = () => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by title, series, medium, or year…"
+              placeholder="Search by artist, title, series, medium, or year…"
               className="pl-9"
             />
           </div>
