@@ -721,8 +721,18 @@ const Files = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by file name, artist, artwork title, medium, series, year, caption…"
-            className="pl-9"
+            className="pl-9 pr-9"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Source chips */}
