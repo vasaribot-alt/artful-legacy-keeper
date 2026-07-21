@@ -160,14 +160,18 @@ const Dashboard = () => {
   // Save scroll position + toggle back-to-top button (only after restore completes)
   useEffect(() => {
     const onScroll = (event?: Event) => {
+      const windowScrollY = Math.max(
+        window.scrollY || 0,
+        document.documentElement.scrollTop || 0,
+        document.body.scrollTop || 0
+      );
       const target = event?.target as HTMLElement | Document | null;
       if (target && "scrollTop" in target) {
-        lastKnownScrollRef.current = Math.max(lastKnownScrollRef.current, target.scrollTop || 0);
+        lastKnownScrollRef.current = Math.max(windowScrollY, target.scrollTop || 0);
       } else if (target === document) {
-        lastKnownScrollRef.current = Math.max(
-          lastKnownScrollRef.current,
-          document.documentElement.scrollTop || document.body.scrollTop || 0
-        );
+        lastKnownScrollRef.current = windowScrollY;
+      } else {
+        lastKnownScrollRef.current = windowScrollY;
       }
       const y = getScrollY();
       setShowBackToTop(y > 300);
