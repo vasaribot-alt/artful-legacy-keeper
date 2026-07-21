@@ -29,6 +29,7 @@ interface FileRow {
   // metadata for filtering
   linked_id: string;
   linked_title: string;
+  artist_name?: string | null;
   linked_route?: string;
   year: number | null;
   medium: string | null;
@@ -125,7 +126,7 @@ const Files = () => {
 
     const { data: artworks } = await supabase
       .from("artworks")
-      .select("id, title, year, medium, series, artwork_type")
+      .select("id, title, year, medium, series, artwork_type, artist_name")
       .eq("owner_id", user.id)
       .eq("role_context", activeRole);
     const artworkIds = (artworks || []).map(a => a.id);
@@ -183,6 +184,7 @@ const Files = () => {
           source: "artwork-image",
           linked_id: a.id,
           linked_title: a.title,
+          artist_name: a.artist_name,
           linked_route: `/artwork/${a.id}`,
           year: a.year,
           medium: a.medium,
@@ -214,6 +216,7 @@ const Files = () => {
           source: "artwork-document",
           linked_id: a.id,
           linked_title: a.title,
+          artist_name: a.artist_name,
           linked_route: `/artwork/${a.id}`,
           year: a.year,
           medium: a.medium,
@@ -461,6 +464,7 @@ const Files = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
     const yFrom = yearFrom ? Number(yearFrom) : null;
     const yTo = yearTo ? Number(yearTo) : null;
     let arr = files.filter(f => {
@@ -473,15 +477,19 @@ const Files = () => {
       if (extension !== "all" && f.extension !== extension) return false;
       if (yFrom !== null && (f.year == null || f.year < yFrom)) return false;
       if (yTo !== null && (f.year == null || f.year > yTo)) return false;
-      if (!q) return true;
-      return (
-        (f.file_name || "").toLowerCase().includes(q) ||
-        (f.linked_title || "").toLowerCase().includes(q) ||
-        (f.medium || "").toLowerCase().includes(q) ||
-        (f.series || "").toLowerCase().includes(q) ||
-        (f.caption || "").toLowerCase().includes(q) ||
-        (f.year ? String(f.year).includes(q) : false)
-      );
+      if (!tokens.length) return true;
+      const haystack = [
+        f.file_name,
+        f.linked_title,
+        f.artist_name,
+        f.medium,
+        f.series,
+        f.caption,
+        f.year != null ? String(f.year) : "",
+        f.extension,
+        f.source,
+      ].filter(Boolean).join(" ").toLowerCase();
+      return tokens.every(t => haystack.includes(t));
     });
     arr = [...arr].sort((a, b) => {
       if (sortBy === "name") return (a.file_name || "").localeCompare(b.file_name || "");
@@ -712,7 +720,7 @@ const Files = () => {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by file name, artwork title, exhibition, year, medium, caption…"
+            placeholder="Search by file name, artist, artwork title, medium, series, year, caption…"
             className="pl-9"
           />
         </div>
