@@ -119,29 +119,58 @@ const Dashboard = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const scrollKey = `dashboardScroll:${activeRole}`;
+  const restoredRef = useRef(false);
+  const targetScrollRef = useRef<number | null>(null);
 
-  // Save scroll position + toggle back-to-top button
+  // Save scroll position + toggle back-to-top button (only after restore completes)
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      sessionStorage.setItem(scrollKey, String(y));
       setShowBackToTop(y > 400);
+      if (!restoredRef.current) return; // don't overwrite saved value before restoring
+      sessionStorage.setItem(scrollKey, String(y));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, [scrollKey]);
 
-  // Restore scroll after artworks load
+  // Reset restore flag when role (and thus key) changes
+  useEffect(() => {
+    restoredRef.current = false;
+    const saved = sessionStorage.getItem(scrollKey);
+    targetScrollRef.current = saved ? parseInt(saved, 10) : null;
+  }, [scrollKey]);
+
+  // Restore scroll after artworks load — retry as images load and page grows
   useEffect(() => {
     if (loading) return;
-    const saved = sessionStorage.getItem(scrollKey);
-    if (saved) {
-      const y = parseInt(saved, 10);
-      requestAnimationFrame(() => window.scrollTo(0, y));
+    if (restoredRef.current) return;
+    const target = targetScrollRef.current;
+    if (target == null || target <= 0) {
+      restoredRef.current = true;
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, artworks.length]);
+
+    let cancelled = false;
+    let attempts = 0;
+    const tryRestore = () => {
+      if (cancelled) return;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      window.scrollTo(0, Math.min(target, Math.max(maxScroll, 0)));
+      attempts++;
+      // Retry for ~2s so images can load and expand the page
+      if (Math.abs(window.scrollY - target) > 4 && attempts < 40) {
+        setTimeout(tryRestore, 50);
+      } else {
+        restoredRef.current = true;
+      }
+    };
+    requestAnimationFrame(tryRestore);
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, artworks.length, scrollKey]);
+
 
 
   useEffect(() => {
