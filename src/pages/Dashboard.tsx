@@ -438,6 +438,19 @@ const Dashboard = () => {
     </ToggleGroup>
   );
 
+  const backToTopButton = showBackToTop ? (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={scrollPageToTop}
+      className="h-9 w-9"
+      aria-label="Back to top"
+      title="Back to top"
+    >
+      <ArrowUp className="h-4 w-4" />
+    </Button>
+  ) : null;
+
   const headerActions = editMode ? (
     <>
       {globalArtistId && (
@@ -445,6 +458,7 @@ const Dashboard = () => {
           GAR-{String(globalArtistId).padStart(8, '0')}
         </span>
       )}
+      {backToTopButton}
       {viewToggle}
       <Button variant="outline" onClick={() => setBulkImportOpen(true)} className="gap-2" size="sm">
         <Upload className="w-4 h-4" /> Import
@@ -458,6 +472,7 @@ const Dashboard = () => {
     </>
   ) : (
     <>
+      {backToTopButton}
       {viewToggle}
       <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
         <Pencil className="w-3.5 h-3.5" /> Edit
