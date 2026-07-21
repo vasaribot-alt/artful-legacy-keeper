@@ -122,6 +122,7 @@ const Dashboard = () => {
   const scrollKey = `dashboardScroll:${activeRole}`;
   const restoredRef = useRef(false);
   const targetScrollRef = useRef<number | null>(null);
+  const lastKnownScrollRef = useRef(0);
 
   // Disable browser's native scroll restoration so it doesn't fight our logic
   useEffect(() => {
@@ -132,23 +133,70 @@ const Dashboard = () => {
     };
   }, []);
 
+  const getScrollY = () => {
+    const elementScrollY = typeof document !== "undefined"
+      ? Array.from(document.querySelectorAll<HTMLElement>("*")).reduce(
+          (max, element) => Math.max(max, element.scrollTop || 0),
+          0
+        )
+      : 0;
+    const scrollValues = [
+      window.scrollY || 0,
+      document.documentElement.scrollTop || 0,
+      document.body.scrollTop || 0,
+      elementScrollY,
+      lastKnownScrollRef.current || 0,
+    ];
+    return Math.max(...scrollValues);
+  };
+
+  const scrollPageToTop = () => {
+    sessionStorage.removeItem(scrollKey);
+    lastKnownScrollRef.current = 0;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    document.documentElement.scrollTo?.({ top: 0, behavior: "smooth" });
+    document.body.scrollTo?.({ top: 0, behavior: "smooth" });
+
+    document.querySelectorAll<HTMLElement>("*").forEach((element) => {
+      if (element.scrollTop > 0) {
+        element.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+  };
+
   // Save scroll position + toggle back-to-top button (only after restore completes)
   useEffect(() => {
-    const getScrollY = () =>
-      window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-
-    const onScroll = () => {
+    const onScroll = (event?: Event) => {
+      const windowScrollY = Math.max(
+        window.scrollY || 0,
+        document.documentElement.scrollTop || 0,
+        document.body.scrollTop || 0
+      );
+      const target = event?.target as HTMLElement | Document | null;
+      if (target && "scrollTop" in target) {
+        lastKnownScrollRef.current = Math.max(windowScrollY, target.scrollTop || 0);
+      } else if (target === document) {
+        lastKnownScrollRef.current = windowScrollY;
+      }
       const y = getScrollY();
+      if (y <= 0) lastKnownScrollRef.current = 0;
       setShowBackToTop(y > 300);
       if (!restoredRef.current) return; // don't overwrite saved value before restoring
       sessionStorage.setItem(scrollKey, String(y));
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("scroll", onScroll, { passive: true, capture: true });
     // Initial check in case page is already scrolled when component mounts
     onScroll();
 
-    return () => window.removeEventListener("scroll", onScroll);
+    const interval = window.setInterval(onScroll, 400);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("scroll", onScroll, { capture: true });
+      window.clearInterval(interval);
+    };
   }, [scrollKey]);
 
   // Reset restore flag when role (and thus key) changes
@@ -400,6 +448,19 @@ const Dashboard = () => {
     </ToggleGroup>
   );
 
+  const backToTopButton = showBackToTop ? (
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={scrollPageToTop}
+      className="h-9 w-9"
+      aria-label="Back to top"
+      title="Back to top"
+    >
+      <ArrowUp className="h-4 w-4" />
+    </Button>
+  ) : null;
+
   const headerActions = editMode ? (
     <>
       {globalArtistId && (
@@ -407,6 +468,7 @@ const Dashboard = () => {
           GAR-{String(globalArtistId).padStart(8, '0')}
         </span>
       )}
+      {backToTopButton}
       {viewToggle}
       <Button variant="outline" onClick={() => setBulkImportOpen(true)} className="gap-2" size="sm">
         <Upload className="w-4 h-4" /> Import
@@ -420,6 +482,7 @@ const Dashboard = () => {
     </>
   ) : (
     <>
+      {backToTopButton}
       {viewToggle}
       <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
         <Pencil className="w-3.5 h-3.5" /> Edit
@@ -703,11 +766,8 @@ const Dashboard = () => {
           <Button
             variant="default"
             size="icon"
-            onClick={() => {
-              sessionStorage.removeItem(scrollKey);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className="fixed bottom-8 right-8 z-[100] h-12 w-12 rounded-full shadow-xl border border-background/20 bg-foreground text-background hover:bg-foreground/90"
+            onClick={scrollPageToTop}
+            className="fixed bottom-6 right-6 z-[9999] h-12 w-12 rounded-full shadow-xl border border-background bg-foreground text-background hover:bg-foreground/90 md:bottom-8 md:right-8"
             aria-label="Back to top"
             title="Back to top"
           >
