@@ -405,6 +405,7 @@ const Dashboard = () => {
   const matchesSearch = (a: Artwork) => {
     if (!searchLower) return true;
     return (a.title || "").toLowerCase().includes(searchLower)
+      || ((a as any).artist_name || "").toLowerCase().includes(searchLower)
       || (a.medium || "").toLowerCase().includes(searchLower)
       || (a.series || "").toLowerCase().includes(searchLower)
       || String(a.year || "").includes(searchLower);
@@ -516,7 +517,7 @@ const Dashboard = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by title, series, medium, or year…"
+                placeholder="Search by artist, title, series, medium, or year…"
                 className="pl-9"
               />
             </div>
@@ -645,7 +646,7 @@ const Dashboard = () => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by title, series, medium, or year…"
+              placeholder="Search by artist, title, series, medium, or year…"
               className="pl-9"
             />
           </div>
