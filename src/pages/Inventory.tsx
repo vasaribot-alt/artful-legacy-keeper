@@ -117,6 +117,7 @@ const Inventory = () => {
   ).filter(a => {
     if (!searchLower) return true;
     return (a.title || "").toLowerCase().includes(searchLower)
+      || (a.artist_name || "").toLowerCase().includes(searchLower)
       || (a.medium || "").toLowerCase().includes(searchLower)
       || composeLocation(a).toLowerCase().includes(searchLower);
   }).sort((a, b) => {
