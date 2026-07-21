@@ -125,7 +125,7 @@ const Files = () => {
 
     const { data: artworks } = await supabase
       .from("artworks")
-      .select("id, title, year, medium, series, artwork_type, artist_name, gawid")
+      .select("id, title, year, medium, series, artwork_type, artist_name")
       .eq("owner_id", user.id)
       .eq("role_context", activeRole);
     const artworkIds = (artworks || []).map(a => a.id);
