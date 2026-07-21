@@ -39,6 +39,7 @@ interface ArtworkRow {
   width: number | null;
   depth: number | null;
   created_at: string;
+  artist_name: string | null;
 }
 
 const composeLocation = (a: ArtworkRow): string => {
@@ -79,7 +80,7 @@ const Inventory = () => {
 
     const { data } = await supabase
       .from("artworks")
-      .select("id, title, artwork_type, medium, year, artwork_location, location_facility, location_room, location_cabinet, location_shelf, location_box, status, height, width, depth, created_at")
+      .select("id, title, artwork_type, medium, year, artwork_location, location_facility, location_room, location_cabinet, location_shelf, location_box, status, height, width, depth, created_at, artist_name")
       .eq("owner_id", user.id)
       .eq("role_context", activeRole)
       .order("title");
@@ -116,6 +117,7 @@ const Inventory = () => {
   ).filter(a => {
     if (!searchLower) return true;
     return (a.title || "").toLowerCase().includes(searchLower)
+      || (a.artist_name || "").toLowerCase().includes(searchLower)
       || (a.medium || "").toLowerCase().includes(searchLower)
       || composeLocation(a).toLowerCase().includes(searchLower);
   }).sort((a, b) => {
@@ -401,7 +403,7 @@ const Inventory = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by title, medium, or location…"
+                placeholder="Search by artist, title, medium, or location…"
                 className="pl-9"
               />
             </div>
