@@ -720,7 +720,7 @@ const Files = () => {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by file name, artwork title, exhibition, year, medium, caption…"
+            placeholder="Search by file name, artist, artwork title, medium, series, year, caption…"
             className="pl-9"
           />
         </div>
