@@ -39,6 +39,7 @@ interface ArtworkRow {
   width: number | null;
   depth: number | null;
   created_at: string;
+  artist_name: string | null;
 }
 
 const composeLocation = (a: ArtworkRow): string => {
