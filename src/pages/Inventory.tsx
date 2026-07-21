@@ -403,7 +403,7 @@ const Inventory = () => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by title, medium, or location…"
+                placeholder="Search by artist, title, medium, or location…"
                 className="pl-9"
               />
             </div>
