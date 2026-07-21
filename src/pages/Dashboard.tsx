@@ -134,10 +134,17 @@ const Dashboard = () => {
   }, []);
 
   const getScrollY = () => {
+    const elementScrollY = typeof document !== "undefined"
+      ? Array.from(document.querySelectorAll<HTMLElement>("*")).reduce(
+          (max, element) => Math.max(max, element.scrollTop || 0),
+          0
+        )
+      : 0;
     const scrollValues = [
       window.scrollY || 0,
       document.documentElement.scrollTop || 0,
       document.body.scrollTop || 0,
+      elementScrollY,
       lastKnownScrollRef.current || 0,
     ];
     return Math.max(...scrollValues);
@@ -170,10 +177,9 @@ const Dashboard = () => {
         lastKnownScrollRef.current = Math.max(windowScrollY, target.scrollTop || 0);
       } else if (target === document) {
         lastKnownScrollRef.current = windowScrollY;
-      } else {
-        lastKnownScrollRef.current = windowScrollY;
       }
       const y = getScrollY();
+      if (y <= 0) lastKnownScrollRef.current = 0;
       setShowBackToTop(y > 300);
       if (!restoredRef.current) return; // don't overwrite saved value before restoring
       sessionStorage.setItem(scrollKey, String(y));
