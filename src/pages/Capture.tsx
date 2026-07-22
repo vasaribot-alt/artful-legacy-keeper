@@ -15,6 +15,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Camera, X, Check, ArrowLeft, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
+
 
 type AppRole = "artist" | "collector" | "registrar";
 
@@ -36,11 +38,13 @@ interface CapturedItem {
 const Capture = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isDesktop = useIsDesktop();
 
   const [authLoading, setAuthLoading] = useState(true);
   const [userId, setUserId] = useState<string>("");
   const [activeRole, setActiveRole] = useState<AppRole>("artist");
   const [availableRoles, setAvailableRoles] = useState<AppRole[]>([]);
+
 
   // Registrar mode: pick a client
   const [clients, setClients] = useState<ClientOption[]>([]);
@@ -261,6 +265,28 @@ const Capture = () => {
       </div>
     );
   }
+
+  if (isDesktop) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="max-w-md text-center space-y-5">
+          <div className="mx-auto w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
+            <Camera className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-semibold">Capture is mobile-only</h1>
+            <p className="text-muted-foreground">
+              To use the Capture feature, open Global Artist Register on a mobile phone or tablet.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            Go back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-background">

@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
+
 import {
   Sidebar,
   SidebarContent,
@@ -87,6 +89,8 @@ export function AppSidebar() {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [activeRole, setActiveRole] = useState<AppRole>("artist");
   const [userId, setUserId] = useState<string | null>(null);
+  const isDesktop = useIsDesktop();
+
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -186,22 +190,41 @@ export function AppSidebar() {
           {!collapsed && <div className="mx-3 mb-2 h-px bg-border" />}
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink
-                      to={item.url}
-                      end
-                      className="hover:bg-accent/50"
-                      activeClassName="bg-accent text-accent-foreground font-medium"
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                const isCapture = item.title === "Capture";
+                if (isCapture && isDesktop) {
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        onClick={() =>
+                          toast.info("To use the Capture feature, open Global Artist Register on a mobile phone or tablet.")
+                        }
+                        className="hover:bg-accent/50 cursor-pointer"
+                      >
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                }
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                      <NavLink
+                        to={item.url}
+                        end
+                        className="hover:bg-accent/50"
+                        activeClassName="bg-accent text-accent-foreground font-medium"
+                      >
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
+
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
