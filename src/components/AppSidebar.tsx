@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
+
 import {
   Sidebar,
   SidebarContent,
