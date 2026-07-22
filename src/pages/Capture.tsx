@@ -38,11 +38,13 @@ interface CapturedItem {
 const Capture = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isDesktop = useIsDesktop();
 
   const [authLoading, setAuthLoading] = useState(true);
   const [userId, setUserId] = useState<string>("");
   const [activeRole, setActiveRole] = useState<AppRole>("artist");
   const [availableRoles, setAvailableRoles] = useState<AppRole[]>([]);
+
 
   // Registrar mode: pick a client
   const [clients, setClients] = useState<ClientOption[]>([]);
