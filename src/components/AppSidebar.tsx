@@ -89,6 +89,8 @@ export function AppSidebar() {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [activeRole, setActiveRole] = useState<AppRole>("artist");
   const [userId, setUserId] = useState<string | null>(null);
+  const isDesktop = useIsDesktop();
+
 
   useEffect(() => {
     const fetchRoles = async () => {
