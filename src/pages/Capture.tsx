@@ -15,6 +15,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Camera, X, Check, ArrowLeft, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
+
 
 type AppRole = "artist" | "collector" | "registrar";
 
