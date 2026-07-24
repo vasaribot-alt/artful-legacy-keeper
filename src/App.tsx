@@ -49,6 +49,7 @@ import CrProfileEditor from "./pages/CrProfileEditor";
 import InviteFriends from "./pages/InviteFriends";
 import FoundingSupporter from "./pages/FoundingSupporter";
 import FoundingSupporterAdmin from "./pages/FoundingSupporterAdmin";
+import FundraisingDashboard from "./pages/FundraisingDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
