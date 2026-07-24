@@ -1,4 +1,4 @@
-import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, Camera, UserPlus, Building2 } from "lucide-react";
+import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, Camera, UserPlus, Building2, TrendingUp } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
