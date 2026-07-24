@@ -1537,6 +1537,66 @@ export type Database = {
           },
         ]
       }
+      founding_supporter_applications: {
+        Row: {
+          anonymous_public: boolean
+          applicant_type: Database["public"]["Enums"]["founding_supporter_applicant_type"]
+          contact_name: string
+          country: string | null
+          created_at: string
+          email: string
+          followup_at: string | null
+          foundation_notes: string | null
+          id: string
+          message: string | null
+          organization_name: string | null
+          phone: string | null
+          pledge_amount_eur: number | null
+          source: string | null
+          status: Database["public"]["Enums"]["founding_supporter_status"]
+          tier: Database["public"]["Enums"]["founding_supporter_tier"]
+          updated_at: string
+        }
+        Insert: {
+          anonymous_public?: boolean
+          applicant_type?: Database["public"]["Enums"]["founding_supporter_applicant_type"]
+          contact_name: string
+          country?: string | null
+          created_at?: string
+          email: string
+          followup_at?: string | null
+          foundation_notes?: string | null
+          id?: string
+          message?: string | null
+          organization_name?: string | null
+          phone?: string | null
+          pledge_amount_eur?: number | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["founding_supporter_status"]
+          tier?: Database["public"]["Enums"]["founding_supporter_tier"]
+          updated_at?: string
+        }
+        Update: {
+          anonymous_public?: boolean
+          applicant_type?: Database["public"]["Enums"]["founding_supporter_applicant_type"]
+          contact_name?: string
+          country?: string | null
+          created_at?: string
+          email?: string
+          followup_at?: string | null
+          foundation_notes?: string | null
+          id?: string
+          message?: string | null
+          organization_name?: string | null
+          phone?: string | null
+          pledge_amount_eur?: number | null
+          source?: string | null
+          status?: Database["public"]["Enums"]["founding_supporter_status"]
+          tier?: Database["public"]["Enums"]["founding_supporter_tier"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       galleries: {
         Row: {
           city: string | null
@@ -2438,6 +2498,17 @@ export type Database = {
         | "mid_career"
         | "emerging"
         | "peer"
+      founding_supporter_applicant_type:
+        | "individual"
+        | "foundation"
+        | "corporation"
+      founding_supporter_status:
+        | "new"
+        | "contacted"
+        | "pledged"
+        | "gifted"
+        | "declined"
+      founding_supporter_tier: "bronze" | "silver" | "gold" | "platinum"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2573,6 +2644,19 @@ export const Constants = {
         "emerging",
         "peer",
       ],
+      founding_supporter_applicant_type: [
+        "individual",
+        "foundation",
+        "corporation",
+      ],
+      founding_supporter_status: [
+        "new",
+        "contacted",
+        "pledged",
+        "gifted",
+        "declined",
+      ],
+      founding_supporter_tier: ["bronze", "silver", "gold", "platinum"],
     },
   },
 } as const
