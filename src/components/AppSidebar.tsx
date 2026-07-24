@@ -27,6 +27,7 @@ const getNavItems = (role: AppRole) => {
       { title: "Founding Artists", url: "/founding-artists", icon: Users },
       { title: "Gallery Outreach", url: "/foundation/gallery-outreach", icon: Building2 },
       { title: "Founding Supporters", url: "/foundation/founding-supporters", icon: Award },
+      { title: "Fundraising", url: "/foundation/fundraising", icon: TrendingUp },
     ];
   }
   if (role === "registrar") {
