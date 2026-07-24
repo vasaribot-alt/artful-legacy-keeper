@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.generate-donation-receipt]
 verify_jwt = false
+
+[functions.founding-supporter-application]
+verify_jwt = false
