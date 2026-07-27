@@ -300,22 +300,60 @@ export default function AllianceOutreach() {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-[180px_1fr] gap-3 items-start pt-2 border-t border-border">
-                  <Select value={t.status} onValueChange={(v) => update(t.id, { status: v as Status })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {STATUSES.map(s => <SelectItem key={s} value={s}>{STATUS_LABELS[s]}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <Textarea
-                    placeholder="Notes — meeting date, reply summary, next step…"
-                    rows={2}
-                    defaultValue={t.notes || ""}
-                    onBlur={(e) => {
-                      const v = e.target.value;
-                      if (v !== (t.notes || "")) update(t.id, { notes: v || null });
-                    }}
-                  />
+                <div className="pt-2 border-t border-border space-y-3">
+                  <div className="grid md:grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Contact person</Label>
+                      <Input
+                        defaultValue={t.contact_person || ""}
+                        placeholder="Name"
+                        onBlur={(e) => {
+                          const v = e.target.value.trim();
+                          if (v !== (t.contact_person || "")) update(t.id, { contact_person: v || null });
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Contact email</Label>
+                      <Input
+                        type="email"
+                        defaultValue={t.contact_email || ""}
+                        placeholder="name@example.org"
+                        onBlur={(e) => {
+                          const v = e.target.value.trim();
+                          if (v !== (t.contact_email || "")) update(t.id, { contact_email: v || null });
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Website</Label>
+                      <Input
+                        defaultValue={t.website || ""}
+                        placeholder="https://…"
+                        onBlur={(e) => {
+                          const v = e.target.value.trim();
+                          if (v !== (t.website || "")) update(t.id, { website: v || null });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-[180px_1fr] gap-3 items-start">
+                    <Select value={t.status} onValueChange={(v) => update(t.id, { status: v as Status })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {STATUSES.map(s => <SelectItem key={s} value={s}>{STATUS_LABELS[s]}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <Textarea
+                      placeholder="Notes — meeting date, reply summary, next step…"
+                      rows={2}
+                      defaultValue={t.notes || ""}
+                      onBlur={(e) => {
+                        const v = e.target.value;
+                        if (v !== (t.notes || "")) update(t.id, { notes: v || null });
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             ))}
