@@ -171,7 +171,7 @@ export default function AllianceOutreach() {
           <div className="space-y-1">
             <h1 className="text-3xl font-serif">Alliance outreach</h1>
             <p className="text-muted-foreground text-sm">
-              Track partnership outreach to associations across every Alliance category — curators, galleries, museums, universities & research, foundations, corporate collections, and registrars.
+              Track partnership outreach to associations across every Alliance category — curators, art critics, galleries, museums, universities & research, foundations, corporate collections, and registrars.
             </p>
           </div>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
