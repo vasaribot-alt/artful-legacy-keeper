@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      alliance_outreach_targets: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          contact_email: string | null
+          contact_person: string | null
+          country: string | null
+          created_at: string
+          id: string
+          last_contacted_at: string | null
+          name: string
+          notes: string | null
+          status: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          category?: string
+          contact_email?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          last_contacted_at?: string | null
+          name: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          contact_email?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          last_contacted_at?: string | null
+          name?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       artist_invites: {
         Row: {
           added_by: string
