@@ -51,6 +51,7 @@ import FoundingSupporter from "./pages/FoundingSupporter";
 import AllianceCurators from "./pages/AllianceCurators";
 import FoundingSupporterAdmin from "./pages/FoundingSupporterAdmin";
 import FundraisingDashboard from "./pages/FundraisingDashboard";
+import AllianceAdmin from "./pages/AllianceAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
