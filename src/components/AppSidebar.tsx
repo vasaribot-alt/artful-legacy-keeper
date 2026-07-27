@@ -29,6 +29,7 @@ const getNavItems = (role: AppRole) => {
       { title: "Founding Supporters", url: "/foundation/founding-supporters", icon: Award },
       { title: "Fundraising", url: "/foundation/fundraising", icon: TrendingUp },
       { title: "Global Alliance", url: "/foundation/alliance", icon: Network },
+      { title: "Alliance Outreach", url: "/foundation/alliance-outreach", icon: Network },
     ];
   }
   if (role === "registrar") {
