@@ -48,6 +48,7 @@ import CrArtistProfile from "./pages/CrArtistProfile";
 import CrProfileEditor from "./pages/CrProfileEditor";
 import InviteFriends from "./pages/InviteFriends";
 import FoundingSupporter from "./pages/FoundingSupporter";
+import AllianceCurators from "./pages/AllianceCurators";
 import FoundingSupporterAdmin from "./pages/FoundingSupporterAdmin";
 import FundraisingDashboard from "./pages/FundraisingDashboard";
 import NotFound from "./pages/NotFound";
