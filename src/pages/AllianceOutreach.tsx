@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { ExternalLink, Mail, Plus, Search, Trash2 } from "lucide-react";
 
 type Category =
-  | "curators" | "galleries" | "museums" | "universities"
+  | "curators" | "art_critics" | "galleries" | "museums" | "universities"
   | "foundations" | "corporate_collections" | "registrars" | "other";
 
 type Status =
@@ -39,6 +39,7 @@ interface Target {
 
 const CATEGORY_LABELS: Record<Category, string> = {
   curators: "Curators",
+  art_critics: "Art Critics",
   galleries: "Galleries",
   museums: "Museums",
   universities: "Universities & Research",
@@ -170,7 +171,7 @@ export default function AllianceOutreach() {
           <div className="space-y-1">
             <h1 className="text-3xl font-serif">Alliance outreach</h1>
             <p className="text-muted-foreground text-sm">
-              Track partnership outreach to associations across every Alliance category — curators, galleries, museums, universities & research, foundations, corporate collections, and registrars.
+              Track partnership outreach to associations across every Alliance category — curators, art critics, galleries, museums, universities & research, foundations, corporate collections, and registrars.
             </p>
           </div>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
