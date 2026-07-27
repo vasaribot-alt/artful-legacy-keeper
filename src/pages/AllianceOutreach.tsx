@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { ExternalLink, Mail, Plus, Search, Trash2 } from "lucide-react";
 
 type Category =
-  | "curators" | "galleries" | "museums" | "universities"
+  | "curators" | "art_critics" | "galleries" | "museums" | "universities"
   | "foundations" | "corporate_collections" | "registrars" | "other";
 
 type Status =
@@ -39,6 +39,7 @@ interface Target {
 
 const CATEGORY_LABELS: Record<Category, string> = {
   curators: "Curators",
+  art_critics: "Art Critics",
   galleries: "Galleries",
   museums: "Museums",
   universities: "Universities & Research",
