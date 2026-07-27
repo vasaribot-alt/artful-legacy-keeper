@@ -1695,6 +1695,69 @@ export type Database = {
           },
         ]
       }
+      global_alliance_members: {
+        Row: {
+          category: string
+          consent_contact: boolean
+          country: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          institution: string | null
+          internal_notes: string | null
+          linkedin: string | null
+          message: string | null
+          referral_source: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          role_title: string | null
+          status: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          category: string
+          consent_contact?: boolean
+          country?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          institution?: string | null
+          internal_notes?: string | null
+          linkedin?: string | null
+          message?: string | null
+          referral_source?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role_title?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          category?: string
+          consent_contact?: boolean
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          institution?: string | null
+          internal_notes?: string | null
+          linkedin?: string | null
+          message?: string | null
+          referral_source?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role_title?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       invite_codes: {
         Row: {
           code: string
