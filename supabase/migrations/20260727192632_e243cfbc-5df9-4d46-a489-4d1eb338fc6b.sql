@@ -1,0 +1,1 @@
+UPDATE public.alliance_outreach_targets SET category = 'museums' WHERE name ILIKE '%Foreningen af Danske Kunstmuseer%';
