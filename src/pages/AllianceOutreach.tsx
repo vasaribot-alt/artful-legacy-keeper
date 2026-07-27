@@ -54,7 +54,7 @@ const STATUS_LABELS: Record<Status, string> = {
   contacted: "Contacted",
   replied: "Replied",
   meeting: "Meeting",
-  partnered: "Partnered",
+  partnered: "Alliance Partner",
   declined: "Declined",
 };
 
