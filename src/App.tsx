@@ -101,6 +101,7 @@ const App = () => (
           <Route path="/foundation/founding-supporters" element={<FoundingSupporterAdmin />} />
           <Route path="/foundation/fundraising" element={<FundraisingDashboard />} />
           <Route path="/foundation/alliance" element={<AllianceAdmin />} />
+          <Route path="/foundation/alliance-outreach" element={<AllianceOutreach />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
           <Route path="/donate" element={<Donate />} />
