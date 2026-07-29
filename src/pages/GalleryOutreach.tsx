@@ -595,9 +595,9 @@ const GalleryOutreach = () => {
 
       {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-serif">{selected?.name}</DialogTitle>
+            <DialogTitle className="font-serif">{nameDraft || selected?.name}</DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="space-y-4 text-sm">
