@@ -445,6 +445,24 @@ export default function AllianceOutreach() {
             <DialogTitle>Email draft — {draftTarget?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <Label>Your name (as sender)</Label>
+                <Input
+                  value={draftSenderName}
+                  onChange={e => setDraftSenderName(e.target.value)}
+                  placeholder="e.g. Jan S. Kindem"
+                />
+              </div>
+              <div>
+                <Label>Your capacity / role *</Label>
+                <Input
+                  value={draftSenderRole}
+                  onChange={e => setDraftSenderRole(e.target.value)}
+                  placeholder="e.g. Founder, Director, Board Member"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
               <div>
                 <Label>Language</Label>
