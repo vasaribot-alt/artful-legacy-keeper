@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { target_id, sender_name, recipient_capacity, language } = await req.json();
+    const { target_id, sender_name, recipient_capacity, language, signature } = await req.json();
     const { data: row, error } = await supabase
       .from("alliance_outreach_targets").select("*").eq("id", target_id).single();
     if (error || !row) {
