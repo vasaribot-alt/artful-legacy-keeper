@@ -96,6 +96,12 @@ export default function AllianceOutreach() {
   const [saving, setSaving] = useState(false);
   const [draftTarget, setDraftTarget] = useState<Target | null>(null);
   const [draftLanguage, setDraftLanguage] = useState<string>("English");
+  const [draftSenderName, setDraftSenderName] = useState<string>(
+    () => localStorage.getItem("garf.outreach.senderName") || ""
+  );
+  const [draftSenderRole, setDraftSenderRole] = useState<string>(
+    () => localStorage.getItem("garf.outreach.senderRole") || ""
+  );
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
@@ -109,9 +115,20 @@ export default function AllianceOutreach() {
 
   const generateDraft = async () => {
     if (!draftTarget) return;
+    if (!draftSenderRole.trim()) {
+      toast.error("Please enter your capacity (e.g. Founder, Director) so the email states it correctly.");
+      return;
+    }
+    localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
+    localStorage.setItem("garf.outreach.senderRole", draftSenderRole.trim());
     setDraftGenerating(true);
     const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
-      body: { target_id: draftTarget.id, language: draftLanguage },
+      body: {
+        target_id: draftTarget.id,
+        language: draftLanguage,
+        sender_name: draftSenderName.trim() || undefined,
+        sender_role: draftSenderRole.trim(),
+      },
     });
     setDraftGenerating(false);
     if (error || !data?.success) {
@@ -428,6 +445,24 @@ export default function AllianceOutreach() {
             <DialogTitle>Email draft — {draftTarget?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <Label>Your name (as sender)</Label>
+                <Input
+                  value={draftSenderName}
+                  onChange={e => setDraftSenderName(e.target.value)}
+                  placeholder="e.g. Jan S. Kindem"
+                />
+              </div>
+              <div>
+                <Label>Your capacity / role *</Label>
+                <Input
+                  value={draftSenderRole}
+                  onChange={e => setDraftSenderRole(e.target.value)}
+                  placeholder="e.g. Founder, Director, Board Member"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
               <div>
                 <Label>Language</Label>
