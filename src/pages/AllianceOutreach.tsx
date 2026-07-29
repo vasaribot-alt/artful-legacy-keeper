@@ -348,6 +348,10 @@ export default function AllianceOutreach() {
                         <a href={t.website} target="_blank" rel="noreferrer"><ExternalLink className="w-3.5 h-3.5 mr-1.5" />Website</a>
                       </Button>
                     )}
+                    <Button size="sm" variant="outline" onClick={() => openDraft(t)}>
+                      <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                      {t.email_body ? "Email draft" : "Generate email"}
+                    </Button>
                     {t.status === "to_contact" && (
                       <Button size="sm" onClick={() => markContacted(t.id)}>Mark contacted</Button>
                     )}
@@ -417,6 +421,61 @@ export default function AllianceOutreach() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!draftTarget} onOpenChange={(o) => !o && setDraftTarget(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Email draft — {draftTarget?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+              <div>
+                <Label>Language</Label>
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese"].map(l => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={generateDraft} disabled={draftGenerating}>
+                <Sparkles className="w-4 h-4 mr-1.5" />
+                {draftGenerating ? "Generating…" : draftTarget?.email_body ? "Regenerate" : "Generate"}
+              </Button>
+            </div>
+            <div>
+              <Label>Subject</Label>
+              <Input value={draftSubject} onChange={e => setDraftSubject(e.target.value)} placeholder="Subject line" />
+            </div>
+            <div>
+              <Label>Body</Label>
+              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
+            </div>
+            {draftTarget?.email_generated_at && (
+              <p className="text-xs text-muted-foreground">
+                Last generated {new Date(draftTarget.email_generated_at).toLocaleString()}
+              </p>
+            )}
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
+              <Copy className="w-4 h-4 mr-1.5" />Copy
+            </Button>
+            {draftTarget?.contact_email && (
+              <Button asChild variant="outline" disabled={!draftBody}>
+                <a
+                  href={`mailto:${draftTarget.contact_email}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}
+                >
+                  <Mail className="w-4 h-4 mr-1.5" />Open in mail app
+                </a>
+              </Button>
+            )}
+            <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
