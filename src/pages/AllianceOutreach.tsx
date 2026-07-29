@@ -121,7 +121,11 @@ Phone: +31-850 600 529`;
     setDraftSubject(t.email_subject || "");
     setDraftBody(t.email_body || "");
     setDraftLanguage("English");
-    setDraftRecipientCapacity("");
+    setDraftRecipientCapacity(
+      t.contact_title
+        ? (t.contact_person ? `${t.contact_title}, ${t.contact_person} of ${t.name}` : `${t.contact_title} of ${t.name}`)
+        : ""
+    );
   };
 
   const generateDraft = async () => {
