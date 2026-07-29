@@ -601,13 +601,45 @@ const GalleryOutreach = () => {
           </DialogHeader>
           {selected && (
             <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div><span className="text-muted-foreground">Rank</span><div>{selected.rank ?? "—"}</div></div>
-                <div><span className="text-muted-foreground">Established</span><div>{selected.established_year ?? "—"}</div></div>
-                <div className="col-span-2"><span className="text-muted-foreground">Location</span><div>{[selected.city, selected.country].filter(Boolean).join(", ") || "—"}</div></div>
-                <div className="col-span-2"><span className="text-muted-foreground">Email</span><div>{selected.email || "—"}</div></div>
-                <div><span className="text-muted-foreground">Phone</span><div>{selected.phone || "—"}</div></div>
-                <div><span className="text-muted-foreground">Website</span><div className="truncate">{selected.website || "—"}</div></div>
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs">Gallery name</Label>
+                  <Input value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} placeholder="Gallery name" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Rank</Label>
+                    <Input type="number" value={rankDraft} onChange={(e) => setRankDraft(e.target.value)} placeholder="e.g. 12" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Established</Label>
+                    <Input type="number" value={establishedYearDraft} onChange={(e) => setEstablishedYearDraft(e.target.value)} placeholder="e.g. 1995" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">City</Label>
+                    <Input value={cityDraft} onChange={(e) => setCityDraft(e.target.value)} placeholder="City" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Country</Label>
+                    <Input value={countryDraft} onChange={(e) => setCountryDraft(e.target.value)} placeholder="Country" />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Email</Label>
+                  <Input type="email" value={emailDraft} onChange={(e) => setEmailDraft(e.target.value)} placeholder="contact@gallery.com" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Phone</Label>
+                    <Input value={phoneDraft} onChange={(e) => setPhoneDraft(e.target.value)} placeholder="Phone number" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Website</Label>
+                    <Input value={websiteDraft} onChange={(e) => setWebsiteDraft(e.target.value)} placeholder="https://…" />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
