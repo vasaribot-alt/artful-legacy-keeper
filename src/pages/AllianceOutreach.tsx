@@ -31,6 +31,7 @@ interface Target {
   website: string | null;
   contact_email: string | null;
   contact_person: string | null;
+  contact_title: string | null;
   status: Status;
   last_contacted_at: string | null;
   notes: string | null;
