@@ -1715,7 +1715,12 @@ export type Database = {
         Row: {
           assigned_to: string | null
           campaign_tag: string | null
+          contact_name: string | null
+          contact_title: string | null
           created_at: string
+          email_body: string | null
+          email_generated_at: string | null
+          email_subject: string | null
           first_contacted_at: string | null
           gallery_id: string
           id: string
@@ -1728,7 +1733,12 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           campaign_tag?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           created_at?: string
+          email_body?: string | null
+          email_generated_at?: string | null
+          email_subject?: string | null
           first_contacted_at?: string | null
           gallery_id: string
           id?: string
@@ -1741,7 +1751,12 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           campaign_tag?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           created_at?: string
+          email_body?: string | null
+          email_generated_at?: string | null
+          email_subject?: string | null
           first_contacted_at?: string | null
           gallery_id?: string
           id?: string
