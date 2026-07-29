@@ -3,12 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Sparkles, Download, Play, RefreshCw } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 interface Gallery {
@@ -21,6 +22,8 @@ interface Gallery {
   email: string | null;
   phone: string | null;
   website: string | null;
+  contact_name: string | null;
+  contact_title: string | null;
   enrichment_status: string;
   enrichment_attempted_at: string | null;
 }
@@ -33,6 +36,9 @@ interface Outreach {
   last_contacted_at: string | null;
   replied_at: string | null;
   reply_notes: string | null;
+  email_subject: string | null;
+  email_body: string | null;
+  email_generated_at: string | null;
 }
 
 const OUTREACH_STATUSES = [
@@ -59,6 +65,15 @@ const statusColor: Record<string, string> = {
   bounced: "bg-red-100 text-red-800",
 };
 
+const DEFAULT_SIGNATURE = `Jan S Kindem
+Email: jan@globalartistregistry.org
+Direct phone: +47 94235177
+
+Global Artist Registry Foundation
+Jan Pieterszoon Coenstraat 7, The Hague, 2595 WP, The Netherlands
+Web: https://globalartistregistry.org/
+Phone: +31-850 600 529`;
+
 const GalleryOutreach = () => {
   const [loading, setLoading] = useState(true);
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -71,9 +86,25 @@ const GalleryOutreach = () => {
   const [enrichProgress, setEnrichProgress] = useState<{ processed: number; enriched: number; remaining: number } | null>(null);
   const [selected, setSelected] = useState<Gallery | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
+  const [contactNameDraft, setContactNameDraft] = useState("");
+  const [contactTitleDraft, setContactTitleDraft] = useState("");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [usingFallbackList, setUsingFallbackList] = useState(false);
   const [accessMessage, setAccessMessage] = useState<string | null>(null);
+
+  // Drafting
+  const [draftOpen, setDraftOpen] = useState(false);
+  const [draftLanguage, setDraftLanguage] = useState<string>("English");
+  const [draftSenderName, setDraftSenderName] = useState<string>(
+    () => localStorage.getItem("garf.outreach.senderName") || ""
+  );
+  const [draftRecipientCapacity, setDraftRecipientCapacity] = useState<string>("");
+  const [draftSignature, setDraftSignature] = useState<string>(
+    () => localStorage.getItem("garf.outreach.signature") || DEFAULT_SIGNATURE
+  );
+  const [draftGenerating, setDraftGenerating] = useState(false);
+  const [draftSubject, setDraftSubject] = useState("");
+  const [draftBody, setDraftBody] = useState("");
 
   const load = async () => {
     setLoading(true);
@@ -105,7 +136,7 @@ const GalleryOutreach = () => {
         return;
       }
 
-      const columns = "id, name, city, country, established_year, rank, email, phone, website, enrichment_status, enrichment_attempted_at";
+      const columns = "id, name, city, country, established_year, rank, email, phone, website, contact_name, contact_title, enrichment_status, enrichment_attempted_at";
       let fallback = false;
       let { data: gs, error: galleriesError } = await (supabase as any)
         .from("galleries")
@@ -163,7 +194,8 @@ const GalleryOutreach = () => {
         const q = search.toLowerCase();
         if (!g.name.toLowerCase().includes(q) &&
             !(g.city || "").toLowerCase().includes(q) &&
-            !(g.email || "").toLowerCase().includes(q)) return false;
+            !(g.email || "").toLowerCase().includes(q) &&
+            !(g.contact_name || "").toLowerCase().includes(q)) return false;
       }
       if (countryFilter !== "all" && g.country !== countryFilter) return false;
       const status = outreach[g.id]?.status || "not_contacted";
@@ -245,17 +277,101 @@ const GalleryOutreach = () => {
     load();
   };
 
-  const saveNotes = async () => {
+  const saveDetails = async () => {
     if (!selected) return;
+    // Save contact_name / contact_title to the gallery row
+    const trimmedName = contactNameDraft.trim() || null;
+    const trimmedTitle = contactTitleDraft.trim() || null;
+    if (trimmedName !== (selected.contact_name || null) || trimmedTitle !== (selected.contact_title || null)) {
+      const { error: gErr } = await (supabase as any)
+        .from("galleries")
+        .update({ contact_name: trimmedName, contact_title: trimmedTitle })
+        .eq("id", selected.id);
+      if (gErr) {
+        toast.error("Could not save contact details: " + gErr.message);
+        return;
+      }
+    }
+
     const existing = outreach[selected.id];
     if (existing) {
       await (supabase as any).from("gallery_outreach").update({ reply_notes: noteDraft }).eq("id", existing.id);
     } else {
       await (supabase as any).from("gallery_outreach").insert({ gallery_id: selected.id, reply_notes: noteDraft, status: "not_contacted" });
     }
-    toast.success("Notes saved");
+    toast.success("Saved");
     setSelected(null);
     load();
+  };
+
+  const openDraft = () => {
+    if (!selected) return;
+    const o = outreach[selected.id];
+    setDraftSubject(o?.email_subject || "");
+    setDraftBody(o?.email_body || "");
+    setDraftLanguage("English");
+    const title = contactTitleDraft.trim() || selected.contact_title || "";
+    const person = contactNameDraft.trim() || selected.contact_name || "";
+    setDraftRecipientCapacity(
+      title
+        ? (person ? `${title}, ${person} of ${selected.name}` : `${title} of ${selected.name}`)
+        : ""
+    );
+    setDraftOpen(true);
+  };
+
+  const generateDraft = async () => {
+    if (!selected) return;
+    localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
+    localStorage.setItem("garf.outreach.signature", draftSignature);
+    setDraftGenerating(true);
+    const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
+      body: {
+        gallery_id: selected.id,
+        language: draftLanguage,
+        sender_name: draftSenderName.trim() || undefined,
+        recipient_capacity: draftRecipientCapacity.trim() || undefined,
+        contact_person: (contactNameDraft.trim() || selected.contact_name) || undefined,
+        signature: draftSignature.trim() || undefined,
+      },
+    });
+    setDraftGenerating(false);
+    if (error || !(data as any)?.success) {
+      toast.error((data as any)?.error || error?.message || "Could not generate draft");
+      return;
+    }
+    setDraftSubject((data as any).subject || "");
+    setDraftBody((data as any).body || "");
+    toast.success("Draft generated");
+    load();
+  };
+
+  const saveDraft = async () => {
+    if (!selected) return;
+    const existing = outreach[selected.id];
+    const payload = {
+      email_subject: draftSubject || null,
+      email_body: draftBody || null,
+    };
+    if (existing) {
+      await (supabase as any).from("gallery_outreach").update(payload).eq("id", existing.id);
+    } else {
+      await (supabase as any).from("gallery_outreach").insert({
+        gallery_id: selected.id, status: "not_contacted", ...payload,
+      });
+    }
+    toast.success("Draft saved");
+    load();
+  };
+
+  const copyDraft = async () => {
+    const text = draftSubject ? `Subject: ${draftSubject}\n\n${draftBody}` : draftBody;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Copied to clipboard");
+    } catch {
+      toast.error("Could not copy");
+    }
   };
 
   const exportCsv = () => {
@@ -267,6 +383,8 @@ const GalleryOutreach = () => {
         city: g.city ?? "",
         country: g.country ?? "",
         year: g.established_year ?? "",
+        contact_name: g.contact_name ?? "",
+        contact_title: g.contact_title ?? "",
         email: g.email ?? "",
         phone: g.phone ?? "",
         website: g.website ?? "",
@@ -318,7 +436,6 @@ const GalleryOutreach = () => {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard label={usingFallbackList ? "Total shown" : "Total (top 1000)"} value={stats.total} />
           <StatCard label="Has email" value={`${stats.withEmail} / ${stats.total}`} />
@@ -348,10 +465,9 @@ const GalleryOutreach = () => {
           </div>
         )}
 
-        {/* Filters */}
         <div className="flex items-center gap-2 flex-wrap">
           <Input
-            placeholder="Search name, city, email…"
+            placeholder="Search name, city, email, contact…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-xs"
@@ -381,7 +497,6 @@ const GalleryOutreach = () => {
           <div className="text-xs text-muted-foreground ml-auto">{filtered.length} shown</div>
         </div>
 
-        {/* Table */}
         {loading ? (
           <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" /></div>
         ) : accessMessage ? null : filtered.length === 0 ? (
@@ -397,8 +512,8 @@ const GalleryOutreach = () => {
                   <TableHead className="w-14">#</TableHead>
                   <TableHead>Gallery</TableHead>
                   <TableHead>Location</TableHead>
+                  <TableHead>Contact</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -407,7 +522,16 @@ const GalleryOutreach = () => {
                   const o = outreach[g.id];
                   const status = o?.status || "not_contacted";
                   return (
-                    <TableRow key={g.id} className="cursor-pointer hover:bg-muted/40" onClick={() => { setSelected(g); setNoteDraft(o?.reply_notes || ""); }}>
+                    <TableRow
+                      key={g.id}
+                      className="cursor-pointer hover:bg-muted/40"
+                      onClick={() => {
+                        setSelected(g);
+                        setNoteDraft(o?.reply_notes || "");
+                        setContactNameDraft(g.contact_name || "");
+                        setContactTitleDraft(g.contact_title || "");
+                      }}
+                    >
                       <TableCell className="text-xs text-muted-foreground">{g.rank}</TableCell>
                       <TableCell>
                         <div className="font-medium">{g.name}</div>
@@ -417,10 +541,17 @@ const GalleryOutreach = () => {
                       </TableCell>
                       <TableCell className="text-sm">{[g.city, g.country].filter(Boolean).join(", ")}</TableCell>
                       <TableCell className="text-sm">
-                        {g.email ? <span className="text-foreground">{g.email}</span> : <span className="text-muted-foreground italic">—</span>}
+                        {g.contact_name ? (
+                          <div>
+                            <div>{g.contact_name}</div>
+                            {g.contact_title && <div className="text-xs text-muted-foreground">{g.contact_title}</div>}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground italic">—</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-sm">
-                        {g.phone ? g.phone : <span className="text-muted-foreground italic">—</span>}
+                        {g.email ? <span className="text-foreground">{g.email}</span> : <span className="text-muted-foreground italic">—</span>}
                       </TableCell>
                       <TableCell>
                         <Badge className={statusColor[status] || ""} variant="secondary">{status.replace("_", " ")}</Badge>
@@ -454,8 +585,27 @@ const GalleryOutreach = () => {
                 <div><span className="text-muted-foreground">Website</span><div className="truncate">{selected.website || "—"}</div></div>
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Contact name</Label>
+                  <Input
+                    value={contactNameDraft}
+                    onChange={(e) => setContactNameDraft(e.target.value)}
+                    placeholder="e.g. Larry Gagosian"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Title</Label>
+                  <Input
+                    value={contactTitleDraft}
+                    onChange={(e) => setContactTitleDraft(e.target.value)}
+                    placeholder="e.g. Director"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="text-xs text-muted-foreground">Outreach status</label>
+                <Label className="text-xs">Outreach status</Label>
                 <Select value={outreach[selected.id]?.status || "not_contacted"} onValueChange={(v) => setStatus(selected.id, v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -465,16 +615,98 @@ const GalleryOutreach = () => {
               </div>
 
               <div>
-                <label className="text-xs text-muted-foreground">Notes / reply summary</label>
+                <Label className="text-xs">Notes / reply summary</Label>
                 <Textarea value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} rows={4} />
               </div>
 
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setSelected(null)}>Close</Button>
-                <Button onClick={saveNotes}>Save notes</Button>
+              <div className="flex flex-wrap justify-between gap-2 pt-1">
+                <Button variant="outline" onClick={openDraft}>
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                  {outreach[selected.id]?.email_body ? "Email draft" : "Generate email"}
+                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setSelected(null)}>Close</Button>
+                  <Button onClick={saveDetails}>Save</Button>
+                </div>
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Draft dialog */}
+      <Dialog open={draftOpen} onOpenChange={setDraftOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Email draft — {selected?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <Label>Your name (as sender)</Label>
+                <Input
+                  value={draftSenderName}
+                  onChange={(e) => setDraftSenderName(e.target.value)}
+                  placeholder="e.g. Jan S. Kindem"
+                />
+              </div>
+              <div>
+                <Label>Recipient's capacity / title</Label>
+                <Input
+                  value={draftRecipientCapacity}
+                  onChange={(e) => setDraftRecipientCapacity(e.target.value)}
+                  placeholder={`e.g. Director of ${selected?.name || "the gallery"}`}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Signature (appended verbatim)</Label>
+              <Textarea
+                rows={8}
+                value={draftSignature}
+                onChange={(e) => setDraftSignature(e.target.value)}
+                className="font-mono text-xs"
+              />
+            </div>
+            <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+              <div>
+                <Label>Language</Label>
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese"].map((l) => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={generateDraft} disabled={draftGenerating}>
+                <Sparkles className="w-4 h-4 mr-1.5" />
+                {draftGenerating ? "Generating…" : draftBody ? "Regenerate" : "Generate"}
+              </Button>
+            </div>
+            <div>
+              <Label>Subject</Label>
+              <Input value={draftSubject} onChange={(e) => setDraftSubject(e.target.value)} placeholder="Subject line" />
+            </div>
+            <div>
+              <Label>Body</Label>
+              <Textarea rows={14} value={draftBody} onChange={(e) => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
+            </div>
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
+              <Copy className="w-4 h-4 mr-1.5" />Copy
+            </Button>
+            {selected?.email && (
+              <Button asChild variant="outline" disabled={!draftBody}>
+                <a href={`mailto:${selected.email}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}>
+                  <Mail className="w-4 h-4 mr-1.5" />Open in mail app
+                </a>
+              </Button>
+            )}
+            <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </AppLayout>

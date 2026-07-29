@@ -1660,6 +1660,8 @@ export type Database = {
       galleries: {
         Row: {
           city: string | null
+          contact_name: string | null
+          contact_title: string | null
           country: string | null
           created_at: string
           email: string | null
@@ -1675,6 +1677,8 @@ export type Database = {
         }
         Insert: {
           city?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           country?: string | null
           created_at?: string
           email?: string | null
@@ -1690,6 +1694,8 @@ export type Database = {
         }
         Update: {
           city?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           country?: string | null
           created_at?: string
           email?: string | null
@@ -1709,7 +1715,12 @@ export type Database = {
         Row: {
           assigned_to: string | null
           campaign_tag: string | null
+          contact_name: string | null
+          contact_title: string | null
           created_at: string
+          email_body: string | null
+          email_generated_at: string | null
+          email_subject: string | null
           first_contacted_at: string | null
           gallery_id: string
           id: string
@@ -1722,7 +1733,12 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           campaign_tag?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           created_at?: string
+          email_body?: string | null
+          email_generated_at?: string | null
+          email_subject?: string | null
           first_contacted_at?: string | null
           gallery_id: string
           id?: string
@@ -1735,7 +1751,12 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           campaign_tag?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           created_at?: string
+          email_body?: string | null
+          email_generated_at?: string | null
+          email_subject?: string | null
           first_contacted_at?: string | null
           gallery_id?: string
           id?: string
