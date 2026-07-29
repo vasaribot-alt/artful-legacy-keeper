@@ -755,9 +755,9 @@ const GalleryOutreach = () => {
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
-            {selected?.email && (
+            {emailDraft && (
               <Button asChild variant="outline" disabled={!draftBody}>
-                <a href={`mailto:${selected.email}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}>
+                <a href={`mailto:${emailDraft}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}>
                   <Mail className="w-4 h-4 mr-1.5" />Open in mail app
                 </a>
               </Button>
