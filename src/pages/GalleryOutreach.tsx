@@ -88,6 +88,14 @@ const GalleryOutreach = () => {
   const [noteDraft, setNoteDraft] = useState("");
   const [contactNameDraft, setContactNameDraft] = useState("");
   const [contactTitleDraft, setContactTitleDraft] = useState("");
+  const [nameDraft, setNameDraft] = useState("");
+  const [cityDraft, setCityDraft] = useState("");
+  const [countryDraft, setCountryDraft] = useState("");
+  const [establishedYearDraft, setEstablishedYearDraft] = useState("");
+  const [rankDraft, setRankDraft] = useState("");
+  const [emailDraft, setEmailDraft] = useState("");
+  const [phoneDraft, setPhoneDraft] = useState("");
+  const [websiteDraft, setWebsiteDraft] = useState("");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [usingFallbackList, setUsingFallbackList] = useState(false);
   const [accessMessage, setAccessMessage] = useState<string | null>(null);
