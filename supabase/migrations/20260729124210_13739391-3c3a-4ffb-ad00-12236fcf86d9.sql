@@ -1,0 +1,1 @@
+ALTER TABLE public.alliance_outreach_targets ADD COLUMN IF NOT EXISTS contact_title text;

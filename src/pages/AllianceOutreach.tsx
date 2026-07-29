@@ -31,6 +31,7 @@ interface Target {
   website: string | null;
   contact_email: string | null;
   contact_person: string | null;
+  contact_title: string | null;
   status: Status;
   last_contacted_at: string | null;
   notes: string | null;
@@ -120,7 +121,11 @@ Phone: +31-850 600 529`;
     setDraftSubject(t.email_subject || "");
     setDraftBody(t.email_body || "");
     setDraftLanguage("English");
-    setDraftRecipientCapacity("");
+    setDraftRecipientCapacity(
+      t.contact_title
+        ? (t.contact_person ? `${t.contact_title}, ${t.contact_person} of ${t.name}` : `${t.contact_title} of ${t.name}`)
+        : ""
+    );
   };
 
   const generateDraft = async () => {
@@ -386,7 +391,18 @@ Phone: +31-850 600 529`;
                 </div>
 
                 <div className="pt-2 border-t border-border space-y-3">
-                  <div className="grid md:grid-cols-3 gap-3">
+                  <div className="grid md:grid-cols-4 gap-3">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Title</Label>
+                      <Input
+                        defaultValue={t.contact_title || ""}
+                        placeholder="e.g. General Manager"
+                        onBlur={(e) => {
+                          const v = e.target.value.trim();
+                          if (v !== (t.contact_title || "")) update(t.id, { contact_title: v || null });
+                        }}
+                      />
+                    </div>
                     <div>
                       <Label className="text-xs text-muted-foreground">Contact person</Label>
                       <Input
