@@ -1660,6 +1660,8 @@ export type Database = {
       galleries: {
         Row: {
           city: string | null
+          contact_name: string | null
+          contact_title: string | null
           country: string | null
           created_at: string
           email: string | null
@@ -1675,6 +1677,8 @@ export type Database = {
         }
         Insert: {
           city?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           country?: string | null
           created_at?: string
           email?: string | null
@@ -1690,6 +1694,8 @@ export type Database = {
         }
         Update: {
           city?: string | null
+          contact_name?: string | null
+          contact_title?: string | null
           country?: string | null
           created_at?: string
           email?: string | null
