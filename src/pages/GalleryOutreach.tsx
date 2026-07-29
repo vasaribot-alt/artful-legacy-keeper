@@ -287,18 +287,27 @@ const GalleryOutreach = () => {
 
   const saveDetails = async () => {
     if (!selected) return;
-    // Save contact_name / contact_title to the gallery row
-    const trimmedName = contactNameDraft.trim() || null;
-    const trimmedTitle = contactTitleDraft.trim() || null;
-    if (trimmedName !== (selected.contact_name || null) || trimmedTitle !== (selected.contact_title || null)) {
-      const { error: gErr } = await (supabase as any)
-        .from("galleries")
-        .update({ contact_name: trimmedName, contact_title: trimmedTitle })
-        .eq("id", selected.id);
-      if (gErr) {
-        toast.error("Could not save contact details: " + gErr.message);
-        return;
-      }
+
+    const galleryUpdate: any = {
+      name: nameDraft.trim() || selected.name,
+      city: cityDraft.trim() || null,
+      country: countryDraft.trim() || null,
+      established_year: establishedYearDraft.trim() ? parseInt(establishedYearDraft.trim(), 10) : null,
+      rank: rankDraft.trim() ? parseInt(rankDraft.trim(), 10) : null,
+      email: emailDraft.trim() || null,
+      phone: phoneDraft.trim() || null,
+      website: websiteDraft.trim() || null,
+      contact_name: contactNameDraft.trim() || null,
+      contact_title: contactTitleDraft.trim() || null,
+    };
+
+    const { error: gErr } = await (supabase as any)
+      .from("galleries")
+      .update(galleryUpdate)
+      .eq("id", selected.id);
+    if (gErr) {
+      toast.error("Could not save gallery details: " + gErr.message);
+      return;
     }
 
     const existing = outreach[selected.id];
