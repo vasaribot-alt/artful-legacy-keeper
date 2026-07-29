@@ -1,0 +1,1 @@
+UPDATE public.galleries SET email = 'salzburg@ropac.net' WHERE id = '10d0b845-7116-4e31-977e-b04213634910';
