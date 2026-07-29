@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { ExternalLink, Mail, Plus, Search, Trash2 } from "lucide-react";
+import { Copy, ExternalLink, Mail, Plus, Search, Sparkles, Trash2 } from "lucide-react";
 
 type Category =
   | "curators" | "art_critics" | "galleries" | "museums" | "universities"
@@ -34,6 +34,9 @@ interface Target {
   status: Status;
   last_contacted_at: string | null;
   notes: string | null;
+  email_subject: string | null;
+  email_body: string | null;
+  email_generated_at: string | null;
   created_at: string;
 }
 
