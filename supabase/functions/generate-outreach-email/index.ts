@@ -13,7 +13,7 @@ const CATEGORY_GUIDANCE: Record<string, string> = {
   art_critics:
     "The recipient is an art critics' association. Frame GARF as an independent, non-commercial reference source for verified artist information, works, exhibitions, and provenance — a citable resource for critical writing.",
   galleries:
-    "The recipient is a gallery or gallery association. Frame GARF as a neutral archival registry that complements (does not replace) gallery inventory tools — improving provenance, catalogue raisonné readiness, and long-term legacy for the artists they represent.",
+    "The recipient is a gallery. Frame GARF as a neutral archival registry that complements (does not replace) gallery inventory tools — improving provenance, catalogue raisonné readiness, and long-term legacy for the artists they represent. Invite them to join as a Supporting Gallery of GARF.",
   museums:
     "The recipient is a museum or museum association. Emphasise archival permanence (100-year plan), scholarly reliability, loan/exhibition history tracking, and the willingness-to-lend feature useful for exhibition planning.",
   universities:
@@ -64,19 +64,66 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { target_id, sender_name, recipient_capacity, language, signature } = await req.json();
-    const { data: row, error } = await supabase
-      .from("alliance_outreach_targets").select("*").eq("id", target_id).single();
-    if (error || !row) {
-      return new Response(JSON.stringify({ error: "Target not found" }), {
-        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const {
+      target_id,
+      gallery_id,
+      sender_name,
+      recipient_capacity,
+      contact_person,
+      language,
+      signature,
+    } = await req.json();
+
+    // Load target: either alliance_outreach_targets or a gallery
+    let category = "";
+    let name = "";
+    let country: string | null = null;
+    let website: string | null = null;
+    let notes: string | null = null;
+    let personName: string | null = contact_person || null;
+
+    if (gallery_id) {
+      const { data: g, error: gErr } = await supabase
+        .from("galleries")
+        .select("id, name, country, city, website, contact_name, contact_title")
+        .eq("id", gallery_id)
+        .single();
+      if (gErr || !g) {
+        return new Response(JSON.stringify({ error: "Gallery not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: o } = await supabase
+        .from("gallery_outreach")
+        .select("contact_name, contact_title, reply_notes")
+        .eq("gallery_id", gallery_id)
+        .maybeSingle();
+      category = "galleries";
+      name = g.name;
+      country = [g.city, g.country].filter(Boolean).join(", ") || null;
+      website = g.website;
+      notes = o?.reply_notes || null;
+      personName = personName || o?.contact_name || (g as any).contact_name || null;
+    } else {
+      const { data: row, error } = await supabase
+        .from("alliance_outreach_targets").select("*").eq("id", target_id).single();
+      if (error || !row) {
+        return new Response(JSON.stringify({ error: "Target not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      category = row.category;
+      name = row.name;
+      country = row.country;
+      website = row.website;
+      notes = row.notes;
+      personName = personName || row.contact_person;
     }
 
-    const guidance = CATEGORY_GUIDANCE[row.category] || CATEGORY_GUIDANCE.other;
-    const salutation = row.contact_person
-      ? `Address the recipient personally as "Dear ${row.contact_person},"`
-      : `Address the recipient formally (e.g. "Dear colleagues," or "To the board of ${row.name},")`;
+    const guidance = CATEGORY_GUIDANCE[category] || CATEGORY_GUIDANCE.other;
+    const salutation = personName
+      ? `Address the recipient personally as "Dear ${personName},"`
+      : `Address the recipient formally (e.g. "Dear colleagues," or "To the team at ${name},")`;
     const lang = (language || "english").toLowerCase();
     const langInstruction = lang === "english"
       ? "Write in clear, professional English."
@@ -85,12 +132,12 @@ Deno.serve(async (req) => {
     const prompt = `Write a partnership outreach email on behalf of the Global Artist Registry Foundation (GARF) — a Dutch non-profit foundation (stichting) building a permanent 100-year archival registry to preserve artist legacies. GARF is non-commercial, independent, and museum-grade.
 
 Recipient:
-- Organisation: ${row.name}
-- Country: ${row.country || "unspecified"}
-- Category: ${row.category}
-- Contact person: ${row.contact_person || "n/a"}
-- Website: ${row.website || "n/a"}
-- Internal notes: ${row.notes || "n/a"}
+- Organisation: ${name}
+- Country: ${country || "unspecified"}
+- Category: ${category}
+- Contact person: ${personName || "n/a"}
+- Website: ${website || "n/a"}
+- Internal notes: ${notes || "n/a"}
 
 Category-specific framing: ${guidance}
 
@@ -101,7 +148,7 @@ Instructions:
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
 - Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) a clear, low-commitment ask (a short introductory call or written reply), (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
-- ${recipient_capacity ? `In the opening sentence, explicitly acknowledge that we are writing to the recipient in their capacity as "${recipient_capacity}" at ${row.name} (e.g. "We are writing to you from the Global Artist Registry Foundation because of your capacity as ${recipient_capacity} of ${row.name}…"). This capacity belongs to the RECIPIENT, not the sender. Never claim the sender holds this role.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
+- ${recipient_capacity ? `In the opening sentence, explicitly acknowledge that we are writing to the recipient in their capacity as "${recipient_capacity}" at ${name} (e.g. "We are writing to you from the Global Artist Registry Foundation because of your capacity as ${recipient_capacity} of ${name}…"). This capacity belongs to the RECIPIENT, not the sender. Never claim the sender holds this role.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
 - ${signature ? `End the email with a short closing line (e.g. "With kind regards,") on its own line, then a blank line, then append the following signature block VERBATIM (do not modify, translate, or reformat any of its lines, including the website and phone numbers):\n---\n${signature}\n---` : `Sign the email on separate lines: first line "${sender_name || "The GARF Team"}", second line "Global Artist Registry Foundation". Include the website https://globalartistregistry.org near the sign-off.`}
 
@@ -132,7 +179,6 @@ Subject: <one-line subject>
     const data = await res.json();
     const raw: string = data?.choices?.[0]?.message?.content || "";
 
-    // Parse "Subject: ..." + body
     let subject = "";
     let body = raw.trim();
     const m = body.match(/^\s*Subject:\s*(.+?)\r?\n([\s\S]*)$/i);
@@ -141,11 +187,29 @@ Subject: <one-line subject>
       body = m[2].trim();
     }
 
-    await supabase.from("alliance_outreach_targets").update({
-      email_subject: subject || null,
-      email_body: body || null,
-      email_generated_at: new Date().toISOString(),
-    }).eq("id", target_id);
+    if (gallery_id) {
+      // Upsert into gallery_outreach
+      const { data: existing } = await supabase
+        .from("gallery_outreach").select("id").eq("gallery_id", gallery_id).maybeSingle();
+      const payload = {
+        email_subject: subject || null,
+        email_body: body || null,
+        email_generated_at: new Date().toISOString(),
+      };
+      if (existing) {
+        await supabase.from("gallery_outreach").update(payload).eq("id", existing.id);
+      } else {
+        await supabase.from("gallery_outreach").insert({
+          gallery_id, status: "not_contacted", ...payload,
+        });
+      }
+    } else {
+      await supabase.from("alliance_outreach_targets").update({
+        email_subject: subject || null,
+        email_body: body || null,
+        email_generated_at: new Date().toISOString(),
+      }).eq("id", target_id);
+    }
 
     return new Response(JSON.stringify({ success: true, subject, body }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
