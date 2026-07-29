@@ -99,9 +99,7 @@ export default function AllianceOutreach() {
   const [draftSenderName, setDraftSenderName] = useState<string>(
     () => localStorage.getItem("garf.outreach.senderName") || ""
   );
-  const [draftSenderRole, setDraftSenderRole] = useState<string>(
-    () => localStorage.getItem("garf.outreach.senderRole") || ""
-  );
+  const [draftRecipientCapacity, setDraftRecipientCapacity] = useState<string>("");
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
@@ -111,23 +109,19 @@ export default function AllianceOutreach() {
     setDraftSubject(t.email_subject || "");
     setDraftBody(t.email_body || "");
     setDraftLanguage("English");
+    setDraftRecipientCapacity("");
   };
 
   const generateDraft = async () => {
     if (!draftTarget) return;
-    if (!draftSenderRole.trim()) {
-      toast.error("Please enter your capacity (e.g. Founder, Director) so the email states it correctly.");
-      return;
-    }
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
-    localStorage.setItem("garf.outreach.senderRole", draftSenderRole.trim());
     setDraftGenerating(true);
     const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
       body: {
         target_id: draftTarget.id,
         language: draftLanguage,
         sender_name: draftSenderName.trim() || undefined,
-        sender_role: draftSenderRole.trim(),
+        recipient_capacity: draftRecipientCapacity.trim() || undefined,
       },
     });
     setDraftGenerating(false);
