@@ -94,6 +94,58 @@ export default function AllianceOutreach() {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [draftTarget, setDraftTarget] = useState<Target | null>(null);
+  const [draftLanguage, setDraftLanguage] = useState<string>("English");
+  const [draftGenerating, setDraftGenerating] = useState(false);
+  const [draftSubject, setDraftSubject] = useState("");
+  const [draftBody, setDraftBody] = useState("");
+
+  const openDraft = (t: Target) => {
+    setDraftTarget(t);
+    setDraftSubject(t.email_subject || "");
+    setDraftBody(t.email_body || "");
+    setDraftLanguage("English");
+  };
+
+  const generateDraft = async () => {
+    if (!draftTarget) return;
+    setDraftGenerating(true);
+    const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
+      body: { target_id: draftTarget.id, language: draftLanguage },
+    });
+    setDraftGenerating(false);
+    if (error || !data?.success) {
+      toast.error(data?.error || error?.message || "Could not generate draft");
+      return;
+    }
+    setDraftSubject(data.subject || "");
+    setDraftBody(data.body || "");
+    setTargets(prev => prev.map(x => x.id === draftTarget.id ? {
+      ...x, email_subject: data.subject || null, email_body: data.body || null,
+      email_generated_at: new Date().toISOString(),
+    } : x));
+    toast.success("Draft generated");
+  };
+
+  const saveDraft = async () => {
+    if (!draftTarget) return;
+    await update(draftTarget.id, {
+      email_subject: draftSubject || null,
+      email_body: draftBody || null,
+    });
+    toast.success("Draft saved");
+  };
+
+  const copyDraft = async () => {
+    const text = draftSubject ? `Subject: ${draftSubject}\n\n${draftBody}` : draftBody;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Copied to clipboard");
+    } catch {
+      toast.error("Could not copy");
+    }
+  };
+
 
   const load = async () => {
     setLoading(true);
