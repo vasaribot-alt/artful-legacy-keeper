@@ -100,6 +100,17 @@ export default function AllianceOutreach() {
     () => localStorage.getItem("garf.outreach.senderName") || ""
   );
   const [draftRecipientCapacity, setDraftRecipientCapacity] = useState<string>("");
+  const DEFAULT_SIGNATURE = `Jan S Kindem
+Email: jan@globalartistregistry.org
+Direct phone: +47 94235177
+
+Global Artist Registry Foundation
+Jan Pieterszoon Coenstraat 7, The Hague, 2595 WP, The Netherlands
+Web: https://globalartistregistry.org/
+Phone: +31-850 600 529`;
+  const [draftSignature, setDraftSignature] = useState<string>(
+    () => localStorage.getItem("garf.outreach.signature") || DEFAULT_SIGNATURE
+  );
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
@@ -115,6 +126,7 @@ export default function AllianceOutreach() {
   const generateDraft = async () => {
     if (!draftTarget) return;
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
+    localStorage.setItem("garf.outreach.signature", draftSignature);
     setDraftGenerating(true);
     const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
       body: {
@@ -122,6 +134,7 @@ export default function AllianceOutreach() {
         language: draftLanguage,
         sender_name: draftSenderName.trim() || undefined,
         recipient_capacity: draftRecipientCapacity.trim() || undefined,
+        signature: draftSignature.trim() || undefined,
       },
     });
     setDraftGenerating(false);
