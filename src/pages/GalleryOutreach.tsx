@@ -88,6 +88,14 @@ const GalleryOutreach = () => {
   const [noteDraft, setNoteDraft] = useState("");
   const [contactNameDraft, setContactNameDraft] = useState("");
   const [contactTitleDraft, setContactTitleDraft] = useState("");
+  const [nameDraft, setNameDraft] = useState("");
+  const [cityDraft, setCityDraft] = useState("");
+  const [countryDraft, setCountryDraft] = useState("");
+  const [establishedYearDraft, setEstablishedYearDraft] = useState("");
+  const [rankDraft, setRankDraft] = useState("");
+  const [emailDraft, setEmailDraft] = useState("");
+  const [phoneDraft, setPhoneDraft] = useState("");
+  const [websiteDraft, setWebsiteDraft] = useState("");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [usingFallbackList, setUsingFallbackList] = useState(false);
   const [accessMessage, setAccessMessage] = useState<string | null>(null);
@@ -279,18 +287,27 @@ const GalleryOutreach = () => {
 
   const saveDetails = async () => {
     if (!selected) return;
-    // Save contact_name / contact_title to the gallery row
-    const trimmedName = contactNameDraft.trim() || null;
-    const trimmedTitle = contactTitleDraft.trim() || null;
-    if (trimmedName !== (selected.contact_name || null) || trimmedTitle !== (selected.contact_title || null)) {
-      const { error: gErr } = await (supabase as any)
-        .from("galleries")
-        .update({ contact_name: trimmedName, contact_title: trimmedTitle })
-        .eq("id", selected.id);
-      if (gErr) {
-        toast.error("Could not save contact details: " + gErr.message);
-        return;
-      }
+
+    const galleryUpdate: any = {
+      name: nameDraft.trim() || selected.name,
+      city: cityDraft.trim() || null,
+      country: countryDraft.trim() || null,
+      established_year: establishedYearDraft.trim() ? parseInt(establishedYearDraft.trim(), 10) : null,
+      rank: rankDraft.trim() ? parseInt(rankDraft.trim(), 10) : null,
+      email: emailDraft.trim() || null,
+      phone: phoneDraft.trim() || null,
+      website: websiteDraft.trim() || null,
+      contact_name: contactNameDraft.trim() || null,
+      contact_title: contactTitleDraft.trim() || null,
+    };
+
+    const { error: gErr } = await (supabase as any)
+      .from("galleries")
+      .update(galleryUpdate)
+      .eq("id", selected.id);
+    if (gErr) {
+      toast.error("Could not save gallery details: " + gErr.message);
+      return;
     }
 
     const existing = outreach[selected.id];
@@ -530,6 +547,14 @@ const GalleryOutreach = () => {
                         setNoteDraft(o?.reply_notes || "");
                         setContactNameDraft(g.contact_name || "");
                         setContactTitleDraft(g.contact_title || "");
+                        setNameDraft(g.name || "");
+                        setCityDraft(g.city || "");
+                        setCountryDraft(g.country || "");
+                        setEstablishedYearDraft(g.established_year?.toString() || "");
+                        setRankDraft(g.rank?.toString() || "");
+                        setEmailDraft(g.email || "");
+                        setPhoneDraft(g.phone || "");
+                        setWebsiteDraft(g.website || "");
                       }}
                     >
                       <TableCell className="text-xs text-muted-foreground">{g.rank}</TableCell>
@@ -570,19 +595,51 @@ const GalleryOutreach = () => {
 
       {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-serif">{selected?.name}</DialogTitle>
+            <DialogTitle className="font-serif">{nameDraft || selected?.name}</DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="space-y-4 text-sm">
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div><span className="text-muted-foreground">Rank</span><div>{selected.rank ?? "—"}</div></div>
-                <div><span className="text-muted-foreground">Established</span><div>{selected.established_year ?? "—"}</div></div>
-                <div className="col-span-2"><span className="text-muted-foreground">Location</span><div>{[selected.city, selected.country].filter(Boolean).join(", ") || "—"}</div></div>
-                <div className="col-span-2"><span className="text-muted-foreground">Email</span><div>{selected.email || "—"}</div></div>
-                <div><span className="text-muted-foreground">Phone</span><div>{selected.phone || "—"}</div></div>
-                <div><span className="text-muted-foreground">Website</span><div className="truncate">{selected.website || "—"}</div></div>
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs">Gallery name</Label>
+                  <Input value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} placeholder="Gallery name" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Rank</Label>
+                    <Input type="number" value={rankDraft} onChange={(e) => setRankDraft(e.target.value)} placeholder="e.g. 12" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Established</Label>
+                    <Input type="number" value={establishedYearDraft} onChange={(e) => setEstablishedYearDraft(e.target.value)} placeholder="e.g. 1995" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">City</Label>
+                    <Input value={cityDraft} onChange={(e) => setCityDraft(e.target.value)} placeholder="City" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Country</Label>
+                    <Input value={countryDraft} onChange={(e) => setCountryDraft(e.target.value)} placeholder="Country" />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Email</Label>
+                  <Input type="email" value={emailDraft} onChange={(e) => setEmailDraft(e.target.value)} placeholder="contact@gallery.com" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Phone</Label>
+                    <Input value={phoneDraft} onChange={(e) => setPhoneDraft(e.target.value)} placeholder="Phone number" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Website</Label>
+                    <Input value={websiteDraft} onChange={(e) => setWebsiteDraft(e.target.value)} placeholder="https://…" />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -698,9 +755,9 @@ const GalleryOutreach = () => {
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
-            {selected?.email && (
+            {emailDraft && (
               <Button asChild variant="outline" disabled={!draftBody}>
-                <a href={`mailto:${selected.email}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}>
+                <a href={`mailto:${emailDraft}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}>
                   <Mail className="w-4 h-4 mr-1.5" />Open in mail app
                 </a>
               </Button>
