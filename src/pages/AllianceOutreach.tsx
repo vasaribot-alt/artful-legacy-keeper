@@ -391,7 +391,18 @@ Phone: +31-850 600 529`;
                 </div>
 
                 <div className="pt-2 border-t border-border space-y-3">
-                  <div className="grid md:grid-cols-3 gap-3">
+                  <div className="grid md:grid-cols-4 gap-3">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Title</Label>
+                      <Input
+                        defaultValue={t.contact_title || ""}
+                        placeholder="e.g. General Manager"
+                        onBlur={(e) => {
+                          const v = e.target.value.trim();
+                          if (v !== (t.contact_title || "")) update(t.id, { contact_title: v || null });
+                        }}
+                      />
+                    </div>
                     <div>
                       <Label className="text-xs text-muted-foreground">Contact person</Label>
                       <Input
