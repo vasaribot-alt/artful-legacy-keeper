@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { target_id, sender_name, sender_role, language } = await req.json();
+    const { target_id, sender_name, recipient_capacity, language } = await req.json();
     const { data: row, error } = await supabase
       .from("alliance_outreach_targets").select("*").eq("id", target_id).single();
     if (error || !row) {
@@ -101,8 +101,9 @@ Instructions:
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
 - Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) a clear, low-commitment ask (a short introductory call or written reply), (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
-- ${sender_role ? `The sender writes in the capacity of "${sender_role}" at GARF. In the opening sentence, state clearly that the sender is writing in this capacity on behalf of GARF (e.g. "I am writing to you in my capacity as ${sender_role} of the Global Artist Registry Foundation…"). Never infer any capacity or title from the recipient's notes or contact fields — those belong to the recipient, not the sender.` : `Do not fabricate a role or capacity for the sender. Write on behalf of "the Global Artist Registry Foundation" without inventing a personal title, and never take a title from the recipient's notes.`}
-- Sign the email on separate lines: first line "${sender_name || "The GARF Team"}"${sender_role ? `, second line "${sender_role}, Global Artist Registry Foundation"` : `, second line "Global Artist Registry Foundation"`}.
+- ${recipient_capacity ? `In the opening sentence, explicitly acknowledge that we are writing to the recipient in their capacity as "${recipient_capacity}" at ${row.name} (e.g. "We are writing to you from the Global Artist Registry Foundation because of your capacity as ${recipient_capacity} of ${row.name}…"). This capacity belongs to the RECIPIENT, not the sender. Never claim the sender holds this role.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
+- The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
+- Sign the email on separate lines: first line "${sender_name || "The GARF Team"}", second line "Global Artist Registry Foundation".
 - Include the website https://globalartistregistry.org near the sign-off.
 
 Return the result as plain text with EXACTLY this format:
