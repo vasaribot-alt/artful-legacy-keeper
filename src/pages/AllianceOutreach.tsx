@@ -449,11 +449,11 @@ export default function AllianceOutreach() {
                 />
               </div>
               <div>
-                <Label>Your capacity / role *</Label>
+                <Label>Recipient's capacity / title</Label>
                 <Input
-                  value={draftSenderRole}
-                  onChange={e => setDraftSenderRole(e.target.value)}
-                  placeholder="e.g. Founder, Director, Board Member"
+                  value={draftRecipientCapacity}
+                  onChange={e => setDraftRecipientCapacity(e.target.value)}
+                  placeholder={draftTarget?.contact_person ? `e.g. General Manager of ${draftTarget?.name}` : "e.g. President, Director"}
                 />
               </div>
             </div>
