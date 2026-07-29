@@ -17,7 +17,7 @@ import { ExternalLink, Mail, Plus, Search, Trash2 } from "lucide-react";
 
 type Category =
   | "curators" | "art_critics" | "galleries" | "museums" | "universities"
-  | "foundations" | "corporate_collections" | "registrars" | "organisations" | "other";
+  | "foundations" | "corporate_collections" | "registrars" | "organisations" | "artist_organisations" | "other";
 
 type Status =
   | "to_contact" | "contacted" | "replied" | "meeting"
@@ -47,6 +47,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
   corporate_collections: "Corporate Collections",
   registrars: "Registrars",
   organisations: "Organisations (Umbrella)",
+  artist_organisations: "Artist Organisations",
   other: "Other",
 };
 
