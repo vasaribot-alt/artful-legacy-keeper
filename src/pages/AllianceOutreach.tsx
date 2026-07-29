@@ -470,6 +470,15 @@ Phone: +31-850 600 529`;
                 />
               </div>
             </div>
+            <div>
+              <Label>Signature (appended verbatim)</Label>
+              <Textarea
+                rows={8}
+                value={draftSignature}
+                onChange={e => setDraftSignature(e.target.value)}
+                className="font-mono text-xs"
+              />
+            </div>
             <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
               <div>
                 <Label>Language</Label>
