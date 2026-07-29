@@ -538,6 +538,14 @@ const GalleryOutreach = () => {
                         setNoteDraft(o?.reply_notes || "");
                         setContactNameDraft(g.contact_name || "");
                         setContactTitleDraft(g.contact_title || "");
+                        setNameDraft(g.name || "");
+                        setCityDraft(g.city || "");
+                        setCountryDraft(g.country || "");
+                        setEstablishedYearDraft(g.established_year?.toString() || "");
+                        setRankDraft(g.rank?.toString() || "");
+                        setEmailDraft(g.email || "");
+                        setPhoneDraft(g.phone || "");
+                        setWebsiteDraft(g.website || "");
                       }}
                     >
                       <TableCell className="text-xs text-muted-foreground">{g.rank}</TableCell>
