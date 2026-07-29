@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { target_id, sender_name, recipient_capacity, language } = await req.json();
+    const { target_id, sender_name, recipient_capacity, language, signature } = await req.json();
     const { data: row, error } = await supabase
       .from("alliance_outreach_targets").select("*").eq("id", target_id).single();
     if (error || !row) {
@@ -103,8 +103,7 @@ Instructions:
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
 - ${recipient_capacity ? `In the opening sentence, explicitly acknowledge that we are writing to the recipient in their capacity as "${recipient_capacity}" at ${row.name} (e.g. "We are writing to you from the Global Artist Registry Foundation because of your capacity as ${recipient_capacity} of ${row.name}…"). This capacity belongs to the RECIPIENT, not the sender. Never claim the sender holds this role.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
-- Sign the email on separate lines: first line "${sender_name || "The GARF Team"}", second line "Global Artist Registry Foundation".
-- Include the website https://globalartistregistry.org near the sign-off.
+- ${signature ? `End the email with a short closing line (e.g. "With kind regards,") on its own line, then a blank line, then append the following signature block VERBATIM (do not modify, translate, or reformat any of its lines, including the website and phone numbers):\n---\n${signature}\n---` : `Sign the email on separate lines: first line "${sender_name || "The GARF Team"}", second line "Global Artist Registry Foundation". Include the website https://globalartistregistry.org near the sign-off.`}
 
 Return the result as plain text with EXACTLY this format:
 Subject: <one-line subject>
