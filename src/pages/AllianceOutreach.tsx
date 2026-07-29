@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { ExternalLink, Mail, Plus, Search, Trash2 } from "lucide-react";
+import { Copy, ExternalLink, Mail, Plus, Search, Sparkles, Trash2 } from "lucide-react";
 
 type Category =
   | "curators" | "art_critics" | "galleries" | "museums" | "universities"
@@ -34,6 +34,9 @@ interface Target {
   status: Status;
   last_contacted_at: string | null;
   notes: string | null;
+  email_subject: string | null;
+  email_body: string | null;
+  email_generated_at: string | null;
   created_at: string;
 }
 
@@ -91,6 +94,58 @@ export default function AllianceOutreach() {
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [draftTarget, setDraftTarget] = useState<Target | null>(null);
+  const [draftLanguage, setDraftLanguage] = useState<string>("English");
+  const [draftGenerating, setDraftGenerating] = useState(false);
+  const [draftSubject, setDraftSubject] = useState("");
+  const [draftBody, setDraftBody] = useState("");
+
+  const openDraft = (t: Target) => {
+    setDraftTarget(t);
+    setDraftSubject(t.email_subject || "");
+    setDraftBody(t.email_body || "");
+    setDraftLanguage("English");
+  };
+
+  const generateDraft = async () => {
+    if (!draftTarget) return;
+    setDraftGenerating(true);
+    const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
+      body: { target_id: draftTarget.id, language: draftLanguage },
+    });
+    setDraftGenerating(false);
+    if (error || !data?.success) {
+      toast.error(data?.error || error?.message || "Could not generate draft");
+      return;
+    }
+    setDraftSubject(data.subject || "");
+    setDraftBody(data.body || "");
+    setTargets(prev => prev.map(x => x.id === draftTarget.id ? {
+      ...x, email_subject: data.subject || null, email_body: data.body || null,
+      email_generated_at: new Date().toISOString(),
+    } : x));
+    toast.success("Draft generated");
+  };
+
+  const saveDraft = async () => {
+    if (!draftTarget) return;
+    await update(draftTarget.id, {
+      email_subject: draftSubject || null,
+      email_body: draftBody || null,
+    });
+    toast.success("Draft saved");
+  };
+
+  const copyDraft = async () => {
+    const text = draftSubject ? `Subject: ${draftSubject}\n\n${draftBody}` : draftBody;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Copied to clipboard");
+    } catch {
+      toast.error("Could not copy");
+    }
+  };
+
 
   const load = async () => {
     setLoading(true);
@@ -293,6 +348,10 @@ export default function AllianceOutreach() {
                         <a href={t.website} target="_blank" rel="noreferrer"><ExternalLink className="w-3.5 h-3.5 mr-1.5" />Website</a>
                       </Button>
                     )}
+                    <Button size="sm" variant="outline" onClick={() => openDraft(t)}>
+                      <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                      {t.email_body ? "Email draft" : "Generate email"}
+                    </Button>
                     {t.status === "to_contact" && (
                       <Button size="sm" onClick={() => markContacted(t.id)}>Mark contacted</Button>
                     )}
@@ -362,6 +421,61 @@ export default function AllianceOutreach() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!draftTarget} onOpenChange={(o) => !o && setDraftTarget(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Email draft — {draftTarget?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+              <div>
+                <Label>Language</Label>
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese"].map(l => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={generateDraft} disabled={draftGenerating}>
+                <Sparkles className="w-4 h-4 mr-1.5" />
+                {draftGenerating ? "Generating…" : draftTarget?.email_body ? "Regenerate" : "Generate"}
+              </Button>
+            </div>
+            <div>
+              <Label>Subject</Label>
+              <Input value={draftSubject} onChange={e => setDraftSubject(e.target.value)} placeholder="Subject line" />
+            </div>
+            <div>
+              <Label>Body</Label>
+              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
+            </div>
+            {draftTarget?.email_generated_at && (
+              <p className="text-xs text-muted-foreground">
+                Last generated {new Date(draftTarget.email_generated_at).toLocaleString()}
+              </p>
+            )}
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
+              <Copy className="w-4 h-4 mr-1.5" />Copy
+            </Button>
+            {draftTarget?.contact_email && (
+              <Button asChild variant="outline" disabled={!draftBody}>
+                <a
+                  href={`mailto:${draftTarget.contact_email}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}
+                >
+                  <Mail className="w-4 h-4 mr-1.5" />Open in mail app
+                </a>
+              </Button>
+            )}
+            <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
