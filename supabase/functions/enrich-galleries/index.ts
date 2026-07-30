@@ -204,8 +204,9 @@ Deno.serve(async (req) => {
       .not("rank", "is", null);
     remainingQuery = missingContact
       ? remainingQuery.is("contact_name", null)
-      : remainingQuery.eq("enrichment_status", "not_attempted");
+      : remainingQuery.or("contact_name.is.null,email.is.null,phone.is.null,website.is.null");
     const { count: remainingCount } = await remainingQuery;
+
 
     return new Response(
       JSON.stringify({
