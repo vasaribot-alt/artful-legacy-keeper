@@ -232,7 +232,7 @@ const GalleryOutreach = () => {
       let keepGoing = true;
       while (keepGoing) {
         const { data, error } = await (supabase.functions.invoke as any)("enrich-galleries", {
-          body: { max_rank: 1000, batch_size: 15, concurrency: 5 },
+          body: { max_rank: rankScope, batch_size: 15, concurrency: 5, missing_contact: missingContactMode },
         });
         if (error) throw error;
         setEnrichProgress({ processed: data.processed, enriched: data.enriched, remaining: data.remaining });
@@ -252,11 +252,11 @@ const GalleryOutreach = () => {
     }
   };
 
-  const runOneBatch = async () => {
+  const runOneBatch = async (size = 10) => {
     setEnriching(true);
     try {
       const { data, error } = await (supabase.functions.invoke as any)("enrich-galleries", {
-        body: { max_rank: 1000, batch_size: 15, concurrency: 5 },
+        body: { max_rank: rankScope, batch_size: size, concurrency: 5, missing_contact: missingContactMode },
       });
       if (error) throw error;
       setEnrichProgress({ processed: data.processed, enriched: data.enriched, remaining: data.remaining });
@@ -268,6 +268,7 @@ const GalleryOutreach = () => {
       setEnriching(false);
     }
   };
+
 
   const setStatus = async (galleryId: string, newStatus: string) => {
     const existing = outreach[galleryId];
