@@ -693,6 +693,7 @@ const GalleryOutreach = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-8"></TableHead>
                   <TableHead className="w-14">#</TableHead>
                   <TableHead>Gallery</TableHead>
                   <TableHead>Location</TableHead>
