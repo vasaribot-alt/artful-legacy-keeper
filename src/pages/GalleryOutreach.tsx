@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 interface Gallery {
@@ -115,6 +116,13 @@ const GalleryOutreach = () => {
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
+
+  // Batch drafting (10 at a time) + Outlook export
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
+  const [batchResults, setBatchResults] = useState<{ id: string; name: string; email: string; subject: string; body: string }[]>([]);
+  const [batchOpen, setBatchOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -399,6 +407,113 @@ const GalleryOutreach = () => {
     }
   };
 
+  // ---------- Batch of 10: generate drafts + export to Outlook ----------
+  const toggleSelectOne = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : prev.length >= 50 ? prev : [...prev, id]));
+  };
+
+  const selectNextTen = () => {
+    const pool = filtered.filter((g) => g.email && (outreach[g.id]?.status || "not_contacted") === "not_contacted");
+    const next = pool.slice(0, 10).map((g) => g.id);
+    setSelectedIds(next);
+    if (next.length === 0) toast.info("No un-contacted galleries with an email in the current filter.");
+    else toast.success(`Selected ${next.length} galleries.`);
+  };
+
+  const generateBatchDrafts = async () => {
+    const targets = selectedIds
+      .map((id) => galleries.find((g) => g.id === id))
+      .filter(Boolean) as Gallery[];
+    if (targets.length === 0) return;
+    localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
+    localStorage.setItem("garf.outreach.signature", draftSignature);
+    setBatchRunning(true);
+    setBatchOpen(true);
+    setBatchResults([]);
+    setBatchProgress({ done: 0, total: targets.length });
+    const results: typeof batchResults = [];
+    for (let i = 0; i < targets.length; i++) {
+      const g = targets[i];
+      try {
+        const capacity = g.contact_title
+          ? (g.contact_name ? `${g.contact_title}, ${g.contact_name} of ${g.name}` : `${g.contact_title} of ${g.name}`)
+          : "";
+        const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
+          body: {
+            gallery_id: g.id,
+            language: draftLanguage,
+            sender_name: draftSenderName.trim() || undefined,
+            recipient_capacity: capacity || undefined,
+            contact_person: g.contact_name || undefined,
+            signature: draftSignature.trim() || undefined,
+          },
+        });
+        if (error || !(data as any)?.success) throw new Error((data as any)?.error || error?.message || "failed");
+        const subject = (data as any).subject || "";
+        const body = (data as any).body || "";
+        results.push({ id: g.id, name: g.name, email: g.email || "", subject, body });
+        const existing = outreach[g.id];
+        if (existing) {
+          await (supabase as any).from("gallery_outreach").update({ email_subject: subject, email_body: body }).eq("id", existing.id);
+        } else {
+          await (supabase as any).from("gallery_outreach").insert({ gallery_id: g.id, status: "not_contacted", email_subject: subject, email_body: body });
+        }
+      } catch (e: any) {
+        toast.error(`${g.name}: ${e.message || "draft failed"}`);
+      }
+      setBatchProgress({ done: i + 1, total: targets.length });
+      setBatchResults([...results]);
+    }
+    setBatchRunning(false);
+    toast.success(`Generated ${results.length} of ${targets.length} drafts.`);
+    load();
+  };
+
+  const buildEml = (to: string, subject: string, body: string) => {
+    const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+    const lines = [
+      "X-Unsent: 1",
+      `To: ${to}`,
+      `Subject: =?UTF-8?B?${b64(subject)}?=`,
+      "MIME-Version: 1.0",
+      'Content-Type: text/plain; charset="utf-8"',
+      "Content-Transfer-Encoding: base64",
+      "",
+      b64(body).replace(/(.{76})/g, "$1\r\n"),
+      "",
+    ];
+    return lines.join("\r\n");
+  };
+
+  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+
+  const exportBatchToOutlook = () => {
+    const ready = batchResults.filter((r) => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No drafts with an email address to export.");
+      return;
+    }
+    ready.forEach((r, i) => {
+      setTimeout(() => {
+        const blob = new Blob([buildEml(r.email, r.subject, r.body)], { type: "message/rfc822" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `GARF-${String(i + 1).padStart(2, "0")}-${slug(r.name)}.eml`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }, i * 350);
+    });
+    toast.success(`Exporting ${ready.length} Outlook drafts (.eml).`);
+  };
+
+  const markBatchQueued = async () => {
+    for (const r of batchResults) await setStatus(r.id, "queued");
+    toast.success("Marked as queued");
+  };
+
+
+
   const exportCsv = () => {
     const rows = filtered.map((g) => {
       const o = outreach[g.id];
@@ -479,6 +594,32 @@ const GalleryOutreach = () => {
           </div>
         </div>
 
+        {/* Batch mailing bar */}
+        <div className="border border-border rounded-sm px-3 py-2 flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-muted-foreground">Batch mailing —</span>
+          <Button size="sm" variant="outline" onClick={selectNextTen}>Select next 10</Button>
+          {selectedIds.length > 0 && (
+            <>
+              <Badge variant="secondary">{selectedIds.length} selected</Badge>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+              <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
+                {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                Generate {selectedIds.length} letters
+              </Button>
+            </>
+          )}
+          {batchResults.length > 0 && (
+            <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
+              <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
+            </Button>
+          )}
+          <span className="text-[11px] text-muted-foreground ml-auto">
+            Exports .eml files — open them in Outlook as ready-to-send drafts.
+          </span>
+        </div>
+
+
+
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard label={usingFallbackList ? "Total shown" : "Total (top 1000)"} value={stats.total} />
           <StatCard label="Has email" value={`${stats.withEmail} / ${stats.total}`} />
@@ -552,6 +693,7 @@ const GalleryOutreach = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-8"></TableHead>
                   <TableHead className="w-14">#</TableHead>
                   <TableHead>Gallery</TableHead>
                   <TableHead>Location</TableHead>
@@ -583,6 +725,13 @@ const GalleryOutreach = () => {
                         setWebsiteDraft(g.website || "");
                       }}
                     >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={selectedIds.includes(g.id)}
+                          onCheckedChange={() => toggleSelectOne(g.id)}
+                          aria-label={`Select ${g.name}`}
+                        />
+                      </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{g.rank}</TableCell>
                       <TableCell>
                         <div className="font-medium">{g.name}</div>
@@ -792,7 +941,71 @@ const GalleryOutreach = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Batch review dialog */}
+      <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-serif">
+              Batch letters {batchProgress ? `— ${batchProgress.done}/${batchProgress.total}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Language</Label>
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch"].map((l) => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Sender name</Label>
+                <Input value={draftSenderName} onChange={(e) => setDraftSenderName(e.target.value)} placeholder="Jan S Kindem" />
+              </div>
+            </div>
+            {batchRunning && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
+              </div>
+            )}
+            {batchResults.length === 0 && !batchRunning && (
+              <div className="text-muted-foreground">No drafts yet. Select galleries and click “Generate letters”.</div>
+            )}
+            {batchResults.map((r, i) => (
+              <div key={r.id} className="border border-border rounded-sm p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-medium">{i + 1}. {r.name}</div>
+                  <div className="text-xs text-muted-foreground">{r.email || "no email"}</div>
+                </div>
+                <Input
+                  value={r.subject}
+                  onChange={(e) => setBatchResults((prev) => prev.map((x) => x.id === r.id ? { ...x, subject: e.target.value } : x))}
+                />
+                <Textarea
+                  rows={8}
+                  value={r.body}
+                  onChange={(e) => setBatchResults((prev) => prev.map((x) => x.id === r.id ? { ...x, body: e.target.value } : x))}
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
+              Mark as queued
+            </Button>
+            <Button onClick={exportBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <FileDown className="w-4 h-4 mr-1.5" /> Export to Outlook (.eml)
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
+
   );
 };
 
