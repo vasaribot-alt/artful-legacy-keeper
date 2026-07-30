@@ -407,6 +407,113 @@ const GalleryOutreach = () => {
     }
   };
 
+  // ---------- Batch of 10: generate drafts + export to Outlook ----------
+  const toggleSelectOne = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : prev.length >= 50 ? prev : [...prev, id]));
+  };
+
+  const selectNextTen = () => {
+    const pool = filtered.filter((g) => g.email && (outreach[g.id]?.status || "not_contacted") === "not_contacted");
+    const next = pool.slice(0, 10).map((g) => g.id);
+    setSelectedIds(next);
+    if (next.length === 0) toast.info("No un-contacted galleries with an email in the current filter.");
+    else toast.success(`Selected ${next.length} galleries.`);
+  };
+
+  const generateBatchDrafts = async () => {
+    const targets = selectedIds
+      .map((id) => galleries.find((g) => g.id === id))
+      .filter(Boolean) as Gallery[];
+    if (targets.length === 0) return;
+    localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
+    localStorage.setItem("garf.outreach.signature", draftSignature);
+    setBatchRunning(true);
+    setBatchOpen(true);
+    setBatchResults([]);
+    setBatchProgress({ done: 0, total: targets.length });
+    const results: typeof batchResults = [];
+    for (let i = 0; i < targets.length; i++) {
+      const g = targets[i];
+      try {
+        const capacity = g.contact_title
+          ? (g.contact_name ? `${g.contact_title}, ${g.contact_name} of ${g.name}` : `${g.contact_title} of ${g.name}`)
+          : "";
+        const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
+          body: {
+            gallery_id: g.id,
+            language: draftLanguage,
+            sender_name: draftSenderName.trim() || undefined,
+            recipient_capacity: capacity || undefined,
+            contact_person: g.contact_name || undefined,
+            signature: draftSignature.trim() || undefined,
+          },
+        });
+        if (error || !(data as any)?.success) throw new Error((data as any)?.error || error?.message || "failed");
+        const subject = (data as any).subject || "";
+        const body = (data as any).body || "";
+        results.push({ id: g.id, name: g.name, email: g.email || "", subject, body });
+        const existing = outreach[g.id];
+        if (existing) {
+          await (supabase as any).from("gallery_outreach").update({ email_subject: subject, email_body: body }).eq("id", existing.id);
+        } else {
+          await (supabase as any).from("gallery_outreach").insert({ gallery_id: g.id, status: "not_contacted", email_subject: subject, email_body: body });
+        }
+      } catch (e: any) {
+        toast.error(`${g.name}: ${e.message || "draft failed"}`);
+      }
+      setBatchProgress({ done: i + 1, total: targets.length });
+      setBatchResults([...results]);
+    }
+    setBatchRunning(false);
+    toast.success(`Generated ${results.length} of ${targets.length} drafts.`);
+    load();
+  };
+
+  const buildEml = (to: string, subject: string, body: string) => {
+    const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+    const lines = [
+      "X-Unsent: 1",
+      `To: ${to}`,
+      `Subject: =?UTF-8?B?${b64(subject)}?=`,
+      "MIME-Version: 1.0",
+      'Content-Type: text/plain; charset="utf-8"',
+      "Content-Transfer-Encoding: base64",
+      "",
+      b64(body).replace(/(.{76})/g, "$1\r\n"),
+      "",
+    ];
+    return lines.join("\r\n");
+  };
+
+  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+
+  const exportBatchToOutlook = () => {
+    const ready = batchResults.filter((r) => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No drafts with an email address to export.");
+      return;
+    }
+    ready.forEach((r, i) => {
+      setTimeout(() => {
+        const blob = new Blob([buildEml(r.email, r.subject, r.body)], { type: "message/rfc822" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `GARF-${String(i + 1).padStart(2, "0")}-${slug(r.name)}.eml`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }, i * 350);
+    });
+    toast.success(`Exporting ${ready.length} Outlook drafts (.eml).`);
+  };
+
+  const markBatchQueued = async () => {
+    for (const r of batchResults) await setStatus(r.id, "queued");
+    toast.success("Marked as queued");
+  };
+
+
+
   const exportCsv = () => {
     const rows = filtered.map((g) => {
       const o = outreach[g.id];
