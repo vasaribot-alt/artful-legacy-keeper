@@ -19,12 +19,14 @@ interface LookupResult {
   email: string;
   phone: string;
   website: string;
+  contact_name: string;
+  contact_title: string;
 }
 
 async function lookupGallery(g: GalleryRow, apiKey: string): Promise<LookupResult | null> {
   const prompt = `Find the official public contact information for the art gallery "${g.name}"${
     g.city ? ` in ${g.city}` : ""
-  }${g.country ? `, ${g.country}` : ""}. Return only information you are confident is correct and publicly listed on the gallery's official website. If uncertain, return empty strings.`;
+  }${g.country ? `, ${g.country}` : ""}. Include, if publicly listed, the name and job title of the most appropriate senior person to contact (director, gallery director, partner, owner or senior director). Return only information you are confident is correct and publicly listed on the gallery's official website. If uncertain, return empty strings.`;
 
   try {
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -48,8 +50,10 @@ async function lookupGallery(g: GalleryRow, apiKey: string): Promise<LookupResul
                   email: { type: "string", description: "General public email (info@, contact@, gallery@…), empty if unknown" },
                   phone: { type: "string", description: "Main phone with country code, empty if unknown" },
                   website: { type: "string", description: "Official website URL, empty if unknown" },
+                  contact_name: { type: "string", description: "Full name of the most senior appropriate contact person, empty if unknown" },
+                  contact_title: { type: "string", description: "That person's job title, e.g. Director, empty if unknown" },
                 },
-                required: ["email", "phone", "website"],
+                required: ["email", "phone", "website", "contact_name", "contact_title"],
                 additionalProperties: false,
               },
             },
@@ -68,12 +72,14 @@ async function lookupGallery(g: GalleryRow, apiKey: string): Promise<LookupResul
 
     const data = await resp.json();
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall?.function?.arguments) return { email: "", phone: "", website: "" };
+    if (!toolCall?.function?.arguments) return { email: "", phone: "", website: "", contact_name: "", contact_title: "" };
     const args = JSON.parse(toolCall.function.arguments);
     return {
       email: (args.email || "").trim(),
       phone: (args.phone || "").trim(),
       website: (args.website || "").trim(),
+      contact_name: (args.contact_name || "").trim(),
+      contact_title: (args.contact_title || "").trim(),
     };
   } catch (e) {
     if (e instanceof Error && (e.message === "ai_429" || e.message === "ai_402")) throw e;
@@ -98,14 +104,19 @@ Deno.serve(async (req) => {
     const batchSize: number = Math.min(body.batch_size ?? 15, 30);
     const concurrency: number = Math.min(body.concurrency ?? 5, 10);
 
-    // Select galleries in top N missing email or phone, not recently attempted
-    const { data: pending, error: fetchErr } = await supabase
+    // Select galleries in top N missing contact info
+    const missingContact: boolean = body.missing_contact === true;
+    let query = supabase
       .from("galleries")
-      .select("id, name, city, country, email, phone, website")
+      .select("id, name, city, country, email, phone, website, contact_name, contact_title")
       .lte("rank", maxRank)
-      .not("rank", "is", null)
-      .in("enrichment_status", ["not_attempted"])
-      .or("email.is.null,phone.is.null")
+      .not("rank", "is", null);
+
+    query = missingContact
+      ? query.is("contact_name", null)
+      : query.in("enrichment_status", ["not_attempted"]).or("email.is.null,phone.is.null");
+
+    const { data: pending, error: fetchErr } = await query
       .order("rank", { ascending: true })
       .limit(batchSize);
 
@@ -165,8 +176,10 @@ Deno.serve(async (req) => {
         if (result.email && !g.email) updates.email = result.email;
         if (result.phone && !g.phone) updates.phone = result.phone;
         if (result.website && !g.website) updates.website = result.website;
+        if (result.contact_name && !(g as any).contact_name) updates.contact_name = result.contact_name;
+        if (result.contact_title && !(g as any).contact_title) updates.contact_title = result.contact_title;
 
-        const gotAnything = result.email || result.phone || result.website;
+        const gotAnything = result.email || result.phone || result.website || result.contact_name;
         updates.enrichment_status = gotAnything ? "enriched" : "no_data";
         if (gotAnything) enriched++; else empty++;
 
@@ -183,12 +196,15 @@ Deno.serve(async (req) => {
     }
 
     // Compute remaining
-    const { count: remainingCount } = await supabase
+    let remainingQuery = supabase
       .from("galleries")
       .select("*", { count: "exact", head: true })
       .lte("rank", maxRank)
-      .not("rank", "is", null)
-      .eq("enrichment_status", "not_attempted");
+      .not("rank", "is", null);
+    remainingQuery = missingContact
+      ? remainingQuery.is("contact_name", null)
+      : remainingQuery.eq("enrichment_status", "not_attempted");
+    const { count: remainingCount } = await remainingQuery;
 
     return new Response(
       JSON.stringify({

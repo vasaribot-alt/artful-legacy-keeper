@@ -83,6 +83,8 @@ const GalleryOutreach = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [hasEmailFilter, setHasEmailFilter] = useState<string>("all");
   const [enriching, setEnriching] = useState(false);
+  const [rankScope, setRankScope] = useState<number>(200);
+  const [missingContactMode, setMissingContactMode] = useState(false);
   const [enrichProgress, setEnrichProgress] = useState<{ processed: number; enriched: number; remaining: number } | null>(null);
   const [selected, setSelected] = useState<Gallery | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
@@ -232,7 +234,7 @@ const GalleryOutreach = () => {
       let keepGoing = true;
       while (keepGoing) {
         const { data, error } = await (supabase.functions.invoke as any)("enrich-galleries", {
-          body: { max_rank: 1000, batch_size: 15, concurrency: 5 },
+          body: { max_rank: rankScope, batch_size: 15, concurrency: 5, missing_contact: missingContactMode },
         });
         if (error) throw error;
         setEnrichProgress({ processed: data.processed, enriched: data.enriched, remaining: data.remaining });
@@ -252,11 +254,11 @@ const GalleryOutreach = () => {
     }
   };
 
-  const runOneBatch = async () => {
+  const runOneBatch = async (size = 10) => {
     setEnriching(true);
     try {
       const { data, error } = await (supabase.functions.invoke as any)("enrich-galleries", {
-        body: { max_rank: 1000, batch_size: 15, concurrency: 5 },
+        body: { max_rank: rankScope, batch_size: size, concurrency: 5, missing_contact: missingContactMode },
       });
       if (error) throw error;
       setEnrichProgress({ processed: data.processed, enriched: data.enriched, remaining: data.remaining });
@@ -268,6 +270,7 @@ const GalleryOutreach = () => {
       setEnriching(false);
     }
   };
+
 
   const setStatus = async (galleryId: string, newStatus: string) => {
     const existing = outreach[galleryId];
@@ -439,16 +442,34 @@ const GalleryOutreach = () => {
               {usingFallbackList ? "Imported gallery list. Add ranks to focus the top 1,000." : "Top 1,000 galleries by rank. Enrich contact info, track invitations."}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button variant="outline" size="sm" onClick={load}><RefreshCw className="w-3.5 h-3.5 mr-1" /> Refresh</Button>
             <Button variant="outline" size="sm" onClick={exportCsv}><Download className="w-3.5 h-3.5 mr-1" /> Export CSV</Button>
-            <Button size="sm" onClick={runOneBatch} disabled={enriching}>
+            <select
+              value={rankScope}
+              onChange={(e) => setRankScope(Number(e.target.value))}
+              className="h-8 rounded-sm border border-input bg-background px-2 text-xs"
+            >
+              <option value={50}>Top 50</option>
+              <option value={200}>Top 200</option>
+              <option value={500}>Top 500</option>
+              <option value={1000}>Top 1000</option>
+            </select>
+            <label className="flex items-center gap-1 text-xs text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={missingContactMode}
+                onChange={(e) => setMissingContactMode(e.target.checked)}
+              />
+              Missing contact name only
+            </label>
+            <Button size="sm" onClick={() => runOneBatch(10)} disabled={enriching}>
               {enriching ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
-              Enrich 15
+              Enrich next 10
             </Button>
             <Button size="sm" variant="default" onClick={runEnrichBatch} disabled={enriching}>
               {enriching ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Play className="w-3.5 h-3.5 mr-1" />}
-              Enrich all missing
+              Enrich all in scope
             </Button>
           </div>
         </div>
