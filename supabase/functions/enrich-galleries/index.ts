@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
 
     query = missingContact
       ? query.is("contact_name", null)
-      : query.in("enrichment_status", ["not_attempted"]).or("email.is.null,phone.is.null");
+      : query.or("contact_name.is.null,email.is.null,phone.is.null,website.is.null");
 
     const { data: pending, error: fetchErr } = await query
       .order("rank", { ascending: true })
@@ -123,10 +123,11 @@ Deno.serve(async (req) => {
     if (fetchErr) throw fetchErr;
     if (!pending || pending.length === 0) {
       return new Response(
-        JSON.stringify({ done: true, processed: 0, remaining: 0 }),
+        JSON.stringify({ done: true, processed: 0, enriched: 0, no_data: 0, failed: 0, remaining: 0 }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
 
     // Mark as in-progress to avoid duplicate work if re-invoked
     const ids = pending.map((g) => g.id);
