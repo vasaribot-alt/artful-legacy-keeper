@@ -941,7 +941,71 @@ const GalleryOutreach = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Batch review dialog */}
+      <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-serif">
+              Batch letters {batchProgress ? `— ${batchProgress.done}/${batchProgress.total}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Language</Label>
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch"].map((l) => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Sender name</Label>
+                <Input value={draftSenderName} onChange={(e) => setDraftSenderName(e.target.value)} placeholder="Jan S Kindem" />
+              </div>
+            </div>
+            {batchRunning && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
+              </div>
+            )}
+            {batchResults.length === 0 && !batchRunning && (
+              <div className="text-muted-foreground">No drafts yet. Select galleries and click “Generate letters”.</div>
+            )}
+            {batchResults.map((r, i) => (
+              <div key={r.id} className="border border-border rounded-sm p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-medium">{i + 1}. {r.name}</div>
+                  <div className="text-xs text-muted-foreground">{r.email || "no email"}</div>
+                </div>
+                <Input
+                  value={r.subject}
+                  onChange={(e) => setBatchResults((prev) => prev.map((x) => x.id === r.id ? { ...x, subject: e.target.value } : x))}
+                />
+                <Textarea
+                  rows={8}
+                  value={r.body}
+                  onChange={(e) => setBatchResults((prev) => prev.map((x) => x.id === r.id ? { ...x, body: e.target.value } : x))}
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
+              Mark as queued
+            </Button>
+            <Button onClick={exportBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <FileDown className="w-4 h-4 mr-1.5" /> Export to Outlook (.eml)
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
+
   );
 };
 
