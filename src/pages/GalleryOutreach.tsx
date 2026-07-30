@@ -594,6 +594,32 @@ const GalleryOutreach = () => {
           </div>
         </div>
 
+        {/* Batch mailing bar */}
+        <div className="border border-border rounded-sm px-3 py-2 flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-muted-foreground">Batch mailing —</span>
+          <Button size="sm" variant="outline" onClick={selectNextTen}>Select next 10</Button>
+          {selectedIds.length > 0 && (
+            <>
+              <Badge variant="secondary">{selectedIds.length} selected</Badge>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+              <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
+                {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                Generate {selectedIds.length} letters
+              </Button>
+            </>
+          )}
+          {batchResults.length > 0 && (
+            <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
+              <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
+            </Button>
+          )}
+          <span className="text-[11px] text-muted-foreground ml-auto">
+            Exports .eml files — open them in Outlook as ready-to-send drafts.
+          </span>
+        </div>
+
+
+
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <StatCard label={usingFallbackList ? "Total shown" : "Total (top 1000)"} value={stats.total} />
           <StatCard label="Has email" value={`${stats.withEmail} / ${stats.total}`} />
