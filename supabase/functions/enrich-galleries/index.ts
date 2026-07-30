@@ -176,8 +176,10 @@ Deno.serve(async (req) => {
         if (result.email && !g.email) updates.email = result.email;
         if (result.phone && !g.phone) updates.phone = result.phone;
         if (result.website && !g.website) updates.website = result.website;
+        if (result.contact_name && !(g as any).contact_name) updates.contact_name = result.contact_name;
+        if (result.contact_title && !(g as any).contact_title) updates.contact_title = result.contact_title;
 
-        const gotAnything = result.email || result.phone || result.website;
+        const gotAnything = result.email || result.phone || result.website || result.contact_name;
         updates.enrichment_status = gotAnything ? "enriched" : "no_data";
         if (gotAnything) enriched++; else empty++;
 
