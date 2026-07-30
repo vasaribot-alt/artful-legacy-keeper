@@ -261,8 +261,13 @@ const GalleryOutreach = () => {
         body: { max_rank: rankScope, batch_size: size, concurrency: 5, missing_contact: missingContactMode },
       });
       if (error) throw error;
-      setEnrichProgress({ processed: data.processed, enriched: data.enriched, remaining: data.remaining });
-      toast.success(`Enriched ${data.enriched} of ${data.processed}. ${data.remaining} left.`);
+      setEnrichProgress({ processed: data.processed ?? 0, enriched: data.enriched ?? 0, remaining: data.remaining ?? 0 });
+      if ((data.processed ?? 0) === 0) {
+        toast.info(`Nothing left to enrich in Top ${rankScope}${missingContactMode ? " (missing contact name)" : ""}.`);
+      } else {
+        toast.success(`Enriched ${data.enriched ?? 0} of ${data.processed}. ${data.remaining ?? 0} left.`);
+      }
+
       await load();
     } catch (e: any) {
       toast.error("Batch failed: " + (e.message || "unknown"));
