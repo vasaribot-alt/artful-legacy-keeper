@@ -50,8 +50,10 @@ async function lookupGallery(g: GalleryRow, apiKey: string): Promise<LookupResul
                   email: { type: "string", description: "General public email (info@, contact@, gallery@…), empty if unknown" },
                   phone: { type: "string", description: "Main phone with country code, empty if unknown" },
                   website: { type: "string", description: "Official website URL, empty if unknown" },
+                  contact_name: { type: "string", description: "Full name of the most senior appropriate contact person, empty if unknown" },
+                  contact_title: { type: "string", description: "That person's job title, e.g. Director, empty if unknown" },
                 },
-                required: ["email", "phone", "website"],
+                required: ["email", "phone", "website", "contact_name", "contact_title"],
                 additionalProperties: false,
               },
             },
@@ -70,12 +72,14 @@ async function lookupGallery(g: GalleryRow, apiKey: string): Promise<LookupResul
 
     const data = await resp.json();
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall?.function?.arguments) return { email: "", phone: "", website: "" };
+    if (!toolCall?.function?.arguments) return { email: "", phone: "", website: "", contact_name: "", contact_title: "" };
     const args = JSON.parse(toolCall.function.arguments);
     return {
       email: (args.email || "").trim(),
       phone: (args.phone || "").trim(),
       website: (args.website || "").trim(),
+      contact_name: (args.contact_name || "").trim(),
+      contact_title: (args.contact_title || "").trim(),
     };
   } catch (e) {
     if (e instanceof Error && (e.message === "ai_429" || e.message === "ai_402")) throw e;
