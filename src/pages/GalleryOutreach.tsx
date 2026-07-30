@@ -725,6 +725,13 @@ const GalleryOutreach = () => {
                         setWebsiteDraft(g.website || "");
                       }}
                     >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={selectedIds.includes(g.id)}
+                          onCheckedChange={() => toggleSelectOne(g.id)}
+                          aria-label={`Select ${g.name}`}
+                        />
+                      </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{g.rank}</TableCell>
                       <TableCell>
                         <div className="font-medium">{g.name}</div>
