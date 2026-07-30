@@ -19,12 +19,14 @@ interface LookupResult {
   email: string;
   phone: string;
   website: string;
+  contact_name: string;
+  contact_title: string;
 }
 
 async function lookupGallery(g: GalleryRow, apiKey: string): Promise<LookupResult | null> {
   const prompt = `Find the official public contact information for the art gallery "${g.name}"${
     g.city ? ` in ${g.city}` : ""
-  }${g.country ? `, ${g.country}` : ""}. Return only information you are confident is correct and publicly listed on the gallery's official website. If uncertain, return empty strings.`;
+  }${g.country ? `, ${g.country}` : ""}. Include, if publicly listed, the name and job title of the most appropriate senior person to contact (director, gallery director, partner, owner or senior director). Return only information you are confident is correct and publicly listed on the gallery's official website. If uncertain, return empty strings.`;
 
   try {
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
