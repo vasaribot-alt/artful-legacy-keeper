@@ -83,6 +83,8 @@ const GalleryOutreach = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [hasEmailFilter, setHasEmailFilter] = useState<string>("all");
   const [enriching, setEnriching] = useState(false);
+  const [rankScope, setRankScope] = useState<number>(200);
+  const [missingContactMode, setMissingContactMode] = useState(false);
   const [enrichProgress, setEnrichProgress] = useState<{ processed: number; enriched: number; remaining: number } | null>(null);
   const [selected, setSelected] = useState<Gallery | null>(null);
   const [noteDraft, setNoteDraft] = useState("");
