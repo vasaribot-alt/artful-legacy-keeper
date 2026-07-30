@@ -196,12 +196,15 @@ Deno.serve(async (req) => {
     }
 
     // Compute remaining
-    const { count: remainingCount } = await supabase
+    let remainingQuery = supabase
       .from("galleries")
       .select("*", { count: "exact", head: true })
       .lte("rank", maxRank)
-      .not("rank", "is", null)
-      .eq("enrichment_status", "not_attempted");
+      .not("rank", "is", null);
+    remainingQuery = missingContact
+      ? remainingQuery.is("contact_name", null)
+      : remainingQuery.eq("enrichment_status", "not_attempted");
+    const { count: remainingCount } = await remainingQuery;
 
     return new Response(
       JSON.stringify({
