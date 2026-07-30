@@ -104,14 +104,19 @@ Deno.serve(async (req) => {
     const batchSize: number = Math.min(body.batch_size ?? 15, 30);
     const concurrency: number = Math.min(body.concurrency ?? 5, 10);
 
-    // Select galleries in top N missing email or phone, not recently attempted
-    const { data: pending, error: fetchErr } = await supabase
+    // Select galleries in top N missing contact info
+    const missingContact: boolean = body.missing_contact === true;
+    let query = supabase
       .from("galleries")
-      .select("id, name, city, country, email, phone, website")
+      .select("id, name, city, country, email, phone, website, contact_name, contact_title")
       .lte("rank", maxRank)
-      .not("rank", "is", null)
-      .in("enrichment_status", ["not_attempted"])
-      .or("email.is.null,phone.is.null")
+      .not("rank", "is", null);
+
+    query = missingContact
+      ? query.is("contact_name", null)
+      : query.in("enrichment_status", ["not_attempted"]).or("email.is.null,phone.is.null");
+
+    const { data: pending, error: fetchErr } = await query
       .order("rank", { ascending: true })
       .limit(batchSize);
 
