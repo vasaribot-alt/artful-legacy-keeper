@@ -3,7 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ShieldCheck, ChevronDown, ChevronUp, Pencil, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ShieldCheck, ShieldX, ChevronDown, ChevronUp, Pencil, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface PendingArtwork {
