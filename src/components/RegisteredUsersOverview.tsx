@@ -43,6 +43,10 @@ export default function RegisteredUsersOverview() {
   const [roles, setRoles] = useState<Record<string, string[]>>({});
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [pendingDelete, setPendingDelete] = useState<ProfileRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
 
   useEffect(() => {
     const fetch = async () => {
