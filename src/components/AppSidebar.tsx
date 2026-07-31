@@ -30,6 +30,7 @@ const getNavItems = (role: AppRole) => {
       { title: "Fundraising", url: "/foundation/fundraising", icon: TrendingUp },
       { title: "Global Alliance", url: "/foundation/alliance", icon: Network },
       { title: "Alliance Outreach", url: "/foundation/alliance-outreach", icon: Network },
+      { title: "Documents", url: "/foundation/documents", icon: FolderOpen },
     ];
   }
   if (role === "registrar") {
