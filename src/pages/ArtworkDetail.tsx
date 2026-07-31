@@ -337,21 +337,47 @@ const ArtworkDetail = () => {
           verification_status: "verified",
           verified_at: new Date().toISOString(),
           verified_by: currentUserId,
+          decline_reason: null as any,
         }
       : {
           verification_status: "pending",
           verified_at: null as any,
           verified_by: null as any,
         };
-    const { error } = await supabase.from("artworks").update(updates).eq("id", id!);
+    const { error } = await supabase.from("artworks").update(updates as any).eq("id", id!);
     setVerifyingNow(false);
     if (error) {
       toast.error("Could not update verification");
       return;
     }
     setVerificationStatus(goingToVerified ? "verified" : "pending");
+    if (goingToVerified) setDeclineReason("");
     toast.success(goingToVerified ? "Marked as artist verified" : "Verification removed");
   };
+
+  const handleDecline = async () => {
+    if (!isOwner) return;
+    setDeclining(true);
+    const { error } = await supabase
+      .from("artworks")
+      .update({
+        verification_status: "declined",
+        decline_reason: declineReason.trim() || null,
+        verified_at: null,
+        verified_by: null,
+      } as any)
+      .eq("id", id!);
+    setDeclining(false);
+    if (error) {
+      toast.error("Could not decline record");
+      return;
+    }
+    setVerificationStatus("declined");
+    setDeclineDialogOpen(false);
+    toast.success("Record declined");
+  };
+
+
 
   const handleSave = async () => {
     if (!title.trim()) { toast.error("Title is required"); return; }
