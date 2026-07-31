@@ -128,6 +128,33 @@ export const PendingVerificationInbox = ({ userId, activeRole, onVerified }: Pen
     onVerified?.();
   };
 
+  const confirmDecline = async () => {
+    if (!declineTargets || declineTargets.length === 0) return;
+    setDeclining(true);
+    const { error } = await supabase
+      .from("artworks")
+      .update({
+        verification_status: "declined",
+        decline_reason: declineReason.trim() || null,
+        verified_at: null,
+        verified_by: null,
+      } as any)
+      .in("id", declineTargets);
+    setDeclining(false);
+    if (error) {
+      toast.error("Could not decline");
+      return;
+    }
+    toast.success(`Declined ${declineTargets.length} work${declineTargets.length !== 1 ? "s" : ""}`);
+    setDeclineTargets(null);
+    setDeclineReason("");
+    setSelectedIds(new Set());
+    await load();
+    onVerified?.();
+  };
+
+
+
   return (
     <div className="mb-8 border border-border rounded-sm bg-secondary/40 overflow-hidden">
       <button
