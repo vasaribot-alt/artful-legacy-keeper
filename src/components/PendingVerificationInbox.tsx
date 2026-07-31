@@ -39,6 +39,9 @@ export const PendingVerificationInbox = ({ userId, activeRole, onVerified }: Pen
   const [expanded, setExpanded] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [verifying, setVerifying] = useState(false);
+  const [declineTargets, setDeclineTargets] = useState<string[] | null>(null);
+  const [declineReason, setDeclineReason] = useState("");
+  const [declining, setDeclining] = useState(false);
 
   // Only the artist role uses the verification badge — collectors/registrars don't see it
   const enabled = activeRole === "artist";
