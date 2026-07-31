@@ -96,6 +96,8 @@ const App = () => (
           <Route path="/artist/:id" element={<PublicArtistProfile />} />
           <Route path="/foundation" element={<FoundationPitch />} />
           <Route path="/foundation/admin" element={<FoundationDashboard />} />
+          <Route path="/foundation/documents" element={<FoundationDocuments />} />
+          <Route path="/shared-document/:token" element={<SharedDocument />} />
           <Route path="/donors" element={<Donors />} />
           <Route path="/foundation/gallery-outreach" element={<GalleryOutreach />} />
           <Route path="/founding-supporter" element={<FoundingSupporter />} />
