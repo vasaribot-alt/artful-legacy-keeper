@@ -4,7 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Download, Search, Users } from "lucide-react";
+import { Download, Search, Users, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ProfileRow {
   user_id: string;
@@ -32,6 +43,10 @@ export default function RegisteredUsersOverview() {
   const [roles, setRoles] = useState<Record<string, string[]>>({});
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [pendingDelete, setPendingDelete] = useState<ProfileRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -54,10 +69,30 @@ export default function RegisteredUsersOverview() {
         setRoles(map);
       }
 
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id ?? null);
+
       setLoading(false);
     };
     fetch();
   }, []);
+
+  const handleDelete = async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    const { data, error } = await supabase.functions.invoke("admin-delete-user", {
+      body: { userId: pendingDelete.user_id },
+    });
+    setDeleting(false);
+    if (error || (data as { error?: string })?.error) {
+      toast.error((data as { error?: string })?.error || "Could not delete user");
+      return;
+    }
+    setProfiles((prev) => prev.filter((p) => p.user_id !== pendingDelete.user_id));
+    toast.success(`${pendingDelete.full_name || pendingDelete.email || "User"} deleted`);
+    setPendingDelete(null);
+  };
+
 
   const filtered = profiles.filter((p) => {
     if (!search) return true;
@@ -134,6 +169,7 @@ export default function RegisteredUsersOverview() {
                 <TableHead>Country</TableHead>
                 <TableHead>Roles</TableHead>
                 <TableHead>Joined</TableHead>
+                <TableHead className="w-10"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -159,12 +195,47 @@ export default function RegisteredUsersOverview() {
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(p.created_at).toLocaleDateString()}
                   </TableCell>
+                  <TableCell>
+                    {p.user_id !== currentUserId && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label={`Delete ${p.full_name || p.email || "user"}`}
+                        onClick={() => setPendingDelete(p)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       )}
+
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this user permanently?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDelete?.full_name || pendingDelete?.email} will be removed from the
+              registry along with their profile, roles, artworks, exhibitions, catalogues and
+              uploaded files. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleDelete(); }}
+              disabled={deleting}
+            >
+              {deleting && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}
+              Delete user
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }
