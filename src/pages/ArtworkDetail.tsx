@@ -124,6 +124,9 @@ const ArtworkDetail = () => {
   const [ownerId, setOwnerId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [verifyingNow, setVerifyingNow] = useState(false);
+  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
+  const [declining, setDeclining] = useState(false);
 
   // Images
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
