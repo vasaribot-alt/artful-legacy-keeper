@@ -637,6 +637,18 @@ const ArtworkDetail = () => {
               </span>
             </Button>
           )}
+          {isOwner && verificationStatus !== "declined" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDeclineDialogOpen(true)}
+              className="gap-1.5 text-destructive hover:text-destructive"
+              title="Decline this record"
+            >
+              <ShieldX className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Decline</span>
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
             <Eye className="w-3.5 h-3.5 mr-1.5" /> Preview
           </Button>
