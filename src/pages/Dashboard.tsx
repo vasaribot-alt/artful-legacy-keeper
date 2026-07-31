@@ -559,6 +559,7 @@ const Dashboard = () => {
                     <SelectItem value="all">All verification</SelectItem>
                     <SelectItem value="verified">Artist verified</SelectItem>
                     <SelectItem value="pending">Pending review</SelectItem>
+                    <SelectItem value="declined">Declined</SelectItem>
                   </SelectContent>
                 </Select>
               )}

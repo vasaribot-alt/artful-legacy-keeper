@@ -17,7 +17,15 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, ShieldCheck, ShieldOff, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, ShieldCheck, ShieldOff, ShieldX, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
 import { CollectorValuationSection } from "@/components/CollectorValuationSection";
@@ -116,6 +124,9 @@ const ArtworkDetail = () => {
   const [ownerId, setOwnerId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [verifyingNow, setVerifyingNow] = useState(false);
+  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
+  const [declining, setDeclining] = useState(false);
 
   // Images
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
@@ -216,6 +227,7 @@ const ArtworkDetail = () => {
 
     setOwnerId(data.owner_id);
     setVerificationStatus((data as any).verification_status || "pending");
+    setDeclineReason((data as any).decline_reason || "");
     setTitle(data.title);
     setGlobalArtworkId(data.global_artwork_id);
     setArtworkType(data.artwork_type || "");
@@ -325,21 +337,47 @@ const ArtworkDetail = () => {
           verification_status: "verified",
           verified_at: new Date().toISOString(),
           verified_by: currentUserId,
+          decline_reason: null as any,
         }
       : {
           verification_status: "pending",
           verified_at: null as any,
           verified_by: null as any,
         };
-    const { error } = await supabase.from("artworks").update(updates).eq("id", id!);
+    const { error } = await supabase.from("artworks").update(updates as any).eq("id", id!);
     setVerifyingNow(false);
     if (error) {
       toast.error("Could not update verification");
       return;
     }
     setVerificationStatus(goingToVerified ? "verified" : "pending");
+    if (goingToVerified) setDeclineReason("");
     toast.success(goingToVerified ? "Marked as artist verified" : "Verification removed");
   };
+
+  const handleDecline = async () => {
+    if (!isOwner) return;
+    setDeclining(true);
+    const { error } = await supabase
+      .from("artworks")
+      .update({
+        verification_status: "declined",
+        decline_reason: declineReason.trim() || null,
+        verified_at: null,
+        verified_by: null,
+      } as any)
+      .eq("id", id!);
+    setDeclining(false);
+    if (error) {
+      toast.error("Could not decline record");
+      return;
+    }
+    setVerificationStatus("declined");
+    setDeclineDialogOpen(false);
+    toast.success("Record declined");
+  };
+
+
 
   const handleSave = async () => {
     if (!title.trim()) { toast.error("Title is required"); return; }
@@ -597,6 +635,18 @@ const ArtworkDetail = () => {
               <span className="hidden md:inline">
                 {verificationStatus === "verified" ? "Unverify" : "Verify"}
               </span>
+            </Button>
+          )}
+          {isOwner && verificationStatus !== "declined" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDeclineDialogOpen(true)}
+              className="gap-1.5 text-destructive hover:text-destructive"
+              title="Decline this record"
+            >
+              <ShieldX className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Decline</span>
             </Button>
           )}
           <Button variant="outline" size="sm" onClick={() => navigate(`/artwork/${id}/view`)}>
@@ -1001,6 +1051,38 @@ const ArtworkDetail = () => {
           </Button>
         </div>
       </main>
+
+      <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Decline this record</DialogTitle>
+            <DialogDescription>
+              The record stays in the archive but is marked as declined, so it is never presented as
+              authorised by you. Your registrar can correct it and resubmit.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="declineReasonDetail">Reason (optional)</Label>
+            <Textarea
+              id="declineReasonDetail"
+              value={declineReason}
+              onChange={(e) => setDeclineReason(e.target.value)}
+              placeholder="e.g. Not my work / wrong attribution / incorrect data"
+              rows={3}
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeclineDialogOpen(false)} disabled={declining}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDecline} disabled={declining} className="gap-1.5">
+              {declining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldX className="w-3.5 h-3.5" />}
+              Confirm decline
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -530,6 +530,7 @@ export type Database = {
           created_by: string | null
           currency: string | null
           current_market_value: number | null
+          decline_reason: string | null
           depth: number | null
           description: string | null
           dimensions: string | null
@@ -596,6 +597,7 @@ export type Database = {
           created_by?: string | null
           currency?: string | null
           current_market_value?: number | null
+          decline_reason?: string | null
           depth?: number | null
           description?: string | null
           dimensions?: string | null
@@ -662,6 +664,7 @@ export type Database = {
           created_by?: string | null
           currency?: string | null
           current_market_value?: number | null
+          decline_reason?: string | null
           depth?: number | null
           description?: string | null
           dimensions?: string | null
