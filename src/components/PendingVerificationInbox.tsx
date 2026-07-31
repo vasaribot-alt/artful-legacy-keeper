@@ -255,11 +255,54 @@ export const PendingVerificationInbox = ({ userId, activeRole, onVerified }: Pen
                 >
                   <ShieldCheck className="w-3 h-3" /> Verify
                 </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="gap-1.5 text-xs h-8 text-destructive hover:text-destructive"
+                  disabled={declining}
+                  onClick={() => { setDeclineReason(""); setDeclineTargets([art.id]); }}
+                >
+                  <ShieldX className="w-3 h-3" /> Decline
+                </Button>
               </li>
             ))}
           </ul>
         </div>
       )}
+
+      <Dialog open={!!declineTargets} onOpenChange={(o) => { if (!o) setDeclineTargets(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Decline {declineTargets?.length === 1 ? "this record" : `${declineTargets?.length ?? 0} records`}
+            </DialogTitle>
+            <DialogDescription>
+              The record stays in the archive but is marked as declined, so it is never presented as
+              authorised by you. Your registrar can correct it and resubmit.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="declineReason">Reason (optional)</Label>
+            <Textarea
+              id="declineReason"
+              value={declineReason}
+              onChange={(e) => setDeclineReason(e.target.value)}
+              placeholder="e.g. Not my work / wrong attribution / incorrect data"
+              rows={3}
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeclineTargets(null)} disabled={declining}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDecline} disabled={declining} className="gap-1.5">
+              {declining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldX className="w-3.5 h-3.5" />}
+              Confirm decline
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
