@@ -1,4 +1,4 @@
-import { ShieldCheck, Clock } from "lucide-react";
+import { ShieldCheck, Clock, ShieldX } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VerificationBadgeProps {
@@ -41,6 +41,21 @@ export const VerificationBadge = ({ status, size = "sm", className }: Verificati
       >
         <Clock className={size === "sm" ? "w-3 h-3" : "w-3.5 h-3.5"} />
         Pending review
+      </span>
+    );
+  }
+  if (status === "declined") {
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center gap-1 rounded-sm border border-destructive/40 bg-destructive/10 text-destructive font-medium tracking-wide",
+          size === "sm" ? "text-[10px] px-1.5 py-0.5" : "text-xs px-2 py-1",
+          className
+        )}
+        title="Declined by the artist"
+      >
+        <ShieldX className={size === "sm" ? "w-3 h-3" : "w-3.5 h-3.5"} />
+        Declined
       </span>
     );
   }
