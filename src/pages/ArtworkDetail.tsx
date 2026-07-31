@@ -1051,6 +1051,38 @@ const ArtworkDetail = () => {
           </Button>
         </div>
       </main>
+
+      <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Decline this record</DialogTitle>
+            <DialogDescription>
+              The record stays in the archive but is marked as declined, so it is never presented as
+              authorised by you. Your registrar can correct it and resubmit.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="declineReasonDetail">Reason (optional)</Label>
+            <Textarea
+              id="declineReasonDetail"
+              value={declineReason}
+              onChange={(e) => setDeclineReason(e.target.value)}
+              placeholder="e.g. Not my work / wrong attribution / incorrect data"
+              rows={3}
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeclineDialogOpen(false)} disabled={declining}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDecline} disabled={declining} className="gap-1.5">
+              {declining ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldX className="w-3.5 h-3.5" />}
+              Confirm decline
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
