@@ -196,6 +196,16 @@ export const PendingVerificationInbox = ({ userId, activeRole, onVerified }: Pen
             </Button>
             <Button
               size="sm"
+              variant="outline"
+              disabled={declining || selectedIds.size === 0}
+              onClick={() => { setDeclineReason(""); setDeclineTargets(Array.from(selectedIds)); }}
+              className="gap-1.5"
+            >
+              <ShieldX className="w-3.5 h-3.5" />
+              Decline selected
+            </Button>
+            <Button
+              size="sm"
               disabled={verifying || selectedIds.size === 0}
               onClick={() => verify(Array.from(selectedIds))}
               className="gap-1.5"
