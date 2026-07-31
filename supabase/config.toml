@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.founding-supporter-application]
 verify_jwt = false
+
+[functions.shared-document]
+verify_jwt = false
