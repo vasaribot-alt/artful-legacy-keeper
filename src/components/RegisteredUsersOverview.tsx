@@ -69,10 +69,30 @@ export default function RegisteredUsersOverview() {
         setRoles(map);
       }
 
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id ?? null);
+
       setLoading(false);
     };
     fetch();
   }, []);
+
+  const handleDelete = async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    const { data, error } = await supabase.functions.invoke("admin-delete-user", {
+      body: { userId: pendingDelete.user_id },
+    });
+    setDeleting(false);
+    if (error || (data as { error?: string })?.error) {
+      toast.error((data as { error?: string })?.error || "Could not delete user");
+      return;
+    }
+    setProfiles((prev) => prev.filter((p) => p.user_id !== pendingDelete.user_id));
+    toast.success(`${pendingDelete.full_name || pendingDelete.email || "User"} deleted`);
+    setPendingDelete(null);
+  };
+
 
   const filtered = profiles.filter((p) => {
     if (!search) return true;
