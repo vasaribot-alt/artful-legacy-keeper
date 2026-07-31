@@ -169,6 +169,7 @@ export default function RegisteredUsersOverview() {
                 <TableHead>Country</TableHead>
                 <TableHead>Roles</TableHead>
                 <TableHead>Joined</TableHead>
+                <TableHead className="w-10"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -194,12 +195,47 @@ export default function RegisteredUsersOverview() {
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(p.created_at).toLocaleDateString()}
                   </TableCell>
+                  <TableCell>
+                    {p.user_id !== currentUserId && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label={`Delete ${p.full_name || p.email || "user"}`}
+                        onClick={() => setPendingDelete(p)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       )}
+
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this user permanently?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDelete?.full_name || pendingDelete?.email} will be removed from the
+              registry along with their profile, roles, artworks, exhibitions, catalogues and
+              uploaded files. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleDelete(); }}
+              disabled={deleting}
+            >
+              {deleting && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}
+              Delete user
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 }
