@@ -31,6 +31,8 @@ import FoundationDashboard from "./pages/FoundationDashboard";
 import FoundationPitch from "./pages/FoundationPitch";
 import Donors from "./pages/Donors";
 import GalleryOutreach from "./pages/GalleryOutreach";
+import FoundationDocuments from "./pages/FoundationDocuments";
+import SharedDocument from "./pages/SharedDocument";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
