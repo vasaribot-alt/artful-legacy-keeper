@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Copy, ExternalLink, Mail, Plus, Search, Sparkles, Trash2 } from "lucide-react";
+import { Copy, ExternalLink, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 type Category =
   | "curators" | "art_critics" | "galleries" | "museums" | "universities"
@@ -38,6 +38,9 @@ interface Target {
   email_subject: string | null;
   email_body: string | null;
   email_generated_at: string | null;
+  tag: string | null;
+  decision_maker_research: string | null;
+  research_at: string | null;
   created_at: string;
 }
 
@@ -73,6 +76,10 @@ const STATUS_VARIANT: Record<Status, "default" | "secondary" | "outline"> = {
   declined: "outline",
 };
 
+const TAG_LABELS: Record<string, string> = {
+  seed_funding: "Seed funding shortlist",
+};
+
 const STATUSES = Object.keys(STATUS_LABELS) as Status[];
 const CATEGORIES = Object.keys(CATEGORY_LABELS) as Category[];
 
@@ -92,6 +99,8 @@ export default function AllianceOutreach() {
   const [q, setQ] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
+  const [tagFilter, setTagFilter] = useState<string>("all");
+  const [researching, setResearching] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
@@ -202,6 +211,25 @@ Phone: +31-850 600 529`;
     toast.success("Marked as contacted");
   };
 
+  const researchDecisionMakers = async (ids: string[], label: string) => {
+    if (ids.length === 0) return;
+    setResearching(label);
+    const { data, error } = await supabase.functions.invoke("research-decision-maker", {
+      body: { target_ids: ids },
+    });
+    setResearching(null);
+    if (error || !data?.success) {
+      toast.error(data?.error || error?.message || "Could not research contacts");
+      if (!data?.results?.length) return;
+    }
+    const results: any[] = data?.results || [];
+    setTargets(prev => prev.map(t => {
+      const r = results.find(x => x.id === t.id);
+      return r ? { ...t, ...r } : t;
+    }));
+    toast.success(`Researched ${results.length} organisation${results.length === 1 ? "" : "s"}`);
+  };
+
   const remove = async (id: string) => {
     if (!confirm("Remove this outreach target?")) return;
     const { error } = await supabase
@@ -237,13 +265,19 @@ Phone: +31-850 600 529`;
   const filtered = useMemo(() => targets.filter(t => {
     if (categoryFilter !== "all" && t.category !== categoryFilter) return false;
     if (statusFilter !== "all" && t.status !== statusFilter) return false;
+    if (tagFilter !== "all" && (t.tag || "") !== tagFilter) return false;
     if (q.trim()) {
       const s = q.toLowerCase();
       if (![t.name, t.country, t.contact_person, t.contact_email, t.notes]
         .some(f => f?.toLowerCase().includes(s))) return false;
     }
     return true;
-  }), [targets, q, categoryFilter, statusFilter]);
+  }), [targets, q, categoryFilter, statusFilter, tagFilter]);
+
+  const tags = useMemo(
+    () => Array.from(new Set(targets.map(t => t.tag).filter(Boolean) as string[])).sort(),
+    [targets]
+  );
 
   const statusCounts = useMemo(() => targets.reduce((acc, t) => {
     acc[t.status] = (acc[t.status] || 0) + 1;
@@ -343,6 +377,28 @@ Phone: +31-850 600 529`;
               {STATUSES.map(s => <SelectItem key={s} value={s}>{STATUS_LABELS[s]}</SelectItem>)}
             </SelectContent>
           </Select>
+          {tags.length > 0 && (
+            <Select value={tagFilter} onValueChange={setTagFilter}>
+              <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All lists (tags)</SelectItem>
+                {tags.map(tg => (
+                  <SelectItem key={tg} value={tg}>{TAG_LABELS[tg] || tg}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <Button
+            variant="outline"
+            disabled={!!researching}
+            onClick={() => researchDecisionMakers(
+              filtered.filter(t => !t.decision_maker_research).slice(0, 10).map(t => t.id),
+              "batch"
+            )}
+          >
+            <UserSearch className="w-4 h-4 mr-1.5" />
+            {researching === "batch" ? "Researching…" : "Find decision makers (next 10)"}
+          </Button>
         </div>
 
         {loading ? (
@@ -359,6 +415,7 @@ Phone: +31-850 600 529`;
                       <h3 className="font-medium">{t.name}</h3>
                       <Badge variant="outline">{CATEGORY_LABELS[t.category]}</Badge>
                       <Badge variant={STATUS_VARIANT[t.status]}>{STATUS_LABELS[t.status]}</Badge>
+                      {t.tag && <Badge variant="secondary">{TAG_LABELS[t.tag] || t.tag}</Badge>}
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
                       {t.country || "—"}
@@ -377,6 +434,15 @@ Phone: +31-850 600 529`;
                         <a href={t.website} target="_blank" rel="noreferrer"><ExternalLink className="w-3.5 h-3.5 mr-1.5" />Website</a>
                       </Button>
                     )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={researching === t.id}
+                      onClick={() => researchDecisionMakers([t.id], t.id)}
+                    >
+                      <UserSearch className="w-3.5 h-3.5 mr-1.5" />
+                      {researching === t.id ? "Researching…" : t.decision_maker_research ? "Re-research" : "Find decision maker"}
+                    </Button>
                     <Button size="sm" variant="outline" onClick={() => openDraft(t)}>
                       <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                       {t.email_body ? "Email draft" : "Generate email"}
@@ -389,6 +455,12 @@ Phone: +31-850 600 529`;
                     </Button>
                   </div>
                 </div>
+
+                {t.decision_maker_research && (
+                  <div className="rounded-md bg-muted/50 p-3 text-sm whitespace-pre-wrap">
+                    {t.decision_maker_research}
+                  </div>
+                )}
 
                 <div className="pt-2 border-t border-border space-y-3">
                   <div className="grid md:grid-cols-4 gap-3">
