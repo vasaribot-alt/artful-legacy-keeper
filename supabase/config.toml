@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.shared-document]
 verify_jwt = false
+
+[functions.research-decision-maker]
+verify_jwt = true
