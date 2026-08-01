@@ -13,7 +13,7 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Copy, ExternalLink, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+import { Copy, ExternalLink, FileDown, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 type Category =
   | "curators" | "art_critics" | "galleries" | "museums" | "universities"
@@ -124,6 +124,15 @@ Phone: +31-850 600 529`;
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
+
+  // Batch drafting (10 at a time) + Outlook export
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
+  const [batchResults, setBatchResults] = useState<
+    { id: string; name: string; email: string; subject: string; body: string }[]
+  >([]);
+  const [batchOpen, setBatchOpen] = useState(false);
 
   const openDraft = (t: Target) => {
     setDraftTarget(t);
@@ -260,6 +269,117 @@ Phone: +31-850 600 529`;
     setForm(EMPTY_FORM);
     setAddOpen(false);
     toast.success("Target added");
+  };
+
+  // ---------- Batch of 10: generate drafts + export to Outlook ----------
+  const toggleSelectOne = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(x => x !== id) : prev.length >= 50 ? prev : [...prev, id]
+    );
+  };
+
+  const selectNextTen = () => {
+    const pool = filtered.filter(t => t.contact_email && t.status === "to_contact");
+    const next = pool.slice(0, 10).map(t => t.id);
+    setSelectedIds(next);
+    if (next.length === 0) toast.info("No un-contacted targets with an email in the current filter.");
+    else toast.success(`Selected ${next.length} organisations.`);
+  };
+
+  const generateBatchDrafts = async () => {
+    const batchTargets = selectedIds
+      .map(id => targets.find(t => t.id === id))
+      .filter(Boolean) as Target[];
+    if (batchTargets.length === 0) return;
+    localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
+    localStorage.setItem("garf.outreach.signature", draftSignature);
+    setBatchRunning(true);
+    setBatchOpen(true);
+    setBatchResults([]);
+    setBatchProgress({ done: 0, total: batchTargets.length });
+    const results: typeof batchResults = [];
+    for (let i = 0; i < batchTargets.length; i++) {
+      const t = batchTargets[i];
+      try {
+        const capacity = t.contact_title
+          ? (t.contact_person ? `${t.contact_title}, ${t.contact_person} of ${t.name}` : `${t.contact_title} of ${t.name}`)
+          : "";
+        const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
+          body: {
+            target_id: t.id,
+            language: draftLanguage,
+            sender_name: draftSenderName.trim() || undefined,
+            recipient_capacity: capacity || undefined,
+            contact_person: t.contact_person || undefined,
+            signature: draftSignature.trim() || undefined,
+          },
+        });
+        if (error || !(data as any)?.success) throw new Error((data as any)?.error || error?.message || "failed");
+        const subject = (data as any).subject || "";
+        const body = (data as any).body || "";
+        results.push({ id: t.id, name: t.name, email: t.contact_email || "", subject, body });
+        setTargets(prev => prev.map(x => x.id === t.id ? {
+          ...x, email_subject: subject || null, email_body: body || null,
+          email_generated_at: new Date().toISOString(),
+        } : x));
+      } catch (e: any) {
+        toast.error(`${t.name}: ${e.message || "draft failed"}`);
+      }
+      setBatchProgress({ done: i + 1, total: batchTargets.length });
+      setBatchResults([...results]);
+    }
+    setBatchRunning(false);
+    toast.success(`Generated ${results.length} of ${batchTargets.length} drafts.`);
+  };
+
+  const buildEml = (to: string, subject: string, body: string) => {
+    const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+    return [
+      "X-Unsent: 1",
+      `To: ${to}`,
+      `Subject: =?UTF-8?B?${b64(subject)}?=`,
+      "MIME-Version: 1.0",
+      'Content-Type: text/plain; charset="utf-8"',
+      "Content-Transfer-Encoding: base64",
+      "",
+      b64(body).replace(/(.{76})/g, "$1\r\n"),
+      "",
+    ].join("\r\n");
+  };
+
+  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+
+  const exportBatchToOutlook = () => {
+    const ready = batchResults.filter(r => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No drafts with an email address to export.");
+      return;
+    }
+    ready.forEach((r, i) => {
+      setTimeout(() => {
+        const blob = new Blob([buildEml(r.email, r.subject, r.body)], { type: "message/rfc822" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `GARF-${String(i + 1).padStart(2, "0")}-${slug(r.name)}.eml`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }, i * 350);
+    });
+    toast.success(`Exporting ${ready.length} Outlook drafts (.eml).`);
+  };
+
+  const saveBatchEdits = async () => {
+    for (const r of batchResults) {
+      await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
+    }
+    toast.success("Drafts saved");
+  };
+
+  const markBatchContacted = async () => {
+    const now = new Date().toISOString();
+    for (const r of batchResults) await update(r.id, { status: "contacted", last_contacted_at: now });
+    toast.success("Marked as contacted");
   };
 
   const filtered = useMemo(() => targets.filter(t => {
@@ -401,6 +521,30 @@ Phone: +31-850 600 529`;
           </Button>
         </div>
 
+        {/* Batch mailing bar */}
+        <div className="border border-border rounded-md px-3 py-2 flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-muted-foreground">Batch mailing —</span>
+          <Button size="sm" variant="outline" onClick={selectNextTen}>Select next 10</Button>
+          {selectedIds.length > 0 && (
+            <>
+              <Badge variant="secondary">{selectedIds.length} selected</Badge>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+              <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
+                {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                Generate {selectedIds.length} letters
+              </Button>
+            </>
+          )}
+          {batchResults.length > 0 && (
+            <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
+              <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
+            </Button>
+          )}
+          <span className="text-[11px] text-muted-foreground ml-auto">
+            Exports .eml files — open them in Outlook as ready-to-send drafts.
+          </span>
+        </div>
+
         {loading ? (
           <p className="text-muted-foreground text-sm">Loading…</p>
         ) : filtered.length === 0 ? (
@@ -410,7 +554,15 @@ Phone: +31-850 600 529`;
             {filtered.map(t => (
               <div key={t.id} className="border border-border rounded-lg p-4 space-y-3">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      className="mt-1"
+                      checked={selectedIds.includes(t.id)}
+                      onChange={() => toggleSelectOne(t.id)}
+                      aria-label={`Select ${t.name} for batch mailing`}
+                    />
+                    <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-medium">{t.name}</h3>
                       <Badge variant="outline">{CATEGORY_LABELS[t.category]}</Badge>
@@ -421,6 +573,7 @@ Phone: +31-850 600 529`;
                       {t.country || "—"}
                       {t.contact_person && <> · {t.contact_person}</>}
                       {t.last_contacted_at && <> · last contacted {new Date(t.last_contacted_at).toLocaleDateString()}</>}
+                    </div>
                     </div>
                   </div>
                   <div className="flex gap-2 flex-wrap">
@@ -533,6 +686,80 @@ Phone: +31-850 600 529`;
           </div>
         )}
       </div>
+
+      <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Batch letters {batchProgress ? `— ${batchProgress.done}/${batchProgress.total}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Language</Label>
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Sender name</Label>
+                <Input value={draftSenderName} onChange={e => setDraftSenderName(e.target.value)} placeholder="Jan S Kindem" />
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Signature (appended verbatim)</Label>
+              <Textarea
+                rows={6}
+                value={draftSignature}
+                onChange={e => setDraftSignature(e.target.value)}
+                className="font-mono text-xs"
+              />
+            </div>
+            {batchRunning && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
+              </div>
+            )}
+            {batchResults.length === 0 && !batchRunning && (
+              <div className="text-muted-foreground">No drafts yet. Select organisations and click “Generate letters”.</div>
+            )}
+            {batchResults.map((r, i) => (
+              <div key={r.id} className="border border-border rounded-md p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-medium">{i + 1}. {r.name}</div>
+                  <div className="text-xs text-muted-foreground">{r.email || "no email"}</div>
+                </div>
+                <Input
+                  value={r.subject}
+                  onChange={e => setBatchResults(prev => prev.map(x => x.id === r.id ? { ...x, subject: e.target.value } : x))}
+                />
+                <Textarea
+                  rows={8}
+                  value={r.body}
+                  onChange={e => setBatchResults(prev => prev.map(x => x.id === r.id ? { ...x, body: e.target.value } : x))}
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={saveBatchEdits} disabled={batchRunning || batchResults.length === 0}>
+              Save edits
+            </Button>
+            <Button variant="outline" onClick={markBatchContacted} disabled={batchRunning || batchResults.length === 0}>
+              Mark as contacted
+            </Button>
+            <Button onClick={exportBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <FileDown className="w-4 h-4 mr-1.5" /> Export to Outlook (.eml)
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!draftTarget} onOpenChange={(o) => !o && setDraftTarget(null)}>
         <DialogContent className="max-w-2xl">
