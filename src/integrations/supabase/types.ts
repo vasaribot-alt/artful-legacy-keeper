@@ -23,6 +23,7 @@ export type Database = {
           contact_title: string | null
           country: string | null
           created_at: string
+          decision_maker_research: string | null
           email_body: string | null
           email_generated_at: string | null
           email_subject: string | null
@@ -30,7 +31,9 @@ export type Database = {
           last_contacted_at: string | null
           name: string
           notes: string | null
+          research_at: string | null
           status: string
+          tag: string | null
           updated_at: string
           website: string | null
         }
@@ -42,6 +45,7 @@ export type Database = {
           contact_title?: string | null
           country?: string | null
           created_at?: string
+          decision_maker_research?: string | null
           email_body?: string | null
           email_generated_at?: string | null
           email_subject?: string | null
@@ -49,7 +53,9 @@ export type Database = {
           last_contacted_at?: string | null
           name: string
           notes?: string | null
+          research_at?: string | null
           status?: string
+          tag?: string | null
           updated_at?: string
           website?: string | null
         }
@@ -61,6 +67,7 @@ export type Database = {
           contact_title?: string | null
           country?: string | null
           created_at?: string
+          decision_maker_research?: string | null
           email_body?: string | null
           email_generated_at?: string | null
           email_subject?: string | null
@@ -68,7 +75,9 @@ export type Database = {
           last_contacted_at?: string | null
           name?: string
           notes?: string | null
+          research_at?: string | null
           status?: string
+          tag?: string | null
           updated_at?: string
           website?: string | null
         }
