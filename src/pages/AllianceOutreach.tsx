@@ -574,6 +574,7 @@ Phone: +31-850 600 529`;
                       {t.contact_person && <> · {t.contact_person}</>}
                       {t.last_contacted_at && <> · last contacted {new Date(t.last_contacted_at).toLocaleDateString()}</>}
                     </div>
+                    </div>
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     {t.contact_email && (
