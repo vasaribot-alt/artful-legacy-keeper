@@ -78,6 +78,7 @@ const STATUS_VARIANT: Record<Status, "default" | "secondary" | "outline"> = {
 
 const TAG_LABELS: Record<string, string> = {
   seed_funding: "Seed funding shortlist",
+  grant_funding: "Grant funding (art & technology)",
 };
 
 const STATUSES = Object.keys(STATUS_LABELS) as Status[];
