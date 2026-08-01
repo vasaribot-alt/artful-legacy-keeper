@@ -125,6 +125,15 @@ Phone: +31-850 600 529`;
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
 
+  // Batch drafting (10 at a time) + Outlook export
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
+  const [batchResults, setBatchResults] = useState<
+    { id: string; name: string; email: string; subject: string; body: string }[]
+  >([]);
+  const [batchOpen, setBatchOpen] = useState(false);
+
   const openDraft = (t: Target) => {
     setDraftTarget(t);
     setDraftSubject(t.email_subject || "");
