@@ -521,6 +521,30 @@ Phone: +31-850 600 529`;
           </Button>
         </div>
 
+        {/* Batch mailing bar */}
+        <div className="border border-border rounded-md px-3 py-2 flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-muted-foreground">Batch mailing —</span>
+          <Button size="sm" variant="outline" onClick={selectNextTen}>Select next 10</Button>
+          {selectedIds.length > 0 && (
+            <>
+              <Badge variant="secondary">{selectedIds.length} selected</Badge>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+              <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
+                {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                Generate {selectedIds.length} letters
+              </Button>
+            </>
+          )}
+          {batchResults.length > 0 && (
+            <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
+              <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
+            </Button>
+          )}
+          <span className="text-[11px] text-muted-foreground ml-auto">
+            Exports .eml files — open them in Outlook as ready-to-send drafts.
+          </span>
+        </div>
+
         {loading ? (
           <p className="text-muted-foreground text-sm">Loading…</p>
         ) : filtered.length === 0 ? (
@@ -530,7 +554,15 @@ Phone: +31-850 600 529`;
             {filtered.map(t => (
               <div key={t.id} className="border border-border rounded-lg p-4 space-y-3">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      className="mt-1"
+                      checked={selectedIds.includes(t.id)}
+                      onChange={() => toggleSelectOne(t.id)}
+                      aria-label={`Select ${t.name} for batch mailing`}
+                    />
+                    <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-medium">{t.name}</h3>
                       <Badge variant="outline">{CATEGORY_LABELS[t.category]}</Badge>
