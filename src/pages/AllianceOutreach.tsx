@@ -80,6 +80,7 @@ const TAG_LABELS: Record<string, string> = {
   seed_funding: "Seed funding shortlist",
   grant_funding: "Grant funding (art & technology)",
   us_partner: "Strategic US partner",
+  partnership_core: "Core partnership (GARF alliance)",
 };
 
 const STATUSES = Object.keys(STATUS_LABELS) as Status[];
