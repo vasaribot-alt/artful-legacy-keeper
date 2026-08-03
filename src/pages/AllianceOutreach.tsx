@@ -131,6 +131,8 @@ Phone: +31-850 600 529`;
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
   const [draftPreview, setDraftPreview] = useState(false);
+  // When a saved email text is selected, choose between verbatim apply or AI rewrite based on it.
+  const [aiRewriteFromTemplate, setAiRewriteFromTemplate] = useState(false);
 
   // Built-in preset letter: Allied Curator Partner invitation
   const CURATOR_PARTNER_SUBJECT =
