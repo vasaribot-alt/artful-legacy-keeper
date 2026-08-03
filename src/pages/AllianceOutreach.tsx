@@ -941,6 +941,10 @@ With kind regards,
               <Button variant="outline" size="sm" onClick={useTemplateInDraft} disabled={!hasTemplate}>
                 Use saved template
               </Button>
+              <Button variant="outline" size="sm" onClick={useCuratorPartnerLetter}>
+                Use Curator Partner letter
+              </Button>
+
               <span className="text-[11px] text-muted-foreground">
                 Placeholders: {"{{greeting}} {{name}} {{contact_person}} {{contact_title}} {{country}} {{signature}}"}
               </span>
