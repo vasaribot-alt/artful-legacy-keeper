@@ -128,6 +128,60 @@ Phone: +31-850 600 529`;
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
 
+  // Reusable letter template (edited once, reused for every recipient)
+  const [templateSubject, setTemplateSubject] = useState<string>(
+    () => localStorage.getItem("garf.outreach.tplSubject") || ""
+  );
+  const [templateBody, setTemplateBody] = useState<string>(
+    () => localStorage.getItem("garf.outreach.tplBody") || ""
+  );
+  const hasTemplate = !!templateBody.trim();
+
+  const fillTemplate = (t: Target, text: string) =>
+    text
+      .replace(/\{\{\s*name\s*\}\}/gi, t.name)
+      .replace(/\{\{\s*contact_person\s*\}\}/gi, t.contact_person || "")
+      .replace(/\{\{\s*contact_title\s*\}\}/gi, t.contact_title || "")
+      .replace(/\{\{\s*country\s*\}\}/gi, t.country || "")
+      .replace(/\{\{\s*greeting\s*\}\}/gi, t.contact_person ? `Dear ${t.contact_person},` : "Dear colleagues,")
+      .replace(/\{\{\s*signature\s*\}\}/gi, draftSignature.trim());
+
+  const saveAsTemplate = () => {
+    localStorage.setItem("garf.outreach.tplSubject", draftSubject);
+    localStorage.setItem("garf.outreach.tplBody", draftBody);
+    setTemplateSubject(draftSubject);
+    setTemplateBody(draftBody);
+    toast.success("Saved as reusable template");
+  };
+
+  const useTemplateInDraft = () => {
+    if (!draftTarget || !hasTemplate) return;
+    setDraftSubject(fillTemplate(draftTarget, templateSubject));
+    setDraftBody(fillTemplate(draftTarget, templateBody));
+    toast.success("Template applied — edit freely, then Save draft");
+  };
+
+  const applyTemplateToSelected = async () => {
+    const list = selectedIds
+      .map(id => targets.find(t => t.id === id))
+      .filter(Boolean) as Target[];
+    if (list.length === 0 || !hasTemplate) return;
+    setBatchOpen(true);
+    const results = list.map(t => ({
+      id: t.id,
+      name: t.name,
+      email: t.contact_email || "",
+      subject: fillTemplate(t, templateSubject),
+      body: fillTemplate(t, templateBody),
+    }));
+    setBatchResults(results);
+    setBatchProgress({ done: results.length, total: results.length });
+    for (const r of results) {
+      await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
+    }
+    toast.success(`Template applied to ${results.length} letters`);
+  };
+
   // Batch drafting (10 at a time) + Outlook export
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [batchRunning, setBatchRunning] = useState(false);
