@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
+import { markdownToHtml, markdownToEmailHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 
