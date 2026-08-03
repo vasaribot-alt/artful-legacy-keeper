@@ -134,6 +134,57 @@ const FoundationDocuments = () => {
     }
   };
 
+  const bulkUpload = async (files: File[]) => {
+    if (!files.length) return;
+    setBulkUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not signed in");
+      let ok = 0;
+      for (const f of files) {
+        const safeName = f.name.replace(/[^\w.\-]+/g, "_");
+        const path = `${user.id}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from("foundation-documents")
+          .upload(path, f, { contentType: f.type || undefined });
+        if (upErr) { toast.error(`Failed: ${f.name}`); continue; }
+        const { error: insErr } = await supabase.from("foundation_documents").insert({
+          title: f.name.replace(/\.[^.]+$/, ""),
+          category: filterCategory === "all" ? "general" : filterCategory,
+          file_path: path,
+          file_name: f.name,
+          file_size: f.size,
+          file_type: f.type || null,
+          uploaded_by: user.id,
+        });
+        if (insErr) { toast.error(`Failed: ${f.name}`); continue; }
+        ok++;
+      }
+      if (ok) toast.success(`${ok} document(s) uploaded`);
+      fetchDocs();
+    } catch (e: any) {
+      toast.error(e?.message || "Upload failed");
+    } finally {
+      setBulkUploading(false);
+    }
+  };
+
+  const changeCategory = async (doc: DocRow, value: string) => {
+    const { error } = await supabase
+      .from("foundation_documents").update({ category: value }).eq("id", doc.id);
+    if (error) { toast.error("Could not change category"); return; }
+    setDocs((p) => p.map((d) => (d.id === doc.id ? { ...d, category: value } : d)));
+    toast.success("Category updated");
+  };
+
+  const handleView = async (doc: DocRow) => {
+    const { data, error } = await supabase.storage
+      .from("foundation-documents")
+      .createSignedUrl(doc.file_path, 3600);
+    if (error || !data) { toast.error("Could not open file"); return; }
+    setViewDoc({ doc, url: data.signedUrl });
+  };
+
   const handleDownload = async (doc: DocRow) => {
     const { data, error } = await supabase.storage
       .from("foundation-documents")
@@ -141,6 +192,7 @@ const FoundationDocuments = () => {
     if (error || !data) { toast.error("Could not open file"); return; }
     window.open(data.signedUrl, "_blank");
   };
+
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
