@@ -475,6 +475,11 @@ With kind regards,
       .map(id => targets.find(t => t.id === id))
       .filter(Boolean) as Target[];
     if (batchTargets.length === 0) return;
+    // A saved email text is selected: apply it verbatim to the whole batch.
+    if (pickedTextId && emailTexts.some(x => x.id === pickedTextId)) {
+      await applySavedTextToSelected(pickedTextId);
+      return;
+    }
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
     localStorage.setItem("garf.outreach.signature", draftSignature);
     setBatchRunning(true);
