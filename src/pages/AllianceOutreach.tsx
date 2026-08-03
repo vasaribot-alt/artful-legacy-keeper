@@ -228,6 +228,7 @@ With kind regards,
   const applySavedTextToSelected = async (id: string) => {
     const tpl = emailTexts.find(x => x.id === id);
     if (!tpl) return;
+    setPickedTextId(id);
     const list = selectedIds
       .map(sid => targets.find(t => t.id === sid))
       .filter(Boolean) as Target[];
@@ -245,7 +246,7 @@ With kind regards,
     for (const r of results) {
       await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
     }
-    toast.success(`“${tpl.name}” applied to ${results.length} letters`);
+    toast.success(`"${tpl.name}" applied to ${results.length} letters`);
   };
 
 
