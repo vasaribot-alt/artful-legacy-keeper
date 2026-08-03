@@ -13,7 +13,9 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Copy, ExternalLink, FileDown, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
+import { Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+
 
 type Category =
   | "curators" | "art_critics" | "galleries" | "museums" | "universities"
@@ -154,6 +156,20 @@ With kind regards,
 
 {{signature}}`;
 
+  // Saved email texts library (per category, reusable)
+  const [emailTexts, setEmailTexts] = useState<OutreachEmailText[]>([]);
+  const [textsOpen, setTextsOpen] = useState(false);
+  const [pickedTextId, setPickedTextId] = useState<string>("");
+
+  const loadEmailTexts = async () => {
+    const { data, error } = await (supabase.from("outreach_email_templates" as never) as any)
+      .select("id, name, category, subject, body, updated_at")
+      .order("name", { ascending: true });
+    if (!error) setEmailTexts((data as OutreachEmailText[]) || []);
+  };
+
+  useEffect(() => { loadEmailTexts(); }, []);
+
   // Reusable letter template (edited once, reused for every recipient)
   const [templateSubject, setTemplateSubject] = useState<string>(
     () => localStorage.getItem("garf.outreach.tplSubject") || ""
@@ -162,6 +178,8 @@ With kind regards,
     () => localStorage.getItem("garf.outreach.tplBody") || ""
   );
   const hasTemplate = !!templateBody.trim();
+
+
 
 
   const buildGreeting = (t: Target) => {
@@ -193,6 +211,40 @@ With kind regards,
     setDraftBody(fillTemplate(draftTarget, templateBody));
     toast.success("Template applied — edit freely, then Save draft");
   };
+
+  const applySavedTextToDraft = (id: string) => {
+    const tpl = emailTexts.find(x => x.id === id);
+    if (!tpl || !draftTarget) return;
+    setPickedTextId(id);
+    setDraftSubject(fillTemplate(draftTarget, tpl.subject || ""));
+    setDraftBody(fillTemplate(draftTarget, tpl.body || ""));
+    toast.success(`“${tpl.name}” applied — edit freely, then Save draft`);
+  };
+
+  const applySavedTextToSelected = async (id: string) => {
+    const tpl = emailTexts.find(x => x.id === id);
+    if (!tpl) return;
+    const list = selectedIds
+      .map(sid => targets.find(t => t.id === sid))
+      .filter(Boolean) as Target[];
+    if (list.length === 0) return;
+    setBatchOpen(true);
+    const results = list.map(t => ({
+      id: t.id,
+      name: t.name,
+      email: t.contact_email || "",
+      subject: fillTemplate(t, tpl.subject || ""),
+      body: fillTemplate(t, tpl.body || ""),
+    }));
+    setBatchResults(results);
+    setBatchProgress({ done: results.length, total: results.length });
+    for (const r of results) {
+      await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
+    }
+    toast.success(`“${tpl.name}” applied to ${results.length} letters`);
+  };
+
+
 
   const useCuratorPartnerLetter = () => {
     if (!draftTarget) return;
@@ -533,7 +585,13 @@ With kind regards,
               Track partnership outreach to associations across every Alliance category — curators, art critics, galleries, museums, universities & research, foundations, corporate collections, and registrars.
             </p>
           </div>
+          <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setTextsOpen(true)}>
+            <FileText className="w-4 h-4 mr-1.5" />Email texts
+            {emailTexts.length > 0 && <Badge variant="secondary" className="ml-2">{emailTexts.length}</Badge>}
+          </Button>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
+
             <DialogTrigger asChild>
               <Button><Plus className="w-4 h-4 mr-1.5" />Add target</Button>
             </DialogTrigger>
@@ -584,7 +642,9 @@ With kind regards,
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </div>
         </header>
+
 
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           {STATUSES.map(s => (
@@ -658,9 +718,22 @@ With kind regards,
               <Button size="sm" variant="outline" onClick={applyCuratorLetterToSelected} disabled={batchRunning}>
                 Curator Partner letter for {selectedIds.length}
               </Button>
-
-
+              {emailTexts.length > 0 && (
+                <Select onValueChange={(v) => applySavedTextToSelected(v)}>
+                  <SelectTrigger className="w-[260px] h-8 text-xs">
+                    <SelectValue placeholder={`Use email text for ${selectedIds.length}…`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {emailTexts.map(t => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}{t.category ? ` — ${CATEGORY_LABELS[t.category as Category] || t.category}` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </>
+
           )}
           {batchResults.length > 0 && (
             <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
@@ -939,6 +1012,28 @@ With kind regards,
               </Button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <Select value={pickedTextId} onValueChange={applySavedTextToDraft}>
+                <SelectTrigger className="w-[300px] h-9 text-sm">
+                  <SelectValue placeholder={emailTexts.length ? "Insert saved email text…" : "No saved email texts yet"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...emailTexts]
+                    .sort((a, b) => {
+                      const cat = draftTarget?.category;
+                      const score = (t: OutreachEmailText) => (t.category === cat ? 0 : t.category ? 2 : 1);
+                      return score(a) - score(b) || a.name.localeCompare(b.name);
+                    })
+                    .map(t => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}{t.category ? ` — ${CATEGORY_LABELS[t.category as Category] || t.category}` : ""}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="sm" onClick={() => setTextsOpen(true)}>
+                <FileText className="w-4 h-4 mr-1.5" />Manage email texts
+              </Button>
+
               <Button variant="outline" size="sm" onClick={saveAsTemplate} disabled={!draftBody.trim()}>
                 Save this text as template
               </Button>
@@ -985,6 +1080,16 @@ With kind regards,
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <OutreachEmailTextsDialog
+        open={textsOpen}
+        onOpenChange={setTextsOpen}
+        templates={emailTexts}
+        categoryLabels={CATEGORY_LABELS}
+        categories={CATEGORIES}
+        onChanged={loadEmailTexts}
+      />
     </AppLayout>
+
   );
 }
