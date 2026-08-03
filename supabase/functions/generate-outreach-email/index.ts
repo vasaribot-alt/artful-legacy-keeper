@@ -72,6 +72,8 @@ Deno.serve(async (req) => {
       contact_person,
       language,
       signature,
+      template_subject,
+      template_body,
     } = await req.json();
 
     // Load target: either alliance_outreach_targets or a gallery
