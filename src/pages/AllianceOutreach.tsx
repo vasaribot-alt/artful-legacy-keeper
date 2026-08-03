@@ -1068,9 +1068,29 @@ With kind regards,
               <Input value={draftSubject} onChange={e => setDraftSubject(e.target.value)} placeholder="Subject line" />
             </div>
             <div>
-              <Label>Body</Label>
-              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — generate with AI, or reuse your saved template." />
+              <div className="flex items-center justify-between">
+                <Label>Body</Label>
+                <Button
+                  type="button" size="sm" variant={draftPreview ? "default" : "ghost"}
+                  className="h-7 px-2 text-xs"
+                  onClick={() => setDraftPreview(p => !p)}
+                >
+                  {draftPreview ? "Edit" : "Preview"}
+                </Button>
+              </div>
+              {draftPreview ? (
+                <div
+                  className="min-h-[280px] rounded-md border border-input bg-background p-3 text-sm prose-email"
+                  dangerouslySetInnerHTML={{ __html: markdownToHtml(draftBody) }}
+                />
+              ) : (
+                <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — generate with AI, or reuse your saved template. **bold**, *italic*, ## heading, - bullet." />
+              )}
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Formatting: **bold**, *italic*, ## heading, - bullet — preserved in the exported Outlook draft.
+              </p>
             </div>
+
 
             {draftTarget?.email_generated_at && (
               <p className="text-xs text-muted-foreground">
