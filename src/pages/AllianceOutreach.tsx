@@ -323,6 +323,17 @@ With kind regards,
     if (!draftTarget) return;
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
     localStorage.setItem("garf.outreach.signature", draftSignature);
+    // A saved email text is selected: use it verbatim (placeholders only), never rewrite with AI.
+    const picked = emailTexts.find(x => x.id === pickedTextId);
+    if (picked) {
+      const subject = fillTemplate(draftTarget, picked.subject || "");
+      const body = fillTemplate(draftTarget, picked.body || "");
+      setDraftSubject(subject);
+      setDraftBody(body);
+      await update(draftTarget.id, { email_subject: subject || null, email_body: body || null });
+      toast.success(`“${picked.name}” applied word-for-word`);
+      return;
+    }
     setDraftGenerating(true);
     const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
       body: {
