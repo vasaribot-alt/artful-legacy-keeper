@@ -281,6 +281,24 @@ const FoundationDocuments = () => {
           </Button>
         </div>
 
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragOver(false);
+            bulkUpload(Array.from(e.dataTransfer.files || []));
+          }}
+          className={`border border-dashed rounded-sm p-6 text-center text-sm transition-colors ${
+            dragOver ? "border-foreground bg-accent/50" : "border-border text-muted-foreground"
+          }`}
+        >
+          {bulkUploading
+            ? "Uploading files…"
+            : "Drag and drop files here to upload in bulk" +
+              (filterCategory === "all" ? " (filed under General)" : ` (filed under ${categoryLabel(filterCategory)})`)}
+        </div>
+
         {visible.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No documents yet. Upload your first file to start the shared library.
@@ -292,8 +310,12 @@ const FoundationDocuments = () => {
                 <FileText className="h-5 w-5 mt-0.5 text-muted-foreground shrink-0" />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-medium truncate">{doc.title}</span>
-                    <Badge variant="outline" className="text-xs">{categoryLabel(doc.category)}</Badge>
+                    <button
+                      onClick={() => handleView(doc)}
+                      className="font-medium truncate text-left hover:underline"
+                    >
+                      {doc.title}
+                    </button>
                     {doc.share_token && (
                       <Badge variant="secondary" className="text-xs">Shared</Badge>
                     )}
@@ -304,16 +326,29 @@ const FoundationDocuments = () => {
                   <p className="text-xs text-muted-foreground mt-1 truncate">
                     {doc.file_name} · {formatBytes(Number(doc.file_size || 0))} · {new Date(doc.created_at).toLocaleDateString()}
                   </p>
-                  {doc.share_token && (
-                    <button
-                      onClick={() => copyLink(doc.share_token!)}
-                      className="text-xs underline mt-1 text-muted-foreground hover:text-foreground"
-                    >
-                      Copy share link
-                    </button>
-                  )}
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <Select value={doc.category} onValueChange={(v) => changeCategory(doc, v)}>
+                      <SelectTrigger className="h-7 w-52 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {CATEGORIES.map((c) => (
+                          <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {doc.share_token && (
+                      <button
+                        onClick={() => copyLink(doc.share_token!)}
+                        className="text-xs underline text-muted-foreground hover:text-foreground"
+                      >
+                        Copy share link
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
+                  <Button variant="ghost" size="sm" onClick={() => handleView(doc)} title="View in browser">
+                    <Eye className="h-3.5 w-3.5" />
+                  </Button>
                   <Button variant="ghost" size="sm" onClick={() => handleDownload(doc)} title="Open / download">
                     <Download className="h-3.5 w-3.5" />
                   </Button>
@@ -332,6 +367,33 @@ const FoundationDocuments = () => {
           </div>
         )}
       </div>
+
+      <Dialog open={!!viewDoc} onOpenChange={(o) => !o && setViewDoc(null)}>
+        <DialogContent className="max-w-5xl">
+          <DialogHeader><DialogTitle className="truncate">{viewDoc?.doc.title}</DialogTitle></DialogHeader>
+          {viewDoc && (
+            <>
+              {/pdf$|^image\//i.test(viewDoc.doc.file_type || "") || /\.pdf$/i.test(viewDoc.doc.file_name) ? (
+                <iframe
+                  src={viewDoc.url}
+                  title={viewDoc.doc.title}
+                  className="w-full h-[70vh] border border-border rounded-sm bg-muted"
+                />
+              ) : (
+                <div className="h-[40vh] flex flex-col items-center justify-center gap-4 text-sm text-muted-foreground">
+                  <p>This file type cannot be previewed in the browser.</p>
+                  <Button asChild variant="outline">
+                    <a href={viewDoc.url} target="_blank" rel="noreferrer">
+                      <Download className="h-4 w-4 mr-1" /> Open file
+                    </a>
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
 
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
         <DialogContent>
