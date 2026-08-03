@@ -1077,6 +1077,28 @@ With kind regards,
                     ))}
                 </SelectContent>
               </Select>
+              {pickedTextId && (
+                <div className="flex items-center rounded-md border border-border overflow-hidden">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                    className="rounded-none h-8 px-2 text-xs"
+                    onClick={() => setAiRewriteFromTemplate(false)}
+                  >
+                    Apply verbatim
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                    className="rounded-none h-8 px-2 text-xs"
+                    onClick={() => setAiRewriteFromTemplate(true)}
+                  >
+                    Generate from text
+                  </Button>
+                </div>
+              )}
               <Button variant="outline" size="sm" onClick={() => setTextsOpen(true)}>
                 <FileText className="w-4 h-4 mr-1.5" />Manage email texts
               </Button>
