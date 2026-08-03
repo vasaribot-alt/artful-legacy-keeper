@@ -1040,7 +1040,11 @@ With kind regards,
               </div>
               <Button onClick={generateDraft} disabled={draftGenerating}>
                 <Sparkles className="w-4 h-4 mr-1.5" />
-                {draftGenerating ? "Generating…" : draftTarget?.email_body ? "Regenerate" : "Generate"}
+                {draftGenerating
+                  ? "Generating…"
+                  : pickedTextId
+                    ? "Apply saved text"
+                    : draftTarget?.email_body ? "Regenerate" : "Generate"}
               </Button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
