@@ -325,9 +325,9 @@ With kind regards,
     if (!draftTarget) return;
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
     localStorage.setItem("garf.outreach.signature", draftSignature);
-    // A saved email text is selected: use it verbatim (placeholders only), never rewrite with AI.
     const picked = emailTexts.find(x => x.id === pickedTextId);
-    if (picked) {
+    // A saved email text is selected and "verbatim" mode is active: apply placeholders only.
+    if (picked && !aiRewriteFromTemplate) {
       const subject = fillTemplate(draftTarget, picked.subject || "");
       const body = fillTemplate(draftTarget, picked.body || "");
       setDraftSubject(subject);
@@ -344,6 +344,8 @@ With kind regards,
         sender_name: draftSenderName.trim() || undefined,
         recipient_capacity: draftRecipientCapacity.trim() || undefined,
         signature: draftSignature.trim() || undefined,
+        template_subject: picked?.subject || undefined,
+        template_body: picked?.body || undefined,
       },
     });
     setDraftGenerating(false);
@@ -357,7 +359,7 @@ With kind regards,
       ...x, email_subject: data.subject || null, email_body: data.body || null,
       email_generated_at: new Date().toISOString(),
     } : x));
-    toast.success("Draft generated");
+    toast.success(picked ? `Draft generated from "${picked.name}"` : "Draft generated");
   };
 
   const saveDraft = async () => {
