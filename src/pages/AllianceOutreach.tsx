@@ -590,6 +590,10 @@ Phone: +31-850 600 529`;
                 {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
                 Generate {selectedIds.length} letters
               </Button>
+              <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
+                Use saved template for {selectedIds.length}
+              </Button>
+
             </>
           )}
           {batchResults.length > 0 && (
