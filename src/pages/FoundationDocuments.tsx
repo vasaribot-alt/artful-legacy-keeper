@@ -69,6 +69,9 @@ const FoundationDocuments = () => {
   const [category, setCategory] = useState("general");
   const [uploading, setUploading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<DocRow | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [bulkUploading, setBulkUploading] = useState(false);
+  const [viewDoc, setViewDoc] = useState<{ doc: DocRow; url: string } | null>(null);
 
   useEffect(() => {
     (async () => {
