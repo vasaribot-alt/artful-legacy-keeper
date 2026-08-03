@@ -1012,6 +1012,28 @@ With kind regards,
               </Button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <Select value={pickedTextId} onValueChange={applySavedTextToDraft}>
+                <SelectTrigger className="w-[300px] h-9 text-sm">
+                  <SelectValue placeholder={emailTexts.length ? "Insert saved email text…" : "No saved email texts yet"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...emailTexts]
+                    .sort((a, b) => {
+                      const cat = draftTarget?.category;
+                      const score = (t: OutreachEmailText) => (t.category === cat ? 0 : t.category ? 2 : 1);
+                      return score(a) - score(b) || a.name.localeCompare(b.name);
+                    })
+                    .map(t => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}{t.category ? ` — ${CATEGORY_LABELS[t.category as Category] || t.category}` : ""}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="sm" onClick={() => setTextsOpen(true)}>
+                <FileText className="w-4 h-4 mr-1.5" />Manage email texts
+              </Button>
+
               <Button variant="outline" size="sm" onClick={saveAsTemplate} disabled={!draftBody.trim()}>
                 Save this text as template
               </Button>
