@@ -131,6 +131,16 @@ Deno.serve(async (req) => {
       ? "Write in clear, professional English."
       : `Write in ${language}. Use natural, professional register for that language.`;
 
+    const templateInstruction = template_body
+      ? `Use the following saved email text as the base. Preserve its core message, structure, tone, and any specific phrases or facts, but rewrite it naturally for this recipient and language. Do not invent facts that are not in the saved text or recipient details. Keep roughly the same length.
+
+Saved subject: ${template_subject || "(none — derive a concise subject from the body)"}
+Saved body:
+---
+${template_body}
+---`
+      : "";
+
     const prompt = `Write a partnership outreach email on behalf of the Global Artist Registry Foundation (GARF) — a Dutch non-profit foundation (stichting) building a permanent 100-year archival registry to preserve artist legacies. GARF is non-commercial, independent, and museum-grade.
 
 Recipient:
@@ -142,6 +152,8 @@ Recipient:
 - Internal notes: ${notes || "n/a"}
 
 Category-specific framing: ${guidance}
+
+${templateInstruction}
 
 Instructions:
 - ${salutation}
