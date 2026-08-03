@@ -128,6 +128,32 @@ Phone: +31-850 600 529`;
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
 
+  // Built-in preset letter: Allied Curator Partner invitation
+  const CURATOR_PARTNER_SUBJECT =
+    "Invitation: {{name}} as Allied Curator Partner — Global Artist Registry Foundation";
+  const CURATOR_PARTNER_BODY = `{{greeting}}
+
+I am writing on behalf of the Global Artist Registry Foundation (GARF), a Dutch non-profit foundation (stichting) building an independent, 100-year archival record of contemporary artists and their work — free for artists, and governed for the public good.
+
+Curators are central to how art is understood, contextualised, and preserved for the future. As part of our effort to bring every relevant group of stakeholders into the long-term archival documentation of contemporary art, we are establishing a broader Global Alliance that includes curators, galleries, museums, universities and research institutions, foundations, corporate collections, and registrars. We would be honoured if {{name}} would join us as an Allied Curator Partner.
+
+What partnership means, in practice:
+
+- Your members get free professional profiles on GARF and can link the exhibitions they have curated to the artists' permanent records.
+- Your association is listed as an Allied Curator Partner on our public Alliance page, with a link to your site.
+- Curators can personally invite the artists they work with to join GARF — free of charge — so the exhibitions and scholarship curators produce are anchored to the artists' own permanent records.
+- No fees, no exclusivity, no data ownership by GARF — members keep full ownership and control of their records.
+- Optional: a short interview or joint statement we can publish when the Alliance launches publicly.
+
+We would be grateful for a short call (20–30 minutes) with the board, or a delegated contact, to walk through the project, answer questions, and discuss how a partnership could work for {{name}}.
+
+More about GARF: https://globalartistregistry.org
+Alliance overview (curators): https://globalartistregistry.org/alliance/curators
+
+With kind regards,
+
+{{signature}}`;
+
   // Reusable letter template (edited once, reused for every recipient)
   const [templateSubject, setTemplateSubject] = useState<string>(
     () => localStorage.getItem("garf.outreach.tplSubject") || ""
@@ -137,13 +163,20 @@ Phone: +31-850 600 529`;
   );
   const hasTemplate = !!templateBody.trim();
 
+
+  const buildGreeting = (t: Target) => {
+    if (!t.contact_person) return "Dear colleagues,";
+    const title = t.contact_title ? `, ${t.contact_title} of ${t.name}` : "";
+    return `Dear ${t.contact_person}${title},`;
+  };
+
   const fillTemplate = (t: Target, text: string) =>
     text
       .replace(/\{\{\s*name\s*\}\}/gi, t.name)
       .replace(/\{\{\s*contact_person\s*\}\}/gi, t.contact_person || "")
       .replace(/\{\{\s*contact_title\s*\}\}/gi, t.contact_title || "")
       .replace(/\{\{\s*country\s*\}\}/gi, t.country || "")
-      .replace(/\{\{\s*greeting\s*\}\}/gi, t.contact_person ? `Dear ${t.contact_person},` : "Dear colleagues,")
+      .replace(/\{\{\s*greeting\s*\}\}/gi, buildGreeting(t))
       .replace(/\{\{\s*signature\s*\}\}/gi, draftSignature.trim());
 
   const saveAsTemplate = () => {
@@ -160,6 +193,35 @@ Phone: +31-850 600 529`;
     setDraftBody(fillTemplate(draftTarget, templateBody));
     toast.success("Template applied — edit freely, then Save draft");
   };
+
+  const useCuratorPartnerLetter = () => {
+    if (!draftTarget) return;
+    setDraftSubject(fillTemplate(draftTarget, CURATOR_PARTNER_SUBJECT));
+    setDraftBody(fillTemplate(draftTarget, CURATOR_PARTNER_BODY));
+    toast.success("Curator Partner letter loaded — edit freely, then Save draft");
+  };
+
+  const applyCuratorLetterToSelected = async () => {
+    const list = selectedIds
+      .map(id => targets.find(t => t.id === id))
+      .filter(Boolean) as Target[];
+    if (list.length === 0) return;
+    setBatchOpen(true);
+    const results = list.map(t => ({
+      id: t.id,
+      name: t.name,
+      email: t.contact_email || "",
+      subject: fillTemplate(t, CURATOR_PARTNER_SUBJECT),
+      body: fillTemplate(t, CURATOR_PARTNER_BODY),
+    }));
+    setBatchResults(results);
+    setBatchProgress({ done: results.length, total: results.length });
+    for (const r of results) {
+      await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
+    }
+    toast.success(`Curator Partner letter applied to ${results.length} letters`);
+  };
+
 
   const applyTemplateToSelected = async () => {
     const list = selectedIds
@@ -593,6 +655,10 @@ Phone: +31-850 600 529`;
               <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
                 Use saved template for {selectedIds.length}
               </Button>
+              <Button size="sm" variant="outline" onClick={applyCuratorLetterToSelected} disabled={batchRunning}>
+                Curator Partner letter for {selectedIds.length}
+              </Button>
+
 
             </>
           )}
@@ -879,6 +945,10 @@ Phone: +31-850 600 529`;
               <Button variant="outline" size="sm" onClick={useTemplateInDraft} disabled={!hasTemplate}>
                 Use saved template
               </Button>
+              <Button variant="outline" size="sm" onClick={useCuratorPartnerLetter}>
+                Use Curator Partner letter
+              </Button>
+
               <span className="text-[11px] text-muted-foreground">
                 Placeholders: {"{{greeting}} {{name}} {{contact_person}} {{contact_title}} {{country}} {{signature}}"}
               </span>
