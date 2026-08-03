@@ -50,6 +50,36 @@ export function OutreachEmailTextsDialog({
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
+  const [preview, setPreview] = useState(false);
+
+  const editEl = () =>
+    document.getElementById("email-text-body") as HTMLTextAreaElement | null;
+
+  const wrap = (marker: string) => {
+    const el = editEl();
+    if (!el) return;
+    const start = el.selectionStart, end = el.selectionEnd;
+    const sel = body.slice(start, end) || "text";
+    const next = body.slice(0, start) + marker + sel + marker + body.slice(end);
+    setBody(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + marker.length, start + marker.length + sel.length);
+    });
+  };
+
+  const prefix = (token: string) => {
+    const el = editEl();
+    if (!el) return;
+    const start = el.selectionStart;
+    const lineStart = body.lastIndexOf("\n", start - 1) + 1;
+    const next = body.slice(0, lineStart) + token + body.slice(lineStart);
+    setBody(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + token.length, start + token.length);
+    });
+  };
 
   const resetForm = () => {
     setActiveId(null);
