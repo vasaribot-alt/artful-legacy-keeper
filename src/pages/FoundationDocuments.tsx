@@ -371,26 +371,62 @@ const FoundationDocuments = () => {
       <Dialog open={!!viewDoc} onOpenChange={(o) => !o && setViewDoc(null)}>
         <DialogContent className="max-w-5xl">
           <DialogHeader><DialogTitle className="truncate">{viewDoc?.doc.title}</DialogTitle></DialogHeader>
-          {viewDoc && (
-            <>
-              {/pdf$|^image\//i.test(viewDoc.doc.file_type || "") || /\.pdf$/i.test(viewDoc.doc.file_name) ? (
+          {viewDoc && (() => {
+            const src = `${viewDoc.doc.file_name} ${viewDoc.doc.file_path}`.toLowerCase();
+            const type = (viewDoc.doc.file_type || "").toLowerCase();
+            const ext = (src.match(/\.([a-z0-9]+)(?:\s|$)/g) || []).join(" ");
+            const isPdf = type.includes("pdf") || /\.pdf/.test(ext);
+            const isImage = type.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg|avif)/.test(ext);
+            const isText = type.startsWith("text/") || /\.(txt|md|csv|json)/.test(ext);
+            const isOffice = /\.(docx?|xlsx?|pptx?)/.test(ext) ||
+              type.includes("officedocument") || type.includes("msword") || type.includes("ms-excel");
+
+            if (isImage) {
+              return (
+                <div className="w-full h-[70vh] flex items-center justify-center bg-muted rounded-sm border border-border">
+                  <img src={viewDoc.url} alt={viewDoc.doc.title} className="max-h-full max-w-full object-contain" />
+                </div>
+              );
+            }
+            if (isPdf || isText) {
+              return (
                 <iframe
                   src={viewDoc.url}
                   title={viewDoc.doc.title}
                   className="w-full h-[70vh] border border-border rounded-sm bg-muted"
                 />
-              ) : (
-                <div className="h-[40vh] flex flex-col items-center justify-center gap-4 text-sm text-muted-foreground">
-                  <p>This file type cannot be previewed in the browser.</p>
-                  <Button asChild variant="outline">
-                    <a href={viewDoc.url} target="_blank" rel="noreferrer">
-                      <Download className="h-4 w-4 mr-1" /> Open file
-                    </a>
-                  </Button>
+              );
+            }
+            if (isOffice) {
+              return (
+                <div className="space-y-2">
+                  <iframe
+                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(viewDoc.url)}`}
+                    title={viewDoc.doc.title}
+                    className="w-full h-[70vh] border border-border rounded-sm bg-muted"
+                  />
+                  <div className="flex justify-end">
+                    <Button asChild variant="outline" size="sm">
+                      <a href={viewDoc.url} target="_blank" rel="noreferrer">
+                        <Download className="h-4 w-4 mr-1" /> Download original
+                      </a>
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </>
-          )}
+              );
+            }
+            return (
+              <div className="h-[40vh] flex flex-col items-center justify-center gap-4 text-sm text-muted-foreground">
+                <p>This file type cannot be previewed in the browser.</p>
+                <Button asChild variant="outline">
+                  <a href={viewDoc.url} target="_blank" rel="noreferrer">
+                    <Download className="h-4 w-4 mr-1" /> Open file
+                  </a>
+                </Button>
+              </div>
+            );
+          })()}
+
         </DialogContent>
       </Dialog>
 
