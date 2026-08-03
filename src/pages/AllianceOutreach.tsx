@@ -479,9 +479,10 @@ With kind regards,
       .map(id => targets.find(t => t.id === id))
       .filter(Boolean) as Target[];
     if (batchTargets.length === 0) return;
-    // A saved email text is selected: apply it verbatim to the whole batch.
-    if (pickedTextId && emailTexts.some(x => x.id === pickedTextId)) {
-      await applySavedTextToSelected(pickedTextId);
+    const picked = emailTexts.find(x => x.id === pickedTextId);
+    // A saved email text is selected and "verbatim" mode is active: apply it verbatim to the whole batch.
+    if (picked && !aiRewriteFromTemplate) {
+      await applySavedTextToSelected(picked.id);
       return;
     }
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
@@ -505,6 +506,8 @@ With kind regards,
             recipient_capacity: capacity || undefined,
             contact_person: t.contact_person || undefined,
             signature: draftSignature.trim() || undefined,
+            template_subject: picked?.subject || undefined,
+            template_body: picked?.body || undefined,
           },
         });
         if (error || !(data as any)?.success) throw new Error((data as any)?.error || error?.message || "failed");
@@ -522,7 +525,9 @@ With kind regards,
       setBatchResults([...results]);
     }
     setBatchRunning(false);
-    toast.success(`Generated ${results.length} of ${batchTargets.length} drafts.`);
+    toast.success(picked
+      ? `Generated ${results.length} of ${batchTargets.length} drafts from "${picked.name}".`
+      : `Generated ${results.length} of ${batchTargets.length} drafts.`);
   };
 
   const buildEml = (to: string, subject: string, body: string) => {
