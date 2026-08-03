@@ -212,6 +212,40 @@ With kind regards,
     toast.success("Template applied — edit freely, then Save draft");
   };
 
+  const applySavedTextToDraft = (id: string) => {
+    const tpl = emailTexts.find(x => x.id === id);
+    if (!tpl || !draftTarget) return;
+    setPickedTextId(id);
+    setDraftSubject(fillTemplate(draftTarget, tpl.subject || ""));
+    setDraftBody(fillTemplate(draftTarget, tpl.body || ""));
+    toast.success(`“${tpl.name}” applied — edit freely, then Save draft`);
+  };
+
+  const applySavedTextToSelected = async (id: string) => {
+    const tpl = emailTexts.find(x => x.id === id);
+    if (!tpl) return;
+    const list = selectedIds
+      .map(sid => targets.find(t => t.id === sid))
+      .filter(Boolean) as Target[];
+    if (list.length === 0) return;
+    setBatchOpen(true);
+    const results = list.map(t => ({
+      id: t.id,
+      name: t.name,
+      email: t.contact_email || "",
+      subject: fillTemplate(t, tpl.subject || ""),
+      body: fillTemplate(t, tpl.body || ""),
+    }));
+    setBatchResults(results);
+    setBatchProgress({ done: results.length, total: results.length });
+    for (const r of results) {
+      await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
+    }
+    toast.success(`“${tpl.name}” applied to ${results.length} letters`);
+  };
+
+
+
   const useCuratorPartnerLetter = () => {
     if (!draftTarget) return;
     setDraftSubject(fillTemplate(draftTarget, CURATOR_PARTNER_SUBJECT));
