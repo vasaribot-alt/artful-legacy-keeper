@@ -323,6 +323,17 @@ With kind regards,
     if (!draftTarget) return;
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
     localStorage.setItem("garf.outreach.signature", draftSignature);
+    // A saved email text is selected: use it verbatim (placeholders only), never rewrite with AI.
+    const picked = emailTexts.find(x => x.id === pickedTextId);
+    if (picked) {
+      const subject = fillTemplate(draftTarget, picked.subject || "");
+      const body = fillTemplate(draftTarget, picked.body || "");
+      setDraftSubject(subject);
+      setDraftBody(body);
+      await update(draftTarget.id, { email_subject: subject || null, email_body: body || null });
+      toast.success(`“${picked.name}” applied word-for-word`);
+      return;
+    }
     setDraftGenerating(true);
     const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
       body: {
@@ -464,6 +475,11 @@ With kind regards,
       .map(id => targets.find(t => t.id === id))
       .filter(Boolean) as Target[];
     if (batchTargets.length === 0) return;
+    // A saved email text is selected: apply it verbatim to the whole batch.
+    if (pickedTextId && emailTexts.some(x => x.id === pickedTextId)) {
+      await applySavedTextToSelected(pickedTextId);
+      return;
+    }
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
     localStorage.setItem("garf.outreach.signature", draftSignature);
     setBatchRunning(true);
@@ -726,7 +742,7 @@ With kind regards,
               <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
               <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
                 {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
-                Generate {selectedIds.length} letters
+                {pickedTextId ? `Apply saved text to ${selectedIds.length}` : `Generate ${selectedIds.length} letters`}
               </Button>
               <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
                 Use saved template for {selectedIds.length}
@@ -1024,7 +1040,11 @@ With kind regards,
               </div>
               <Button onClick={generateDraft} disabled={draftGenerating}>
                 <Sparkles className="w-4 h-4 mr-1.5" />
-                {draftGenerating ? "Generating…" : draftTarget?.email_body ? "Regenerate" : "Generate"}
+                {draftGenerating
+                  ? "Generating…"
+                  : pickedTextId
+                    ? "Apply saved text"
+                    : draftTarget?.email_body ? "Regenerate" : "Generate"}
               </Button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
