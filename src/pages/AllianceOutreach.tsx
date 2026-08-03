@@ -872,14 +872,26 @@ Phone: +31-850 600 529`;
                 {draftGenerating ? "Generating…" : draftTarget?.email_body ? "Regenerate" : "Generate"}
               </Button>
             </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" onClick={saveAsTemplate} disabled={!draftBody.trim()}>
+                Save this text as template
+              </Button>
+              <Button variant="outline" size="sm" onClick={useTemplateInDraft} disabled={!hasTemplate}>
+                Use saved template
+              </Button>
+              <span className="text-[11px] text-muted-foreground">
+                Placeholders: {"{{greeting}} {{name}} {{contact_person}} {{contact_title}} {{country}} {{signature}}"}
+              </span>
+            </div>
             <div>
               <Label>Subject</Label>
               <Input value={draftSubject} onChange={e => setDraftSubject(e.target.value)} placeholder="Subject line" />
             </div>
             <div>
               <Label>Body</Label>
-              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
+              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — generate with AI, or reuse your saved template." />
             </div>
+
             {draftTarget?.email_generated_at && (
               <p className="text-xs text-muted-foreground">
                 Last generated {new Date(draftTarget.email_generated_at).toLocaleString()}
