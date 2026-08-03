@@ -1,0 +1,4 @@
+UPDATE public.alliance_outreach_targets
+SET contact_email = NULL,
+    notes = COALESCE(notes, '') || E'\n\nEmail note 2026-08-03: RhiannonStanford@serpentinegalleries.org BOUNCED (permanent, Outlook 550). Serpentine pattern is NOT firstname+lastname. Observed patterns: FirstL@serpentinegalleries.org (most common, i.e. RhiannonS@serpentinegalleries.org), then First.Last@serpentinegalleries.org (Rhiannon.Stanford@...). Safest route: general enquiries address on serpentinegalleries.org / press office, asking to be forwarded to Hans Ulrich Obrist''s office. Do not send to unverified guessed addresses — repeated bounces harm sender reputation.'
+WHERE id = 'f0032c36-0d9a-40f1-902e-59af240fe003';
