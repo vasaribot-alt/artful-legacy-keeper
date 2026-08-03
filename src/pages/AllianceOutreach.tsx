@@ -585,7 +585,13 @@ With kind regards,
               Track partnership outreach to associations across every Alliance category — curators, art critics, galleries, museums, universities & research, foundations, corporate collections, and registrars.
             </p>
           </div>
+          <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setTextsOpen(true)}>
+            <FileText className="w-4 h-4 mr-1.5" />Email texts
+            {emailTexts.length > 0 && <Badge variant="secondary" className="ml-2">{emailTexts.length}</Badge>}
+          </Button>
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
+
             <DialogTrigger asChild>
               <Button><Plus className="w-4 h-4 mr-1.5" />Add target</Button>
             </DialogTrigger>
