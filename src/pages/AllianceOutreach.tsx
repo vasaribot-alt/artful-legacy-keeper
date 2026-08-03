@@ -128,6 +128,32 @@ Phone: +31-850 600 529`;
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
 
+  // Built-in preset letter: Allied Curator Partner invitation
+  const CURATOR_PARTNER_SUBJECT =
+    "Invitation: {{name}} as Allied Curator Partner — Global Artist Registry Foundation";
+  const CURATOR_PARTNER_BODY = `{{greeting}}
+
+I am writing on behalf of the Global Artist Registry Foundation (GARF), a Dutch non-profit foundation (stichting) building an independent, 100-year archival record of contemporary artists and their work — free for artists, and governed for the public good.
+
+Curators are central to how art is understood, contextualised, and preserved for the future. As part of our effort to bring every relevant group of stakeholders into the long-term archival documentation of contemporary art, we are establishing a broader Global Alliance that includes curators, galleries, museums, universities and research institutions, foundations, corporate collections, and registrars. We would be honoured if {{name}} would join us as an Allied Curator Partner.
+
+What partnership means, in practice:
+
+- Your members get free professional profiles on GARF and can link the exhibitions they have curated to the artists' permanent records.
+- Your association is listed as an Allied Curator Partner on our public Alliance page, with a link to your site.
+- Curators can personally invite the artists they work with to join GARF — free of charge — so the exhibitions and scholarship curators produce are anchored to the artists' own permanent records.
+- No fees, no exclusivity, no data ownership by GARF — members keep full ownership and control of their records.
+- Optional: a short interview or joint statement we can publish when the Alliance launches publicly.
+
+We would be grateful for a short call (20–30 minutes) with the board, or a delegated contact, to walk through the project, answer questions, and discuss how a partnership could work for {{name}}.
+
+More about GARF: https://globalartistregistry.org
+Alliance overview (curators): https://globalartistregistry.org/alliance/curators
+
+With kind regards,
+
+{{signature}}`;
+
   // Reusable letter template (edited once, reused for every recipient)
   const [templateSubject, setTemplateSubject] = useState<string>(
     () => localStorage.getItem("garf.outreach.tplSubject") || ""
@@ -136,6 +162,7 @@ Phone: +31-850 600 529`;
     () => localStorage.getItem("garf.outreach.tplBody") || ""
   );
   const hasTemplate = !!templateBody.trim();
+
 
   const fillTemplate = (t: Target, text: string) =>
     text
