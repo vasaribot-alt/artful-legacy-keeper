@@ -1080,6 +1080,16 @@ With kind regards,
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <OutreachEmailTextsDialog
+        open={textsOpen}
+        onOpenChange={setTextsOpen}
+        templates={emailTexts}
+        categoryLabels={CATEGORY_LABELS}
+        categories={CATEGORIES}
+        onChanged={loadEmailTexts}
+      />
     </AppLayout>
+
   );
 }
