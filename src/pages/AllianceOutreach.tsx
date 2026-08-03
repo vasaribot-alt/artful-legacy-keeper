@@ -742,7 +742,7 @@ With kind regards,
               <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
               <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
                 {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
-                Generate {selectedIds.length} letters
+                {pickedTextId ? `Apply saved text to ${selectedIds.length}` : `Generate ${selectedIds.length} letters`}
               </Button>
               <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
                 Use saved template for {selectedIds.length}
