@@ -128,6 +128,60 @@ Phone: +31-850 600 529`;
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
 
+  // Reusable letter template (edited once, reused for every recipient)
+  const [templateSubject, setTemplateSubject] = useState<string>(
+    () => localStorage.getItem("garf.outreach.tplSubject") || ""
+  );
+  const [templateBody, setTemplateBody] = useState<string>(
+    () => localStorage.getItem("garf.outreach.tplBody") || ""
+  );
+  const hasTemplate = !!templateBody.trim();
+
+  const fillTemplate = (t: Target, text: string) =>
+    text
+      .replace(/\{\{\s*name\s*\}\}/gi, t.name)
+      .replace(/\{\{\s*contact_person\s*\}\}/gi, t.contact_person || "")
+      .replace(/\{\{\s*contact_title\s*\}\}/gi, t.contact_title || "")
+      .replace(/\{\{\s*country\s*\}\}/gi, t.country || "")
+      .replace(/\{\{\s*greeting\s*\}\}/gi, t.contact_person ? `Dear ${t.contact_person},` : "Dear colleagues,")
+      .replace(/\{\{\s*signature\s*\}\}/gi, draftSignature.trim());
+
+  const saveAsTemplate = () => {
+    localStorage.setItem("garf.outreach.tplSubject", draftSubject);
+    localStorage.setItem("garf.outreach.tplBody", draftBody);
+    setTemplateSubject(draftSubject);
+    setTemplateBody(draftBody);
+    toast.success("Saved as reusable template");
+  };
+
+  const useTemplateInDraft = () => {
+    if (!draftTarget || !hasTemplate) return;
+    setDraftSubject(fillTemplate(draftTarget, templateSubject));
+    setDraftBody(fillTemplate(draftTarget, templateBody));
+    toast.success("Template applied — edit freely, then Save draft");
+  };
+
+  const applyTemplateToSelected = async () => {
+    const list = selectedIds
+      .map(id => targets.find(t => t.id === id))
+      .filter(Boolean) as Target[];
+    if (list.length === 0 || !hasTemplate) return;
+    setBatchOpen(true);
+    const results = list.map(t => ({
+      id: t.id,
+      name: t.name,
+      email: t.contact_email || "",
+      subject: fillTemplate(t, templateSubject),
+      body: fillTemplate(t, templateBody),
+    }));
+    setBatchResults(results);
+    setBatchProgress({ done: results.length, total: results.length });
+    for (const r of results) {
+      await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
+    }
+    toast.success(`Template applied to ${results.length} letters`);
+  };
+
   // Batch drafting (10 at a time) + Outlook export
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [batchRunning, setBatchRunning] = useState(false);
@@ -536,6 +590,10 @@ Phone: +31-850 600 529`;
                 {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
                 Generate {selectedIds.length} letters
               </Button>
+              <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
+                Use saved template for {selectedIds.length}
+              </Button>
+
             </>
           )}
           {batchResults.length > 0 && (
@@ -814,14 +872,26 @@ Phone: +31-850 600 529`;
                 {draftGenerating ? "Generating…" : draftTarget?.email_body ? "Regenerate" : "Generate"}
               </Button>
             </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" onClick={saveAsTemplate} disabled={!draftBody.trim()}>
+                Save this text as template
+              </Button>
+              <Button variant="outline" size="sm" onClick={useTemplateInDraft} disabled={!hasTemplate}>
+                Use saved template
+              </Button>
+              <span className="text-[11px] text-muted-foreground">
+                Placeholders: {"{{greeting}} {{name}} {{contact_person}} {{contact_title}} {{country}} {{signature}}"}
+              </span>
+            </div>
             <div>
               <Label>Subject</Label>
               <Input value={draftSubject} onChange={e => setDraftSubject(e.target.value)} placeholder="Subject line" />
             </div>
             <div>
               <Label>Body</Label>
-              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
+              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — generate with AI, or reuse your saved template." />
             </div>
+
             {draftTarget?.email_generated_at && (
               <p className="text-xs text-muted-foreground">
                 Last generated {new Date(draftTarget.email_generated_at).toLocaleString()}
