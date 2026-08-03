@@ -131,6 +131,8 @@ Phone: +31-850 600 529`;
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
   const [draftPreview, setDraftPreview] = useState(false);
+  // When a saved email text is selected, choose between verbatim apply or AI rewrite based on it.
+  const [aiRewriteFromTemplate, setAiRewriteFromTemplate] = useState(false);
 
   // Built-in preset letter: Allied Curator Partner invitation
   const CURATOR_PARTNER_SUBJECT =
@@ -226,6 +228,7 @@ With kind regards,
   const applySavedTextToSelected = async (id: string) => {
     const tpl = emailTexts.find(x => x.id === id);
     if (!tpl) return;
+    setPickedTextId(id);
     const list = selectedIds
       .map(sid => targets.find(t => t.id === sid))
       .filter(Boolean) as Target[];
@@ -243,7 +246,7 @@ With kind regards,
     for (const r of results) {
       await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
     }
-    toast.success(`“${tpl.name}” applied to ${results.length} letters`);
+    toast.success(`"${tpl.name}" applied to ${results.length} letters`);
   };
 
 
@@ -323,9 +326,9 @@ With kind regards,
     if (!draftTarget) return;
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
     localStorage.setItem("garf.outreach.signature", draftSignature);
-    // A saved email text is selected: use it verbatim (placeholders only), never rewrite with AI.
     const picked = emailTexts.find(x => x.id === pickedTextId);
-    if (picked) {
+    // A saved email text is selected and "verbatim" mode is active: apply placeholders only.
+    if (picked && !aiRewriteFromTemplate) {
       const subject = fillTemplate(draftTarget, picked.subject || "");
       const body = fillTemplate(draftTarget, picked.body || "");
       setDraftSubject(subject);
@@ -342,6 +345,8 @@ With kind regards,
         sender_name: draftSenderName.trim() || undefined,
         recipient_capacity: draftRecipientCapacity.trim() || undefined,
         signature: draftSignature.trim() || undefined,
+        template_subject: picked?.subject || undefined,
+        template_body: picked?.body || undefined,
       },
     });
     setDraftGenerating(false);
@@ -355,7 +360,7 @@ With kind regards,
       ...x, email_subject: data.subject || null, email_body: data.body || null,
       email_generated_at: new Date().toISOString(),
     } : x));
-    toast.success("Draft generated");
+    toast.success(picked ? `Draft generated from "${picked.name}"` : "Draft generated");
   };
 
   const saveDraft = async () => {
@@ -475,9 +480,10 @@ With kind regards,
       .map(id => targets.find(t => t.id === id))
       .filter(Boolean) as Target[];
     if (batchTargets.length === 0) return;
-    // A saved email text is selected: apply it verbatim to the whole batch.
-    if (pickedTextId && emailTexts.some(x => x.id === pickedTextId)) {
-      await applySavedTextToSelected(pickedTextId);
+    const picked = emailTexts.find(x => x.id === pickedTextId);
+    // A saved email text is selected and "verbatim" mode is active: apply it verbatim to the whole batch.
+    if (picked && !aiRewriteFromTemplate) {
+      await applySavedTextToSelected(picked.id);
       return;
     }
     localStorage.setItem("garf.outreach.senderName", draftSenderName.trim());
@@ -501,6 +507,8 @@ With kind regards,
             recipient_capacity: capacity || undefined,
             contact_person: t.contact_person || undefined,
             signature: draftSignature.trim() || undefined,
+            template_subject: picked?.subject || undefined,
+            template_body: picked?.body || undefined,
           },
         });
         if (error || !(data as any)?.success) throw new Error((data as any)?.error || error?.message || "failed");
@@ -518,7 +526,9 @@ With kind regards,
       setBatchResults([...results]);
     }
     setBatchRunning(false);
-    toast.success(`Generated ${results.length} of ${batchTargets.length} drafts.`);
+    toast.success(picked
+      ? `Generated ${results.length} of ${batchTargets.length} drafts from "${picked.name}".`
+      : `Generated ${results.length} of ${batchTargets.length} drafts.`);
   };
 
   const buildEml = (to: string, subject: string, body: string) => {
@@ -742,7 +752,11 @@ With kind regards,
               <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
               <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
                 {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
-                {pickedTextId ? `Apply saved text to ${selectedIds.length}` : `Generate ${selectedIds.length} letters`}
+                {pickedTextId
+                  ? aiRewriteFromTemplate
+                    ? `Generate from saved text for ${selectedIds.length}`
+                    : `Apply saved text to ${selectedIds.length}`
+                  : `Generate ${selectedIds.length} letters`}
               </Button>
               <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
                 Use saved template for {selectedIds.length}
@@ -763,6 +777,28 @@ With kind regards,
                     ))}
                   </SelectContent>
                 </Select>
+              )}
+              {pickedTextId && (
+                <div className="flex items-center rounded-md border border-border overflow-hidden">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                    className="rounded-none h-7 px-2 text-[11px]"
+                    onClick={() => setAiRewriteFromTemplate(false)}
+                  >
+                    Verbatim
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                    className="rounded-none h-7 px-2 text-[11px]"
+                    onClick={() => setAiRewriteFromTemplate(true)}
+                  >
+                    AI rewrite
+                  </Button>
+                </div>
               )}
             </>
 
@@ -1043,7 +1079,9 @@ With kind regards,
                 {draftGenerating
                   ? "Generating…"
                   : pickedTextId
-                    ? "Apply saved text"
+                    ? aiRewriteFromTemplate
+                      ? "Generate from saved text"
+                      : "Apply saved text"
                     : draftTarget?.email_body ? "Regenerate" : "Generate"}
               </Button>
             </div>
@@ -1066,6 +1104,28 @@ With kind regards,
                     ))}
                 </SelectContent>
               </Select>
+              {pickedTextId && (
+                <div className="flex items-center rounded-md border border-border overflow-hidden">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                    className="rounded-none h-8 px-2 text-xs"
+                    onClick={() => setAiRewriteFromTemplate(false)}
+                  >
+                    Apply verbatim
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                    className="rounded-none h-8 px-2 text-xs"
+                    onClick={() => setAiRewriteFromTemplate(true)}
+                  >
+                    Generate from text
+                  </Button>
+                </div>
+              )}
               <Button variant="outline" size="sm" onClick={() => setTextsOpen(true)}>
                 <FileText className="w-4 h-4 mr-1.5" />Manage email texts
               </Button>
