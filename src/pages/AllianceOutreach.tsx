@@ -642,7 +642,9 @@ With kind regards,
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </div>
         </header>
+
 
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           {STATUSES.map(s => (
