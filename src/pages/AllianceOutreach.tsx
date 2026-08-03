@@ -156,6 +156,20 @@ With kind regards,
 
 {{signature}}`;
 
+  // Saved email texts library (per category, reusable)
+  const [emailTexts, setEmailTexts] = useState<OutreachEmailText[]>([]);
+  const [textsOpen, setTextsOpen] = useState(false);
+  const [pickedTextId, setPickedTextId] = useState<string>("");
+
+  const loadEmailTexts = async () => {
+    const { data, error } = await (supabase.from("outreach_email_templates" as never) as any)
+      .select("id, name, category, subject, body, updated_at")
+      .order("name", { ascending: true });
+    if (!error) setEmailTexts((data as OutreachEmailText[]) || []);
+  };
+
+  useEffect(() => { loadEmailTexts(); }, []);
+
   // Reusable letter template (edited once, reused for every recipient)
   const [templateSubject, setTemplateSubject] = useState<string>(
     () => localStorage.getItem("garf.outreach.tplSubject") || ""
@@ -164,6 +178,8 @@ With kind regards,
     () => localStorage.getItem("garf.outreach.tplBody") || ""
   );
   const hasTemplate = !!templateBody.trim();
+
+
 
 
   const buildGreeting = (t: Target) => {
