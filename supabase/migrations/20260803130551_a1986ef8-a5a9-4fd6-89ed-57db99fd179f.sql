@@ -1,0 +1,7 @@
+update public.alliance_outreach_targets
+set contact_person = 'Anton Osika',
+    contact_title = 'Co-founder & CEO',
+    website = 'https://lovable.dev/partners',
+    country = coalesce(country, 'Sweden'),
+    notes = notes || E'\n\nContact routes (verified 2026-08-03, public sources only):\n- Partnerships application form: https://lovable.dev/partners (Solution / Startup / Government tracks — apply here for a formal record)\n- Press & media: press@lovable.dev (fastest human route for a strategic/mission enquiry)\n- Support (paying customers, account/platform): support@lovable.dev\n- Community: Lovable Discord (via https://lovable.dev/support)\n- Leadership: Anton Osika (Co-founder & CEO) and Fabian Hedin (Co-founder), Stockholm. No personal emails are published — approach via LinkedIn/X or press@ and ask to be routed. Do NOT guess first-name@lovable.dev addresses.\nSuggested sequence: (1) submit the partners form, (2) same-day email to press@lovable.dev referencing the submission and asking to be routed to the leadership/partnerships owner, (3) LinkedIn note to Anton Osika. GARF is itself built on Lovable — lead with that: a live, non-commercial 100-year cultural-heritage registry as a reference case.'
+where id = '2d50a823-af1c-439a-b7d1-7937afff3e40';
