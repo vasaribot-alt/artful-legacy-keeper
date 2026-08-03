@@ -719,7 +719,7 @@ With kind regards,
                 Curator Partner letter for {selectedIds.length}
               </Button>
               {emailTexts.length > 0 && (
-                <Select value="" onValueChange={(v) => applySavedTextToSelected(v)}>
+                <Select onValueChange={(v) => applySavedTextToSelected(v)}>
                   <SelectTrigger className="w-[260px] h-8 text-xs">
                     <SelectValue placeholder={`Use email text for ${selectedIds.length}…`} />
                   </SelectTrigger>
