@@ -130,6 +130,7 @@ Phone: +31-850 600 529`;
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
+  const [draftPreview, setDraftPreview] = useState(false);
 
   // Built-in preset letter: Allied Curator Partner invitation
   const CURATOR_PARTNER_SUBJECT =
