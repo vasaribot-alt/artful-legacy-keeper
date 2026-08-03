@@ -718,9 +718,22 @@ With kind regards,
               <Button size="sm" variant="outline" onClick={applyCuratorLetterToSelected} disabled={batchRunning}>
                 Curator Partner letter for {selectedIds.length}
               </Button>
-
-
+              {emailTexts.length > 0 && (
+                <Select value="" onValueChange={(v) => applySavedTextToSelected(v)}>
+                  <SelectTrigger className="w-[260px] h-8 text-xs">
+                    <SelectValue placeholder={`Use email text for ${selectedIds.length}…`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {emailTexts.map(t => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}{t.category ? ` — ${CATEGORY_LABELS[t.category as Category] || t.category}` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </>
+
           )}
           {batchResults.length > 0 && (
             <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
