@@ -1052,7 +1052,9 @@ With kind regards,
                 {draftGenerating
                   ? "Generating…"
                   : pickedTextId
-                    ? "Apply saved text"
+                    ? aiRewriteFromTemplate
+                      ? "Generate from saved text"
+                      : "Apply saved text"
                     : draftTarget?.email_body ? "Regenerate" : "Generate"}
               </Button>
             </div>
