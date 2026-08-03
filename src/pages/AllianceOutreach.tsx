@@ -164,13 +164,19 @@ With kind regards,
   const hasTemplate = !!templateBody.trim();
 
 
+  const buildGreeting = (t: Target) => {
+    if (!t.contact_person) return "Dear colleagues,";
+    const title = t.contact_title ? `, ${t.contact_title} of ${t.name}` : "";
+    return `Dear ${t.contact_person}${title},`;
+  };
+
   const fillTemplate = (t: Target, text: string) =>
     text
       .replace(/\{\{\s*name\s*\}\}/gi, t.name)
       .replace(/\{\{\s*contact_person\s*\}\}/gi, t.contact_person || "")
       .replace(/\{\{\s*contact_title\s*\}\}/gi, t.contact_title || "")
       .replace(/\{\{\s*country\s*\}\}/gi, t.country || "")
-      .replace(/\{\{\s*greeting\s*\}\}/gi, t.contact_person ? `Dear ${t.contact_person},` : "Dear colleagues,")
+      .replace(/\{\{\s*greeting\s*\}\}/gi, buildGreeting(t))
       .replace(/\{\{\s*signature\s*\}\}/gi, draftSignature.trim());
 
   const saveAsTemplate = () => {
@@ -187,6 +193,35 @@ With kind regards,
     setDraftBody(fillTemplate(draftTarget, templateBody));
     toast.success("Template applied — edit freely, then Save draft");
   };
+
+  const useCuratorPartnerLetter = () => {
+    if (!draftTarget) return;
+    setDraftSubject(fillTemplate(draftTarget, CURATOR_PARTNER_SUBJECT));
+    setDraftBody(fillTemplate(draftTarget, CURATOR_PARTNER_BODY));
+    toast.success("Curator Partner letter loaded — edit freely, then Save draft");
+  };
+
+  const applyCuratorLetterToSelected = async () => {
+    const list = selectedIds
+      .map(id => targets.find(t => t.id === id))
+      .filter(Boolean) as Target[];
+    if (list.length === 0) return;
+    setBatchOpen(true);
+    const results = list.map(t => ({
+      id: t.id,
+      name: t.name,
+      email: t.contact_email || "",
+      subject: fillTemplate(t, CURATOR_PARTNER_SUBJECT),
+      body: fillTemplate(t, CURATOR_PARTNER_BODY),
+    }));
+    setBatchResults(results);
+    setBatchProgress({ done: results.length, total: results.length });
+    for (const r of results) {
+      await update(r.id, { email_subject: r.subject || null, email_body: r.body || null });
+    }
+    toast.success(`Curator Partner letter applied to ${results.length} letters`);
+  };
+
 
   const applyTemplateToSelected = async () => {
     const list = selectedIds
