@@ -655,6 +655,10 @@ With kind regards,
               <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
                 Use saved template for {selectedIds.length}
               </Button>
+              <Button size="sm" variant="outline" onClick={applyCuratorLetterToSelected} disabled={batchRunning}>
+                Curator Partner letter for {selectedIds.length}
+              </Button>
+
 
             </>
           )}
