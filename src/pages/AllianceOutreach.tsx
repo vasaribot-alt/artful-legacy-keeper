@@ -778,6 +778,28 @@ With kind regards,
                   </SelectContent>
                 </Select>
               )}
+              {pickedTextId && (
+                <div className="flex items-center rounded-md border border-border overflow-hidden">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                    className="rounded-none h-7 px-2 text-[11px]"
+                    onClick={() => setAiRewriteFromTemplate(false)}
+                  >
+                    Verbatim
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                    className="rounded-none h-7 px-2 text-[11px]"
+                    onClick={() => setAiRewriteFromTemplate(true)}
+                  >
+                    AI rewrite
+                  </Button>
+                </div>
+              )}
             </>
 
           )}
