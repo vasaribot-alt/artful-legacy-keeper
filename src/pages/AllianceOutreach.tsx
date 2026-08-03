@@ -504,19 +504,33 @@ With kind regards,
   };
 
   const buildEml = (to: string, subject: string, body: string) => {
-    const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+    const b64 = (s: string) =>
+      btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/(.{76})/g, "$1\r\n");
+    const boundary = "garf-boundary-0001";
     return [
       "X-Unsent: 1",
       `To: ${to}`,
-      `Subject: =?UTF-8?B?${b64(subject)}?=`,
+      `Subject: =?UTF-8?B?${btoa(String.fromCharCode(...new TextEncoder().encode(subject)))}?=`,
       "MIME-Version: 1.0",
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      "",
+      `--${boundary}`,
       'Content-Type: text/plain; charset="utf-8"',
       "Content-Transfer-Encoding: base64",
       "",
-      b64(body).replace(/(.{76})/g, "$1\r\n"),
+      b64(markdownToPlainText(body)),
+      "",
+      `--${boundary}`,
+      'Content-Type: text/html; charset="utf-8"',
+      "Content-Transfer-Encoding: base64",
+      "",
+      b64(markdownToEmailHtml(body)),
+      "",
+      `--${boundary}--`,
       "",
     ].join("\r\n");
   };
+
 
   const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 
