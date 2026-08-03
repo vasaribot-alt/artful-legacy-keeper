@@ -107,3 +107,13 @@
     text-wrap: balance;
   }
 }
+
+/* Rendered markdown preview for outreach emails */
+.prose-email h2 { @apply text-base font-semibold mt-4 mb-1; }
+.prose-email h3 { @apply text-sm font-semibold mt-3 mb-1; }
+.prose-email h4 { @apply text-sm font-semibold mt-3 mb-1; }
+.prose-email p { @apply mb-3 leading-relaxed; }
+.prose-email ul { @apply list-disc pl-5 mb-3 space-y-1; }
+.prose-email strong { @apply font-semibold; }
+.prose-email a { @apply underline; }
+.prose-email hr { @apply my-4 border-border; }

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
+import { markdownToHtml, markdownToEmailHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 
@@ -129,6 +130,7 @@ Phone: +31-850 600 529`;
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
+  const [draftPreview, setDraftPreview] = useState(false);
 
   // Built-in preset letter: Allied Curator Partner invitation
   const CURATOR_PARTNER_SUBJECT =
@@ -504,19 +506,33 @@ With kind regards,
   };
 
   const buildEml = (to: string, subject: string, body: string) => {
-    const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+    const b64 = (s: string) =>
+      btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/(.{76})/g, "$1\r\n");
+    const boundary = "garf-boundary-0001";
     return [
       "X-Unsent: 1",
       `To: ${to}`,
-      `Subject: =?UTF-8?B?${b64(subject)}?=`,
+      `Subject: =?UTF-8?B?${btoa(String.fromCharCode(...new TextEncoder().encode(subject)))}?=`,
       "MIME-Version: 1.0",
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      "",
+      `--${boundary}`,
       'Content-Type: text/plain; charset="utf-8"',
       "Content-Transfer-Encoding: base64",
       "",
-      b64(body).replace(/(.{76})/g, "$1\r\n"),
+      b64(markdownToPlainText(body)),
+      "",
+      `--${boundary}`,
+      'Content-Type: text/html; charset="utf-8"',
+      "Content-Transfer-Encoding: base64",
+      "",
+      b64(markdownToEmailHtml(body)),
+      "",
+      `--${boundary}--`,
       "",
     ].join("\r\n");
   };
+
 
   const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 
@@ -1053,9 +1069,29 @@ With kind regards,
               <Input value={draftSubject} onChange={e => setDraftSubject(e.target.value)} placeholder="Subject line" />
             </div>
             <div>
-              <Label>Body</Label>
-              <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — generate with AI, or reuse your saved template." />
+              <div className="flex items-center justify-between">
+                <Label>Body</Label>
+                <Button
+                  type="button" size="sm" variant={draftPreview ? "default" : "ghost"}
+                  className="h-7 px-2 text-xs"
+                  onClick={() => setDraftPreview(p => !p)}
+                >
+                  {draftPreview ? "Edit" : "Preview"}
+                </Button>
+              </div>
+              {draftPreview ? (
+                <div
+                  className="min-h-[280px] rounded-md border border-input bg-background p-3 text-sm prose-email"
+                  dangerouslySetInnerHTML={{ __html: markdownToHtml(draftBody) }}
+                />
+              ) : (
+                <Textarea rows={14} value={draftBody} onChange={e => setDraftBody(e.target.value)} placeholder="Email body — generate with AI, or reuse your saved template. **bold**, *italic*, ## heading, - bullet." />
+              )}
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Formatting: **bold**, *italic*, ## heading, - bullet — preserved in the exported Outlook draft.
+              </p>
             </div>
+
 
             {draftTarget?.email_generated_at && (
               <p className="text-xs text-muted-foreground">

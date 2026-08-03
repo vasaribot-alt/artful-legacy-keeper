@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
+import { markdownToHtml } from "@/lib/emailMarkdown";
 
 export interface OutreachEmailText {
   id: string;
@@ -50,6 +51,36 @@ export function OutreachEmailTextsDialog({
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [saving, setSaving] = useState(false);
+  const [preview, setPreview] = useState(false);
+
+  const editEl = () =>
+    document.getElementById("email-text-body") as HTMLTextAreaElement | null;
+
+  const wrap = (marker: string) => {
+    const el = editEl();
+    if (!el) return;
+    const start = el.selectionStart, end = el.selectionEnd;
+    const sel = body.slice(start, end) || "text";
+    const next = body.slice(0, start) + marker + sel + marker + body.slice(end);
+    setBody(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + marker.length, start + marker.length + sel.length);
+    });
+  };
+
+  const prefix = (token: string) => {
+    const el = editEl();
+    if (!el) return;
+    const start = el.selectionStart;
+    const lineStart = body.lastIndexOf("\n", start - 1) + 1;
+    const next = body.slice(0, lineStart) + token + body.slice(lineStart);
+    setBody(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(start + token.length, start + token.length);
+    });
+  };
 
   const resetForm = () => {
     setActiveId(null);
@@ -176,14 +207,36 @@ export function OutreachEmailTextsDialog({
               />
             </div>
             <div>
-              <Label>Email text</Label>
-              <Textarea
-                rows={16}
-                value={body}
-                onChange={e => setBody(e.target.value)}
-                className="font-mono text-xs"
-                placeholder={`{{greeting}}\n\nWe are writing on behalf of the Global Artist Registry Foundation…\n\nWith kind regards,\n\n{{signature}}`}
-              />
+              <div className="flex items-center justify-between">
+                <Label>Email text</Label>
+                <div className="flex items-center gap-1">
+                  <Button type="button" size="sm" variant="ghost" className="h-7 px-2 font-bold" onClick={() => wrap("**")}>B</Button>
+                  <Button type="button" size="sm" variant="ghost" className="h-7 px-2 italic" onClick={() => wrap("*")}>I</Button>
+                  <Button type="button" size="sm" variant="ghost" className="h-7 px-2" onClick={() => prefix("## ")}>H</Button>
+                  <Button type="button" size="sm" variant="ghost" className="h-7 px-2" onClick={() => prefix("- ")}>•</Button>
+                  <Button type="button" size="sm" variant={preview ? "default" : "ghost"} className="h-7 px-2 text-xs" onClick={() => setPreview(p => !p)}>
+                    {preview ? "Edit" : "Preview"}
+                  </Button>
+                </div>
+              </div>
+              {preview ? (
+                <div
+                  className="min-h-[320px] rounded-md border border-input bg-background p-3 text-sm prose-email"
+                  dangerouslySetInnerHTML={{ __html: markdownToHtml(body) }}
+                />
+              ) : (
+                <Textarea
+                  id="email-text-body"
+                  rows={16}
+                  value={body}
+                  onChange={e => setBody(e.target.value)}
+                  className="font-mono text-xs"
+                  placeholder={`{{greeting}}\n\n**Why we are writing**\n\nWe are writing on behalf of the Global Artist Registry Foundation…\n\nWith kind regards,\n\n{{signature}}`}
+                />
+              )}
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Formatting: **bold**, *italic*, ## heading, - bullet. Bold and headings are preserved in the exported Outlook draft.
+              </p>
             </div>
             <div className="rounded-md border border-border p-3 text-xs space-y-1">
               <div className="font-medium">Placeholders the system fills in automatically</div>
