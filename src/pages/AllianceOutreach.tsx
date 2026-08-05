@@ -737,6 +737,11 @@ With kind regards,
             <FileText className="w-4 h-4 mr-1.5" />Email texts
             {emailTexts.length > 0 && <Badge variant="secondary" className="ml-2">{emailTexts.length}</Badge>}
           </Button>
+          <Button variant="outline" onClick={findExistingDuplicates} disabled={dupScanRunning || loading}>
+            <AlertTriangle className="w-4 h-4 mr-1.5" />
+            {dupScanRunning ? "Scanning…" : "Find duplicates"}
+          </Button>
+
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
 
             <DialogTrigger asChild>
