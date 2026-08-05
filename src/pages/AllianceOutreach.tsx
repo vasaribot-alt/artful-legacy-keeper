@@ -502,6 +502,69 @@ With kind regards,
     toast.success("Target added");
   };
 
+  const findExistingDuplicates = () => {
+    setDupScanRunning(true);
+    const groups: { key: string; reason: string; items: Target[] }[] = [];
+    const seenName = new Map<string, Target[]>();
+    const seenEmail = new Map<string, Target[]>();
+    const seenHost = new Map<string, Target[]>();
+
+    for (const t of targets) {
+      const nk = nameKey(t.name);
+      if (nk) {
+        const list = seenName.get(nk) || [];
+        list.push(t);
+        seenName.set(nk, list);
+      }
+      const em = t.contact_email?.trim().toLowerCase();
+      if (em) {
+        const list = seenEmail.get(em) || [];
+        list.push(t);
+        seenEmail.set(em, list);
+      }
+      const host = hostKey(t.website || "");
+      if (host) {
+        const list = seenHost.get(host) || [];
+        list.push(t);
+        seenHost.set(host, list);
+      }
+    }
+
+    const addGroup = (reason: string, list: Target[]) => {
+      if (list.length < 2) return;
+      const key = list.map(x => x.id).sort().join("|");
+      if (groups.some(g => g.key === key)) return;
+      groups.push({ key, reason, items: list });
+    };
+
+    for (const [, list] of seenName) {
+      // Only flag as name duplicate if the normalized keys are identical or one contains the other
+      const first = nameKey(list[0].name);
+      const allSame = list.every(t => nameKey(t.name) === first);
+      if (allSame) addGroup("Same normalised name", list);
+      else {
+        // Check pairwise containment
+        for (let i = 0; i < list.length; i++) {
+          for (let j = i + 1; j < list.length; j++) {
+            const a = nameKey(list[i].name);
+            const b = nameKey(list[j].name);
+            if (a.includes(b) || b.includes(a)) {
+              addGroup("Similar name", [list[i], list[j]]);
+            }
+          }
+        }
+      }
+    }
+    for (const [, list] of seenEmail) addGroup("Same email", list);
+    for (const [, list] of seenHost) addGroup("Same website domain", list);
+
+    setDupGroups(groups);
+    setDupScanRunning(false);
+    setDupScanOpen(true);
+    if (groups.length === 0) toast.info("No duplicates found in existing targets.");
+  };
+
+
   // ---------- Batch of 10: generate drafts + export to Outlook ----------
   const toggleSelectOne = (id: string) => {
     setSelectedIds(prev =>
