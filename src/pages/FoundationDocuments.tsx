@@ -564,7 +564,41 @@ const FoundationDocuments = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={simScanOpen} onOpenChange={setSimScanOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Similar file names</DialogTitle></DialogHeader>
+          {simGroups.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No documents with closely matching file names.</p>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                {simGroups.length} group(s) of documents share most of their file name. Delete the versions you are replacing.
+              </p>
+              {simGroups.map((group, i) => (
+                <div key={i} className="border border-border rounded-sm divide-y divide-border">
+                  {group.map((doc) => (
+                    <div key={doc.id} className="flex items-center gap-2 p-2 text-xs">
+                      <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="truncate flex-1 min-w-0">{doc.file_name}</span>
+                      <span className="text-muted-foreground shrink-0">{formatBytes(Number(doc.file_size || 0))}</span>
+                      <span className="text-muted-foreground shrink-0">{new Date(doc.created_at).toLocaleDateString()}</span>
+                      <Button variant="ghost" size="sm" className="h-6 px-1" onClick={() => deleteDoc(doc)} title="Delete">
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSimScanOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete document?</AlertDialogTitle>
