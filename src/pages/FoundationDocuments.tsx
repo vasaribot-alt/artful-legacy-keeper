@@ -220,16 +220,51 @@ const FoundationDocuments = () => {
   };
 
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    const doc = deleteTarget;
-    setDeleteTarget(null);
+  const deleteDoc = async (doc: DocRow) => {
     await supabase.storage.from("foundation-documents").remove([doc.file_path]);
     const { error } = await supabase.from("foundation_documents").delete().eq("id", doc.id);
     if (error) { toast.error("Could not delete document"); return; }
     toast.success("Document deleted");
     setDocs((prev) => prev.filter((d) => d.id !== doc.id));
+    setSimGroups((groups) =>
+      groups
+        .map((g) => g.filter((d) => d.id !== doc.id))
+        .filter((g) => g.length > 1)
+    );
   };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    const doc = deleteTarget;
+    setDeleteTarget(null);
+    await deleteDoc(doc);
+  };
+
+  // Documents whose file name closely matches the file staged for upload
+  const similarToStaged = file
+    ? docs
+        .map((d) => ({ doc: d, score: Math.max(similarity(file.name, d.file_name), similarity(file.name, d.title)) }))
+        .filter((r) => r.score >= SIM_THRESHOLD)
+        .sort((a, b) => b.score - a.score)
+    : [];
+
+  const runSimilarScan = () => {
+    const groups: DocRow[][] = [];
+    const used = new Set<string>();
+    docs.forEach((a, i) => {
+      if (used.has(a.id)) return;
+      const group = [a];
+      docs.slice(i + 1).forEach((b) => {
+        if (used.has(b.id)) return;
+        const score = Math.max(similarity(a.file_name, b.file_name), similarity(a.title, b.title));
+        if (score >= SIM_THRESHOLD) { group.push(b); used.add(b.id); }
+      });
+      if (group.length > 1) { used.add(a.id); groups.push(group); }
+    });
+    setSimGroups(groups);
+    setSimScanOpen(true);
+  };
+
 
   const shareUrl = (token: string) => `${window.location.origin}/shared-document/${token}`;
 
