@@ -337,9 +337,13 @@ const FoundationDocuments = () => {
               ))}
             </SelectContent>
           </Select>
+          <Button variant="outline" onClick={runSimilarScan}>
+            <Copy className="h-4 w-4 mr-1" /> Find similar
+          </Button>
           <Button onClick={() => setUploadOpen(true)}>
             <Upload className="h-4 w-4 mr-1" /> Upload
           </Button>
+
         </div>
 
         <div
