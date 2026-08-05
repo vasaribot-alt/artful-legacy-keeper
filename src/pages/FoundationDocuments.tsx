@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import {
-  Upload, FileText, Download, Trash2, Link2, Link2Off, Search, FolderOpen, Eye,
+  Upload, FileText, Download, Trash2, Link2, Link2Off, Search, FolderOpen, Eye, Copy,
 } from "lucide-react";
 import { formatBytes } from "@/lib/storageQuota";
 
