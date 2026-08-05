@@ -512,6 +512,29 @@ const FoundationDocuments = () => {
                 }}
               />
             </div>
+            {similarToStaged.length > 0 && (
+              <div className="rounded-sm border border-border bg-muted p-3 space-y-2">
+                <p className="text-xs font-medium">
+                  {similarToStaged.length} existing document(s) have a similar file name — is one of them the version you are replacing?
+                </p>
+                <div className="space-y-1">
+                  {similarToStaged.map(({ doc, score }) => (
+                    <div key={doc.id} className="flex items-center gap-2 text-xs">
+                      <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="truncate flex-1 min-w-0">{doc.file_name}</span>
+                      <span className="text-muted-foreground shrink-0">{Math.round(score * 100)}%</span>
+                      <span className="text-muted-foreground shrink-0">
+                        {new Date(doc.created_at).toLocaleDateString()}
+                      </span>
+                      <Button variant="ghost" size="sm" className="h-6 px-1" onClick={() => deleteDoc(doc)} title="Delete this older version">
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div>
               <Label>Title</Label>
               <Input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5" autoComplete="off" />
