@@ -54,6 +54,29 @@ const randomToken = () =>
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
+// ── filename similarity helpers ──
+const STOP = new Set(["v", "final", "draft", "copy", "new", "rev", "revised", "and", "the", "of"]);
+
+const tokens = (name: string) =>
+  name
+    .replace(/\.[^.]+$/, "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length > 1 && !STOP.has(t) && !/^\d{1,2}$/.test(t));
+
+/** 0-1 overlap score between two file names (Jaccard on meaningful tokens). */
+const similarity = (a: string, b: string) => {
+  const ta = new Set(tokens(a));
+  const tb = new Set(tokens(b));
+  if (!ta.size || !tb.size) return 0;
+  let shared = 0;
+  ta.forEach((t) => { if (tb.has(t)) shared++; });
+  return shared / Math.min(ta.size, tb.size);
+};
+
+const SIM_THRESHOLD = 0.6;
+
+
 const FoundationDocuments = () => {
   const navigate = useNavigate();
   const [allowed, setAllowed] = useState(false);
