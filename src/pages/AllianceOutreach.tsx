@@ -15,7 +15,23 @@ import {
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
 import { markdownToHtml, markdownToEmailHtml, markdownToPlainText } from "@/lib/emailMarkdown";
-import { Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+import { AlertTriangle, Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+
+/** Loose name key: lowercase, strip parentheses/punctuation and generic words */
+const nameKey = (s: string) =>
+  s.toLowerCase()
+    .replace(/\(.*?\)/g, " ")
+    .replace(/[^a-z0-9åäöæøéèüß ]/gi, " ")
+    .replace(/\b(the|association|assoc|of|and|for|e\.?v|foundation|stichting|society|network|verein)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const hostKey = (s: string) => {
+  try {
+    const u = new URL(s.startsWith("http") ? s : `https://${s}`);
+    return u.hostname.replace(/^www\./, "").toLowerCase();
+  } catch { return ""; }
+};
 
 
 type Category =
@@ -437,8 +453,30 @@ With kind regards,
     toast.success("Removed");
   };
 
+  // Live duplicate detection for the add form
+  const duplicates = useMemo(() => {
+    const n = nameKey(form.name);
+    const email = form.contact_email.trim().toLowerCase();
+    const host = hostKey(form.website.trim());
+    if (!n && !email && !host) return [] as Target[];
+    return targets.filter(t => {
+      const tn = nameKey(t.name);
+      if (n && tn && (tn === n || tn.includes(n) || n.includes(tn))) return true;
+      if (email && t.contact_email && t.contact_email.trim().toLowerCase() === email) return true;
+      if (host && t.website && hostKey(t.website) === host) return true;
+      return false;
+    }).slice(0, 5);
+  }, [form.name, form.contact_email, form.website, targets]);
+
+
   const add = async () => {
     if (!form.name.trim()) { toast.error("Name is required"); return; }
+    if (duplicates.length > 0) {
+      const ok = confirm(
+        `Possible duplicate: "${duplicates[0].name}" is already in the list${duplicates[0].country ? ` (${duplicates[0].country})` : ""}.\n\nAdd anyway?`
+      );
+      if (!ok) return;
+    }
     setSaving(true);
     const { data, error } = await supabase
       .from("alliance_outreach_targets")
@@ -677,7 +715,25 @@ With kind regards,
                   <Label>Notes</Label>
                   <Textarea rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} />
                 </div>
+                {duplicates.length > 0 && (
+                  <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-destructive">
+                      <AlertTriangle className="w-4 h-4" />
+                      Possible duplicate{duplicates.length > 1 ? "s" : ""} already in the list
+                    </div>
+                    <ul className="text-xs text-muted-foreground space-y-0.5">
+                      {duplicates.map(d => (
+                        <li key={d.id}>
+                          {d.name}
+                          {d.country ? ` · ${d.country}` : ""}
+                          {d.contact_email ? ` · ${d.contact_email}` : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
+
               <DialogFooter>
                 <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
                 <Button onClick={add} disabled={saving}>{saving ? "Saving…" : "Add"}</Button>
