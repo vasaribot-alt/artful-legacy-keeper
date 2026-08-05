@@ -95,6 +95,9 @@ const FoundationDocuments = () => {
   const [dragOver, setDragOver] = useState(false);
   const [bulkUploading, setBulkUploading] = useState(false);
   const [viewDoc, setViewDoc] = useState<{ doc: DocRow; url: string } | null>(null);
+  const [simScanOpen, setSimScanOpen] = useState(false);
+  const [simGroups, setSimGroups] = useState<DocRow[][]>([]);
+
 
   useEffect(() => {
     (async () => {
