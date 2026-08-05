@@ -1,0 +1,1 @@
+DELETE FROM public.alliance_outreach_targets WHERE id = '455d69c4-ccf0-43ca-be11-93f380811468';
