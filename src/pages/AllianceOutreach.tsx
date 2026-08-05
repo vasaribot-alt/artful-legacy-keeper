@@ -715,7 +715,25 @@ With kind regards,
                   <Label>Notes</Label>
                   <Textarea rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} />
                 </div>
+                {duplicates.length > 0 && (
+                  <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-destructive">
+                      <AlertTriangle className="w-4 h-4" />
+                      Possible duplicate{duplicates.length > 1 ? "s" : ""} already in the list
+                    </div>
+                    <ul className="text-xs text-muted-foreground space-y-0.5">
+                      {duplicates.map(d => (
+                        <li key={d.id}>
+                          {d.name}
+                          {d.country ? ` · ${d.country}` : ""}
+                          {d.contact_email ? ` · ${d.contact_email}` : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
+
               <DialogFooter>
                 <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
                 <Button onClick={add} disabled={saving}>{saving ? "Saving…" : "Add"}</Button>
