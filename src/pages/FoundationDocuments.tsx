@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import {
-  Upload, FileText, Download, Trash2, Link2, Link2Off, Search, FolderOpen, Eye,
+  Upload, FileText, Download, Trash2, Link2, Link2Off, Search, FolderOpen, Eye, Copy,
 } from "lucide-react";
 import { formatBytes } from "@/lib/storageQuota";
 
@@ -54,6 +54,29 @@ const randomToken = () =>
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
+// ── filename similarity helpers ──
+const STOP = new Set(["v", "final", "draft", "copy", "new", "rev", "revised", "and", "the", "of"]);
+
+const tokens = (name: string) =>
+  name
+    .replace(/\.[^.]+$/, "")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length > 1 && !STOP.has(t) && !/^\d{1,2}$/.test(t));
+
+/** 0-1 overlap score between two file names (Jaccard on meaningful tokens). */
+const similarity = (a: string, b: string) => {
+  const ta = new Set(tokens(a));
+  const tb = new Set(tokens(b));
+  if (!ta.size || !tb.size) return 0;
+  let shared = 0;
+  ta.forEach((t) => { if (tb.has(t)) shared++; });
+  return shared / Math.min(ta.size, tb.size);
+};
+
+const SIM_THRESHOLD = 0.6;
+
+
 const FoundationDocuments = () => {
   const navigate = useNavigate();
   const [allowed, setAllowed] = useState(false);
@@ -72,6 +95,9 @@ const FoundationDocuments = () => {
   const [dragOver, setDragOver] = useState(false);
   const [bulkUploading, setBulkUploading] = useState(false);
   const [viewDoc, setViewDoc] = useState<{ doc: DocRow; url: string } | null>(null);
+  const [simScanOpen, setSimScanOpen] = useState(false);
+  const [simGroups, setSimGroups] = useState<DocRow[][]>([]);
+
 
   useEffect(() => {
     (async () => {
@@ -194,16 +220,51 @@ const FoundationDocuments = () => {
   };
 
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    const doc = deleteTarget;
-    setDeleteTarget(null);
+  const deleteDoc = async (doc: DocRow) => {
     await supabase.storage.from("foundation-documents").remove([doc.file_path]);
     const { error } = await supabase.from("foundation_documents").delete().eq("id", doc.id);
     if (error) { toast.error("Could not delete document"); return; }
     toast.success("Document deleted");
     setDocs((prev) => prev.filter((d) => d.id !== doc.id));
+    setSimGroups((groups) =>
+      groups
+        .map((g) => g.filter((d) => d.id !== doc.id))
+        .filter((g) => g.length > 1)
+    );
   };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    const doc = deleteTarget;
+    setDeleteTarget(null);
+    await deleteDoc(doc);
+  };
+
+  // Documents whose file name closely matches the file staged for upload
+  const similarToStaged = file
+    ? docs
+        .map((d) => ({ doc: d, score: Math.max(similarity(file.name, d.file_name), similarity(file.name, d.title)) }))
+        .filter((r) => r.score >= SIM_THRESHOLD)
+        .sort((a, b) => b.score - a.score)
+    : [];
+
+  const runSimilarScan = () => {
+    const groups: DocRow[][] = [];
+    const used = new Set<string>();
+    docs.forEach((a, i) => {
+      if (used.has(a.id)) return;
+      const group = [a];
+      docs.slice(i + 1).forEach((b) => {
+        if (used.has(b.id)) return;
+        const score = Math.max(similarity(a.file_name, b.file_name), similarity(a.title, b.title));
+        if (score >= SIM_THRESHOLD) { group.push(b); used.add(b.id); }
+      });
+      if (group.length > 1) { used.add(a.id); groups.push(group); }
+    });
+    setSimGroups(groups);
+    setSimScanOpen(true);
+  };
+
 
   const shareUrl = (token: string) => `${window.location.origin}/shared-document/${token}`;
 
@@ -276,9 +337,13 @@ const FoundationDocuments = () => {
               ))}
             </SelectContent>
           </Select>
+          <Button variant="outline" onClick={runSimilarScan}>
+            <Copy className="h-4 w-4 mr-1" /> Find similar
+          </Button>
           <Button onClick={() => setUploadOpen(true)}>
             <Upload className="h-4 w-4 mr-1" /> Upload
           </Button>
+
         </div>
 
         <div
@@ -447,6 +512,29 @@ const FoundationDocuments = () => {
                 }}
               />
             </div>
+            {similarToStaged.length > 0 && (
+              <div className="rounded-sm border border-border bg-muted p-3 space-y-2">
+                <p className="text-xs font-medium">
+                  {similarToStaged.length} existing document(s) have a similar file name — is one of them the version you are replacing?
+                </p>
+                <div className="space-y-1">
+                  {similarToStaged.map(({ doc, score }) => (
+                    <div key={doc.id} className="flex items-center gap-2 text-xs">
+                      <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="truncate flex-1 min-w-0">{doc.file_name}</span>
+                      <span className="text-muted-foreground shrink-0">{Math.round(score * 100)}%</span>
+                      <span className="text-muted-foreground shrink-0">
+                        {new Date(doc.created_at).toLocaleDateString()}
+                      </span>
+                      <Button variant="ghost" size="sm" className="h-6 px-1" onClick={() => deleteDoc(doc)} title="Delete this older version">
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div>
               <Label>Title</Label>
               <Input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5" autoComplete="off" />
@@ -476,7 +564,41 @@ const FoundationDocuments = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={simScanOpen} onOpenChange={setSimScanOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Similar file names</DialogTitle></DialogHeader>
+          {simGroups.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No documents with closely matching file names.</p>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                {simGroups.length} group(s) of documents share most of their file name. Delete the versions you are replacing.
+              </p>
+              {simGroups.map((group, i) => (
+                <div key={i} className="border border-border rounded-sm divide-y divide-border">
+                  {group.map((doc) => (
+                    <div key={doc.id} className="flex items-center gap-2 p-2 text-xs">
+                      <FileText className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="truncate flex-1 min-w-0">{doc.file_name}</span>
+                      <span className="text-muted-foreground shrink-0">{formatBytes(Number(doc.file_size || 0))}</span>
+                      <span className="text-muted-foreground shrink-0">{new Date(doc.created_at).toLocaleDateString()}</span>
+                      <Button variant="ghost" size="sm" className="h-6 px-1" onClick={() => deleteDoc(doc)} title="Delete">
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSimScanOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete document?</AlertDialogTitle>
