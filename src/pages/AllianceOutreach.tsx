@@ -15,7 +15,23 @@ import {
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
 import { markdownToHtml, markdownToEmailHtml, markdownToPlainText } from "@/lib/emailMarkdown";
-import { Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+import { AlertTriangle, Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+
+/** Loose name key: lowercase, strip parentheses/punctuation and generic words */
+const nameKey = (s: string) =>
+  s.toLowerCase()
+    .replace(/\(.*?\)/g, " ")
+    .replace(/[^a-z0-9åäöæøéèüß ]/gi, " ")
+    .replace(/\b(the|association|assoc|of|and|for|e\.?v|foundation|stichting|society|network|verein)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const hostKey = (s: string) => {
+  try {
+    const u = new URL(s.startsWith("http") ? s : `https://${s}`);
+    return u.hostname.replace(/^www\./, "").toLowerCase();
+  } catch { return ""; }
+};
 
 
 type Category =
