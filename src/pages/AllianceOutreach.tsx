@@ -149,6 +149,10 @@ Phone: +31-850 600 529`;
   const [draftPreview, setDraftPreview] = useState(false);
   // When a saved email text is selected, choose between verbatim apply or AI rewrite based on it.
   const [aiRewriteFromTemplate, setAiRewriteFromTemplate] = useState(false);
+  const [dupScanOpen, setDupScanOpen] = useState(false);
+  const [dupScanRunning, setDupScanRunning] = useState(false);
+  const [dupGroups, setDupGroups] = useState<{ key: string; reason: string; items: Target[] }[]>([]);
+
 
   // Built-in preset letter: Allied Curator Partner invitation
   const CURATOR_PARTNER_SUBJECT =
@@ -498,6 +502,69 @@ With kind regards,
     toast.success("Target added");
   };
 
+  const findExistingDuplicates = () => {
+    setDupScanRunning(true);
+    const groups: { key: string; reason: string; items: Target[] }[] = [];
+    const seenName = new Map<string, Target[]>();
+    const seenEmail = new Map<string, Target[]>();
+    const seenHost = new Map<string, Target[]>();
+
+    for (const t of targets) {
+      const nk = nameKey(t.name);
+      if (nk) {
+        const list = seenName.get(nk) || [];
+        list.push(t);
+        seenName.set(nk, list);
+      }
+      const em = t.contact_email?.trim().toLowerCase();
+      if (em) {
+        const list = seenEmail.get(em) || [];
+        list.push(t);
+        seenEmail.set(em, list);
+      }
+      const host = hostKey(t.website || "");
+      if (host) {
+        const list = seenHost.get(host) || [];
+        list.push(t);
+        seenHost.set(host, list);
+      }
+    }
+
+    const addGroup = (reason: string, list: Target[]) => {
+      if (list.length < 2) return;
+      const key = list.map(x => x.id).sort().join("|");
+      if (groups.some(g => g.key === key)) return;
+      groups.push({ key, reason, items: list });
+    };
+
+    for (const [, list] of seenName) {
+      // Only flag as name duplicate if the normalized keys are identical or one contains the other
+      const first = nameKey(list[0].name);
+      const allSame = list.every(t => nameKey(t.name) === first);
+      if (allSame) addGroup("Same normalised name", list);
+      else {
+        // Check pairwise containment
+        for (let i = 0; i < list.length; i++) {
+          for (let j = i + 1; j < list.length; j++) {
+            const a = nameKey(list[i].name);
+            const b = nameKey(list[j].name);
+            if (a.includes(b) || b.includes(a)) {
+              addGroup("Similar name", [list[i], list[j]]);
+            }
+          }
+        }
+      }
+    }
+    for (const [, list] of seenEmail) addGroup("Same email", list);
+    for (const [, list] of seenHost) addGroup("Same website domain", list);
+
+    setDupGroups(groups);
+    setDupScanRunning(false);
+    setDupScanOpen(true);
+    if (groups.length === 0) toast.info("No duplicates found in existing targets.");
+  };
+
+
   // ---------- Batch of 10: generate drafts + export to Outlook ----------
   const toggleSelectOne = (id: string) => {
     setSelectedIds(prev =>
@@ -670,6 +737,11 @@ With kind regards,
             <FileText className="w-4 h-4 mr-1.5" />Email texts
             {emailTexts.length > 0 && <Badge variant="secondary" className="ml-2">{emailTexts.length}</Badge>}
           </Button>
+          <Button variant="outline" onClick={findExistingDuplicates} disabled={dupScanRunning || loading}>
+            <AlertTriangle className="w-4 h-4 mr-1.5" />
+            {dupScanRunning ? "Scanning…" : "Find duplicates"}
+          </Button>
+
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
 
             <DialogTrigger asChild>
@@ -1253,7 +1325,59 @@ With kind regards,
         </DialogContent>
       </Dialog>
 
+      <Dialog open={dupScanOpen} onOpenChange={setDupScanOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Duplicate targets {dupGroups.length > 0 ? `— ${dupGroups.length} group${dupGroups.length === 1 ? "" : "s"}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          {dupGroups.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No duplicate targets found.</p>
+          ) : (
+            <div className="space-y-4">
+              {dupGroups.map((g, i) => (
+                <div key={g.key} className="border border-border rounded-md p-3 space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <span className="text-muted-foreground">{i + 1}.</span>
+                    <Badge variant="outline">{g.reason}</Badge>
+                  </div>
+                  <ul className="space-y-2">
+                    {g.items.map(t => (
+                      <li key={t.id} className="flex items-start justify-between gap-3 text-sm">
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{t.name}</div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {CATEGORY_LABELS[t.category]}
+                            {t.country ? ` · ${t.country}` : ""}
+                            {t.contact_email ? ` · ${t.contact_email}` : ""}
+                            {t.website ? ` · ${t.website}` : ""}
+                          </div>
+                          {t.notes && <div className="text-xs text-muted-foreground mt-0.5">{t.notes}</div>}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="shrink-0 text-destructive"
+                          onClick={() => remove(t.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDupScanOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <OutreachEmailTextsDialog
+
         open={textsOpen}
         onOpenChange={setTextsOpen}
         templates={emailTexts}
