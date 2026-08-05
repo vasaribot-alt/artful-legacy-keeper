@@ -455,6 +455,12 @@ With kind regards,
 
   const add = async () => {
     if (!form.name.trim()) { toast.error("Name is required"); return; }
+    if (duplicates.length > 0) {
+      const ok = confirm(
+        `Possible duplicate: "${duplicates[0].name}" is already in the list${duplicates[0].country ? ` (${duplicates[0].country})` : ""}.\n\nAdd anyway?`
+      );
+      if (!ok) return;
+    }
     setSaving(true);
     const { data, error } = await supabase
       .from("alliance_outreach_targets")
