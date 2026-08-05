@@ -1325,7 +1325,59 @@ With kind regards,
         </DialogContent>
       </Dialog>
 
+      <Dialog open={dupScanOpen} onOpenChange={setDupScanOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Duplicate targets {dupGroups.length > 0 ? `— ${dupGroups.length} group${dupGroups.length === 1 ? "" : "s"}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          {dupGroups.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No duplicate targets found.</p>
+          ) : (
+            <div className="space-y-4">
+              {dupGroups.map((g, i) => (
+                <div key={g.key} className="border border-border rounded-md p-3 space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <span className="text-muted-foreground">{i + 1}.</span>
+                    <Badge variant="outline">{g.reason}</Badge>
+                  </div>
+                  <ul className="space-y-2">
+                    {g.items.map(t => (
+                      <li key={t.id} className="flex items-start justify-between gap-3 text-sm">
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{t.name}</div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {CATEGORY_LABELS[t.category]}
+                            {t.country ? ` · ${t.country}` : ""}
+                            {t.contact_email ? ` · ${t.contact_email}` : ""}
+                            {t.website ? ` · ${t.website}` : ""}
+                          </div>
+                          {t.notes && <div className="text-xs text-muted-foreground mt-0.5">{t.notes}</div>}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="shrink-0 text-destructive"
+                          onClick={() => remove(t.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDupScanOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <OutreachEmailTextsDialog
+
         open={textsOpen}
         onOpenChange={setTextsOpen}
         templates={emailTexts}
