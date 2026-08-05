@@ -453,6 +453,22 @@ With kind regards,
     toast.success("Removed");
   };
 
+  // Live duplicate detection for the add form
+  const duplicates = useMemo(() => {
+    const n = nameKey(form.name);
+    const email = form.contact_email.trim().toLowerCase();
+    const host = hostKey(form.website.trim());
+    if (!n && !email && !host) return [] as Target[];
+    return targets.filter(t => {
+      const tn = nameKey(t.name);
+      if (n && tn && (tn === n || tn.includes(n) || n.includes(tn))) return true;
+      if (email && t.contact_email && t.contact_email.trim().toLowerCase() === email) return true;
+      if (host && t.website && hostKey(t.website) === host) return true;
+      return false;
+    }).slice(0, 5);
+  }, [form.name, form.contact_email, form.website, targets]);
+
+
   const add = async () => {
     if (!form.name.trim()) { toast.error("Name is required"); return; }
     if (duplicates.length > 0) {
