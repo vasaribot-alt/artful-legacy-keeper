@@ -1443,6 +1443,55 @@ With kind regards,
         categories={CATEGORIES}
         onChanged={loadEmailTexts}
       />
+
+      <Dialog open={forceReauthOpen} onOpenChange={setForceReauthOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Force re-authenticate Outlook</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p className="text-muted-foreground">
+              Microsoft reuses the browser session, so the account picker often re-authorises the same mailbox
+              silently. Do these steps in order to force a genuinely fresh authorisation:
+            </p>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>
+                Sign out of every Microsoft session first:{" "}
+                <a
+                  href="https://login.microsoftonline.com/common/oauth2/v2.0/logout"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:no-underline"
+                >
+                  login.microsoftonline.com logout
+                </a>
+                {" "}— or open the next step in a private/incognito window.
+              </li>
+              <li>
+                In Lovable, open <span className="font-medium">Settings → Connectors → All connectors → Microsoft
+                Outlook → Add connection</span> (do not click either existing Outlook card).
+              </li>
+              <li>
+                On the Microsoft sign-in screen choose <span className="font-medium">“Work or school account”</span>{" "}
+                and sign in with your Microsoft 365 address.
+              </li>
+              <li>Come back here and click “Check account” to confirm the mailbox before saving drafts.</li>
+            </ol>
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={() => setForceReauthOpen(false)}>Close</Button>
+            <Button
+              onClick={async () => {
+                await checkOutlookAccount();
+              }}
+              disabled={checkingAccount}
+            >
+              {checkingAccount ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : null}
+              Re-check account
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
 
   );
