@@ -28,38 +28,58 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: jsonHeaders });
     }
 
-    const response = await fetch(
+    const gatewayHeaders = {
+      Authorization: `Bearer ${lovableKey}`,
+      "X-Connection-Api-Key": outlookKey,
+    };
+
+    let displayName: string | null = null;
+    let address: string | null = null;
+
+    const profileRes = await fetch(
       "https://connector-gateway.lovable.dev/microsoft_outlook/me?$select=displayName,mail,userPrincipalName,id",
-      {
-        headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "X-Connection-Api-Key": outlookKey,
-        },
-      },
+      { headers: gatewayHeaders },
     );
 
-    if (!response.ok) {
-      const details = await response.text();
-      console.error(`Outlook identity check failed [${response.status}]: ${details}`);
-      return new Response(
-        JSON.stringify({ error: "Outlook request failed", status: response.status, details }),
-        { status: response.status, headers: jsonHeaders },
+    if (profileRes.ok) {
+      const me = await profileRes.json();
+      displayName = me?.displayName || null;
+      address = me?.mail || me?.userPrincipalName || null;
+    } else {
+      // Some grants lack User.Read but still allow Mail scopes; derive the mailbox from Graph metadata.
+      const details = await profileRes.text();
+      console.error(`Outlook profile check failed [${profileRes.status}]: ${details}`);
+
+      const mailRes = await fetch(
+        "https://connector-gateway.lovable.dev/microsoft_outlook/me/mailFolders/drafts",
+        { headers: gatewayHeaders },
       );
+      if (!mailRes.ok) {
+        const mailDetails = await mailRes.text();
+        console.error(`Outlook mailbox check failed [${mailRes.status}]: ${mailDetails}`);
+        return new Response(
+          JSON.stringify({ error: "Outlook request failed", status: mailRes.status, details: mailDetails }),
+          { status: mailRes.status, headers: jsonHeaders },
+        );
+      }
+      const folder = await mailRes.json();
+      const context = folder?.["@odata.context"] as string | undefined;
+      const match = context?.match(/users\('([^']+)'\)/);
+      if (match) address = decodeURIComponent(match[1]);
     }
 
-    const me = await response.json();
-    const address: string | null = me?.mail || me?.userPrincipalName || null;
     const isPersonal = typeof address === "string" && /outlook_[0-9A-F]{16}@outlook\.com$/i.test(address);
 
     return new Response(
       JSON.stringify({
         success: true,
-        displayName: me?.displayName || null,
+        displayName,
         address,
         accountType: isPersonal ? "personal" : "work",
       }),
       { status: 200, headers: jsonHeaders },
     );
+
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unexpected error" }), {
