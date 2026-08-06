@@ -682,6 +682,11 @@ With kind regards,
       toast.error("No drafts with an email address to export.");
       return;
     }
+    if (!senderEmail.trim()) {
+      toast.error("Add a “Send from account” email address at the top of this dialog first.");
+      return;
+    }
+
     ready.forEach((r, i) => {
       setTimeout(() => {
         const blob = new Blob([buildEml(r.email, r.subject, r.body)], { type: "message/rfc822" });
