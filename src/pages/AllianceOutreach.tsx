@@ -1188,7 +1188,7 @@ With kind regards,
           </DialogHeader>
           <div className="space-y-4 text-sm">
             <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-              Drafts are saved directly to the connected Outlook account. No files need to be downloaded or moved.
+              This batch is stored temporarily in this browser, so you can close this window or refresh the page and reopen it later. Use “Open in Outlook” to create an email in the Outlook account configured on this device.
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
