@@ -41,6 +41,8 @@ Deno.serve(async (req) => {
     }
 
     let saved = 0;
+    let mailbox: string | null = null;
+    const links: { to: string; subject: string; webLink: string }[] = [];
     const failures: { to: string; error: string }[] = [];
     for (const draft of drafts) {
       if (!draft?.to || !draft?.bodyHtml) {
@@ -62,6 +64,15 @@ Deno.serve(async (req) => {
       });
       if (response.ok) {
         saved += 1;
+        const created = await response.json().catch(() => null);
+        if (created?.webLink) {
+          links.push({ to: draft.to, subject: draft.subject || "", webLink: created.webLink });
+        }
+        const context = created?.["@odata.context"] as string | undefined;
+        if (!mailbox && context) {
+          const match = context.match(/users\('([^']+)'\)/);
+          if (match) mailbox = decodeURIComponent(match[1]);
+        }
       } else {
         const details = await response.text();
         console.error(`Outlook draft failed [${response.status}]: ${details}`);
@@ -69,10 +80,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ success: failures.length === 0, saved, failures }), {
+    return new Response(JSON.stringify({ success: failures.length === 0, saved, mailbox, links, failures }), {
       status: saved > 0 ? 200 : 502,
       headers: jsonHeaders,
     });
+
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unexpected error" }), {

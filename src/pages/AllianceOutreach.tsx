@@ -324,6 +324,9 @@ With kind regards,
   // Batch drafting (10 at a time) + Outlook export
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [batchRunning, setBatchRunning] = useState(false);
+  const [draftMailbox, setDraftMailbox] = useState<string | null>(null);
+  const [draftLinks, setDraftLinks] = useState<{ to: string; subject: string; webLink: string }[]>([]);
+
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
   const [batchResults, setBatchResults] = useState<
     { id: string; name: string; email: string; subject: string; body: string }[]
@@ -657,9 +660,12 @@ With kind regards,
       toast.error(data?.error || error?.message || "Could not save drafts to Outlook");
       return;
     }
+    setDraftMailbox(data.mailbox || null);
+    setDraftLinks(Array.isArray(data.links) ? data.links : []);
     if (data.failures?.length) toast.warning(`Saved ${data.saved}; ${data.failures.length} could not be saved.`);
-    else toast.success(`${data.saved} drafts saved directly in Outlook.`);
+    else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
+
 
   const saveBatchEdits = async () => {
     for (const r of batchResults) {
@@ -1099,6 +1105,32 @@ With kind regards,
                 <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
               </div>
             )}
+            {draftLinks.length > 0 && (
+              <div className="border border-border rounded-md p-3 space-y-2 bg-muted/40">
+                <div className="text-xs font-medium">
+                  {draftLinks.length} drafts saved{draftMailbox ? ` in mailbox ${draftMailbox}` : ""}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  If they don’t appear in your Outlook app, open them directly — these links go to the exact mailbox they were saved in.
+                </p>
+                <ul className="space-y-1">
+                  {draftLinks.map((l, i) => (
+                    <li key={l.webLink} className="text-xs">
+                      <a
+                        href={l.webLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline hover:no-underline"
+                      >
+                        {i + 1}. {l.subject || l.to}
+                      </a>
+                      <span className="text-muted-foreground"> — {l.to}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {batchResults.length === 0 && !batchRunning && (
               <div className="text-muted-foreground">No drafts yet. Select organisations and click “Generate letters”.</div>
             )}
