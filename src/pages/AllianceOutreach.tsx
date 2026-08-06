@@ -1326,7 +1326,6 @@ With kind regards,
             ))}
           </div>
           <DialogFooter className="flex-wrap gap-2">
-
             <Button variant="outline" onClick={saveBatchEdits} disabled={batchRunning || batchResults.length === 0}>
               Save edits
             </Button>
@@ -1336,14 +1335,17 @@ With kind regards,
             <Button variant="outline" onClick={downloadBatchEml} disabled={batchResults.length === 0}>
               Download .eml files
             </Button>
-            <Button variant="outline" onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
-              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
-            </Button>
-
-            <Button onClick={saveBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
-
+            <Button
+              variant="outline"
+              onClick={saveBatchToOutlook}
+              disabled={batchRunning || batchResults.length === 0}
+              className="border-amber-500/50 text-amber-700 hover:bg-amber-50"
+            >
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
-              Save to Outlook Drafts
+              Save to Outlook Drafts (online mailbox only)
+            </Button>
+            <Button onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
             </Button>
           </DialogFooter>
         </DialogContent>
