@@ -692,7 +692,7 @@ With kind regards,
         drafts: ready.map(r => ({
           to: r.email,
           subject: r.subject,
-          bodyHtml: markdownToHtml(r.body),
+          bodyHtml: markdownToHtml(withSignature(r.body)),
         })),
       },
     });
@@ -714,7 +714,7 @@ With kind regards,
       return;
     }
     ready.forEach((r, i) => {
-      const html = markdownToHtml(r.body);
+      const html = markdownToHtml(withSignature(r.body));
       const eml = [
         `X-Unsent: 1`,
         `To: ${r.email}`,
@@ -774,7 +774,7 @@ With kind regards,
   };
 
   const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
-    await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(r.body)}`);
+    await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(withSignature(r.body))}`);
     toast.success("Draft copied to clipboard");
   };
 
