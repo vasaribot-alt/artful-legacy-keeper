@@ -712,8 +712,38 @@ With kind regards,
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     });
-    toast.success(`${ready.length} .eml files downloaded — open or drag them into your Outlook Drafts folder.`);
+    toast.success(`${ready.length} .eml files downloaded — double-click each file to open it in Outlook.`);
   };
+
+  const mailtoUrl = (r: { email: string; subject: string; body: string }) =>
+    `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent(r.subject || "")}&body=${encodeURIComponent(markdownToPlainText(r.body))}`;
+
+  const openOneInOutlook = (r: { email: string; subject: string; body: string }) => {
+    const a = document.createElement("a");
+    a.href = mailtoUrl(r);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  const openAllInOutlook = async () => {
+    const ready = batchResults.filter(r => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No drafts with an email address to open.");
+      return;
+    }
+    for (const r of ready) {
+      openOneInOutlook(r);
+      await new Promise(res => setTimeout(res, 1200));
+    }
+    toast.success(`${ready.length} messages opened in your default mail app — save each as a draft or send.`);
+  };
+
+  const copyDraft = async (r: { email: string; subject: string; body: string }) => {
+    await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(r.body)}`);
+    toast.success("Draft copied to clipboard");
+  };
+
 
 
   const saveBatchEdits = async () => {
