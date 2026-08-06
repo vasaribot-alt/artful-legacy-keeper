@@ -657,9 +657,12 @@ With kind regards,
       toast.error(data?.error || error?.message || "Could not save drafts to Outlook");
       return;
     }
+    setDraftMailbox(data.mailbox || null);
+    setDraftLinks(Array.isArray(data.links) ? data.links : []);
     if (data.failures?.length) toast.warning(`Saved ${data.saved}; ${data.failures.length} could not be saved.`);
-    else toast.success(`${data.saved} drafts saved directly in Outlook.`);
+    else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
+
 
   const saveBatchEdits = async () => {
     for (const r of batchResults) {
