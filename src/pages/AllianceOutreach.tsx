@@ -739,7 +739,7 @@ With kind regards,
     toast.success(`${ready.length} messages opened in your default mail app — save each as a draft or send.`);
   };
 
-  const copyDraft = async (r: { email: string; subject: string; body: string }) => {
+  const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
     await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(r.body)}`);
     toast.success("Draft copied to clipboard");
   };
