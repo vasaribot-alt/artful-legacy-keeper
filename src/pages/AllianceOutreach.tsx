@@ -1152,7 +1152,21 @@ With kind regards,
               </div>
             ))}
           </div>
+          <div className="border-t border-border pt-3 space-y-1">
+            <label className="text-xs font-medium">Send from account (email address)</label>
+            <Input
+              value={senderEmail}
+              onChange={e => setSenderEmail(e.target.value)}
+              placeholder="you@globalartistregistry.org"
+              autoComplete="off"
+            />
+            <p className="text-xs text-muted-foreground">
+              Written into each exported draft as the From address, so Outlook opens it on that account.
+              The files still land in your Downloads folder — double-click them (or drag them into Outlook’s Drafts) to open them.
+            </p>
+          </div>
           <DialogFooter className="flex-wrap gap-2">
+
             <Button variant="outline" onClick={saveBatchEdits} disabled={batchRunning || batchResults.length === 0}>
               Save edits
             </Button>
