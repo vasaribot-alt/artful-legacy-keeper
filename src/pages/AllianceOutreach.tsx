@@ -1199,8 +1199,17 @@ With kind regards,
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-sm">
-            <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-              This batch is stored temporarily in this browser, so you can close this window or refresh the page and reopen it later. Use “Open in Outlook” to create an email in the Outlook account configured on this device.
+            <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground space-y-1.5">
+              <p className="font-medium text-foreground">How to get these into Outlook</p>
+              <p>
+                Because your Microsoft account is a personal Outlook.com account, the “Save to Outlook Drafts” button saves drafts into a separate online mailbox that does not sync to the Outlook program you normally use.
+              </p>
+              <p>
+                The reliable way is to use <strong>“Open in Outlook”</strong> — it opens a new Outlook compose window on this computer with the recipient, subject and body already filled in. Then you just press Send.
+              </p>
+              <p>
+                This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -1317,7 +1326,6 @@ With kind regards,
             ))}
           </div>
           <DialogFooter className="flex-wrap gap-2">
-
             <Button variant="outline" onClick={saveBatchEdits} disabled={batchRunning || batchResults.length === 0}>
               Save edits
             </Button>
@@ -1327,14 +1335,17 @@ With kind regards,
             <Button variant="outline" onClick={downloadBatchEml} disabled={batchResults.length === 0}>
               Download .eml files
             </Button>
-            <Button variant="outline" onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
-              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
-            </Button>
-
-            <Button onClick={saveBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
-
+            <Button
+              variant="outline"
+              onClick={saveBatchToOutlook}
+              disabled={batchRunning || batchResults.length === 0}
+              className="border-amber-500/50 text-amber-700 hover:bg-amber-50"
+            >
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
-              Save to Outlook Drafts
+              Save to Outlook Drafts (online mailbox only)
+            </Button>
+            <Button onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
             </Button>
           </DialogFooter>
         </DialogContent>
