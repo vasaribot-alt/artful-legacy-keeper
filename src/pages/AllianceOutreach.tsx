@@ -685,6 +685,36 @@ With kind regards,
     else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
 
+  const downloadBatchEml = () => {
+    const ready = batchResults.filter(r => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No drafts with an email address to export.");
+      return;
+    }
+    ready.forEach((r, i) => {
+      const html = markdownToHtml(r.body);
+      const eml = [
+        `X-Unsent: 1`,
+        `To: ${r.email}`,
+        `Subject: ${r.subject || ""}`,
+        `MIME-Version: 1.0`,
+        `Content-Type: text/html; charset=utf-8`,
+        ``,
+        html,
+      ].join("\r\n");
+      const blob = new Blob([eml], { type: "message/rfc822" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${String(i + 1).padStart(2, "0")}-${(r.name || "draft").replace(/[^\w\-]+/g, "_").slice(0, 40)}.eml`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    });
+    toast.success(`${ready.length} .eml files downloaded — open or drag them into your Outlook Drafts folder.`);
+  };
+
 
   const saveBatchEdits = async () => {
     for (const r of batchResults) {
@@ -1207,7 +1237,11 @@ With kind regards,
             <Button variant="outline" onClick={markBatchContacted} disabled={batchRunning || batchResults.length === 0}>
               Mark as contacted
             </Button>
+            <Button variant="outline" onClick={downloadBatchEml} disabled={batchResults.length === 0}>
+              Download .eml files
+            </Button>
             <Button onClick={saveBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
+
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Save to Outlook Drafts
             </Button>
