@@ -640,8 +640,10 @@ With kind regards,
     const b64 = (s: string) =>
       btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/(.{76})/g, "$1\r\n");
     const boundary = "garf-boundary-0001";
+    const from = senderEmail.trim();
     return [
       "X-Unsent: 1",
+      ...(from ? [`From: ${from}`, `X-Unsent-Account: ${from}`] : []),
       `To: ${to}`,
       `Subject: =?UTF-8?B?${btoa(String.fromCharCode(...new TextEncoder().encode(subject)))}?=`,
       "MIME-Version: 1.0",
