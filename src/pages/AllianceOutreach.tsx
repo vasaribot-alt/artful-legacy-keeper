@@ -1105,6 +1105,34 @@ With kind regards,
                 <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
               </div>
             )}
+            <div className="border border-border rounded-md p-3 space-y-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="text-xs font-medium">Outlook account used for drafts</div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={checkOutlookAccount} disabled={checkingAccount}>
+                    {checkingAccount ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : null}
+                    Check account
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setForceReauthOpen(true)}>
+                    Force re-authenticate
+                  </Button>
+                </div>
+              </div>
+              {outlookAccount ? (
+                <p className="text-xs text-muted-foreground">
+                  Connected as <span className="font-mono">{outlookAccount.address || "unknown"}</span>
+                  {outlookAccount.displayName ? ` (${outlookAccount.displayName})` : ""} —{" "}
+                  {outlookAccount.accountType === "personal"
+                    ? "this is a personal Outlook.com mailbox, not your Microsoft 365 work account."
+                    : "this is a Microsoft 365 work/school mailbox."}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Click “Check account” to see which mailbox the connector is currently authorised for.
+                </p>
+              )}
+            </div>
+
             {draftLinks.length > 0 && (
               <div className="border border-border rounded-md p-3 space-y-2 bg-muted/40">
                 <div className="text-xs font-medium">
