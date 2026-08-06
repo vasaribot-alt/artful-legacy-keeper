@@ -324,6 +324,9 @@ With kind regards,
   // Batch drafting (10 at a time) + Outlook export
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [batchRunning, setBatchRunning] = useState(false);
+  const [draftMailbox, setDraftMailbox] = useState<string | null>(null);
+  const [draftLinks, setDraftLinks] = useState<{ to: string; subject: string; webLink: string }[]>([]);
+
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
   const [batchResults, setBatchResults] = useState<
     { id: string; name: string; email: string; subject: string; body: string }[]
