@@ -359,10 +359,20 @@ With kind regards,
 
 
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
-  const [batchResults, setBatchResults] = useState<
-    { id: string; name: string; email: string; subject: string; body: string }[]
-  >([]);
+  type BatchResult = { id: string; name: string; email: string; subject: string; body: string };
+  const [batchResults, setBatchResults] = useState<BatchResult[]>(() =>
+    readStored<BatchResult[]>(BATCH_KEY, [])
+  );
   const [batchOpen, setBatchOpen] = useState(false);
+
+  // Persist the last batch + selection so nothing is lost on refresh or publish.
+  useEffect(() => {
+    try { localStorage.setItem(BATCH_KEY, JSON.stringify(batchResults)); } catch { /* quota */ }
+  }, [batchResults]);
+  useEffect(() => {
+    try { localStorage.setItem(SEL_KEY, JSON.stringify(selectedIds)); } catch { /* quota */ }
+  }, [selectedIds]);
+
 
   const openDraft = (t: Target) => {
     setDraftTarget(t);
