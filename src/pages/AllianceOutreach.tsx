@@ -326,6 +326,25 @@ With kind regards,
   const [batchRunning, setBatchRunning] = useState(false);
   const [draftMailbox, setDraftMailbox] = useState<string | null>(null);
   const [draftLinks, setDraftLinks] = useState<{ to: string; subject: string; webLink: string }[]>([]);
+  const [outlookAccount, setOutlookAccount] = useState<{ address: string | null; displayName: string | null; accountType: string } | null>(null);
+  const [checkingAccount, setCheckingAccount] = useState(false);
+  const [forceReauthOpen, setForceReauthOpen] = useState(false);
+
+  const checkOutlookAccount = async () => {
+    setCheckingAccount(true);
+    const { data, error } = await supabase.functions.invoke("check-outlook-account");
+    setCheckingAccount(false);
+    if (error || !(data as any)?.success) {
+      toast.error((data as any)?.error || error?.message || "Could not read the Outlook account");
+      return;
+    }
+    setOutlookAccount({
+      address: (data as any).address ?? null,
+      displayName: (data as any).displayName ?? null,
+      accountType: (data as any).accountType ?? "work",
+    });
+  };
+
 
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
   const [batchResults, setBatchResults] = useState<
@@ -1105,6 +1124,34 @@ With kind regards,
                 <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
               </div>
             )}
+            <div className="border border-border rounded-md p-3 space-y-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="text-xs font-medium">Outlook account used for drafts</div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={checkOutlookAccount} disabled={checkingAccount}>
+                    {checkingAccount ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : null}
+                    Check account
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setForceReauthOpen(true)}>
+                    Force re-authenticate
+                  </Button>
+                </div>
+              </div>
+              {outlookAccount ? (
+                <p className="text-xs text-muted-foreground">
+                  Connected as <span className="font-mono">{outlookAccount.address || "unknown"}</span>
+                  {outlookAccount.displayName ? ` (${outlookAccount.displayName})` : ""} —{" "}
+                  {outlookAccount.accountType === "personal"
+                    ? "this is a personal Outlook.com mailbox, not your Microsoft 365 work account."
+                    : "this is a Microsoft 365 work/school mailbox."}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Click “Check account” to see which mailbox the connector is currently authorised for.
+                </p>
+              )}
+            </div>
+
             {draftLinks.length > 0 && (
               <div className="border border-border rounded-md p-3 space-y-2 bg-muted/40">
                 <div className="text-xs font-medium">
@@ -1396,6 +1443,55 @@ With kind regards,
         categories={CATEGORIES}
         onChanged={loadEmailTexts}
       />
+
+      <Dialog open={forceReauthOpen} onOpenChange={setForceReauthOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Force re-authenticate Outlook</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p className="text-muted-foreground">
+              Microsoft reuses the browser session, so the account picker often re-authorises the same mailbox
+              silently. Do these steps in order to force a genuinely fresh authorisation:
+            </p>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>
+                Sign out of every Microsoft session first:{" "}
+                <a
+                  href="https://login.microsoftonline.com/common/oauth2/v2.0/logout"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:no-underline"
+                >
+                  login.microsoftonline.com logout
+                </a>
+                {" "}— or open the next step in a private/incognito window.
+              </li>
+              <li>
+                In Lovable, open <span className="font-medium">Settings → Connectors → All connectors → Microsoft
+                Outlook → Add connection</span> (do not click either existing Outlook card).
+              </li>
+              <li>
+                On the Microsoft sign-in screen choose <span className="font-medium">“Work or school account”</span>{" "}
+                and sign in with your Microsoft 365 address.
+              </li>
+              <li>Come back here and click “Check account” to confirm the mailbox before saving drafts.</li>
+            </ol>
+          </div>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={() => setForceReauthOpen(false)}>Close</Button>
+            <Button
+              onClick={async () => {
+                await checkOutlookAccount();
+              }}
+              disabled={checkingAccount}
+            >
+              {checkingAccount ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : null}
+              Re-check account
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
 
   );
