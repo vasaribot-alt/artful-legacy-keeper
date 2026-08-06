@@ -326,6 +326,25 @@ With kind regards,
   const [batchRunning, setBatchRunning] = useState(false);
   const [draftMailbox, setDraftMailbox] = useState<string | null>(null);
   const [draftLinks, setDraftLinks] = useState<{ to: string; subject: string; webLink: string }[]>([]);
+  const [outlookAccount, setOutlookAccount] = useState<{ address: string | null; displayName: string | null; accountType: string } | null>(null);
+  const [checkingAccount, setCheckingAccount] = useState(false);
+  const [forceReauthOpen, setForceReauthOpen] = useState(false);
+
+  const checkOutlookAccount = async () => {
+    setCheckingAccount(true);
+    const { data, error } = await supabase.functions.invoke("check-outlook-account");
+    setCheckingAccount(false);
+    if (error || !(data as any)?.success) {
+      toast.error((data as any)?.error || error?.message || "Could not read the Outlook account");
+      return;
+    }
+    setOutlookAccount({
+      address: (data as any).address ?? null,
+      displayName: (data as any).displayName ?? null,
+      accountType: (data as any).accountType ?? "work",
+    });
+  };
+
 
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
   const [batchResults, setBatchResults] = useState<
