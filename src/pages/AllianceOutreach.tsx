@@ -1256,6 +1256,14 @@ With kind regards,
                   value={r.body}
                   onChange={e => setBatchResults(prev => prev.map(x => x.id === r.id ? { ...x, body: e.target.value } : x))}
                 />
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" disabled={!r.email || !r.body} onClick={() => openOneInOutlook(r)}>
+                    <Mail className="w-3.5 h-3.5 mr-1.5" /> Open in Outlook
+                  </Button>
+                  <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
+                    Copy text
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -1270,6 +1278,10 @@ With kind regards,
             <Button variant="outline" onClick={downloadBatchEml} disabled={batchResults.length === 0}>
               Download .eml files
             </Button>
+            <Button variant="outline" onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
+            </Button>
+
             <Button onClick={saveBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
 
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
