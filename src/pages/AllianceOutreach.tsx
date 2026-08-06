@@ -636,12 +636,21 @@ With kind regards,
       : `Generated ${results.length} of ${batchTargets.length} drafts.`);
   };
 
+  const [senderEmail, setSenderEmail] = useState<string>(
+    () => localStorage.getItem("garf_outreach_sender_email") || "",
+  );
+  useEffect(() => {
+    localStorage.setItem("garf_outreach_sender_email", senderEmail);
+  }, [senderEmail]);
+
   const buildEml = (to: string, subject: string, body: string) => {
     const b64 = (s: string) =>
       btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/(.{76})/g, "$1\r\n");
     const boundary = "garf-boundary-0001";
+    const from = senderEmail.trim();
     return [
       "X-Unsent: 1",
+      ...(from ? [`From: ${from}`, `X-Unsent-Account: ${from}`] : []),
       `To: ${to}`,
       `Subject: =?UTF-8?B?${btoa(String.fromCharCode(...new TextEncoder().encode(subject)))}?=`,
       "MIME-Version: 1.0",
@@ -1143,7 +1152,21 @@ With kind regards,
               </div>
             ))}
           </div>
+          <div className="border-t border-border pt-3 space-y-1">
+            <label className="text-xs font-medium">Send from account (email address)</label>
+            <Input
+              value={senderEmail}
+              onChange={e => setSenderEmail(e.target.value)}
+              placeholder="you@globalartistregistry.org"
+              autoComplete="off"
+            />
+            <p className="text-xs text-muted-foreground">
+              Written into each exported draft as the From address, so Outlook opens it on that account.
+              The files still land in your Downloads folder — double-click them (or drag them into Outlook’s Drafts) to open them.
+            </p>
+          </div>
           <DialogFooter className="flex-wrap gap-2">
+
             <Button variant="outline" onClick={saveBatchEdits} disabled={batchRunning || batchResults.length === 0}>
               Save edits
             </Button>
