@@ -636,6 +636,13 @@ With kind regards,
       : `Generated ${results.length} of ${batchTargets.length} drafts.`);
   };
 
+  const [senderEmail, setSenderEmail] = useState<string>(
+    () => localStorage.getItem("garf_outreach_sender_email") || "",
+  );
+  useEffect(() => {
+    localStorage.setItem("garf_outreach_sender_email", senderEmail);
+  }, [senderEmail]);
+
   const buildEml = (to: string, subject: string, body: string) => {
     const b64 = (s: string) =>
       btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/(.{76})/g, "$1\r\n");
