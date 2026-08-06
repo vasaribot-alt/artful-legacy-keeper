@@ -322,8 +322,20 @@ With kind regards,
   };
 
   // Batch drafting (10 at a time) + Outlook export
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  // Generated letters are kept in localStorage so a refresh / publish never loses them.
+  const BATCH_KEY = "garf.outreach.lastBatch";
+  const SEL_KEY = "garf.outreach.lastSelection";
+  const readStored = <T,>(key: string, fallback: T): T => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? (JSON.parse(raw) as T) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+  const [selectedIds, setSelectedIds] = useState<string[]>(() => readStored<string[]>(SEL_KEY, []));
   const [batchRunning, setBatchRunning] = useState(false);
+
   const [draftMailbox, setDraftMailbox] = useState<string | null>(null);
   const [draftLinks, setDraftLinks] = useState<{ to: string; subject: string; webLink: string }[]>([]);
   const [outlookAccount, setOutlookAccount] = useState<{ address: string | null; displayName: string | null; accountType: string } | null>(null);
@@ -347,10 +359,20 @@ With kind regards,
 
 
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
-  const [batchResults, setBatchResults] = useState<
-    { id: string; name: string; email: string; subject: string; body: string }[]
-  >([]);
+  type BatchResult = { id: string; name: string; email: string; subject: string; body: string };
+  const [batchResults, setBatchResults] = useState<BatchResult[]>(() =>
+    readStored<BatchResult[]>(BATCH_KEY, [])
+  );
   const [batchOpen, setBatchOpen] = useState(false);
+
+  // Persist the last batch + selection so nothing is lost on refresh or publish.
+  useEffect(() => {
+    try { localStorage.setItem(BATCH_KEY, JSON.stringify(batchResults)); } catch { /* quota */ }
+  }, [batchResults]);
+  useEffect(() => {
+    try { localStorage.setItem(SEL_KEY, JSON.stringify(selectedIds)); } catch { /* quota */ }
+  }, [selectedIds]);
+
 
   const openDraft = (t: Target) => {
     setDraftTarget(t);
@@ -933,6 +955,21 @@ With kind regards,
         <div className="border border-border rounded-md px-3 py-2 flex items-center gap-2 flex-wrap">
           <span className="text-xs text-muted-foreground">Batch mailing —</span>
           <Button size="sm" variant="outline" onClick={selectNextTen}>Select next 10</Button>
+          {batchResults.length > 0 && (
+            <>
+              <Button size="sm" variant="secondary" onClick={() => setBatchOpen(true)}>
+                Reopen last batch ({batchResults.length})
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => { setBatchResults([]); setBatchProgress(null); toast.success("Saved batch cleared"); }}
+              >
+                Discard saved batch
+              </Button>
+            </>
+          )}
+
           {selectedIds.length > 0 && (
             <>
               <Badge variant="secondary">{selectedIds.length} selected</Badge>
