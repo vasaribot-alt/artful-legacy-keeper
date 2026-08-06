@@ -737,8 +737,20 @@ With kind regards,
     toast.success(`${ready.length} .eml files downloaded — double-click each file to open it in Outlook.`);
   };
 
+  // Guarantee the letter always ends with the sender block (name + email), so
+  // recipients can see who wrote and how to reply even when the mail app shows
+  // no From address in the compose window.
+  const withSignature = (body: string) => {
+    const sig = (draftSignature || DEFAULT_SIGNATURE).trim();
+    if (!sig) return body;
+    const senderEmail = sig.match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0];
+    if (senderEmail && body.includes(senderEmail)) return body;
+    return `${body.trimEnd()}\n\n${sig}`;
+  };
+
   const mailtoUrl = (r: { email: string; subject: string; body: string }) =>
-    `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent(r.subject || "")}&body=${encodeURIComponent(markdownToPlainText(r.body))}`;
+    `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent(r.subject || "")}&body=${encodeURIComponent(markdownToPlainText(withSignature(r.body)))}`;
+
 
   const openOneInOutlook = (r: { email: string; subject: string; body: string }) => {
     const a = document.createElement("a");
