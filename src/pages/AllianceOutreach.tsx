@@ -322,8 +322,20 @@ With kind regards,
   };
 
   // Batch drafting (10 at a time) + Outlook export
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  // Generated letters are kept in localStorage so a refresh / publish never loses them.
+  const BATCH_KEY = "garf.outreach.lastBatch";
+  const SEL_KEY = "garf.outreach.lastSelection";
+  const readStored = <T,>(key: string, fallback: T): T => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? (JSON.parse(raw) as T) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+  const [selectedIds, setSelectedIds] = useState<string[]>(() => readStored<string[]>(SEL_KEY, []));
   const [batchRunning, setBatchRunning] = useState(false);
+
   const [draftMailbox, setDraftMailbox] = useState<string | null>(null);
   const [draftLinks, setDraftLinks] = useState<{ to: string; subject: string; webLink: string }[]>([]);
   const [outlookAccount, setOutlookAccount] = useState<{ address: string | null; displayName: string | null; accountType: string } | null>(null);
