@@ -1199,8 +1199,17 @@ With kind regards,
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-sm">
-            <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-              This batch is stored temporarily in this browser, so you can close this window or refresh the page and reopen it later. Use “Open in Outlook” to create an email in the Outlook account configured on this device.
+            <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground space-y-1.5">
+              <p className="font-medium text-foreground">How to get these into Outlook</p>
+              <p>
+                Because your Microsoft account is a personal Outlook.com account, the “Save to Outlook Drafts” button saves drafts into a separate online mailbox that does not sync to the Outlook program you normally use.
+              </p>
+              <p>
+                The reliable way is to use <strong>“Open in Outlook”</strong> — it opens a new Outlook compose window on this computer with the recipient, subject and body already filled in. Then you just press Send.
+              </p>
+              <p>
+                This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
