@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
-import { markdownToHtml, markdownToEmailHtml, markdownToPlainText } from "@/lib/emailMarkdown";
-import { AlertTriangle, Copy, ExternalLink, FileDown, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+import { markdownToHtml } from "@/lib/emailMarkdown";
+import { AlertTriangle, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
 const nameKey = (s: string) =>
@@ -636,69 +636,29 @@ With kind regards,
       : `Generated ${results.length} of ${batchTargets.length} drafts.`);
   };
 
-  const [senderEmail, setSenderEmail] = useState<string>(
-    () => localStorage.getItem("garf_outreach_sender_email") || "",
-  );
-  useEffect(() => {
-    localStorage.setItem("garf_outreach_sender_email", senderEmail);
-  }, [senderEmail]);
-
-  const buildEml = (to: string, subject: string, body: string) => {
-    const b64 = (s: string) =>
-      btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/(.{76})/g, "$1\r\n");
-    const boundary = "garf-boundary-0001";
-    const from = senderEmail.trim();
-    return [
-      "X-Unsent: 1",
-      ...(from ? [`From: ${from}`, `X-Unsent-Account: ${from}`] : []),
-      `To: ${to}`,
-      `Subject: =?UTF-8?B?${btoa(String.fromCharCode(...new TextEncoder().encode(subject)))}?=`,
-      "MIME-Version: 1.0",
-      `Content-Type: multipart/alternative; boundary="${boundary}"`,
-      "",
-      `--${boundary}`,
-      'Content-Type: text/plain; charset="utf-8"',
-      "Content-Transfer-Encoding: base64",
-      "",
-      b64(markdownToPlainText(body)),
-      "",
-      `--${boundary}`,
-      'Content-Type: text/html; charset="utf-8"',
-      "Content-Transfer-Encoding: base64",
-      "",
-      b64(markdownToEmailHtml(body)),
-      "",
-      `--${boundary}--`,
-      "",
-    ].join("\r\n");
-  };
-
-
-  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
-
-  const exportBatchToOutlook = () => {
+  const saveBatchToOutlook = async () => {
     const ready = batchResults.filter(r => r.body && r.email);
     if (ready.length === 0) {
-      toast.error("No drafts with an email address to export.");
+      toast.error("No drafts with an email address to save.");
       return;
     }
-    if (!senderEmail.trim()) {
-      toast.error("Add a “Send from account” email address at the top of this dialog first.");
-      return;
-    }
-
-    ready.forEach((r, i) => {
-      setTimeout(() => {
-        const blob = new Blob([buildEml(r.email, r.subject, r.body)], { type: "message/rfc822" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `GARF-${String(i + 1).padStart(2, "0")}-${slug(r.name)}.eml`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-      }, i * 350);
+    setBatchRunning(true);
+    const { data, error } = await supabase.functions.invoke("save-outlook-drafts", {
+      body: {
+        drafts: ready.map(r => ({
+          to: r.email,
+          subject: r.subject,
+          bodyHtml: markdownToHtml(r.body),
+        })),
+      },
     });
-    toast.success(`Exporting ${ready.length} Outlook drafts (.eml).`);
+    setBatchRunning(false);
+    if (error || !data?.saved) {
+      toast.error(data?.error || error?.message || "Could not save drafts to Outlook");
+      return;
+    }
+    if (data.failures?.length) toast.warning(`Saved ${data.saved}; ${data.failures.length} could not be saved.`);
+    else toast.success(`${data.saved} drafts saved directly in Outlook.`);
   };
 
   const saveBatchEdits = async () => {
@@ -1105,18 +1065,8 @@ With kind regards,
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 text-sm">
-            <div className="rounded-md border border-border bg-muted/40 p-3 space-y-1">
-              <Label className="text-xs font-medium">Send from account (email address)</Label>
-              <Input
-                value={senderEmail}
-                onChange={e => setSenderEmail(e.target.value)}
-                placeholder="you@globalartistregistry.org"
-                autoComplete="off"
-              />
-              <p className="text-xs text-muted-foreground">
-                Written into each exported .eml as the From address, so Outlook opens the draft on that account.
-                Files download first — double-click them, or drag them into Outlook's Drafts folder.
-              </p>
+            <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+              Drafts are saved directly to the connected Outlook account. No files need to be downloaded or moved.
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -1178,8 +1128,9 @@ With kind regards,
             <Button variant="outline" onClick={markBatchContacted} disabled={batchRunning || batchResults.length === 0}>
               Mark as contacted
             </Button>
-            <Button onClick={exportBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
-              <FileDown className="w-4 h-4 mr-1.5" /> Export to Outlook (.eml)
+            <Button onClick={saveBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
+              {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
+              Save to Outlook Drafts
             </Button>
           </DialogFooter>
         </DialogContent>
