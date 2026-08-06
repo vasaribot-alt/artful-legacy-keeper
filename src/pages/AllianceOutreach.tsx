@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
-import { markdownToHtml } from "@/lib/emailMarkdown";
+import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { AlertTriangle, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
@@ -712,8 +712,38 @@ With kind regards,
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 2000);
     });
-    toast.success(`${ready.length} .eml files downloaded — open or drag them into your Outlook Drafts folder.`);
+    toast.success(`${ready.length} .eml files downloaded — double-click each file to open it in Outlook.`);
   };
+
+  const mailtoUrl = (r: { email: string; subject: string; body: string }) =>
+    `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent(r.subject || "")}&body=${encodeURIComponent(markdownToPlainText(r.body))}`;
+
+  const openOneInOutlook = (r: { email: string; subject: string; body: string }) => {
+    const a = document.createElement("a");
+    a.href = mailtoUrl(r);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  const openAllInOutlook = async () => {
+    const ready = batchResults.filter(r => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No drafts with an email address to open.");
+      return;
+    }
+    for (const r of ready) {
+      openOneInOutlook(r);
+      await new Promise(res => setTimeout(res, 1200));
+    }
+    toast.success(`${ready.length} messages opened in your default mail app — save each as a draft or send.`);
+  };
+
+  const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
+    await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(r.body)}`);
+    toast.success("Draft copied to clipboard");
+  };
+
 
 
   const saveBatchEdits = async () => {
@@ -1226,6 +1256,14 @@ With kind regards,
                   value={r.body}
                   onChange={e => setBatchResults(prev => prev.map(x => x.id === r.id ? { ...x, body: e.target.value } : x))}
                 />
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" disabled={!r.email || !r.body} onClick={() => openOneInOutlook(r)}>
+                    <Mail className="w-3.5 h-3.5 mr-1.5" /> Open in Outlook
+                  </Button>
+                  <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
+                    Copy text
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -1240,6 +1278,10 @@ With kind regards,
             <Button variant="outline" onClick={downloadBatchEml} disabled={batchResults.length === 0}>
               Download .eml files
             </Button>
+            <Button variant="outline" onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
+            </Button>
+
             <Button onClick={saveBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
 
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
