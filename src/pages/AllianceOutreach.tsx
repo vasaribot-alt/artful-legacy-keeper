@@ -955,6 +955,21 @@ With kind regards,
         <div className="border border-border rounded-md px-3 py-2 flex items-center gap-2 flex-wrap">
           <span className="text-xs text-muted-foreground">Batch mailing —</span>
           <Button size="sm" variant="outline" onClick={selectNextTen}>Select next 10</Button>
+          {batchResults.length > 0 && (
+            <>
+              <Button size="sm" variant="secondary" onClick={() => setBatchOpen(true)}>
+                Reopen last batch ({batchResults.length})
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => { setBatchResults([]); setBatchProgress(null); toast.success("Saved batch cleared"); }}
+              >
+                Discard saved batch
+              </Button>
+            </>
+          )}
+
           {selectedIds.length > 0 && (
             <>
               <Badge variant="secondary">{selectedIds.length} selected</Badge>
