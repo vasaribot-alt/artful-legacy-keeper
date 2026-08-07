@@ -143,6 +143,7 @@ Phone: +31-850 600 529`;
   const [draftSignature, setDraftSignature] = useState<string>(
     () => localStorage.getItem("garf.outreach.signature") || DEFAULT_SIGNATURE
   );
+  const [batchStep, setBatchStep] = useState(0);
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
@@ -707,6 +708,11 @@ With kind regards,
     else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
 
+  // The address every outreach letter should be sent from.
+  const senderEmail =
+    (draftSignature || DEFAULT_SIGNATURE).match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0] ||
+    "jan@globalartistregistry.org";
+
   const downloadBatchEml = () => {
     const ready = batchResults.filter(r => r.body && r.email);
     if (ready.length === 0) {
@@ -717,6 +723,7 @@ With kind regards,
       const html = markdownToHtml(withSignature(r.body));
       const eml = [
         `X-Unsent: 1`,
+        `From: ${senderEmail}`,
         `To: ${r.email}`,
         `Subject: ${r.subject || ""}`,
         `MIME-Version: 1.0`,
@@ -743,8 +750,8 @@ With kind regards,
   const withSignature = (body: string) => {
     const sig = (draftSignature || DEFAULT_SIGNATURE).trim();
     if (!sig) return body;
-    const senderEmail = sig.match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0];
-    if (senderEmail && body.includes(senderEmail)) return body;
+    const sigEmail = sig.match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0];
+    if (sigEmail && body.includes(sigEmail)) return body;
     return `${body.trimEnd()}\n\n${sig}`;
   };
 
@@ -760,17 +767,16 @@ With kind regards,
     a.remove();
   };
 
-  const openAllInOutlook = async () => {
-    const ready = batchResults.filter(r => r.body && r.email);
-    if (ready.length === 0) {
-      toast.error("No drafts with an email address to open.");
+  // Stepper: every open is a real user click, so nothing gets blocked as a pop-up.
+  const readyBatch = batchResults.filter(r => r.body && r.email);
+  const openNextInOutlook = () => {
+    const next = readyBatch[batchStep];
+    if (!next) {
+      toast.success("All letters opened.");
       return;
     }
-    for (const r of ready) {
-      openOneInOutlook(r);
-      await new Promise(res => setTimeout(res, 1200));
-    }
-    toast.success(`${ready.length} messages opened in your default mail app — save each as a draft or send.`);
+    openOneInOutlook(next);
+    setBatchStep(batchStep + 1);
   };
 
   const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
@@ -1205,7 +1211,10 @@ With kind regards,
                 Because your Microsoft account is a personal Outlook.com account, the “Save to Outlook Drafts” button saves drafts into a separate online mailbox that does not sync to the Outlook program you normally use.
               </p>
               <p>
-                The reliable way is to use <strong>“Open in Outlook”</strong> — it opens a new Outlook compose window on this computer with the recipient, subject and body already filled in. Then you just press Send.
+                The reliable way is the <strong>“Open letter N of M”</strong> button at the bottom: each click opens one Outlook compose window with recipient, subject and body filled in, then the counter advances. Opening them one click at a time avoids the browser blocking the rest as pop-ups.
+              </p>
+              <p>
+                <strong>Sending from {senderEmail}:</strong> a mail link cannot set the From address — Outlook uses your default account. Set <span className="font-mono">{senderEmail}</span> as the default account in Outlook (Settings → Accounts → set as default) once, and every letter opened from here will be sent from it. Alternatively use <strong>“Download .eml files”</strong> — those carry a From header for {senderEmail}.
               </p>
               <p>
                 This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
@@ -1344,8 +1353,14 @@ With kind regards,
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Save to Outlook Drafts (online mailbox only)
             </Button>
-            <Button onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
-              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
+            <Button variant="ghost" onClick={() => setBatchStep(0)} disabled={batchStep === 0}>
+              Reset counter
+            </Button>
+            <Button onClick={openNextInOutlook} disabled={batchRunning || readyBatch.length === 0 || batchStep >= readyBatch.length}>
+              <Mail className="w-4 h-4 mr-1.5" />
+              {batchStep >= readyBatch.length && readyBatch.length > 0
+                ? "All letters opened"
+                : `Open letter ${Math.min(batchStep + 1, readyBatch.length)} of ${readyBatch.length}`}
             </Button>
           </DialogFooter>
         </DialogContent>
