@@ -707,6 +707,11 @@ With kind regards,
     else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
 
+  // The address every outreach letter should be sent from.
+  const senderEmail =
+    (draftSignature || DEFAULT_SIGNATURE).match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0] ||
+    "jan@globalartistregistry.org";
+
   const downloadBatchEml = () => {
     const ready = batchResults.filter(r => r.body && r.email);
     if (ready.length === 0) {
@@ -717,6 +722,7 @@ With kind regards,
       const html = markdownToHtml(withSignature(r.body));
       const eml = [
         `X-Unsent: 1`,
+        `From: ${senderEmail}`,
         `To: ${r.email}`,
         `Subject: ${r.subject || ""}`,
         `MIME-Version: 1.0`,
@@ -743,8 +749,8 @@ With kind regards,
   const withSignature = (body: string) => {
     const sig = (draftSignature || DEFAULT_SIGNATURE).trim();
     if (!sig) return body;
-    const senderEmail = sig.match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0];
-    if (senderEmail && body.includes(senderEmail)) return body;
+    const sigEmail = sig.match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0];
+    if (sigEmail && body.includes(sigEmail)) return body;
     return `${body.trimEnd()}\n\n${sig}`;
   };
 
@@ -760,17 +766,16 @@ With kind regards,
     a.remove();
   };
 
-  const openAllInOutlook = async () => {
-    const ready = batchResults.filter(r => r.body && r.email);
-    if (ready.length === 0) {
-      toast.error("No drafts with an email address to open.");
+  // Stepper: every open is a real user click, so nothing gets blocked as a pop-up.
+  const readyBatch = batchResults.filter(r => r.body && r.email);
+  const openNextInOutlook = () => {
+    const next = readyBatch[batchStep];
+    if (!next) {
+      toast.success("All letters opened.");
       return;
     }
-    for (const r of ready) {
-      openOneInOutlook(r);
-      await new Promise(res => setTimeout(res, 1200));
-    }
-    toast.success(`${ready.length} messages opened in your default mail app — save each as a draft or send.`);
+    openOneInOutlook(next);
+    setBatchStep(batchStep + 1);
   };
 
   const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
