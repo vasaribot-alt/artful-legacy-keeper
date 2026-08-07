@@ -1211,7 +1211,10 @@ With kind regards,
                 Because your Microsoft account is a personal Outlook.com account, the “Save to Outlook Drafts” button saves drafts into a separate online mailbox that does not sync to the Outlook program you normally use.
               </p>
               <p>
-                The reliable way is to use <strong>“Open in Outlook”</strong> — it opens a new Outlook compose window on this computer with the recipient, subject and body already filled in. Then you just press Send.
+                The reliable way is the <strong>“Open letter N of M”</strong> button at the bottom: each click opens one Outlook compose window with recipient, subject and body filled in, then the counter advances. Opening them one click at a time avoids the browser blocking the rest as pop-ups.
+              </p>
+              <p>
+                <strong>Sending from {senderEmail}:</strong> a mail link cannot set the From address — Outlook uses your default account. Set <span className="font-mono">{senderEmail}</span> as the default account in Outlook (Settings → Accounts → set as default) once, and every letter opened from here will be sent from it. Alternatively use <strong>“Download .eml files”</strong> — those carry a From header for {senderEmail}.
               </p>
               <p>
                 This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
