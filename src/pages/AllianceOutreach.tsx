@@ -143,6 +143,7 @@ Phone: +31-850 600 529`;
   const [draftSignature, setDraftSignature] = useState<string>(
     () => localStorage.getItem("garf.outreach.signature") || DEFAULT_SIGNATURE
   );
+  const [batchStep, setBatchStep] = useState(0);
   const [draftGenerating, setDraftGenerating] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
