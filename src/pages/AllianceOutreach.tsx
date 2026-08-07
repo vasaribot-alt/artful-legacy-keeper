@@ -1350,8 +1350,14 @@ With kind regards,
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Save to Outlook Drafts (online mailbox only)
             </Button>
-            <Button onClick={openAllInOutlook} disabled={batchRunning || batchResults.length === 0}>
-              <Mail className="w-4 h-4 mr-1.5" /> Open all in Outlook
+            <Button variant="ghost" onClick={() => setBatchStep(0)} disabled={batchStep === 0}>
+              Reset counter
+            </Button>
+            <Button onClick={openNextInOutlook} disabled={batchRunning || readyBatch.length === 0 || batchStep >= readyBatch.length}>
+              <Mail className="w-4 h-4 mr-1.5" />
+              {batchStep >= readyBatch.length && readyBatch.length > 0
+                ? "All letters opened"
+                : `Open letter ${Math.min(batchStep + 1, readyBatch.length)} of ${readyBatch.length}`}
             </Button>
           </DialogFooter>
         </DialogContent>
