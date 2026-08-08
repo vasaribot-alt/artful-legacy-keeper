@@ -541,7 +541,10 @@ const GalleryOutreach = () => {
       // Non-2xx responses put the JSON body on error.context, not on data.
       try {
         const res = (error as any)?.context as Response | undefined;
-        if (res && typeof res.json === "function") payload = await res.clone().json();
+        if (res && typeof res.text === "function") {
+          const raw = await res.clone().text();
+          try { payload = JSON.parse(raw); } catch { payload = { error: raw || undefined }; }
+        }
       } catch { /* keep the generic message */ }
     }
     if (error || !payload?.sent) {

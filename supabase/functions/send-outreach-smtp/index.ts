@@ -150,10 +150,12 @@ Deno.serve(async (req) => {
     const adminClient = createClient(backendUrl, serviceKey);
     const { data: roles } = await adminClient.from("user_roles").select("role").eq("user_id", user.id);
     if (!roles?.some((row) => row.role === "foundation")) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: jsonHeaders });
+      console.error("Forbidden: user", user.id, "roles", JSON.stringify(roles));
+      return new Response(JSON.stringify({ error: "Your account is missing the Foundation role required to send letters." }), { status: 403, headers: jsonHeaders });
     }
 
     const payload = await req.json().catch(() => null);
+    console.log("send-outreach-smtp invoked by", user.id);
     const letters = Array.isArray(payload?.letters) ? (payload.letters as Letter[]).slice(0, 50) : [];
     const fromName = typeof payload?.fromName === "string" && payload.fromName.trim()
       ? payload.fromName.trim().slice(0, 120)
@@ -215,7 +217,9 @@ Deno.serve(async (req) => {
           }
         }
       } catch (e) {
-        failures.push({ to: letter.to, error: e instanceof Error ? e.message : "Send failed" });
+        const msg = e instanceof Error ? e.message : "Send failed";
+        console.error("SMTP send failed for", letter.to, msg);
+        failures.push({ to: letter.to, error: msg });
       }
     }
 
