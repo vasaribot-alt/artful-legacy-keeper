@@ -133,14 +133,14 @@ const FoundingArtists = () => {
         <div className="max-w-3xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
             <Award className="h-6 w-6 text-foreground" />
-            <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Founding Artist Program</span>
+            <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Legacy Artist Program</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6 text-balance">
             The artists building art's permanent record
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
             For the first time, artists can create their own authenticated, archival-grade catalogue raisonné — 
-            a permanent record that outlasts galleries, institutions, and markets. Founding Artists are the 
+            a permanent record that outlasts galleries, institutions, and markets. Legacy Artists are the 
             pioneers who believe their work deserves a record as enduring as the art itself.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
@@ -173,7 +173,7 @@ const FoundingArtists = () => {
               },
               {
                 title: "First movers shape history",
-                text: "Founding Artists are permanently recognized as the pioneers who established this new standard for art documentation.",
+                text: "Legacy Artists are permanently recognized as the pioneers who established this new standard for art documentation.",
               },
             ].map((item) => (
               <div key={item.title}>
@@ -190,14 +190,14 @@ const FoundingArtists = () => {
           <div className="text-muted-foreground text-center py-12">Loading...</div>
         ) : artists.length === 0 ? (
           <p className="text-muted-foreground text-center py-12">
-            The Founding Artist program is currently in progress.
+            The Legacy Artist program is currently in progress.
           </p>
         ) : (
           <>
             {/* Two Artist Showcases */}
             {showcaseArtists.length > 0 && (
               <section className="mb-20">
-                <h2 className="text-2xl font-semibold mb-8">Featured Founding Artists</h2>
+                <h2 className="text-2xl font-semibold mb-8">Featured Legacy Artists</h2>
                 <div className="grid md:grid-cols-2 gap-8">
                   {showcaseArtists.map((artist) => {
                     const avatarSrc = getAvatarSrc(artist.profile?.avatar_url);
@@ -297,7 +297,7 @@ const FoundingArtists = () => {
 
       {/* CTA */}
       <section className="py-16 px-6 border-t border-border text-center">
-        <h2 className="text-2xl font-semibold mb-3">Join the Founding Artists</h2>
+        <h2 className="text-2xl font-semibold mb-3">Join the Legacy Artists</h2>
         <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
           The program is invitation-only. If you've received an invite code, 
           register now to secure your place in art history.
