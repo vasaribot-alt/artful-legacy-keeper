@@ -1042,8 +1042,13 @@ const GalleryOutreach = () => {
             <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
               Mark as queued
             </Button>
-            <Button onClick={exportBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
-              <FileDown className="w-4 h-4 mr-1.5" /> Export to Outlook (.eml)
+            <Button variant="outline" onClick={exportBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
+              <FileDown className="w-4 h-4 mr-1.5" /> Export (.eml)
+            </Button>
+            <Button onClick={sendBatchViaSmtp} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
+              {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
+              Send {batchResults.filter((r) => r.body && r.email).length} letter{batchResults.filter((r) => r.body && r.email).length === 1 ? "" : "s"} now
+
             </Button>
           </DialogFooter>
         </DialogContent>
