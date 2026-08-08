@@ -512,6 +512,48 @@ const GalleryOutreach = () => {
     toast.success("Marked as queued");
   };
 
+  // Send straight from jan@globalartistregistry.org over the Domeneshop mail
+  // server, and mirror a copy into the mailbox's own Sent folder.
+  const sendBatchViaSmtp = async () => {
+    const ready = batchResults.filter((r) => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No letters with an email address to send.");
+      return;
+    }
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now from jan@globalartistregistry.org?`)) return;
+    setBatchRunning(true);
+    const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
+      body: {
+        fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        letters: ready.map((r) => ({
+          to: r.email,
+          subject: r.subject || "",
+          bodyHtml: markdownToHtml(r.body),
+          bodyText: markdownToPlainText(r.body),
+        })),
+      },
+    });
+    setBatchRunning(false);
+    const payload = data as any;
+    if (error || !payload?.sent) {
+      toast.error(payload?.error || error?.message || "Could not send the letters");
+      return;
+    }
+    const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
+    for (const r of ready) {
+      if (sentAddresses.has(r.email)) await setStatus(r.id, "contacted");
+    }
+    if (payload.failures?.length) {
+      toast.warning(`Sent ${payload.sent}; ${payload.failures.length} failed (${payload.failures.map((f: { to: string }) => f.to).join(", ")}).`);
+    } else if (!payload.savedToSent) {
+      toast.success(`${payload.sent} letters sent. A copy could not be filed in your Sent folder.`);
+    } else {
+      toast.success(`${payload.sent} letters sent and filed in your Sent folder.`);
+    }
+    load();
+  };
+
+
 
 
   const exportCsv = () => {
