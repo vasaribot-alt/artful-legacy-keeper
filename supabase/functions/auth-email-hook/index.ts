@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "artful-legacy-keeper"
+const SITE_NAME = "Global Artist Registry Foundation"
 const SENDER_DOMAIN = "notify.globalartistregistry.org"
 const ROOT_DOMAIN = "globalartistregistry.org"
 const FROM_DOMAIN = "notify.globalartistregistry.org" // Domain shown in From address (may be root or sender subdomain)
