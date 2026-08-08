@@ -536,11 +536,27 @@ const GalleryOutreach = () => {
       },
     });
     setBatchRunning(false);
-    const payload = data as any;
+    let payload = data as any;
+    if (error) {
+      // Non-2xx responses put the JSON body on error.context, not on data.
+      try {
+        const res = (error as any)?.context as Response | undefined;
+        if (res && typeof res.json === "function") payload = await res.clone().json();
+      } catch { /* keep the generic message */ }
+    }
     if (error || !payload?.sent) {
-      toast.error(payload?.error || error?.message || "Could not send the letters");
+      const detail =
+        payload?.error ||
+        (Array.isArray(payload?.failures) && payload.failures.length
+          ? payload.failures.map((f: { to: string; error: string }) => `${f.to}: ${f.error}`).join(" · ")
+          : null) ||
+        error?.message ||
+        "Could not send the letters";
+      toast.error(detail, { duration: 12000 });
+      console.error("send-outreach-smtp failed", payload || error);
       return;
     }
+
     const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
     for (const r of ready) {
       if (sentAddresses.has(r.email)) await setStatus(r.id, "contacted");

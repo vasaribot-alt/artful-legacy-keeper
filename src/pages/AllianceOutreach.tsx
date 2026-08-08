@@ -730,10 +730,26 @@ With kind regards,
       },
     });
     setBatchRunning(false);
-    if (error || !data?.sent) {
-      toast.error(data?.error || error?.message || "Could not send the letters");
+    let payload = data as any;
+    if (error) {
+      try {
+        const res = (error as any)?.context as Response | undefined;
+        if (res && typeof res.json === "function") payload = await res.clone().json();
+      } catch { /* keep the generic message */ }
+    }
+    if (error || !payload?.sent) {
+      const detail =
+        payload?.error ||
+        (Array.isArray(payload?.failures) && payload.failures.length
+          ? payload.failures.map((f: { to: string; error: string }) => `${f.to}: ${f.error}`).join(" · ")
+          : null) ||
+        error?.message ||
+        "Could not send the letters";
+      toast.error(detail, { duration: 12000 });
+      console.error("send-outreach-smtp failed", payload || error);
       return;
     }
+
     const sentAddresses = new Set<string>(Array.isArray(data.recipients) ? data.recipients : []);
     const now = new Date().toISOString();
     for (const r of ready) {
