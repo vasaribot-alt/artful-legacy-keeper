@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail, FileDown } from "lucide-react";
 import { toast } from "sonner";
+import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
+
 
 interface Gallery {
   id: string;
