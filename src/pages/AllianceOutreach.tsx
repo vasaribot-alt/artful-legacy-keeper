@@ -708,6 +708,55 @@ With kind regards,
     else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
 
+  // Send straight from jan@globalartistregistry.org over the Domeneshop mail
+  // server, and mirror a copy into the mailbox's own Sent folder.
+  const sendBatchViaSmtp = async () => {
+    const ready = batchResults.filter(r => r.body && r.email);
+    if (ready.length === 0) {
+      toast.error("No letters with an email address to send.");
+      return;
+    }
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now from jan@globalartistregistry.org?`)) return;
+    setBatchRunning(true);
+    const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
+      body: {
+        fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        letters: ready.map(r => ({
+          to: r.email,
+          subject: r.subject || "",
+          bodyHtml: markdownToHtml(withSignature(r.body)),
+          bodyText: markdownToPlainText(withSignature(r.body)),
+        })),
+      },
+    });
+    setBatchRunning(false);
+    if (error || !data?.sent) {
+      toast.error(data?.error || error?.message || "Could not send the letters");
+      return;
+    }
+    const sentAddresses = new Set<string>(Array.isArray(data.recipients) ? data.recipients : []);
+    const now = new Date().toISOString();
+    for (const r of ready) {
+      if (sentAddresses.has(r.email)) {
+        await update(r.id, {
+          status: "contacted",
+          last_contacted_at: now,
+          email_subject: r.subject || null,
+          email_body: r.body || null,
+        });
+      }
+    }
+    if (data.failures?.length) {
+      toast.warning(`Sent ${data.sent}; ${data.failures.length} failed (${data.failures.map((f: { to: string }) => f.to).join(", ")}).`);
+    } else if (!data.savedToSent) {
+      toast.success(`${data.sent} letters sent. A copy could not be filed in your Sent folder — check the delivery log.`);
+    } else {
+      toast.success(`${data.sent} letters sent and filed in your Sent folder.`);
+    }
+  };
+
+
+
   // The address every outreach letter should be sent from.
   const senderEmail =
     (draftSignature || DEFAULT_SIGNATURE).match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0] ||
