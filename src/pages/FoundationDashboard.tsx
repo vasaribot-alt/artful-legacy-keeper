@@ -181,7 +181,7 @@ const FoundationDashboard = () => {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <Award className="h-6 w-6" />
-            <h1 className="text-2xl font-semibold">Founding Artist Program</h1>
+            <h1 className="text-2xl font-semibold">Legacy Artist Program</h1>
           </div>
           <p className="text-sm text-muted-foreground">
             Generate and manage invite codes for founding artists. {artists.length} artist(s) enrolled.
@@ -261,7 +261,7 @@ const FoundationDashboard = () => {
 
         {/* Used codes / enrolled artists */}
         <section>
-          <h2 className="text-lg font-medium mb-4">Enrolled Founding Artists ({used.length})</h2>
+          <h2 className="text-lg font-medium mb-4">Enrolled Legacy Artists ({used.length})</h2>
           {used.length === 0 ? (
             <p className="text-sm text-muted-foreground">No artists have used an invite code yet.</p>
           ) : (

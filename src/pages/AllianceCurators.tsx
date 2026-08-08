@@ -19,7 +19,7 @@ const PILLARS = [
 const BENEFITS = [
   "Free membership during the Founding phase",
   "Curator profile with a verified GARF identifier",
-  "Access to Founding Artists and their full archival records",
+  "Access to Legacy Artists and their full archival records",
   "Ability to link your exhibitions and publications to artists' permanent records",
   "Invitations to curator briefings and Foundation events",
 ];
