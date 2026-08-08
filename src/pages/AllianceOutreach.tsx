@@ -1394,14 +1394,13 @@ With kind regards,
               Download .eml files
             </Button>
             <Button
-              variant="outline"
-              onClick={saveBatchToOutlook}
-              disabled={batchRunning || batchResults.length === 0}
-              className="border-amber-500/50 text-amber-700 hover:bg-amber-50"
+              onClick={sendBatchViaSmtp}
+              disabled={batchRunning || readyBatch.length === 0}
             >
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
-              Save to Outlook Drafts (online mailbox only)
+              Send {readyBatch.length} letter{readyBatch.length === 1 ? "" : "s"} now
             </Button>
+
             <Button variant="ghost" onClick={() => setBatchStep(0)} disabled={batchStep === 0}>
               Reset counter
             </Button>
