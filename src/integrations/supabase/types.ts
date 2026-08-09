@@ -1781,6 +1781,7 @@ export type Database = {
           first_contacted_at: string | null
           gallery_id: string
           id: string
+          invited_artists: string | null
           last_contacted_at: string | null
           replied_at: string | null
           reply_notes: string | null
@@ -1799,6 +1800,7 @@ export type Database = {
           first_contacted_at?: string | null
           gallery_id: string
           id?: string
+          invited_artists?: string | null
           last_contacted_at?: string | null
           replied_at?: string | null
           reply_notes?: string | null
@@ -1817,6 +1819,7 @@ export type Database = {
           first_contacted_at?: string | null
           gallery_id?: string
           id?: string
+          invited_artists?: string | null
           last_contacted_at?: string | null
           replied_at?: string | null
           reply_notes?: string | null

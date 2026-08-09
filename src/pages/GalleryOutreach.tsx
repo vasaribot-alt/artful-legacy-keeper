@@ -35,6 +35,8 @@ interface Outreach {
   id: string;
   gallery_id: string;
   status: string;
+  campaign_tag: string | null;
+  invited_artists: string | null;
   first_contacted_at: string | null;
   last_contacted_at: string | null;
   replied_at: string | null;
@@ -43,6 +45,9 @@ interface Outreach {
   email_body: string | null;
   email_generated_at: string | null;
 }
+
+const ARTIST_CAMPAIGN = "artist-list-2026";
+const DAILY_SEND_CAP = 50;
 
 const OUTREACH_STATUSES = [
   "not_contacted",
@@ -85,6 +90,7 @@ const GalleryOutreach = () => {
   const [countryFilter, setCountryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [hasEmailFilter, setHasEmailFilter] = useState<string>("all");
+  const [campaignFilter, setCampaignFilter] = useState<string>(ARTIST_CAMPAIGN);
   const [enriching, setEnriching] = useState(false);
   const [rankScope, setRankScope] = useState<number>(200);
   const [missingContactMode, setMissingContactMode] = useState(false);
@@ -187,6 +193,20 @@ const GalleryOutreach = () => {
       const orMap: Record<string, Outreach> = {};
       (os || []).forEach((o: Outreach) => { orMap[o.gallery_id] = o; });
 
+      // Galleries in a campaign may be unranked (e.g. added from the artist
+      // list), so pull those in explicitly and merge them into the list.
+      const known = new Set((gs || []).map((g: Gallery) => g.id));
+      const missingIds = (os || [])
+        .filter((o: Outreach) => o.campaign_tag && !known.has(o.gallery_id))
+        .map((o: Outreach) => o.gallery_id);
+      if (missingIds.length > 0) {
+        const extra = await (supabase as any)
+          .from("galleries")
+          .select(columns)
+          .in("id", missingIds.slice(0, 500));
+        if (!extra.error && extra.data) gs = [...(gs || []), ...extra.data];
+      }
+
       setGalleries(gs || []);
       setOutreach(orMap);
       setUsingFallbackList(fallback);
@@ -208,35 +228,54 @@ const GalleryOutreach = () => {
     return Array.from(s).sort();
   }, [galleries]);
 
+  const campaigns = useMemo(() => {
+    const s = new Set<string>();
+    Object.values(outreach).forEach((o) => o.campaign_tag && s.add(o.campaign_tag));
+    return Array.from(s).sort();
+  }, [outreach]);
+
   const filtered = useMemo(() => {
     return galleries.filter((g) => {
+      const o = outreach[g.id];
+      if (campaignFilter !== "all" && (o?.campaign_tag || "") !== campaignFilter) return false;
       if (search) {
         const q = search.toLowerCase();
         if (!g.name.toLowerCase().includes(q) &&
             !(g.city || "").toLowerCase().includes(q) &&
             !(g.email || "").toLowerCase().includes(q) &&
+            !(o?.invited_artists || "").toLowerCase().includes(q) &&
             !(g.contact_name || "").toLowerCase().includes(q)) return false;
       }
       if (countryFilter !== "all" && g.country !== countryFilter) return false;
-      const status = outreach[g.id]?.status || "not_contacted";
+      const status = o?.status || "not_contacted";
       if (statusFilter !== "all" && status !== statusFilter) return false;
       if (hasEmailFilter === "yes" && !g.email) return false;
       if (hasEmailFilter === "no" && g.email) return false;
       return true;
     });
-  }, [galleries, outreach, search, countryFilter, statusFilter, hasEmailFilter]);
+  }, [galleries, outreach, search, countryFilter, statusFilter, hasEmailFilter, campaignFilter]);
+
+  // Letters actually sent today, used to hold the daily volume down so the
+  // sending domain keeps a clean reputation.
+  const sentToday = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return Object.values(outreach).filter(
+      (o) => (o.last_contacted_at || "").slice(0, 10) === today
+    ).length;
+  }, [outreach]);
 
   const stats = useMemo(() => {
-    const total = galleries.length;
-    const withEmail = galleries.filter((g) => !!g.email).length;
-    const contacted = galleries.filter((g) => {
+    const scope = campaignFilter === "all" ? galleries : filtered;
+    const total = scope.length;
+    const withEmail = scope.filter((g) => !!g.email).length;
+    const contacted = scope.filter((g) => {
       const s = outreach[g.id]?.status;
       return s && s !== "not_contacted";
     }).length;
-    const replied = galleries.filter((g) => ["replied", "interested", "signed_up"].includes(outreach[g.id]?.status || "")).length;
-    const signedUp = galleries.filter((g) => outreach[g.id]?.status === "signed_up").length;
+    const replied = scope.filter((g) => ["replied", "interested", "signed_up"].includes(outreach[g.id]?.status || "")).length;
+    const signedUp = scope.filter((g) => outreach[g.id]?.status === "signed_up").length;
     return { total, withEmail, contacted, replied, signedUp };
-  }, [galleries, outreach]);
+  }, [galleries, filtered, outreach, campaignFilter]);
 
   const runEnrichBatch = async () => {
     setEnriching(true);
@@ -522,6 +561,15 @@ const GalleryOutreach = () => {
       toast.error("No letters with an email address to send.");
       return;
     }
+    const remainingToday = Math.max(0, DAILY_SEND_CAP - sentToday);
+    if (remainingToday === 0) {
+      toast.error(`Daily limit reached — ${DAILY_SEND_CAP} letters already sent today. Continue tomorrow to protect deliverability.`, { duration: 10000 });
+      return;
+    }
+    if (ready.length > remainingToday) {
+      toast.error(`Only ${remainingToday} letter${remainingToday === 1 ? "" : "s"} left within today's limit of ${DAILY_SEND_CAP}. Reduce the batch and try again.`, { duration: 10000 });
+      return;
+    }
     if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now from jan@globalartistregistry.org?`)) return;
     setBatchRunning(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
@@ -677,8 +725,11 @@ const GalleryOutreach = () => {
             </Button>
           )}
           <span className="text-[11px] text-muted-foreground ml-auto">
-            Exports .eml files — open them in Outlook as ready-to-send drafts.
+            {sentToday} / {DAILY_SEND_CAP} sent today
           </span>
+        </div>
+        <div className="text-[11px] text-muted-foreground">
+          Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing. Batch mailing also exports .eml files for Outlook.
         </div>
 
 
@@ -741,6 +792,17 @@ const GalleryOutreach = () => {
               <SelectItem value="no">No email</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={campaignFilter} onValueChange={setCampaignFilter}>
+            <SelectTrigger className="w-52"><SelectValue placeholder="Campaign" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All galleries</SelectItem>
+              {campaigns.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c === ARTIST_CAMPAIGN ? "Artist list campaign" : c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="text-xs text-muted-foreground ml-auto">{filtered.length} shown</div>
         </div>
 
@@ -761,6 +823,7 @@ const GalleryOutreach = () => {
                   <TableHead>Gallery</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Contact</TableHead>
+                  <TableHead>Invited artists</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
@@ -809,6 +872,13 @@ const GalleryOutreach = () => {
                             <div>{g.contact_name}</div>
                             {g.contact_title && <div className="text-xs text-muted-foreground">{g.contact_title}</div>}
                           </div>
+                        ) : (
+                          <span className="text-muted-foreground italic">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm max-w-[220px]">
+                        {outreach[g.id]?.invited_artists ? (
+                          <span className="text-xs">{outreach[g.id]!.invited_artists}</span>
                         ) : (
                           <span className="text-muted-foreground italic">—</span>
                         )}
