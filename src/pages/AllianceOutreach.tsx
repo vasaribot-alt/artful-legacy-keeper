@@ -823,29 +823,7 @@ With kind regards,
     return `${body.trimEnd()}\n\n${sig}`;
   };
 
-  const mailtoUrl = (r: { email: string; subject: string; body: string }) =>
-    `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent(r.subject || "")}&body=${encodeURIComponent(markdownToPlainText(withSignature(r.body)))}`;
-
-
-  const openOneInOutlook = (r: { email: string; subject: string; body: string }) => {
-    const a = document.createElement("a");
-    a.href = mailtoUrl(r);
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
-
-  // Stepper: every open is a real user click, so nothing gets blocked as a pop-up.
   const readyBatch = batchResults.filter(r => r.body && r.email);
-  const openNextInOutlook = () => {
-    const next = readyBatch[batchStep];
-    if (!next) {
-      toast.success("All letters opened.");
-      return;
-    }
-    openOneInOutlook(next);
-    setBatchStep(batchStep + 1);
-  };
 
   const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
     await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(withSignature(r.body))}`);
