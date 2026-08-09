@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail } from "lucide-react";
+import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 
@@ -562,9 +562,10 @@ const GalleryOutreach = () => {
     if (!window.confirm(`Send this letter now to ${emailDraft}?`)) return;
     setDraftSending(true);
     await saveDraft();
-    const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
+    const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        campaignTag: "gallery_outreach",
         letters: [{
           to: emailDraft,
           subject: draftSubject,
@@ -575,17 +576,17 @@ const GalleryOutreach = () => {
     });
     const payload = error ? await readFunctionError(error, data) : data as any;
     setDraftSending(false);
-    if (error || !payload?.queued) {
-      toast.error(payload?.error || error?.message || "Could not queue the letter", { duration: 12000 });
+    if (error || !payload?.sent) {
+      toast.error(payload?.error || error?.message || "Could not send the letter", { duration: 12000 });
       return;
     }
-    await setStatus(selected.id, "queued");
-    toast.success(`Letter queued for delivery to ${emailDraft}.`);
+    await setStatus(selected.id, "sent");
+    toast.success(`Letter sent to ${emailDraft} via Brevo.`);
     setDraftOpen(false);
   };
 
-  // Queue approved letters through GARF's verified managed email service.
-  const sendBatchViaSmtp = async () => {
+  // Send approved letters through Brevo's marketing email API.
+  const sendBatchViaBrevo = async () => {
     const ready = batchResults.filter((r) => r.body && r.email);
     if (ready.length === 0) {
       toast.error("No letters with an email address to send.");
@@ -600,11 +601,12 @@ const GalleryOutreach = () => {
       toast.error(`Only ${remainingToday} letter${remainingToday === 1 ? "" : "s"} left within today's limit of ${DAILY_SEND_CAP}. Reduce the batch and try again.`, { duration: 10000 });
       return;
     }
-    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now from jan@globalartistregistry.org?`)) return;
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from jan@globalartistregistry.org?`)) return;
     setBatchRunning(true);
-    const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
+    const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        campaignTag: "gallery_outreach",
         letters: ready.map((r) => ({
           to: r.email,
           subject: r.subject || "",
@@ -615,7 +617,7 @@ const GalleryOutreach = () => {
     });
     setBatchRunning(false);
     const payload = error ? await readFunctionError(error, data) : data as any;
-    if (error || !payload?.queued) {
+    if (error || !payload?.sent) {
       const detail =
         payload?.error ||
         (Array.isArray(payload?.failures) && payload.failures.length
@@ -624,16 +626,45 @@ const GalleryOutreach = () => {
         error?.message ||
         "Could not send the letters";
       toast.error(detail, { duration: 12000 });
-      console.error("send-outreach-smtp failed", payload || error);
+      console.error("send-outreach-brevo failed", payload || error);
       return;
     }
 
     const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
     for (const r of ready) {
-      if (sentAddresses.has(r.email)) await setStatus(r.id, "queued");
+      if (sentAddresses.has(r.email)) await setStatus(r.id, "sent");
     }
-    toast.success(`${payload.queued} letter${payload.queued === 1 ? "" : "s"} queued for delivery.`);
+    if (payload.failures?.length) {
+      toast.warning(`${payload.sent} sent; ${payload.failures.length} failed (${payload.failures.map((f: { to: string }) => f.to).join(", ")}).`, { duration: 12000 });
+    } else {
+      toast.success(`${payload.sent} letter${payload.sent === 1 ? "" : "s"} sent via Brevo.`);
+    }
     load();
+  };
+
+  // Sync gallery contacts to Brevo CRM
+  const [syncing, setSyncing] = useState(false);
+  const syncToBrevo = async () => {
+    if (!window.confirm("Sync all gallery contacts (with email addresses) to Brevo CRM? This creates or updates contacts in the 'GARF Gallery Outreach' list.")) return;
+    setSyncing(true);
+    const { data, error } = await supabase.functions.invoke("sync-brevo-contacts", { body: { source: "galleries" } });
+    setSyncing(false);
+    if (error) {
+      try {
+        const res = (error as any)?.context as Response;
+        const raw = res ? await res.clone().text() : "";
+        const payload = raw ? JSON.parse(raw) : null;
+        toast.error(payload?.error || error.message || "Sync failed", { duration: 12000 });
+      } catch {
+        toast.error(error.message || "Sync failed", { duration: 12000 });
+      }
+      return;
+    }
+    if (data?.failures?.length) {
+      toast.warning(`Synced ${data.synced} of ${data.totalContacts} contacts to Brevo. ${data.failures.length} failed.`);
+    } else {
+      toast.success(`${data?.synced || 0} gallery contacts synced to Brevo CRM (${data?.listName}).`);
+    }
   };
 
 
@@ -742,8 +773,12 @@ const GalleryOutreach = () => {
             {sentToday} / {DAILY_SEND_CAP} sent today
           </span>
         </div>
-        <div className="text-[11px] text-muted-foreground">
-          Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing.
+        <div className="text-[11px] text-muted-foreground flex items-center gap-3 flex-wrap">
+          <span>Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing.</span>
+          <Button variant="outline" size="sm" onClick={syncToBrevo} disabled={syncing} className="h-6 text-[11px] px-2 py-0">
+            {syncing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Upload className="w-3 h-3 mr-1" />}
+            Sync to Brevo
+          </Button>
         </div>
 
 
@@ -1157,7 +1192,7 @@ const GalleryOutreach = () => {
               Mark as queued
             </Button>
 
-            <Button onClick={sendBatchViaSmtp} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
+            <Button onClick={sendBatchViaBrevo} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Send {batchResults.filter((r) => r.body && r.email).length} letter{batchResults.filter((r) => r.body && r.email).length === 1 ? "" : "s"} now
 
