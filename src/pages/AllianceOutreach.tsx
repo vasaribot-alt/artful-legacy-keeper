@@ -781,36 +781,6 @@ With kind regards,
     (draftSignature || DEFAULT_SIGNATURE).match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0] ||
     "jan@globalartistregistry.org";
 
-  const downloadBatchEml = () => {
-    const ready = batchResults.filter(r => r.body && r.email);
-    if (ready.length === 0) {
-      toast.error("No drafts with an email address to export.");
-      return;
-    }
-    ready.forEach((r, i) => {
-      const html = markdownToHtml(withSignature(r.body));
-      const eml = [
-        `X-Unsent: 1`,
-        `From: ${senderEmail}`,
-        `To: ${r.email}`,
-        `Subject: ${r.subject || ""}`,
-        `MIME-Version: 1.0`,
-        `Content-Type: text/html; charset=utf-8`,
-        ``,
-        html,
-      ].join("\r\n");
-      const blob = new Blob([eml], { type: "message/rfc822" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${String(i + 1).padStart(2, "0")}-${(r.name || "draft").replace(/[^\w\-]+/g, "_").slice(0, 40)}.eml`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-    });
-    toast.success(`${ready.length} .eml files downloaded — double-click each file to open it in Outlook.`);
-  };
 
   // Guarantee the letter always ends with the sender block (name + email), so
   // recipients can see who wrote and how to reply even when the mail app shows
@@ -1257,7 +1227,7 @@ With kind regards,
                 Review and edit the letters here, then use <strong>“Send N letters now”</strong> at the bottom. Letters are sent by GARF’s own mail service from <span className="font-mono">{senderEmail}</span> — no Outlook window opens, so no empty drafts are created.
               </p>
               <p>
-                <strong>“Download .eml files”</strong> stays available if you ever want to archive or send a letter manually; each file carries a From header for {senderEmail}.
+                Nothing is routed through Outlook any more, so no empty drafts can appear. Use <strong>Copy text</strong> if you ever need a letter outside the app.
               </p>
               <p>
                 This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
@@ -1380,9 +1350,6 @@ With kind regards,
             </Button>
             <Button variant="outline" onClick={markBatchContacted} disabled={batchRunning || batchResults.length === 0}>
               Mark as contacted
-            </Button>
-            <Button variant="outline" onClick={downloadBatchEml} disabled={batchResults.length === 0}>
-              Download .eml files
             </Button>
             <Button
               onClick={sendBatchViaSmtp}
