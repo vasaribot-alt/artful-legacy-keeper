@@ -152,10 +152,10 @@ Recipient:
 - Contact person: ${personName || "n/a"}
 - Website: ${website || "n/a"}
 - Internal notes: ${notes || "n/a"}
-${invitedArtists ? `- Artists represented by this gallery whom GARF is inviting: ${invitedArtists}` : ""}
+${invitedArtists ? `- Artists represented by this gallery whom GARF is inviting, each with their personal access code:\n${invitedArtists}` : ""}
 
 Category-specific framing: ${guidance}
-${invitedArtists ? `\nName the artists listed above in the email (as a short in-sentence list, or a compact list if there are more than four), explaining that GARF would like to invite these artists they represent to be documented in the registry and that the gallery's endorsement would help. Do not add or invent any other artist names.` : ""}
+${invitedArtists ? `\nName the artists listed above in the email and include each artist's personal access code exactly as given, as a clearly formatted list of "Artist name — CODE" lines near the end of the email (before the sign-off), introduced by a short sentence explaining that each code gives that artist free lifetime registration at https://globalartistregistry.org and asking the gallery to pass it on. Copy names and codes verbatim — never alter, shorten or invent a name or code, and if an artist has no code listed, include the name without a code.` : ""}
 
 ${templateInstruction}
 

@@ -878,7 +878,7 @@ const GalleryOutreach = () => {
                       </TableCell>
                       <TableCell className="text-sm max-w-[220px]">
                         {outreach[g.id]?.invited_artists ? (
-                          <span className="text-xs">{outreach[g.id]!.invited_artists}</span>
+                          <span className="text-xs whitespace-pre-line">{outreach[g.id]!.invited_artists}</span>
                         ) : (
                           <span className="text-muted-foreground italic">—</span>
                         )}
