@@ -792,6 +792,17 @@ const GalleryOutreach = () => {
               <SelectItem value="no">No email</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={campaignFilter} onValueChange={setCampaignFilter}>
+            <SelectTrigger className="w-52"><SelectValue placeholder="Campaign" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All galleries</SelectItem>
+              {campaigns.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c === ARTIST_CAMPAIGN ? "Artist list campaign" : c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="text-xs text-muted-foreground ml-auto">{filtered.length} shown</div>
         </div>
 
