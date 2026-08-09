@@ -601,7 +601,7 @@ const GalleryOutreach = () => {
       toast.error(`Only ${remainingToday} letter${remainingToday === 1 ? "" : "s"} left within today's limit of ${DAILY_SEND_CAP}. Reduce the batch and try again.`, { duration: 10000 });
       return;
     }
-    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from jan@globalartistregistry.org?`)) return;
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?`)) return;
     setBatchRunning(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
