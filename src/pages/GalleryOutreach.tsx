@@ -1080,7 +1080,7 @@ const GalleryOutreach = () => {
           <p className="text-xs text-muted-foreground">
             Outlook drafts are prepared for {SENDER_EMAIL}; no manual sender change is needed.
           </p>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
 
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
