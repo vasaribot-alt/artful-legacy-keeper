@@ -441,14 +441,41 @@ const GalleryOutreach = () => {
   };
 
   const copyDraft = async () => {
-    const text = draftSubject ? `Subject: ${draftSubject}\n\n${draftBody}` : draftBody;
+    const text = formatCopyBlock({
+      email: emailDraft || selected?.email || "",
+      subject: draftSubject,
+      body: markdownToPlainText(draftBody),
+      signature: draftSignature,
+    });
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied to clipboard");
+      toast.success("Copied — email, subject and letter (no signature)");
     } catch {
       toast.error("Could not copy");
     }
   };
+
+  const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
+    await navigator.clipboard.writeText(formatCopyBlock({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    }));
+    toast.success("Letter copied");
+  };
+
+  const copyAllBatchDrafts = async () => {
+    const text = formatCopyBlocks(batchResults.filter((r) => r.body).map((r) => ({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    })));
+    await navigator.clipboard.writeText(text);
+    toast.success("All letters copied");
+  };
+
 
   // ---------- Batch of 10: generate drafts + export to Outlook ----------
   const toggleSelectOne = (id: string) => {
