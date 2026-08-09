@@ -35,6 +35,8 @@ interface Outreach {
   id: string;
   gallery_id: string;
   status: string;
+  campaign_tag: string | null;
+  invited_artists: string | null;
   first_contacted_at: string | null;
   last_contacted_at: string | null;
   replied_at: string | null;
@@ -43,6 +45,9 @@ interface Outreach {
   email_body: string | null;
   email_generated_at: string | null;
 }
+
+const ARTIST_CAMPAIGN = "artist-list-2026";
+const DAILY_SEND_CAP = 50;
 
 const OUTREACH_STATUSES = [
   "not_contacted",
