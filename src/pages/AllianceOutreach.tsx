@@ -1324,13 +1324,14 @@ With kind regards,
       </div>
 
       <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6">
             <DialogTitle>
               Batch letters {batchProgress ? `— ${batchProgress.done}/${batchProgress.total}` : ""}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 text-sm">
+          <div className="space-y-4 text-sm overflow-y-auto px-6 flex-1 min-h-0">
+
             <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground space-y-1.5">
               <p className="font-medium text-foreground">How these letters are sent</p>
               <p>
