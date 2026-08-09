@@ -1587,15 +1587,6 @@ With kind regards,
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
-            {draftTarget?.contact_email && (
-              <Button asChild variant="outline" disabled={!draftBody}>
-                <a
-                  href={`mailto:${draftTarget.contact_email}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}
-                >
-                  <Mail className="w-4 h-4 mr-1.5" />Open in mail app
-                </a>
-              </Button>
-            )}
             <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
           </DialogFooter>
         </DialogContent>
