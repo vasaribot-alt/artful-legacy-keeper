@@ -126,8 +126,9 @@ Deno.serve(async (req) => {
 
     const guidance = CATEGORY_GUIDANCE[category] || CATEGORY_GUIDANCE.other;
     const salutation = personName
-      ? `Address the recipient personally as "Dear ${personName},"`
+      ? `Open with the salutation "Dear ${personName}," and then never repeat the recipient's personal name anywhere else in the email.`
       : `Address the recipient formally (e.g. "Dear colleagues," or "To the team at ${name},")`;
+
     const lang = (language || "english").toLowerCase();
     const langInstruction = lang === "english"
       ? "Write in clear, professional English."
