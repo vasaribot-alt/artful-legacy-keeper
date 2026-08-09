@@ -1188,7 +1188,7 @@ const GalleryOutreach = () => {
               Mark as queued
             </Button>
 
-            <Button onClick={sendBatchViaSmtp} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
+            <Button onClick={sendBatchViaBrevo} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Send {batchResults.filter((r) => r.body && r.email).length} letter{batchResults.filter((r) => r.body && r.email).length === 1 ? "" : "s"} now
 
