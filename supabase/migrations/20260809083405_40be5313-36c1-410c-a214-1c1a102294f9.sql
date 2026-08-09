@@ -1,0 +1,1 @@
+ALTER TABLE public.gallery_outreach ADD COLUMN IF NOT EXISTS invited_artists text;
