@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
+import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
 import { AlertTriangle, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */

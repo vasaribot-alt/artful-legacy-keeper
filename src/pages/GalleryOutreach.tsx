@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 
 
+import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
 interface Gallery {
   id: string;
   name: string;
