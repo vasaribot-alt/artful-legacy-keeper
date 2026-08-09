@@ -1403,7 +1403,7 @@ With kind regards,
               Mark as contacted
             </Button>
             <Button
-              onClick={sendBatchViaSmtp}
+              onClick={sendBatchViaBrevo}
               disabled={batchRunning || readyBatch.length === 0}
             >
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
