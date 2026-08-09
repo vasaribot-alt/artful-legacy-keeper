@@ -206,6 +206,23 @@ Subject: <one-line subject>
       body = m[2].trim();
     }
 
+    // The personal name belongs in the salutation only. Enforce this after AI
+    // generation so a model cannot repeat it in the opening paragraph.
+    if (personName) {
+      const escapedName = personName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const lines = body.split(/\r?\n/);
+      const salutationIndex = lines.findIndex((line) => line.trim().length > 0);
+      body = lines.map((line, index) => {
+        if (index === salutationIndex) return line;
+        return line
+          .replace(new RegExp(escapedName, "gi"), "")
+          .replace(/,\s*,/g, ",")
+          .replace(/\s{2,}/g, " ")
+          .replace(/\s+,/g, ",")
+          .trimEnd();
+      }).join("\n");
+    }
+
     // Safety net: make sure the invited artists and their access codes are always present.
     if (invitedArtists) {
       const artistLines = invitedArtists
