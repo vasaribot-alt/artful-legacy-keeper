@@ -1362,16 +1362,20 @@ With kind regards,
                 />
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
-                    Copy text
+                    Copy for Outlook
                   </Button>
                 </div>
               </div>
             ))}
           </div>
           <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={copyAllBatchDrafts} disabled={batchRunning || batchResults.length === 0}>
+              Copy all letters
+            </Button>
             <Button variant="outline" onClick={saveBatchEdits} disabled={batchRunning || batchResults.length === 0}>
               Save edits
             </Button>
+
             <Button variant="outline" onClick={markBatchContacted} disabled={batchRunning || batchResults.length === 0}>
               Mark as contacted
             </Button>
