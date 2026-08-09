@@ -561,6 +561,15 @@ const GalleryOutreach = () => {
       toast.error("No letters with an email address to send.");
       return;
     }
+    const remainingToday = Math.max(0, DAILY_SEND_CAP - sentToday);
+    if (remainingToday === 0) {
+      toast.error(`Daily limit reached — ${DAILY_SEND_CAP} letters already sent today. Continue tomorrow to protect deliverability.`, { duration: 10000 });
+      return;
+    }
+    if (ready.length > remainingToday) {
+      toast.error(`Only ${remainingToday} letter${remainingToday === 1 ? "" : "s"} left within today's limit of ${DAILY_SEND_CAP}. Reduce the batch and try again.`, { duration: 10000 });
+      return;
+    }
     if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now from jan@globalartistregistry.org?`)) return;
     setBatchRunning(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
