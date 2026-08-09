@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
-import { AlertTriangle, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
+import { AlertTriangle, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, Upload, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
 const nameKey = (s: string) =>
@@ -1068,6 +1068,10 @@ With kind regards,
               </Button>
               <Button size="sm" variant="outline" onClick={applyCuratorLetterToSelected} disabled={batchRunning}>
                 Curator Partner letter for {selectedIds.length}
+              </Button>
+              <Button size="sm" variant="outline" onClick={syncToBrevo} disabled={syncing}>
+                {syncing ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Upload className="w-3.5 h-3.5 mr-1" />}
+                Sync to Brevo
               </Button>
               {emailTexts.length > 0 && (
                 <Select onValueChange={(v) => applySavedTextToSelected(v)}>
