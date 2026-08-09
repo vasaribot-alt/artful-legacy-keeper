@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
       }
       const { data: o } = await supabase
         .from("gallery_outreach")
-        .select("contact_name, contact_title, reply_notes")
+        .select("contact_name, contact_title, reply_notes, invited_artists")
         .eq("gallery_id", gallery_id)
         .maybeSingle();
       category = "galleries";
@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
       country = [g.city, g.country].filter(Boolean).join(", ") || null;
       website = g.website;
       notes = o?.reply_notes || null;
+      invitedArtists = (o as any)?.invited_artists || null;
       personName = personName || o?.contact_name || (g as any).contact_name || null;
     } else {
       const { data: row, error } = await supabase
