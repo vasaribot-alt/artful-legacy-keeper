@@ -11,7 +11,7 @@ type Letter = {
 };
 
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/brevo";
-const SENDER_EMAIL = "jan@globalartistregistry.org";
+const SENDER_EMAIL = "outreach@globalartistregistry.org";
 const SENDER_NAME_DEFAULT = "Global Artist Registry Foundation";
 
 Deno.serve(async (req) => {
