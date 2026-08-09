@@ -715,19 +715,19 @@ With kind regards,
     else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
 
-  // Send straight from jan@globalartistregistry.org over the Domeneshop mail
-  // server, and mirror a copy into the mailbox's own Sent folder.
-  const sendBatchViaSmtp = async () => {
+  // Send approved letters through Brevo's marketing email API.
+  const sendBatchViaBrevo = async () => {
     const ready = batchResults.filter(r => r.body && r.email);
     if (ready.length === 0) {
       toast.error("No letters with an email address to send.");
       return;
     }
-    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now from jan@globalartistregistry.org?`)) return;
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from jan@globalartistregistry.org?`)) return;
     setBatchRunning(true);
-    const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
+    const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        campaignTag: "alliance_outreach",
         letters: ready.map(r => ({
           to: r.email,
           subject: r.subject || "",
@@ -756,11 +756,11 @@ With kind regards,
         error?.message ||
         "Could not send the letters";
       toast.error(detail, { duration: 12000 });
-      console.error("send-outreach-smtp failed", payload || error);
+      console.error("send-outreach-brevo failed", payload || error);
       return;
     }
 
-    const sentAddresses = new Set<string>(Array.isArray(data.recipients) ? data.recipients : []);
+    const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
     const now = new Date().toISOString();
     for (const r of ready) {
       if (sentAddresses.has(r.email)) {
@@ -772,12 +772,35 @@ With kind regards,
         });
       }
     }
-    if (data.failures?.length) {
-      toast.warning(`Sent ${data.sent}; ${data.failures.length} failed (${data.failures.map((f: { to: string }) => f.to).join(", ")}).`);
-    } else if (!data.savedToSent) {
-      toast.success(`${data.sent} letters sent. A copy could not be filed in your Sent folder — check the delivery log.`);
+    if (payload.failures?.length) {
+      toast.warning(`Sent ${payload.sent}; ${payload.failures.length} failed (${payload.failures.map((f: { to: string }) => f.to).join(", ")}).`, { duration: 12000 });
     } else {
-      toast.success(`${data.sent} letters sent and filed in your Sent folder.`);
+      toast.success(`${payload.sent} letter${payload.sent === 1 ? "" : "s"} sent via Brevo.`);
+    }
+  };
+
+  // Sync alliance contacts to Brevo CRM
+  const [syncing, setSyncing] = useState(false);
+  const syncToBrevo = async () => {
+    if (!window.confirm("Sync all alliance contacts (with email addresses) to Brevo CRM? This creates or updates contacts in the 'GARF Alliance Outreach' list.")) return;
+    setSyncing(true);
+    const { data, error } = await supabase.functions.invoke("sync-brevo-contacts", { body: { source: "alliance" } });
+    setSyncing(false);
+    if (error) {
+      try {
+        const res = (error as any)?.context as Response;
+        const raw = res ? await res.clone().text() : "";
+        const payload = raw ? JSON.parse(raw) : null;
+        toast.error(payload?.error || error.message || "Sync failed", { duration: 12000 });
+      } catch {
+        toast.error(error.message || "Sync failed", { duration: 12000 });
+      }
+      return;
+    }
+    if (data?.failures?.length) {
+      toast.warning(`Synced ${data.synced} of ${data.totalContacts} contacts to Brevo. ${data.failures.length} failed.`);
+    } else {
+      toast.success(`${data?.synced || 0} alliance contacts synced to Brevo CRM (${data?.listName}).`);
     }
   };
 
