@@ -439,14 +439,20 @@ With kind regards,
   };
 
   const copyDraft = async () => {
-    const text = draftSubject ? `Subject: ${draftSubject}\n\n${draftBody}` : draftBody;
+    const text = formatCopyBlock({
+      email: draftTarget?.contact_email || "",
+      subject: draftSubject,
+      body: markdownToPlainText(draftBody),
+      signature: draftSignature,
+    });
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied to clipboard");
+      toast.success("Copied — email, subject and letter (no signature)");
     } catch {
       toast.error("Could not copy");
     }
   };
+
 
 
   const load = async () => {
