@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail } from "lucide-react";
+import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 
