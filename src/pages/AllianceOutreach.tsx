@@ -1623,16 +1623,21 @@ With kind regards,
 
             {draftTarget?.email_generated_at && (
               <p className="text-xs text-muted-foreground">
-                Last generated {new Date(draftTarget.contact_email_generated_at).toLocaleString()}
+                Last generated {new Date(draftTarget.email_generated_at).toLocaleString()}
               </p>
             )}
           </div>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 border-t border-border bg-background px-6 py-4">
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
-            <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
+            <Button variant="outline" onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
+            <Button onClick={sendDraftViaBrevo} disabled={sendingDraft || !draftBody || !draftTarget?.contact_email}>
+              {sendingDraft ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
+              Send now
+            </Button>
           </DialogFooter>
+
         </DialogContent>
       </Dialog>
 
