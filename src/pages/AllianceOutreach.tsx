@@ -1455,7 +1455,8 @@ With kind regards,
               </div>
             ))}
           </div>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 border-t border-border bg-background px-6 py-4">
+
             <Button variant="outline" onClick={copyAllBatchDrafts} disabled={batchRunning || batchResults.length === 0}>
               Copy all letters
             </Button>
