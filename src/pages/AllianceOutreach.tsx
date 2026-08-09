@@ -779,6 +779,65 @@ With kind regards,
     }
   };
 
+  const [sendingDraft, setSendingDraft] = useState(false);
+  const sendDraftViaBrevo = async () => {
+    if (!draftTarget) return;
+    if (!draftTarget.email) {
+      toast.error("This contact has no email address.");
+      return;
+    }
+    if (!draftBody) {
+      toast.error("Write or generate the letter first.");
+      return;
+    }
+    if (!window.confirm(`Send this letter now to ${draftTarget.email} via Brevo?`)) return;
+    setSendingDraft(true);
+    const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
+      body: {
+        fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        campaignTag: "alliance_outreach",
+        letters: [{
+          to: draftTarget.email,
+          subject: draftSubject || "",
+          bodyHtml: markdownToHtml(withSignature(draftBody)),
+          bodyText: markdownToPlainText(withSignature(draftBody)),
+        }],
+      },
+    });
+    setSendingDraft(false);
+    let payload = data as any;
+    if (error) {
+      try {
+        const res = (error as any)?.context as Response | undefined;
+        if (res && typeof res.text === "function") {
+          const raw = await res.clone().text();
+          try { payload = JSON.parse(raw); } catch { payload = { error: raw || undefined }; }
+        }
+      } catch { /* keep the generic message */ }
+    }
+    if (error || !payload?.sent) {
+      const detail =
+        payload?.error ||
+        (Array.isArray(payload?.failures) && payload.failures.length
+          ? payload.failures.map((f: { to: string; error: string }) => `${f.to}: ${f.error}`).join(" · ")
+          : null) ||
+        error?.message ||
+        "Could not send the letter";
+      toast.error(detail, { duration: 12000 });
+      console.error("send-outreach-brevo failed", payload || error);
+      return;
+    }
+    await update(draftTarget.id, {
+      status: "contacted",
+      last_contacted_at: new Date().toISOString(),
+      email_subject: draftSubject || null,
+      email_body: draftBody || null,
+    });
+    toast.success(`Letter sent to ${draftTarget.email}.`);
+    setDraftTarget(null);
+  };
+
+
   // Sync alliance contacts to Brevo CRM
   const [syncing, setSyncing] = useState(false);
   const syncToBrevo = async () => {
