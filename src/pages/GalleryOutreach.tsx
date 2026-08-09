@@ -193,6 +193,20 @@ const GalleryOutreach = () => {
       const orMap: Record<string, Outreach> = {};
       (os || []).forEach((o: Outreach) => { orMap[o.gallery_id] = o; });
 
+      // Galleries in a campaign may be unranked (e.g. added from the artist
+      // list), so pull those in explicitly and merge them into the list.
+      const known = new Set((gs || []).map((g: Gallery) => g.id));
+      const missingIds = (os || [])
+        .filter((o: Outreach) => o.campaign_tag && !known.has(o.gallery_id))
+        .map((o: Outreach) => o.gallery_id);
+      if (missingIds.length > 0) {
+        const extra = await (supabase as any)
+          .from("galleries")
+          .select(columns)
+          .in("id", missingIds.slice(0, 500));
+        if (!extra.error && extra.data) gs = [...(gs || []), ...extra.data];
+      }
+
       setGalleries(gs || []);
       setOutreach(orMap);
       setUsingFallbackList(fallback);
