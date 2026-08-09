@@ -83,6 +83,7 @@ Deno.serve(async (req) => {
     let website: string | null = null;
     let notes: string | null = null;
     let personName: string | null = contact_person || null;
+    let invitedArtists: string | null = null;
 
     if (gallery_id) {
       const { data: g, error: gErr } = await supabase
