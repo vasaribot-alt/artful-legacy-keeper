@@ -167,7 +167,7 @@ Instructions:
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
 - Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) a clear, low-commitment ask (a short introductory call or written reply), (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
-- ${recipient_capacity ? `In the opening sentence, acknowledge the recipient's capacity as "${recipient_capacity}" at ${name} without repeating their personal name (e.g. "We are writing to you in your capacity as ${recipient_capacity} of ${name}…"). This capacity belongs to the RECIPIENT, not the sender. Never claim the sender holds this role.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
+ - ${recipient_capacity ? `In the opening sentence, acknowledge only the recipient's professional role: "${recipient_capacity}". Write this naturally as "in your capacity as [role] at ${name}". The recipient's personal name must not appear in this sentence or anywhere after the salutation, even if it is included in the capacity text.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
 - ${signature ? `End the email with a short closing line (e.g. "With kind regards,") on its own line, then a blank line, then append the following signature block VERBATIM (do not modify, translate, or reformat any of its lines, including the website and phone numbers):\n---\n${signature}\n---` : `Sign the email on separate lines: first line "${sender_name || "The GARF Team"}", second line "Global Artist Registry Foundation". Include the website https://globalartistregistry.org near the sign-off.`}
 
@@ -204,6 +204,23 @@ Subject: <one-line subject>
     if (m) {
       subject = m[1].trim();
       body = m[2].trim();
+    }
+
+    // The personal name belongs in the salutation only. Enforce this after AI
+    // generation so a model cannot repeat it in the opening paragraph.
+    if (personName) {
+      const escapedName = personName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const lines = body.split(/\r?\n/);
+      const salutationIndex = lines.findIndex((line) => line.trim().length > 0);
+      body = lines.map((line, index) => {
+        if (index === salutationIndex) return line;
+        return line
+          .replace(new RegExp(escapedName, "gi"), "")
+          .replace(/,\s*,/g, ",")
+          .replace(/\s{2,}/g, " ")
+          .replace(/\s+,/g, ",")
+          .trimEnd();
+      }).join("\n");
     }
 
     // Safety net: make sure the invited artists and their access codes are always present.

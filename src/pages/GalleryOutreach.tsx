@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail, FileDown } from "lucide-react";
+import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 
@@ -122,6 +122,7 @@ const GalleryOutreach = () => {
     () => localStorage.getItem("garf.outreach.signature") || DEFAULT_SIGNATURE
   );
   const [draftGenerating, setDraftGenerating] = useState(false);
+  const [draftSending, setDraftSending] = useState(false);
   const [draftSubject, setDraftSubject] = useState("");
   const [draftBody, setDraftBody] = useState("");
 
@@ -388,7 +389,7 @@ const GalleryOutreach = () => {
     const person = contactNameDraft.trim() || selected.contact_name || "";
     setDraftRecipientCapacity(
       title
-        ? (person ? `${title}, ${person} of ${selected.name}` : `${title} of ${selected.name}`)
+        ? `${title} at ${selected.name}`
         : ""
     );
     setDraftOpen(true);
@@ -476,9 +477,7 @@ const GalleryOutreach = () => {
     for (let i = 0; i < targets.length; i++) {
       const g = targets[i];
       try {
-        const capacity = g.contact_title
-          ? (g.contact_name ? `${g.contact_title}, ${g.contact_name} of ${g.name}` : `${g.contact_title} of ${g.name}`)
-          : "";
+        const capacity = g.contact_title ? `${g.contact_title} at ${g.name}` : "";
         const { data, error } = await supabase.functions.invoke("generate-outreach-email", {
           body: {
             gallery_id: g.id,
@@ -510,68 +509,54 @@ const GalleryOutreach = () => {
     load();
   };
 
-  // Every outreach letter must leave from the branded foundation mailbox.
+  // Every outreach letter leaves through the verified GARF email service.
   const SENDER_EMAIL = "jan@globalartistregistry.org";
-  const SENDER_NAME = "Global Artist Registry Foundation";
-
-  const buildEml = (to: string, subject: string, body: string) => {
-    const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
-    const lines = [
-      "X-Unsent: 1",
-      `From: ${SENDER_NAME} <${SENDER_EMAIL}>`,
-      `To: ${to}`,
-      `Subject: =?UTF-8?B?${b64(subject)}?=`,
-      "MIME-Version: 1.0",
-      'Content-Type: text/plain; charset="utf-8"',
-      "Content-Transfer-Encoding: base64",
-      "",
-      b64(body).replace(/(.{76})/g, "$1\r\n"),
-      "",
-    ];
-    return lines.join("\r\n");
-  };
-
-  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
-
-  const exportBatchToOutlook = () => {
-    const ready = batchResults.filter((r) => r.body && r.email);
-    if (ready.length === 0) {
-      toast.error("No drafts with an email address to export.");
-      return;
-    }
-    ready.forEach((r, i) => {
-      setTimeout(() => {
-        const blob = new Blob([buildEml(r.email, r.subject, r.body)], { type: "message/rfc822" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `GARF-${String(i + 1).padStart(2, "0")}-${slug(r.name)}.eml`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-      }, i * 350);
-    });
-    toast.success(`Exporting ${ready.length} Outlook drafts (.eml).`);
-  };
-
-  const openBrandedOutlookDraft = () => {
-    if (!emailDraft || !draftBody) return;
-    const blob = new Blob([buildEml(emailDraft, draftSubject, draftBody)], { type: "message/rfc822" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `GARF-${slug(selected?.name || "gallery")}.eml`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-    toast.success("Branded Outlook draft downloaded — open the file to review and send.");
-  };
 
   const markBatchQueued = async () => {
     for (const r of batchResults) await setStatus(r.id, "queued");
     toast.success("Marked as queued");
   };
 
-  // Send straight from jan@globalartistregistry.org over the Domeneshop mail
-  // server, and mirror a copy into the mailbox's own Sent folder.
+  const readFunctionError = async (error: any, data: any) => {
+    let payload = data;
+    try {
+      const res = error?.context as Response | undefined;
+      if (res && typeof res.text === "function") {
+        const raw = await res.clone().text();
+        try { payload = JSON.parse(raw); } catch { payload = { error: raw || undefined }; }
+      }
+    } catch { /* keep the original response */ }
+    return payload;
+  };
+
+  const sendSingleLetter = async () => {
+    if (!selected || !emailDraft || !draftBody) return;
+    if (!window.confirm(`Send this letter now to ${emailDraft}?`)) return;
+    setDraftSending(true);
+    await saveDraft();
+    const { data, error } = await supabase.functions.invoke("send-outreach-smtp", {
+      body: {
+        fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        letters: [{
+          to: emailDraft,
+          subject: draftSubject,
+          bodyHtml: markdownToHtml(draftBody),
+          bodyText: markdownToPlainText(draftBody),
+        }],
+      },
+    });
+    const payload = error ? await readFunctionError(error, data) : data as any;
+    setDraftSending(false);
+    if (error || !payload?.queued) {
+      toast.error(payload?.error || error?.message || "Could not queue the letter", { duration: 12000 });
+      return;
+    }
+    await setStatus(selected.id, "queued");
+    toast.success(`Letter queued for delivery to ${emailDraft}.`);
+    setDraftOpen(false);
+  };
+
+  // Queue approved letters through GARF's verified managed email service.
   const sendBatchViaSmtp = async () => {
     const ready = batchResults.filter((r) => r.body && r.email);
     if (ready.length === 0) {
@@ -601,18 +586,8 @@ const GalleryOutreach = () => {
       },
     });
     setBatchRunning(false);
-    let payload = data as any;
-    if (error) {
-      // Non-2xx responses put the JSON body on error.context, not on data.
-      try {
-        const res = (error as any)?.context as Response | undefined;
-        if (res && typeof res.text === "function") {
-          const raw = await res.clone().text();
-          try { payload = JSON.parse(raw); } catch { payload = { error: raw || undefined }; }
-        }
-      } catch { /* keep the generic message */ }
-    }
-    if (error || !payload?.sent) {
+    const payload = error ? await readFunctionError(error, data) : data as any;
+    if (error || !payload?.queued) {
       const detail =
         payload?.error ||
         (Array.isArray(payload?.failures) && payload.failures.length
@@ -627,15 +602,9 @@ const GalleryOutreach = () => {
 
     const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
     for (const r of ready) {
-      if (sentAddresses.has(r.email)) await setStatus(r.id, "contacted");
+      if (sentAddresses.has(r.email)) await setStatus(r.id, "queued");
     }
-    if (payload.failures?.length) {
-      toast.warning(`Sent ${payload.sent}; ${payload.failures.length} failed (${payload.failures.map((f: { to: string }) => f.to).join(", ")}).`);
-    } else if (!payload.savedToSent) {
-      toast.success(`${payload.sent} letters sent. A copy could not be filed in your Sent folder.`);
-    } else {
-      toast.success(`${payload.sent} letters sent and filed in your Sent folder.`);
-    }
+    toast.success(`${payload.queued} letter${payload.queued === 1 ? "" : "s"} queued for delivery.`);
     load();
   };
 
@@ -746,7 +715,7 @@ const GalleryOutreach = () => {
           </span>
         </div>
         <div className="text-[11px] text-muted-foreground">
-          Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing. Batch mailing also exports .eml files for Outlook.
+          Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing.
         </div>
 
 
@@ -1077,20 +1046,19 @@ const GalleryOutreach = () => {
               <Textarea rows={14} value={draftBody} onChange={(e) => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Outlook drafts are prepared for {SENDER_EMAIL}; no manual sender change is needed.
-          </p>
+          <p className="text-xs text-muted-foreground">Letters are sent through GARF's verified email service.</p>
           <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
 
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
+            <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
             {emailDraft && (
-              <Button variant="outline" onClick={openBrandedOutlookDraft} disabled={!draftBody}>
-                <FileDown className="w-4 h-4 mr-1.5" />Outlook draft
+              <Button onClick={sendSingleLetter} disabled={!draftBody || draftSending}>
+                {draftSending ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
+                Send now
               </Button>
             )}
-            <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1152,9 +1120,6 @@ const GalleryOutreach = () => {
 
             <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
               Mark as queued
-            </Button>
-            <Button variant="outline" onClick={exportBatchToOutlook} disabled={batchRunning || batchResults.length === 0}>
-              <FileDown className="w-4 h-4 mr-1.5" /> Export (.eml)
             </Button>
             <Button onClick={sendBatchViaSmtp} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
