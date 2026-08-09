@@ -1370,9 +1370,6 @@ With kind regards,
                   onChange={e => setBatchResults(prev => prev.map(x => x.id === r.id ? { ...x, body: e.target.value } : x))}
                 />
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" variant="outline" disabled={!r.email || !r.body} onClick={() => openOneInOutlook(r)}>
-                    <Mail className="w-3.5 h-3.5 mr-1.5" /> Open in Outlook
-                  </Button>
                   <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
                     Copy text
                   </Button>
