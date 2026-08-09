@@ -1018,11 +1018,12 @@ const GalleryOutreach = () => {
 
       {/* Draft dialog */}
       <Dialog open={draftOpen} onOpenChange={setDraftOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader>
             <DialogTitle>Email draft — {selected?.name}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1">
+
             <div className="grid md:grid-cols-2 gap-3">
               <div>
                 <Label>Your name (as sender)</Label>
