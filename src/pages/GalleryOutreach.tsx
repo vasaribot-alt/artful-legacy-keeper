@@ -1096,13 +1096,14 @@ const GalleryOutreach = () => {
 
       {/* Batch review dialog */}
       <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader>
             <DialogTitle className="font-serif">
               Batch letters {batchProgress ? `— ${batchProgress.done}/${batchProgress.total}` : ""}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 text-sm">
+          <div className="space-y-4 text-sm flex-1 min-h-0 overflow-y-auto pr-1">
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Language</Label>
