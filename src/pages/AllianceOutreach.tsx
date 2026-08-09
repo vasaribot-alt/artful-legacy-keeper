@@ -1252,15 +1252,12 @@ With kind regards,
           </DialogHeader>
           <div className="space-y-4 text-sm">
             <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground space-y-1.5">
-              <p className="font-medium text-foreground">How to get these into Outlook</p>
+              <p className="font-medium text-foreground">How these letters are sent</p>
               <p>
-                Because your Microsoft account is a personal Outlook.com account, the “Save to Outlook Drafts” button saves drafts into a separate online mailbox that does not sync to the Outlook program you normally use.
+                Review and edit the letters here, then use <strong>“Send N letters now”</strong> at the bottom. Letters are sent by GARF’s own mail service from <span className="font-mono">{senderEmail}</span> — no Outlook window opens, so no empty drafts are created.
               </p>
               <p>
-                The reliable way is the <strong>“Open letter N of M”</strong> button at the bottom: each click opens one Outlook compose window with recipient, subject and body filled in, then the counter advances. Opening them one click at a time avoids the browser blocking the rest as pop-ups.
-              </p>
-              <p>
-                <strong>Sending from {senderEmail}:</strong> a mail link cannot set the From address — Outlook uses your default account. Set <span className="font-mono">{senderEmail}</span> as the default account in Outlook (Settings → Accounts → set as default) once, and every letter opened from here will be sent from it. Alternatively use <strong>“Download .eml files”</strong> — those carry a From header for {senderEmail}.
+                <strong>“Download .eml files”</strong> stays available if you ever want to archive or send a letter manually; each file carries a From header for {senderEmail}.
               </p>
               <p>
                 This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
