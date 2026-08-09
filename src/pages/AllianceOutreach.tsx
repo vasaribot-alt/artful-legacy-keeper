@@ -782,7 +782,7 @@ With kind regards,
   const [sendingDraft, setSendingDraft] = useState(false);
   const sendDraftViaBrevo = async () => {
     if (!draftTarget) return;
-    if (!draftTarget.email) {
+    if (!draftTarget.contact_email) {
       toast.error("This contact has no email address.");
       return;
     }
@@ -790,14 +790,14 @@ With kind regards,
       toast.error("Write or generate the letter first.");
       return;
     }
-    if (!window.confirm(`Send this letter now to ${draftTarget.email} via Brevo?`)) return;
+    if (!window.confirm(`Send this letter now to ${draftTarget.contact_email} via Brevo?`)) return;
     setSendingDraft(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
         campaignTag: "alliance_outreach",
         letters: [{
-          to: draftTarget.email,
+          to: draftTarget.contact_email,
           subject: draftSubject || "",
           bodyHtml: markdownToHtml(withSignature(draftBody)),
           bodyText: markdownToPlainText(withSignature(draftBody)),
@@ -833,7 +833,7 @@ With kind regards,
       email_subject: draftSubject || null,
       email_body: draftBody || null,
     });
-    toast.success(`Letter sent to ${draftTarget.email}.`);
+    toast.success(`Letter sent to ${draftTarget.contact_email}.`);
     setDraftTarget(null);
   };
 
@@ -1622,7 +1622,7 @@ With kind regards,
 
             {draftTarget?.email_generated_at && (
               <p className="text-xs text-muted-foreground">
-                Last generated {new Date(draftTarget.email_generated_at).toLocaleString()}
+                Last generated {new Date(draftTarget.contact_email_generated_at).toLocaleString()}
               </p>
             )}
           </div>
