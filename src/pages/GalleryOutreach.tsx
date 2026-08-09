@@ -559,7 +559,7 @@ const GalleryOutreach = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `GARF-${slug(selectedGallery?.name || "gallery")}.eml`;
+    a.download = `GARF-${slug(selected?.name || "gallery")}.eml`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
     toast.success("Branded Outlook draft downloaded — open the file to review and send.");
