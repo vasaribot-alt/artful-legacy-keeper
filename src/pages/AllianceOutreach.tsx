@@ -1351,9 +1351,6 @@ With kind regards,
             <Button variant="outline" onClick={markBatchContacted} disabled={batchRunning || batchResults.length === 0}>
               Mark as contacted
             </Button>
-            <Button variant="outline" onClick={downloadBatchEml} disabled={batchResults.length === 0}>
-              Download .eml files
-            </Button>
             <Button
               onClick={sendBatchViaSmtp}
               disabled={batchRunning || readyBatch.length === 0}
