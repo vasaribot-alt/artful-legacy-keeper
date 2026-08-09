@@ -725,8 +725,11 @@ const GalleryOutreach = () => {
             </Button>
           )}
           <span className="text-[11px] text-muted-foreground ml-auto">
-            Exports .eml files — open them in Outlook as ready-to-send drafts.
+            {sentToday} / {DAILY_SEND_CAP} sent today
           </span>
+        </div>
+        <div className="text-[11px] text-muted-foreground">
+          Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing. Batch mailing also exports .eml files for Outlook.
         </div>
 
 
