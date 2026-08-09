@@ -773,8 +773,12 @@ const GalleryOutreach = () => {
             {sentToday} / {DAILY_SEND_CAP} sent today
           </span>
         </div>
-        <div className="text-[11px] text-muted-foreground">
-          Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing.
+        <div className="text-[11px] text-muted-foreground flex items-center gap-3 flex-wrap">
+          <span>Daily cap of {DAILY_SEND_CAP} letters keeps the sending domain in good standing.</span>
+          <Button variant="outline" size="sm" onClick={syncToBrevo} disabled={syncing} className="h-6 text-[11px] px-2 py-0">
+            {syncing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Upload className="w-3 h-3 mr-1" />}
+            Sync to Brevo
+          </Button>
         </div>
 
 
