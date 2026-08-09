@@ -823,29 +823,7 @@ With kind regards,
     return `${body.trimEnd()}\n\n${sig}`;
   };
 
-  const mailtoUrl = (r: { email: string; subject: string; body: string }) =>
-    `mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent(r.subject || "")}&body=${encodeURIComponent(markdownToPlainText(withSignature(r.body)))}`;
-
-
-  const openOneInOutlook = (r: { email: string; subject: string; body: string }) => {
-    const a = document.createElement("a");
-    a.href = mailtoUrl(r);
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
-
-  // Stepper: every open is a real user click, so nothing gets blocked as a pop-up.
   const readyBatch = batchResults.filter(r => r.body && r.email);
-  const openNextInOutlook = () => {
-    const next = readyBatch[batchStep];
-    if (!next) {
-      toast.success("All letters opened.");
-      return;
-    }
-    openOneInOutlook(next);
-    setBatchStep(batchStep + 1);
-  };
 
   const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
     await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(withSignature(r.body))}`);
@@ -1119,7 +1097,7 @@ With kind regards,
             </Button>
           )}
           <span className="text-[11px] text-muted-foreground ml-auto">
-            Exports .eml files — open them in Outlook as ready-to-send drafts.
+            Letters are sent in-app from {senderEmail} — no Outlook drafts involved.
           </span>
         </div>
 
@@ -1274,15 +1252,12 @@ With kind regards,
           </DialogHeader>
           <div className="space-y-4 text-sm">
             <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground space-y-1.5">
-              <p className="font-medium text-foreground">How to get these into Outlook</p>
+              <p className="font-medium text-foreground">How these letters are sent</p>
               <p>
-                Because your Microsoft account is a personal Outlook.com account, the “Save to Outlook Drafts” button saves drafts into a separate online mailbox that does not sync to the Outlook program you normally use.
+                Review and edit the letters here, then use <strong>“Send N letters now”</strong> at the bottom. Letters are sent by GARF’s own mail service from <span className="font-mono">{senderEmail}</span> — no Outlook window opens, so no empty drafts are created.
               </p>
               <p>
-                The reliable way is the <strong>“Open letter N of M”</strong> button at the bottom: each click opens one Outlook compose window with recipient, subject and body filled in, then the counter advances. Opening them one click at a time avoids the browser blocking the rest as pop-ups.
-              </p>
-              <p>
-                <strong>Sending from {senderEmail}:</strong> a mail link cannot set the From address — Outlook uses your default account. Set <span className="font-mono">{senderEmail}</span> as the default account in Outlook (Settings → Accounts → set as default) once, and every letter opened from here will be sent from it. Alternatively use <strong>“Download .eml files”</strong> — those carry a From header for {senderEmail}.
+                <strong>“Download .eml files”</strong> stays available if you ever want to archive or send a letter manually; each file carries a From header for {senderEmail}.
               </p>
               <p>
                 This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
@@ -1392,9 +1367,6 @@ With kind regards,
                   onChange={e => setBatchResults(prev => prev.map(x => x.id === r.id ? { ...x, body: e.target.value } : x))}
                 />
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" variant="outline" disabled={!r.email || !r.body} onClick={() => openOneInOutlook(r)}>
-                    <Mail className="w-3.5 h-3.5 mr-1.5" /> Open in Outlook
-                  </Button>
                   <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
                     Copy text
                   </Button>
@@ -1418,16 +1390,6 @@ With kind regards,
             >
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Send {readyBatch.length} letter{readyBatch.length === 1 ? "" : "s"} now
-            </Button>
-
-            <Button variant="ghost" onClick={() => setBatchStep(0)} disabled={batchStep === 0}>
-              Reset counter
-            </Button>
-            <Button onClick={openNextInOutlook} disabled={batchRunning || readyBatch.length === 0 || batchStep >= readyBatch.length}>
-              <Mail className="w-4 h-4 mr-1.5" />
-              {batchStep >= readyBatch.length && readyBatch.length > 0
-                ? "All letters opened"
-                : `Open letter ${Math.min(batchStep + 1, readyBatch.length)} of ${readyBatch.length}`}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1587,15 +1549,6 @@ With kind regards,
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
-            {draftTarget?.contact_email && (
-              <Button asChild variant="outline" disabled={!draftBody}>
-                <a
-                  href={`mailto:${draftTarget.contact_email}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}
-                >
-                  <Mail className="w-4 h-4 mr-1.5" />Open in mail app
-                </a>
-              </Button>
-            )}
             <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
           </DialogFooter>
         </DialogContent>
