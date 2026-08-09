@@ -1227,7 +1227,7 @@ With kind regards,
                 Review and edit the letters here, then use <strong>“Send N letters now”</strong> at the bottom. Letters are sent by GARF’s own mail service from <span className="font-mono">{senderEmail}</span> — no Outlook window opens, so no empty drafts are created.
               </p>
               <p>
-                <strong>“Download .eml files”</strong> stays available if you ever want to archive or send a letter manually; each file carries a From header for {senderEmail}.
+                Nothing is routed through Outlook any more, so no empty drafts can appear. Use <strong>Copy text</strong> if you ever need a letter outside the app.
               </p>
               <p>
                 This batch is also stored temporarily in this browser, so you can close this window or refresh and reopen it later.
