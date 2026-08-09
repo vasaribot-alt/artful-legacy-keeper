@@ -722,7 +722,7 @@ With kind regards,
       toast.error("No letters with an email address to send.");
       return;
     }
-    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from jan@globalartistregistry.org?`)) return;
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?`)) return;
     setBatchRunning(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
