@@ -823,6 +823,7 @@ const GalleryOutreach = () => {
                   <TableHead>Gallery</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Contact</TableHead>
+                  <TableHead>Invited artists</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
