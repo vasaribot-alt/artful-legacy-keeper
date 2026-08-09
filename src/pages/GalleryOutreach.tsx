@@ -228,35 +228,54 @@ const GalleryOutreach = () => {
     return Array.from(s).sort();
   }, [galleries]);
 
+  const campaigns = useMemo(() => {
+    const s = new Set<string>();
+    Object.values(outreach).forEach((o) => o.campaign_tag && s.add(o.campaign_tag));
+    return Array.from(s).sort();
+  }, [outreach]);
+
   const filtered = useMemo(() => {
     return galleries.filter((g) => {
+      const o = outreach[g.id];
+      if (campaignFilter !== "all" && (o?.campaign_tag || "") !== campaignFilter) return false;
       if (search) {
         const q = search.toLowerCase();
         if (!g.name.toLowerCase().includes(q) &&
             !(g.city || "").toLowerCase().includes(q) &&
             !(g.email || "").toLowerCase().includes(q) &&
+            !(o?.invited_artists || "").toLowerCase().includes(q) &&
             !(g.contact_name || "").toLowerCase().includes(q)) return false;
       }
       if (countryFilter !== "all" && g.country !== countryFilter) return false;
-      const status = outreach[g.id]?.status || "not_contacted";
+      const status = o?.status || "not_contacted";
       if (statusFilter !== "all" && status !== statusFilter) return false;
       if (hasEmailFilter === "yes" && !g.email) return false;
       if (hasEmailFilter === "no" && g.email) return false;
       return true;
     });
-  }, [galleries, outreach, search, countryFilter, statusFilter, hasEmailFilter]);
+  }, [galleries, outreach, search, countryFilter, statusFilter, hasEmailFilter, campaignFilter]);
+
+  // Letters actually sent today, used to hold the daily volume down so the
+  // sending domain keeps a clean reputation.
+  const sentToday = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return Object.values(outreach).filter(
+      (o) => (o.last_contacted_at || "").slice(0, 10) === today
+    ).length;
+  }, [outreach]);
 
   const stats = useMemo(() => {
-    const total = galleries.length;
-    const withEmail = galleries.filter((g) => !!g.email).length;
-    const contacted = galleries.filter((g) => {
+    const scope = campaignFilter === "all" ? galleries : filtered;
+    const total = scope.length;
+    const withEmail = scope.filter((g) => !!g.email).length;
+    const contacted = scope.filter((g) => {
       const s = outreach[g.id]?.status;
       return s && s !== "not_contacted";
     }).length;
-    const replied = galleries.filter((g) => ["replied", "interested", "signed_up"].includes(outreach[g.id]?.status || "")).length;
-    const signedUp = galleries.filter((g) => outreach[g.id]?.status === "signed_up").length;
+    const replied = scope.filter((g) => ["replied", "interested", "signed_up"].includes(outreach[g.id]?.status || "")).length;
+    const signedUp = scope.filter((g) => outreach[g.id]?.status === "signed_up").length;
     return { total, withEmail, contacted, replied, signedUp };
-  }, [galleries, outreach]);
+  }, [galleries, filtered, outreach, campaignFilter]);
 
   const runEnrichBatch = async () => {
     setEnriching(true);
