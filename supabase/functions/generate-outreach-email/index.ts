@@ -126,8 +126,9 @@ Deno.serve(async (req) => {
 
     const guidance = CATEGORY_GUIDANCE[category] || CATEGORY_GUIDANCE.other;
     const salutation = personName
-      ? `Address the recipient personally as "Dear ${personName},"`
+      ? `Open with the salutation "Dear ${personName}," and then never repeat the recipient's personal name anywhere else in the email.`
       : `Address the recipient formally (e.g. "Dear colleagues," or "To the team at ${name},")`;
+
     const lang = (language || "english").toLowerCase();
     const langInstruction = lang === "english"
       ? "Write in clear, professional English."
@@ -166,7 +167,7 @@ Instructions:
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
 - Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) a clear, low-commitment ask (a short introductory call or written reply), (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
-- ${recipient_capacity ? `In the opening sentence, explicitly acknowledge that we are writing to the recipient in their capacity as "${recipient_capacity}" at ${name} (e.g. "We are writing to you from the Global Artist Registry Foundation because of your capacity as ${recipient_capacity} of ${name}…"). This capacity belongs to the RECIPIENT, not the sender. Never claim the sender holds this role.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
+- ${recipient_capacity ? `In the opening sentence, acknowledge the recipient's capacity as "${recipient_capacity}" at ${name} without repeating their personal name (e.g. "We are writing to you in your capacity as ${recipient_capacity} of ${name}…"). This capacity belongs to the RECIPIENT, not the sender. Never claim the sender holds this role.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
 - ${signature ? `End the email with a short closing line (e.g. "With kind regards,") on its own line, then a blank line, then append the following signature block VERBATIM (do not modify, translate, or reformat any of its lines, including the website and phone numbers):\n---\n${signature}\n---` : `Sign the email on separate lines: first line "${sender_name || "The GARF Team"}", second line "Global Artist Registry Foundation". Include the website https://globalartistregistry.org near the sign-off.`}
 
@@ -204,6 +205,35 @@ Subject: <one-line subject>
       subject = m[1].trim();
       body = m[2].trim();
     }
+
+    // Safety net: make sure the invited artists and their access codes are always present.
+    if (invitedArtists) {
+      const artistLines = invitedArtists
+        .split(/\r?\n|;/)
+        .map((l) => l.trim())
+        .filter(Boolean);
+      const missing = artistLines.filter((l) => {
+        const code = l.match(/FOUNDING-[A-Z0-9-]+/i)?.[0];
+        const nameOnly = l.split("—")[0].split("-")[0].trim();
+        return code ? !body.includes(code) : !body.includes(nameOnly);
+      });
+      if (missing.length) {
+        const block = [
+          "",
+          "The following artists you represent are invited to register with GARF free of charge for life. Each personal access code below can be redeemed at https://globalartistregistry.org — we would be grateful if you could pass them on:",
+          "",
+          ...artistLines,
+          "",
+        ].join("\n");
+        // Insert before the closing/sign-off if we can find it, otherwise append.
+        const closing = body.search(/\n\s*(With kind regards|Kind regards|Yours sincerely|Sincerely|Med vennlig hilsen|Mit freundlichen Grüßen|Bien cordialement|Met vriendelijke groet)/i);
+        body = closing > -1
+          ? `${body.slice(0, closing)}\n${block}${body.slice(closing)}`
+          : `${body}\n${block}`;
+      }
+    }
+
+
 
     if (gallery_id) {
       // Upsert into gallery_outreach
