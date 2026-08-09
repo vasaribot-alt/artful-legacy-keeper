@@ -1064,7 +1064,12 @@ const GalleryOutreach = () => {
               <Textarea rows={14} value={draftBody} onChange={(e) => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
             </div>
           </div>
+          <p className="text-xs text-muted-foreground">
+            A mail link cannot set the From address — Outlook uses your default account. Either send with the
+            branded flow, or use the .eml export, which carries a From header for {SENDER_EMAIL}.
+          </p>
           <DialogFooter className="flex-wrap gap-2">
+
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
