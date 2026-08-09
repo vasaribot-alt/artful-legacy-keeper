@@ -553,6 +553,18 @@ const GalleryOutreach = () => {
     toast.success(`Exporting ${ready.length} Outlook drafts (.eml).`);
   };
 
+  const openBrandedOutlookDraft = () => {
+    if (!emailDraft || !draftBody) return;
+    const blob = new Blob([buildEml(emailDraft, draftSubject, draftBody)], { type: "message/rfc822" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `GARF-${slug(selected?.name || "gallery")}.eml`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    toast.success("Branded Outlook draft downloaded — open the file to review and send.");
+  };
+
   const markBatchQueued = async () => {
     for (const r of batchResults) await setStatus(r.id, "queued");
     toast.success("Marked as queued");
@@ -1065,8 +1077,7 @@ const GalleryOutreach = () => {
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            A mail link cannot set the From address — Outlook uses your default account. Either send with the
-            branded flow, or use the .eml export, which carries a From header for {SENDER_EMAIL}.
+            Outlook drafts are prepared for {SENDER_EMAIL}; no manual sender change is needed.
           </p>
           <DialogFooter className="flex-wrap gap-2">
 
@@ -1074,10 +1085,8 @@ const GalleryOutreach = () => {
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
             {emailDraft && (
-              <Button asChild variant="outline" disabled={!draftBody}>
-                <a href={`mailto:${emailDraft}?subject=${encodeURIComponent(draftSubject)}&body=${encodeURIComponent(draftBody)}`}>
-                  <Mail className="w-4 h-4 mr-1.5" />Open in mail app
-                </a>
+              <Button variant="outline" onClick={openBrandedOutlookDraft} disabled={!draftBody}>
+                <FileDown className="w-4 h-4 mr-1.5" />Outlook draft
               </Button>
             )}
             <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
