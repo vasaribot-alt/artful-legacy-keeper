@@ -1097,7 +1097,7 @@ With kind regards,
             </Button>
           )}
           <span className="text-[11px] text-muted-foreground ml-auto">
-            Exports .eml files — open them in Outlook as ready-to-send drafts.
+            Letters are sent in-app from {senderEmail} — no Outlook drafts involved.
           </span>
         </div>
 
