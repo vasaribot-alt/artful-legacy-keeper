@@ -510,10 +510,15 @@ const GalleryOutreach = () => {
     load();
   };
 
+  // Every outreach letter must leave from the branded foundation mailbox.
+  const SENDER_EMAIL = "jan@globalartistregistry.org";
+  const SENDER_NAME = "Global Artist Registry Foundation";
+
   const buildEml = (to: string, subject: string, body: string) => {
     const b64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
     const lines = [
       "X-Unsent: 1",
+      `From: ${SENDER_NAME} <${SENDER_EMAIL}>`,
       `To: ${to}`,
       `Subject: =?UTF-8?B?${b64(subject)}?=`,
       "MIME-Version: 1.0",
