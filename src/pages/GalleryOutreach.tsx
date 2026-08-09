@@ -876,6 +876,13 @@ const GalleryOutreach = () => {
                           <span className="text-muted-foreground italic">—</span>
                         )}
                       </TableCell>
+                      <TableCell className="text-sm max-w-[220px]">
+                        {outreach[g.id]?.invited_artists ? (
+                          <span className="text-xs">{outreach[g.id]!.invited_artists}</span>
+                        ) : (
+                          <span className="text-muted-foreground italic">—</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm">
                         {g.email ? <span className="text-foreground">{g.email}</span> : <span className="text-muted-foreground italic">—</span>}
                       </TableCell>
