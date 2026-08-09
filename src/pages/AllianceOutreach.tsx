@@ -779,6 +779,65 @@ With kind regards,
     }
   };
 
+  const [sendingDraft, setSendingDraft] = useState(false);
+  const sendDraftViaBrevo = async () => {
+    if (!draftTarget) return;
+    if (!draftTarget.contact_email) {
+      toast.error("This contact has no email address.");
+      return;
+    }
+    if (!draftBody) {
+      toast.error("Write or generate the letter first.");
+      return;
+    }
+    if (!window.confirm(`Send this letter now to ${draftTarget.contact_email} via Brevo?`)) return;
+    setSendingDraft(true);
+    const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
+      body: {
+        fromName: "Jan S. Kindem — Global Artist Registry Foundation",
+        campaignTag: "alliance_outreach",
+        letters: [{
+          to: draftTarget.contact_email,
+          subject: draftSubject || "",
+          bodyHtml: markdownToHtml(withSignature(draftBody)),
+          bodyText: markdownToPlainText(withSignature(draftBody)),
+        }],
+      },
+    });
+    setSendingDraft(false);
+    let payload = data as any;
+    if (error) {
+      try {
+        const res = (error as any)?.context as Response | undefined;
+        if (res && typeof res.text === "function") {
+          const raw = await res.clone().text();
+          try { payload = JSON.parse(raw); } catch { payload = { error: raw || undefined }; }
+        }
+      } catch { /* keep the generic message */ }
+    }
+    if (error || !payload?.sent) {
+      const detail =
+        payload?.error ||
+        (Array.isArray(payload?.failures) && payload.failures.length
+          ? payload.failures.map((f: { to: string; error: string }) => `${f.to}: ${f.error}`).join(" · ")
+          : null) ||
+        error?.message ||
+        "Could not send the letter";
+      toast.error(detail, { duration: 12000 });
+      console.error("send-outreach-brevo failed", payload || error);
+      return;
+    }
+    await update(draftTarget.id, {
+      status: "contacted",
+      last_contacted_at: new Date().toISOString(),
+      email_subject: draftSubject || null,
+      email_body: draftBody || null,
+    });
+    toast.success(`Letter sent to ${draftTarget.contact_email}.`);
+    setDraftTarget(null);
+  };
+
+
   // Sync alliance contacts to Brevo CRM
   const [syncing, setSyncing] = useState(false);
   const syncToBrevo = async () => {
@@ -1265,13 +1324,14 @@ With kind regards,
       </div>
 
       <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6">
             <DialogTitle>
               Batch letters {batchProgress ? `— ${batchProgress.done}/${batchProgress.total}` : ""}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 text-sm">
+          <div className="space-y-4 text-sm overflow-y-auto px-6 flex-1 min-h-0">
+
             <div className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground space-y-1.5">
               <p className="font-medium text-foreground">How these letters are sent</p>
               <p>
@@ -1395,7 +1455,8 @@ With kind regards,
               </div>
             ))}
           </div>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 border-t border-border bg-background px-6 py-4">
+
             <Button variant="outline" onClick={copyAllBatchDrafts} disabled={batchRunning || batchResults.length === 0}>
               Copy all letters
             </Button>
@@ -1418,11 +1479,12 @@ With kind regards,
       </Dialog>
 
       <Dialog open={!!draftTarget} onOpenChange={(o) => !o && setDraftTarget(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6">
             <DialogTitle>Email draft — {draftTarget?.name}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-3 overflow-y-auto px-6 flex-1 min-h-0">
+
             <div className="grid md:grid-cols-2 gap-3">
               <div>
                 <Label>Your name (as sender)</Label>
@@ -1567,12 +1629,17 @@ With kind regards,
               </p>
             )}
           </div>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 border-t border-border bg-background px-6 py-4">
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
             </Button>
-            <Button onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
+            <Button variant="outline" onClick={saveDraft} disabled={!draftBody && !draftSubject}>Save draft</Button>
+            <Button onClick={sendDraftViaBrevo} disabled={sendingDraft || !draftBody || !draftTarget?.contact_email}>
+              {sendingDraft ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
+              Send now
+            </Button>
           </DialogFooter>
+
         </DialogContent>
       </Dialog>
 
