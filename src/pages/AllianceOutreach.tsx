@@ -781,36 +781,6 @@ With kind regards,
     (draftSignature || DEFAULT_SIGNATURE).match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0] ||
     "jan@globalartistregistry.org";
 
-  const downloadBatchEml = () => {
-    const ready = batchResults.filter(r => r.body && r.email);
-    if (ready.length === 0) {
-      toast.error("No drafts with an email address to export.");
-      return;
-    }
-    ready.forEach((r, i) => {
-      const html = markdownToHtml(withSignature(r.body));
-      const eml = [
-        `X-Unsent: 1`,
-        `From: ${senderEmail}`,
-        `To: ${r.email}`,
-        `Subject: ${r.subject || ""}`,
-        `MIME-Version: 1.0`,
-        `Content-Type: text/html; charset=utf-8`,
-        ``,
-        html,
-      ].join("\r\n");
-      const blob = new Blob([eml], { type: "message/rfc822" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${String(i + 1).padStart(2, "0")}-${(r.name || "draft").replace(/[^\w\-]+/g, "_").slice(0, 40)}.eml`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 2000);
-    });
-    toast.success(`${ready.length} .eml files downloaded — double-click each file to open it in Outlook.`);
-  };
 
   // Guarantee the letter always ends with the sender block (name + email), so
   // recipients can see who wrote and how to reply even when the mail app shows
