@@ -1018,11 +1018,12 @@ const GalleryOutreach = () => {
 
       {/* Draft dialog */}
       <Dialog open={draftOpen} onOpenChange={setDraftOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader>
             <DialogTitle>Email draft — {selected?.name}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-1">
+
             <div className="grid md:grid-cols-2 gap-3">
               <div>
                 <Label>Your name (as sender)</Label>
@@ -1079,7 +1080,7 @@ const GalleryOutreach = () => {
           <p className="text-xs text-muted-foreground">
             Outlook drafts are prepared for {SENDER_EMAIL}; no manual sender change is needed.
           </p>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
 
             <Button variant="outline" onClick={copyDraft} disabled={!draftBody}>
               <Copy className="w-4 h-4 mr-1.5" />Copy
@@ -1096,13 +1097,14 @@ const GalleryOutreach = () => {
 
       {/* Batch review dialog */}
       <Dialog open={batchOpen} onOpenChange={setBatchOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
           <DialogHeader>
             <DialogTitle className="font-serif">
               Batch letters {batchProgress ? `— ${batchProgress.done}/${batchProgress.total}` : ""}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 text-sm">
+          <div className="space-y-4 text-sm flex-1 min-h-0 overflow-y-auto pr-1">
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">Language</Label>
@@ -1146,7 +1148,8 @@ const GalleryOutreach = () => {
               </div>
             ))}
           </div>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
+
             <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
               Mark as queued
             </Button>
