@@ -1141,14 +1141,22 @@ const GalleryOutreach = () => {
                   value={r.body}
                   onChange={(e) => setBatchResults((prev) => prev.map((x) => x.id === r.id ? { ...x, body: e.target.value } : x))}
                 />
+                <div className="flex justify-end">
+                  <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
+                    <Copy className="w-3.5 h-3.5 mr-1" /> Copy for Outlook
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
           <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
-
+            <Button variant="outline" onClick={copyAllBatchDrafts} disabled={batchRunning || batchResults.length === 0}>
+              <Copy className="w-4 h-4 mr-1.5" /> Copy all letters
+            </Button>
             <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
               Mark as queued
             </Button>
+
             <Button onClick={sendBatchViaSmtp} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Send {batchResults.filter((r) => r.body && r.email).length} letter{batchResults.filter((r) => r.body && r.email).length === 1 ? "" : "s"} now
