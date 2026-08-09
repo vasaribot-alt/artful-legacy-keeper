@@ -1477,11 +1477,12 @@ With kind regards,
       </Dialog>
 
       <Dialog open={!!draftTarget} onOpenChange={(o) => !o && setDraftTarget(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6">
             <DialogTitle>Email draft — {draftTarget?.name}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-3 overflow-y-auto px-6 flex-1 min-h-0">
+
             <div className="grid md:grid-cols-2 gap-3">
               <div>
                 <Label>Your name (as sender)</Label>
