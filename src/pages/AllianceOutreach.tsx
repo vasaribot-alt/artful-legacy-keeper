@@ -796,9 +796,26 @@ With kind regards,
   const readyBatch = batchResults.filter(r => r.body && r.email);
 
   const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
-    await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(withSignature(r.body))}`);
+    await navigator.clipboard.writeText(formatCopyBlock({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    }));
     toast.success("Draft copied to clipboard");
   };
+
+  const copyAllBatchDrafts = async () => {
+    const text = formatCopyBlocks(batchResults.filter(r => r.body).map(r => ({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    })));
+    await navigator.clipboard.writeText(text);
+    toast.success("All letters copied to clipboard");
+  };
+
 
 
 
