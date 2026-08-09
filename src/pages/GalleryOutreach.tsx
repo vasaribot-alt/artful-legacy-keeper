@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 
 
+import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
 interface Gallery {
   id: string;
   name: string;
@@ -440,14 +441,41 @@ const GalleryOutreach = () => {
   };
 
   const copyDraft = async () => {
-    const text = draftSubject ? `Subject: ${draftSubject}\n\n${draftBody}` : draftBody;
+    const text = formatCopyBlock({
+      email: emailDraft || selected?.email || "",
+      subject: draftSubject,
+      body: markdownToPlainText(draftBody),
+      signature: draftSignature,
+    });
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied to clipboard");
+      toast.success("Copied — email, subject and letter (no signature)");
     } catch {
       toast.error("Could not copy");
     }
   };
+
+  const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
+    await navigator.clipboard.writeText(formatCopyBlock({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    }));
+    toast.success("Letter copied");
+  };
+
+  const copyAllBatchDrafts = async () => {
+    const text = formatCopyBlocks(batchResults.filter((r) => r.body).map((r) => ({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    })));
+    await navigator.clipboard.writeText(text);
+    toast.success("All letters copied");
+  };
+
 
   // ---------- Batch of 10: generate drafts + export to Outlook ----------
   const toggleSelectOne = (id: string) => {
@@ -1113,14 +1141,22 @@ const GalleryOutreach = () => {
                   value={r.body}
                   onChange={(e) => setBatchResults((prev) => prev.map((x) => x.id === r.id ? { ...x, body: e.target.value } : x))}
                 />
+                <div className="flex justify-end">
+                  <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
+                    <Copy className="w-3.5 h-3.5 mr-1" /> Copy for Outlook
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
           <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
-
+            <Button variant="outline" onClick={copyAllBatchDrafts} disabled={batchRunning || batchResults.length === 0}>
+              <Copy className="w-4 h-4 mr-1.5" /> Copy all letters
+            </Button>
             <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
               Mark as queued
             </Button>
+
             <Button onClick={sendBatchViaSmtp} disabled={batchRunning || batchResults.filter((r) => r.body && r.email).length === 0}>
               {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
               Send {batchResults.filter((r) => r.body && r.email).length} letter{batchResults.filter((r) => r.body && r.email).length === 1 ? "" : "s"} now

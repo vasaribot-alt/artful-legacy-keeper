@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
+import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
 import { AlertTriangle, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
@@ -438,14 +439,20 @@ With kind regards,
   };
 
   const copyDraft = async () => {
-    const text = draftSubject ? `Subject: ${draftSubject}\n\n${draftBody}` : draftBody;
+    const text = formatCopyBlock({
+      email: draftTarget?.contact_email || "",
+      subject: draftSubject,
+      body: markdownToPlainText(draftBody),
+      signature: draftSignature,
+    });
     try {
       await navigator.clipboard.writeText(text);
-      toast.success("Copied to clipboard");
+      toast.success("Copied — email, subject and letter (no signature)");
     } catch {
       toast.error("Could not copy");
     }
   };
+
 
 
   const load = async () => {
@@ -796,9 +803,26 @@ With kind regards,
   const readyBatch = batchResults.filter(r => r.body && r.email);
 
   const copyBatchDraft = async (r: { email: string; subject: string; body: string }) => {
-    await navigator.clipboard.writeText(`To: ${r.email}\nSubject: ${r.subject || ""}\n\n${markdownToPlainText(withSignature(r.body))}`);
+    await navigator.clipboard.writeText(formatCopyBlock({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    }));
     toast.success("Draft copied to clipboard");
   };
+
+  const copyAllBatchDrafts = async () => {
+    const text = formatCopyBlocks(batchResults.filter(r => r.body).map(r => ({
+      email: r.email,
+      subject: r.subject || "",
+      body: markdownToPlainText(r.body),
+      signature: draftSignature,
+    })));
+    await navigator.clipboard.writeText(text);
+    toast.success("All letters copied to clipboard");
+  };
+
 
 
 
@@ -1338,16 +1362,20 @@ With kind regards,
                 />
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="ghost" disabled={!r.body} onClick={() => copyBatchDraft(r)}>
-                    Copy text
+                    Copy for Outlook
                   </Button>
                 </div>
               </div>
             ))}
           </div>
           <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" onClick={copyAllBatchDrafts} disabled={batchRunning || batchResults.length === 0}>
+              Copy all letters
+            </Button>
             <Button variant="outline" onClick={saveBatchEdits} disabled={batchRunning || batchResults.length === 0}>
               Save edits
             </Button>
+
             <Button variant="outline" onClick={markBatchContacted} disabled={batchRunning || batchResults.length === 0}>
               Mark as contacted
             </Button>
