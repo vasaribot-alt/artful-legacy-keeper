@@ -206,6 +206,35 @@ Subject: <one-line subject>
       body = m[2].trim();
     }
 
+    // Safety net: make sure the invited artists and their access codes are always present.
+    if (invitedArtists) {
+      const artistLines = invitedArtists
+        .split(/\r?\n|;/)
+        .map((l) => l.trim())
+        .filter(Boolean);
+      const missing = artistLines.filter((l) => {
+        const code = l.match(/FOUNDING-[A-Z0-9-]+/i)?.[0];
+        const nameOnly = l.split("—")[0].split("-")[0].trim();
+        return code ? !body.includes(code) : !body.includes(nameOnly);
+      });
+      if (missing.length) {
+        const block = [
+          "",
+          "The following artists you represent are invited to register with GARF free of charge for life. Each personal access code below can be redeemed at https://globalartistregistry.org — we would be grateful if you could pass them on:",
+          "",
+          ...artistLines,
+          "",
+        ].join("\n");
+        // Insert before the closing/sign-off if we can find it, otherwise append.
+        const closing = body.search(/\n\s*(With kind regards|Kind regards|Yours sincerely|Sincerely|Med vennlig hilsen|Mit freundlichen Grüßen|Bien cordialement|Met vriendelijke groet)/i);
+        body = closing > -1
+          ? `${body.slice(0, closing)}\n${block}${body.slice(closing)}`
+          : `${body}\n${block}`;
+      }
+    }
+
+
+
     if (gallery_id) {
       // Upsert into gallery_outreach
       const { data: existing } = await supabase
