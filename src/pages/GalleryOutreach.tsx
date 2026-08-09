@@ -90,6 +90,7 @@ const GalleryOutreach = () => {
   const [countryFilter, setCountryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [hasEmailFilter, setHasEmailFilter] = useState<string>("all");
+  const [campaignFilter, setCampaignFilter] = useState<string>(ARTIST_CAMPAIGN);
   const [enriching, setEnriching] = useState(false);
   const [rankScope, setRankScope] = useState<number>(200);
   const [missingContactMode, setMissingContactMode] = useState(false);
