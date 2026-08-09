@@ -1147,7 +1147,8 @@ const GalleryOutreach = () => {
               </div>
             ))}
           </div>
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
+
             <Button variant="outline" onClick={markBatchQueued} disabled={batchRunning || batchResults.length === 0}>
               Mark as queued
             </Button>
