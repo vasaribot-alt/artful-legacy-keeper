@@ -17,6 +17,8 @@ import { AppLayout } from "@/components/AppLayout";
 import { ProfilePresentationView, type ProfileViewData } from "@/components/ProfilePresentationView";
 import { ManageRegistrarAccess } from "@/components/ManageRegistrarAccess";
 import { UnitPreferenceSetting } from "@/components/UnitPreferenceSetting";
+import { RegistrarCredentialsSummary } from "@/components/RegistrarCredentialsSummary";
+
 
 interface SocialLink {
   platform: string;
