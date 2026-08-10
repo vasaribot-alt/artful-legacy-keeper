@@ -111,9 +111,20 @@ Admin dashboard for reviewing applications:
 
 ---
 
-## ARCS Partnership Note
+## ARCS Alignment
 
-The `arcs_member` and `arcs_member_id` fields are designed to support a future partnership with the Association of Registrars and Collections Specialists. In v1 these are self-declared by the applicant. A future enhancement could cross-reference ARCS membership via their API or a shared verification protocol. The Foundation reviewer can use ARCS membership as a signal (but not the sole criterion) when evaluating applications.
+[arcsinfo.org/membership](https://www.arcsinfo.org/membership) — Association of Registrars and Collections Specialists.
+
+ARCS membership is open to professionals employed in registration or collections care at museums/related organizations (including independent contractors), those serving museums in for-profit roles, students in related studies, and retired practitioners. Membership is tiered by income ($35–$100/yr).
+
+The `arcs_member` and `arcs_member_id` fields capture this. In v1 they are self-declared by the applicant and shown to the Foundation reviewer as a vetting signal. The Foundation reviewer can use ARCS membership as a strong positive signal (but not the sole criterion) when evaluating applications. A future enhancement could cross-reference ARCS membership via a shared verification protocol.
+
+**Vetting criteria informed by ARCS eligibility:**
+- Formal training in art history, museum studies, archive management, or equivalent
+- Employment history in registration or collections care (museum, gallery, private collection)
+- Documented experience with catalogue raisonné or archival documentation projects
+- ARCS membership (optional, self-declared with member ID)
+- Professional references
 
 ---
 
