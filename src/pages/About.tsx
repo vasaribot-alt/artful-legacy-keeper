@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Download } from "lucide-react";
+import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Download, Handshake } from "lucide-react";
 
 const principles = [
   {
