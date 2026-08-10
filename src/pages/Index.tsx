@@ -76,6 +76,12 @@ const Index = () => {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-lg font-semibold tracking-tight">Global Artist Registry Foundation</span>
           <div className="flex items-center gap-6">
+            <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Artists
+            </Link>
+            <Link to="/registrars" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Registrars
+            </Link>
             <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Supporters
             </Link>
@@ -191,6 +197,24 @@ const Index = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Registrar Directory Callout */}
+      <section className="py-20 px-6 border-t border-border">
+        <div className="max-w-3xl mx-auto text-center">
+          <Users className="w-6 h-6 mx-auto text-muted-foreground mb-4" />
+          <h2 className="text-3xl mb-4">Find a verified registrar</h2>
+          <p className="text-muted-foreground text-sm max-w-xl mx-auto mb-8 leading-relaxed">
+            Our directory of Foundation-verified registrars connects artists and collectors
+            with professional documentation expertise — catalogue raisonné, provenance research,
+            and collections care.
+          </p>
+          <Link to="/registrars">
+            <Button variant="outline" size="lg" className="gap-2">
+              Browse the directory <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </section>
 

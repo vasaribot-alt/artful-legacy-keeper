@@ -2318,6 +2318,123 @@ export type Database = {
         }
         Relationships: []
       }
+      registrar_applications: {
+        Row: {
+          arcs_member: boolean
+          arcs_member_id: string | null
+          created_at: string
+          credentials: string | null
+          experience_summary: string | null
+          geographic_coverage: string | null
+          id: string
+          languages: string[]
+          professional_statement: string | null
+          references_json: Json
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          specializations: string[]
+          status: string
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          arcs_member?: boolean
+          arcs_member_id?: string | null
+          created_at?: string
+          credentials?: string | null
+          experience_summary?: string | null
+          geographic_coverage?: string | null
+          id?: string
+          languages?: string[]
+          professional_statement?: string | null
+          references_json?: Json
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          specializations?: string[]
+          status?: string
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          arcs_member?: boolean
+          arcs_member_id?: string | null
+          created_at?: string
+          credentials?: string | null
+          experience_summary?: string | null
+          geographic_coverage?: string | null
+          id?: string
+          languages?: string[]
+          professional_statement?: string | null
+          references_json?: Json
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          specializations?: string[]
+          status?: string
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
+      registrar_profiles: {
+        Row: {
+          arcs_member: boolean
+          arcs_member_id: string | null
+          created_at: string
+          credentials: string | null
+          geographic_coverage: string | null
+          is_listed: boolean
+          is_verified: boolean
+          languages: string[]
+          professional_statement: string | null
+          specializations: string[]
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          arcs_member?: boolean
+          arcs_member_id?: string | null
+          created_at?: string
+          credentials?: string | null
+          geographic_coverage?: string | null
+          is_listed?: boolean
+          is_verified?: boolean
+          languages?: string[]
+          professional_statement?: string | null
+          specializations?: string[]
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          arcs_member?: boolean
+          arcs_member_id?: string | null
+          created_at?: string
+          credentials?: string | null
+          geographic_coverage?: string | null
+          is_listed?: boolean
+          is_verified?: boolean
+          languages?: string[]
+          professional_statement?: string | null
+          specializations?: string[]
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
       series_groups: {
         Row: {
           created_at: string
@@ -2673,6 +2790,22 @@ export type Database = {
           bytes: number
           file_count: number
           source: string
+        }[]
+      }
+      get_verified_registrars: {
+        Args: never
+        Returns: {
+          arcs_member: boolean
+          avatar_url: string
+          city: string
+          country: string
+          full_name: string
+          geographic_coverage: string
+          languages: string[]
+          professional_statement: string
+          specializations: string[]
+          user_id: string
+          years_experience: number
         }[]
       }
       has_collector_access: {
