@@ -432,7 +432,7 @@ const ArtistProfile = () => {
             <div className="flex items-center gap-6">
               <div className="relative group">
                 <Avatar className="w-24 h-24 border-2 border-border">
-                  <AvatarImage src={avatarUrl || undefined} alt="Profile photo" className="object-cover object-top" />
+                  <AvatarImage src={avatarUrl || undefined} alt="Profile photo" className="object-cover object-center" />
                   <AvatarFallback className="text-2xl">
                     {fullName ? fullName.charAt(0).toUpperCase() : "?"}
                   </AvatarFallback>
@@ -556,7 +556,7 @@ const ArtistProfile = () => {
             <div className="flex items-center gap-6">
               <div className="relative group">
                 <Avatar className="w-24 h-24 border-2 border-border">
-                  <AvatarImage src={avatarUrl || undefined} alt="Profile photo" className="object-cover object-top" />
+                  <AvatarImage src={avatarUrl || undefined} alt="Profile photo" className="object-cover object-center" />
                   <AvatarFallback className="text-2xl">
                     {fullName ? fullName.charAt(0).toUpperCase() : "?"}
                   </AvatarFallback>
