@@ -55,6 +55,9 @@ import FoundingSupporterAdmin from "./pages/FoundingSupporterAdmin";
 import FundraisingDashboard from "./pages/FundraisingDashboard";
 import AllianceAdmin from "./pages/AllianceAdmin";
 import AllianceOutreach from "./pages/AllianceOutreach";
+import RegistrarsDirectory from "./pages/RegistrarsDirectory";
+import RegistrarApply from "./pages/RegistrarApply";
+import FoundationRegistrars from "./pages/FoundationRegistrars";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -119,6 +122,9 @@ const App = () => (
           <Route path="/cr" element={<CrDirectory />} />
           <Route path="/cr/artist/:gar" element={<CrArtistProfile />} />
           <Route path="/cr/profile" element={<CrProfileEditor />} />
+          <Route path="/registrars" element={<RegistrarsDirectory />} />
+          <Route path="/registrar/apply" element={<RegistrarApply />} />
+          <Route path="/foundation/registrars" element={<FoundationRegistrars />} />
           <Route path="/invite-friends" element={<InviteFriends />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
