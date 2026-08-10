@@ -8,25 +8,31 @@ const principles = [
     icon: Shield,
     title: "Independent",
     description:
-      "A Dutch stichting with no commercial ownership or influence, established solely for this cultural mission.",
+      "No commercial ownership or influence; a single cultural mission.",
   },
   {
     icon: Users,
     title: "Artist-authenticated",
     description:
-      "Artists document and confirm the record of their own work, exhibitions, and professional history.",
+      "Artists confirm the record of their own work and history.",
   },
   {
     icon: Database,
     title: "Open and structured",
     description:
-      "Consistent metadata, provenance, and exhibition history that institutions and researchers can rely on.",
+      "Consistent metadata and exports institutions can rely on.",
   },
   {
     icon: Clock,
     title: "Built for 100 years",
     description:
-      "Redundant archival storage and long-term preservation strategies, designed to outlast any single platform.",
+      "Redundant archival storage and long-term preservation standards.",
+  },
+  {
+    icon: Handshake,
+    title: "Collaborative",
+    description:
+      "Open to museums, archives, galleries, registrars, universities, and foundations.",
   },
 ];
 
