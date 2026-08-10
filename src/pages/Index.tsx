@@ -89,6 +89,9 @@ const Index = () => {
             <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Supporters
             </Link>
+            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              About us
+            </Link>
             <a
               href="https://catalogueraisonnefoundation.org"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
