@@ -167,7 +167,7 @@ const RegistrarApply = () => {
       languages,
       geographic_coverage: geographicCoverage.trim() || null,
       professional_statement: professionalStatement.trim() || null,
-      references_json: JSON.stringify(cleanReferences),
+      references_json: cleanReferences,
       arcs_member: arcsMember,
       arcs_member_id: arcsMember ? arcsMemberId.trim() || null : null,
       status: "pending",
