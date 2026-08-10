@@ -484,7 +484,12 @@ const ArtistProfile = () => {
 
           <Separator />
 
+          <RegistrarCredentialsSummary />
+
+          <Separator />
+
           <UnitPreferenceSetting />
+
 
 
           <div className="pt-2">
