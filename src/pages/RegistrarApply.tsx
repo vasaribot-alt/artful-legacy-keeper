@@ -109,9 +109,10 @@ const RegistrarApply = () => {
       setLanguages(existing.languages || []);
       setGeographicCoverage(existing.geographic_coverage || "");
       setProfessionalStatement(existing.professional_statement || "");
+      const refs = (existing.references_json as unknown) as Reference[];
       setReferences(
-        (existing.references_json as Reference[])?.length
-          ? (existing.references_json as Reference[])
+        refs?.length
+          ? refs
           : [{ name: "", institution: "", email: "", relationship: "" }]
       );
       setArcsMember(existing.arcs_member || false);
