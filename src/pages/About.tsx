@@ -1,32 +1,38 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Download } from "lucide-react";
+import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Download, Handshake } from "lucide-react";
 
 const principles = [
   {
     icon: Shield,
     title: "Independent",
     description:
-      "A Dutch stichting with no commercial ownership or influence, established solely for this cultural mission.",
+      "No commercial ownership or influence; a single cultural mission.",
   },
   {
     icon: Users,
     title: "Artist-authenticated",
     description:
-      "Artists document and confirm the record of their own work, exhibitions, and professional history.",
+      "Artists confirm the record of their own work and history.",
   },
   {
     icon: Database,
     title: "Open and structured",
     description:
-      "Consistent metadata, provenance, and exhibition history that institutions and researchers can rely on.",
+      "Consistent metadata and exports institutions can rely on.",
   },
   {
     icon: Clock,
     title: "Built for 100 years",
     description:
-      "Redundant archival storage and long-term preservation strategies, designed to outlast any single platform.",
+      "Redundant archival storage and long-term preservation standards.",
+  },
+  {
+    icon: Handshake,
+    title: "Collaborative",
+    description:
+      "Open to museums, archives, galleries, registrars, universities, and foundations.",
   },
 ];
 
@@ -74,9 +80,7 @@ const About = () => {
             Preserving the record of contemporary art
           </h1>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            The Global Artist Registry Foundation is an independent, non-profit foundation building durable
-            infrastructure for the documentation of artists and their work — authenticated by the artists
-            themselves and designed to remain accessible for generations.
+            An independent non-profit foundation preserving the documentation of contemporary art.
           </p>
         </div>
       </header>
@@ -87,15 +91,11 @@ const About = () => {
           <h2 className="text-2xl mb-6">What we do</h2>
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              Artists, estates, and collectors use the registry to build an archival-grade record of artworks:
-              structured metadata, images, dimensions, editions, provenance, exhibition history, catalogues, and
-              professional CVs. Every account is tied to a verified identity, and every artwork receives a
-              permanent identifier.
-            </p>
-            <p>
-              Around this core we maintain a public registry of artists, a directory of verified professional
-              registrars who can assist with cataloguing, and a scholarly framework for catalogues raisonnés
-              through our sister initiative, the Catalogue Raisonné Foundation.
+              We build and maintain a permanent, archival-grade record of contemporary artworks and the artists who
+              make them. Artists, estates, and collectors document their works — metadata, images, dimensions,
+              editions, provenance, exhibitions, catalogues, and professional history — in a system designed for
+              accessibility now and preservation over a century. Every account is tied to a verified identity, and
+              every work carries a permanent identifier.
             </p>
           </div>
         </div>
@@ -104,25 +104,14 @@ const About = () => {
       {/* Why */}
       <section className="py-16 px-6 border-t border-border bg-surface">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl mb-6">Why it matters</h2>
+          <h2 className="text-2xl mb-6">Why it is needed</h2>
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              The documentation surrounding artistic creation — images, records, catalogues, exhibition histories,
-              and personal archives — has always been fragile. In earlier centuries it survived, imperfectly, in
-              libraries, museums, and institutional archives.
-            </p>
-            <p>
-              Today it exists mostly in digital form, dispersed across private databases, gallery systems, personal
-              websites, and commercial platforms. These systems are accessible in the present but unstable over
-              time. When galleries close, services shut down, or artists lose access to a platform, the record can
-              disappear with it.
-            </p>
-            <p>
-              What is lost is not only information about individual works. Entire histories of artistic production
-              become fragmented. For artists, this breaks the continuity of their practice. For collectors, it
-              creates uncertainty around provenance and authenticity. For researchers and historians, it leaves
-              gaps in the cultural record of our time. No widely adopted, independent global infrastructure exists
-              to prevent this — which is why the foundation was established.
+              The documentation surrounding art has always been fragile, and today it lives mostly in digital form:
+              scattered across gallery systems, private databases, personal websites, and commercial platforms. When
+              galleries close, services shut down, or artists lose access, the record disappears with them — leaving
+              artists without continuity, collectors without provenance, and researchers with gaps in the cultural
+              record. No widely adopted, independent global infrastructure exists to prevent this.
             </p>
           </div>
         </div>
@@ -150,15 +139,19 @@ const About = () => {
           <h2 className="text-2xl mb-6">Who we are</h2>
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              GARF is a stichting (foundation) registered under Dutch law in The Hague, the Netherlands, governed
-              by a board and advised by professionals from the fields of collections management, art history, and
-              archival practice. The foundation has no commercial owners; its work is funded by donations,
-              supporting members, and institutional partners.
+              The Global Artist Registry Foundation (GARF) is a stichting registered under Dutch law in The Hague,
+              governed by a board and advised by professionals in collections management, art history, and archival
+              practice. It has no commercial owners and is funded by donations, supporting members, institutional
+              partnerships, and grants.
             </p>
+          </div>
+
+          <h2 className="text-2xl mt-14 mb-6">Working with us</h2>
+          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              Preserving artistic documentation is a shared responsibility. Museums, archives, galleries,
-              collectors, registrars, and researchers all depend on reliable records of artistic production — and
-              the foundation is built as a collaborative framework, open to institutional partnership.
+              Artists and estates can create an archive. Collectors can manage and document holdings. Registrars can
+              join a vetted public directory. Institutions and funders can partner with the foundation or support its
+              endowment for long-term preservation.
             </p>
           </div>
           <div className="flex flex-wrap gap-4 mt-10">
