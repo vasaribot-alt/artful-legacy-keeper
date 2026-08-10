@@ -162,8 +162,13 @@ const About = () => {
             </p>
           </div>
           <div className="flex flex-wrap gap-4 mt-10">
-            <Link to="/donate">
+            <a href="/GARF_Background_and_Founding_Rationale.pdf" download>
               <Button className="gap-2">
+                Background and Founding Rationale (PDF) <Download className="w-4 h-4" />
+              </Button>
+            </a>
+            <Link to="/donate">
+              <Button variant="outline" className="gap-2">
                 Support the foundation <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
