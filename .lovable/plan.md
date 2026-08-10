@@ -1,80 +1,127 @@
-# Collection Management Upgrade — Plan
+# GARF Registrar Registry — Verified Directory of Professional Registrars
 
-Three connected upgrades to the **collector** role context. Nothing here changes the artist experience.
+A public, browsable directory of vetted professional registrars that artists and collectors can contact for documentation help — with a Foundation-controlled vetting process aligned to professional credentials.
 
 ---
 
-## 1. Richer values / valuation fields
+## Concept
 
-Extend `artworks` with dedicated price fields so a collector can track cost, insurance and market value separately instead of the single `price` we have today.
+Today the registrar system is *closed*: an artist or collector can only connect with a registrar they already know by email. This creates a **public directory** of Foundation-verified registrars, turning GARF into the connector between artists/collectors and professional documentation expertise.
 
-**New fields** (all nullable, currency stays on the existing currency column):
+Based on your decisions:
+- **Fully public** — anyone can browse the directory (SEO + discoverability)
+- **Professional credentials** as the primary vetting criterion
+- **Gated contact** — inquiries go through GARF; registrar's email hidden until they accept
+- **ARCS alignment** — vetting criteria informed by the Association of Registrars and Collections Specialists (arcsinfo.org), with an optional ARCS membership field
 
-| Group | Field | Purpose |
+---
+
+## Database
+
+### New table: `registrar_profiles`
+
+Stores the registrar-specific enrichment data. Kept separate from `profiles` (which already has many CR-specific fields) for clarity.
+
+| Field | Type | Purpose |
 |---|---|---|
-| Cost | `purchase_price` | Actual amount paid |
-| Cost | `original_retail_price` | MSRP at launch |
-| Cost | `acquisition_cost` | Total incl. tax / shipping / premiums |
-| Market | `current_market_value` | Today's open-market avg |
-| Market | `estimated_value` | Personal / expert estimate |
-| Market | `appraised_value` + `appraised_at` + `appraised_by` | Certified appraisal |
-| Market | `last_sold_price` + `last_sold_at` | Most recent public sale of identical item |
-| Insurance | `replacement_value` | For insurance |
-| Sale | `reserve_price` | Minimum accepted if selling |
-| Restoration | `restoration_cost` | Cumulative conservation spend |
+| `user_id` | uuid, FK → auth.users, PK | One row per registrar |
+| `specializations` | text[] | e.g. ["Contemporary", "Photography", "Old Masters"] |
+| `credentials` | text | Formal training / qualifications description |
+| `years_experience` | integer | Years in the field |
+| `languages` | text[] | Working languages |
+| `geographic_coverage` | text | e.g. "Nordic countries", "Europe", "Worldwide" |
+| `professional_statement` | text | Short bio / approach statement |
+| `is_listed` | boolean, default false | Whether they appear in the public directory |
+| `is_verified` | boolean, default false | Foundation has approved their application |
+| `verified_at` | timestamptz | When verification was granted |
+| `verified_by` | uuid | Foundation reviewer |
+| `arcs_member` | boolean, default false | ARCS membership declared |
+| `arcs_member_id` | text | Optional ARCS membership number |
+| `created_at` / `updated_at` | timestamptz | Timestamps |
 
-In the collector Artwork form, group these under a collapsible **"Valuation & costs"** section. The artist role never sees this section.
+RLS: SELECT public for `is_listed = true AND is_verified = true` rows (public directory). Full access for own row (`user_id = auth.uid()`). Foundation role gets all access.
 
-Also add **"Consider selling"** as a third status alongside Available / Sold. Inventory filters and badges get the new option.
+### New table: `registrar_applications`
+
+The vetting workflow — a registrar submits this, Foundation reviews it.
+
+| Field | Type | Purpose |
+|---|---|---|
+| `id` | uuid, PK | |
+| `user_id` | uuid, FK → auth.users | Applicant |
+| `credentials` | text | Formal training description |
+| `experience_summary` | text | Years, institutions, project types |
+| `specializations` | text[] | Areas of expertise |
+| `languages` | text[] | Working languages |
+| `geographic_coverage` | text | Regions served |
+| `professional_statement` | text | Short statement |
+| `references_json` | jsonb | Array of {name, institution, email, relationship} |
+| `arcs_member` | boolean | ARCS membership declared |
+| `arcs_member_id` | text | Optional membership number |
+| `status` | text, default 'pending' | pending → under_review → approved/declined |
+| `reviewed_by` | uuid | Foundation reviewer |
+| `reviewed_at` | timestamptz | |
+| `review_notes` | text | Internal Foundation notes |
+| `created_at` / `updated_at` | timestamptz | |
+
+RLS: INSERT/SELECT for own row (`user_id = auth.uid()`); UPDATE only by Foundation role. Foundation SELECT all.
+
+### Contact flow: reuse `registrar_access`
+
+No new table needed. When an artist/collector clicks "Contact this registrar" in the directory, the app inserts a `registrar_access` row with `requested_by = 'owner'`, `status = 'pending'`, and the registrar's `user_id`. The registrar sees this as a pending request in their existing dashboard and approves it — the exact flow already built. The registrar's email stays hidden until they accept.
 
 ---
 
-## 2. Better location overview
+## Pages
 
-Today `artwork_location` is a free-text field plus a `artwork_location_history` log. Upgrade to a structured hierarchy while keeping the free-text field for backward compatibility.
+### 1. `/registrars` — Public Directory (no auth)
 
-**New structured fields on `artworks`** (collector context):
-- `location_facility` (e.g. "Main residence", "Storage Amsterdam")
-- `location_room`
-- `location_cabinet`
-- `location_shelf`
-- `location_box`
-- `env_temperature_note`, `env_humidity_note`, `env_light_note` (short text)
-- `hazard_notes` (fragile / toxic / handling)
+A clean, searchable directory page following the visual pattern of `/founding-artists`:
+- Header with title and short description
+- Search bar: filter by name, specialization, language, geographic coverage
+- Grid of registrar cards showing: name, avatar, specializations (as tags), languages, geographic coverage, verified badge, short statement excerpt
+- "Contact this registrar" button on each card — redirects to `/login` if not signed in, otherwise opens a small dialog to send an inquiry message and creates the pending `registrar_access` row
+- Only registrars with `is_listed = true AND is_verified = true` appear
 
-**Movement history**: extend existing `artwork_location_history` with:
-- `moved_by` (uuid, auto = auth.uid)
-- `reason` (enum-ish text: "conservation", "loan", "exhibition", "storage move", "other")
-- Structured `to_facility` / `to_room` etc. — so an entry both updates the current location fields and writes an audit row atomically via a button "Record move".
+### 2. `/registrar/apply` — Application Form (registrar-only)
 
-**Inventory page** gets a new **grouping by facility → room** view and a location tree summary at the top ("3 facilities · 8 rooms · 42 works").
+A form for registrars to apply for verified status:
+- Fields: credentials, years of experience, specializations (multi-select), languages, geographic coverage, professional statement, references (add/remove rows), ARCS membership toggle + member ID
+- If an application already exists, show its status (pending / under review / approved / declined) with Foundation notes if declined
+- On approval, a trigger sets `registrar_profiles.is_verified = true` and `is_listed = true`
+- Accessible from the registrar sidebar as "Get Verified"
+
+### 3. `/foundation/registrars` — Foundation Review (foundation-only)
+
+Admin dashboard for reviewing applications:
+- Table of all applications with status badges
+- Click to expand and review full details
+- Approve / Decline buttons with optional notes
+- Approved registrars get `is_verified = true` in `registrar_profiles`
+- Section showing currently verified registrars with ability to revoke (sets `is_verified = false, is_listed = false`)
+- Accessible from the Foundation sidebar as "Registrar Registry"
 
 ---
 
-## 3. Lending-to-museums flag
+## Navigation
 
-Simplest possible v1 per your note: a single Yes/No on the collector profile.
+- **Public nav** (Index page): add "Registrars" link alongside "Supporters"
+- **Registrar sidebar**: add "Get Verified" item pointing to `/registrar/apply`
+- **Foundation sidebar**: add "Registrar Registry" item pointing to `/foundation/registrars`
 
-- Add `willing_to_lend` boolean + optional `lending_notes` (text, e.g. "EU only, min 3 months notice") on `profiles` — collector role.
-- Surface as a toggle in **Profile → Collector settings**.
-- Add a small public-facing badge "🏛 Open to museum loans" on the collector's public profile when true.
-- Foundation dashboard gets a filterable **"Collectors open to lending"** list (name, city, count of works, contact) so museums can be pointed there in future. No outreach messaging yet.
+---
+
+## ARCS Partnership Note
+
+The `arcs_member` and `arcs_member_id` fields are designed to support a future partnership with the Association of Registrars and Collections Specialists. In v1 these are self-declared by the applicant. A future enhancement could cross-reference ARCS membership via their API or a shared verification protocol. The Foundation reviewer can use ARCS membership as a signal (but not the sole criterion) when evaluating applications.
 
 ---
 
 ## Technical notes
 
-- One migration adds all `artworks` columns, the profile fields, and extra `artwork_location_history` columns. All nullable, no data backfill needed.
-- Status enum stays as free text (`available` | `sold` | `considering`) to avoid enum migration friction.
-- All new UI lives behind `role_context = 'collector'` checks — artist views untouched.
-- Public collector-lending visibility uses the same RLS SELECT pattern already used for Founding Artists.
-
----
-
-## Out of scope for this pass (can follow later)
-- In-app museum → collector loan-request messaging
-- Automated market-value lookups
-- Insurance document generation
-- Environmental sensor integrations
-
-Shall I proceed?
+- One migration creates both tables with GRANTs and RLS policies
+- A trigger copies approved application data into `registrar_profiles` and flips `is_verified`/`is_listed` when an application status changes to 'approved'
+- Public directory query uses a SECURITY DEFINER function `get_verified_registrars()` returning only listed+verified rows with safe fields (no email, no phone — those stay gated)
+- Contact flow inserts via the existing `registrar_access` table — no schema change to that table needed
+- All new UI matches the existing monochrome minimalist design system
+- Artist and collector experiences are untouched
