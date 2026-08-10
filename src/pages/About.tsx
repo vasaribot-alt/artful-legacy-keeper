@@ -139,15 +139,19 @@ const About = () => {
           <h2 className="text-2xl mb-6">Who we are</h2>
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              GARF is a stichting (foundation) registered under Dutch law in The Hague, the Netherlands, governed
-              by a board and advised by professionals from the fields of collections management, art history, and
-              archival practice. The foundation has no commercial owners; its work is funded by donations,
-              supporting members, and institutional partners.
+              The Global Artist Registry Foundation (GARF) is a stichting registered under Dutch law in The Hague,
+              governed by a board and advised by professionals in collections management, art history, and archival
+              practice. It has no commercial owners and is funded by donations, supporting members, institutional
+              partnerships, and grants.
             </p>
+          </div>
+
+          <h2 className="text-2xl mt-14 mb-6">Working with us</h2>
+          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              Preserving artistic documentation is a shared responsibility. Museums, archives, galleries,
-              collectors, registrars, and researchers all depend on reliable records of artistic production — and
-              the foundation is built as a collaborative framework, open to institutional partnership.
+              Artists and estates can create an archive. Collectors can manage and document holdings. Registrars can
+              join a vetted public directory. Institutions and funders can partner with the foundation or support its
+              endowment for long-term preservation.
             </p>
           </div>
           <div className="flex flex-wrap gap-4 mt-10">
