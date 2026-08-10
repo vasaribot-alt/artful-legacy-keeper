@@ -58,6 +58,7 @@ import AllianceOutreach from "./pages/AllianceOutreach";
 import RegistrarsDirectory from "./pages/RegistrarsDirectory";
 import RegistrarApply from "./pages/RegistrarApply";
 import FoundationRegistrars from "./pages/FoundationRegistrars";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,7 +73,9 @@ const App = () => (
       <Router>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
+
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />

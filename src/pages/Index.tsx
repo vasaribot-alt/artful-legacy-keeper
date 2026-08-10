@@ -76,9 +76,13 @@ const Index = () => {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <span className="text-lg font-semibold tracking-tight">Global Artist Registry Foundation</span>
           <div className="flex items-center gap-6">
+            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              About
+            </Link>
             <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Artists
             </Link>
+
             <Link to="/registrars" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Registrars
             </Link>
