@@ -21,7 +21,7 @@ interface Application {
   languages: string[];
   geographic_coverage: string | null;
   professional_statement: string | null;
-  references_json: any[];
+  references_json: any;
   arcs_member: boolean;
   arcs_member_id: string | null;
   review_notes: string | null;
