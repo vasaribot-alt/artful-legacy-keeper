@@ -227,22 +227,27 @@ const RegistrarsDirectory = () => {
                   </div>
 
                   {registrar.professional_statement && (
-                    <p className="text-sm text-muted-foreground mt-4 line-clamp-3 leading-relaxed">
+                    <p className="text-sm text-muted-foreground mt-4 line-clamp-2 leading-relaxed [hyphens:none] break-words">
                       {registrar.professional_statement}
                     </p>
                   )}
 
                   {registrar.specializations.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-4">
-                      {registrar.specializations.map((spec) => (
+                      {registrar.specializations.slice(0, 4).map((spec) => (
                         <Badge key={spec} variant="secondary" className="text-xs font-normal">
                           {spec}
                         </Badge>
                       ))}
+                      {registrar.specializations.length > 4 && (
+                        <Badge variant="outline" className="text-xs font-normal">
+                          +{registrar.specializations.length - 4}
+                        </Badge>
+                      )}
                     </div>
                   )}
 
-                  <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
                     {registrar.languages.length > 0 && (
                       <span className="flex items-center gap-1">
                         <Languages className="w-3 h-3" />
@@ -250,7 +255,7 @@ const RegistrarsDirectory = () => {
                       </span>
                     )}
                     {registrar.geographic_coverage && (
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 [hyphens:none] break-words">
                         <Globe className="w-3 h-3" />
                         {registrar.geographic_coverage}
                       </span>
@@ -263,16 +268,22 @@ const RegistrarsDirectory = () => {
                     )}
                   </div>
 
-                  <div className="mt-auto pt-5">
+                  <div className="mt-auto pt-5 flex flex-col sm:flex-row gap-2">
+                    <Button asChild size="sm" className="gap-1.5 flex-1">
+                      <Link to={`/registrars/${registrar.user_id}`}>
+                        View presentation <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-1.5 w-full"
+                      className="gap-1.5 flex-1"
                       onClick={() => handleContactClick(registrar)}
                     >
-                      <Mail className="w-3.5 h-3.5" /> Contact this registrar
+                      <Mail className="w-3.5 h-3.5" /> Contact
                     </Button>
                   </div>
+
                 </div>
               ))}
             </div>

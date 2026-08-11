@@ -56,6 +56,7 @@ import FundraisingDashboard from "./pages/FundraisingDashboard";
 import AllianceAdmin from "./pages/AllianceAdmin";
 import AllianceOutreach from "./pages/AllianceOutreach";
 import RegistrarsDirectory from "./pages/RegistrarsDirectory";
+import RegistrarProfile from "./pages/RegistrarProfile";
 import RegistrarApply from "./pages/RegistrarApply";
 import FoundationRegistrars from "./pages/FoundationRegistrars";
 import About from "./pages/About";
@@ -126,6 +127,7 @@ const App = () => (
           <Route path="/cr/artist/:gar" element={<CrArtistProfile />} />
           <Route path="/cr/profile" element={<CrProfileEditor />} />
           <Route path="/registrars" element={<RegistrarsDirectory />} />
+          <Route path="/registrars/:userId" element={<RegistrarProfile />} />
           <Route path="/registrar/apply" element={<RegistrarApply />} />
           <Route path="/foundation/registrars" element={<FoundationRegistrars />} />
           <Route path="/invite-friends" element={<InviteFriends />} />

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
+import { RegistrarListingToggle } from "@/components/RegistrarListingToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -286,6 +287,7 @@ const RegistrarApply = () => {
                 </Button>
               </a>
             </div>
+            <RegistrarListingToggle />
           </div>
         ) : (
           <div className="space-y-6">
