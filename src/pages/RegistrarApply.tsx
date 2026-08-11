@@ -286,6 +286,7 @@ const RegistrarApply = () => {
                 </Button>
               </a>
             </div>
+            <RegistrarListingToggle />
           </div>
         ) : (
           <div className="space-y-6">
