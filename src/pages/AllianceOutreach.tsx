@@ -649,9 +649,42 @@ With kind regards,
     setBatchOpen(true);
     setBatchResults([]);
     setBatchProgress({ done: 0, total: batchTargets.length });
+
+    // Smart name lookup: for any selected organisation without a contact person on
+    // file, try to find the right decision maker automatically before drafting.
+    // Best-effort only — anything still unknown falls back to a neutral salutation.
+    const enriched = new Map<string, { contact_person?: string | null; contact_title?: string | null }>();
+    const missingNameIds = batchTargets.filter(t => !t.contact_person).map(t => t.id);
+    if (missingNameIds.length > 0) {
+      setResearching(`batch:${missingNameIds.length}`);
+      try {
+        const { data: rd } = await supabase.functions.invoke("research-decision-maker", {
+          body: { target_ids: missingNameIds },
+        });
+        const found: any[] = (rd as any)?.results || [];
+        for (const r of found) {
+          if (!r?.id) continue;
+          enriched.set(r.id, { contact_person: r.contact_person ?? null, contact_title: r.contact_title ?? null });
+        }
+        setTargets(prev => prev.map(t => {
+          const e = enriched.get(t.id);
+          return e ? { ...t, ...(e.contact_person ? { contact_person: e.contact_person } : {}), ...(e.contact_title && !t.contact_title ? { contact_title: e.contact_title } : {}) } : t;
+        }));
+        const named = found.filter(r => r.contact_person).length;
+        if (named > 0) toast.success(`Found ${named} contact name${named === 1 ? "" : "s"} automatically.`);
+      } catch {
+        // ignore — drafting continues with a neutral salutation
+      }
+      setResearching(null);
+    }
+
     const results: typeof batchResults = [];
     for (let i = 0; i < batchTargets.length; i++) {
-      const t = batchTargets[i];
+      const base = batchTargets[i];
+      const e = enriched.get(base.id);
+      const t: Target = e
+        ? { ...base, contact_person: base.contact_person || e.contact_person || null, contact_title: base.contact_title || e.contact_title || null }
+        : base;
       try {
         const capacity = t.contact_title
           ? (t.contact_person ? `${t.contact_title}, ${t.contact_person} of ${t.name}` : `${t.contact_title} of ${t.name}`)
