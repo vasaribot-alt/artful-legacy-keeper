@@ -2796,9 +2796,11 @@ export type Database = {
         Args: never
         Returns: {
           arcs_member: boolean
+          arcs_member_id: string
           avatar_url: string
           city: string
           country: string
+          credentials: string
           full_name: string
           geographic_coverage: string
           languages: string[]
