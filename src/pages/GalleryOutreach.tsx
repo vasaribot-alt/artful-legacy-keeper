@@ -134,6 +134,66 @@ const GalleryOutreach = () => {
   const [batchResults, setBatchResults] = useState<{ id: string; name: string; email: string; subject: string; body: string }[]>([]);
   const [batchOpen, setBatchOpen] = useState(false);
 
+  // Attachments (from Foundation Documents) added to every letter in a send
+  const [documents, setDocuments] = useState<{ id: string; title: string; file_name: string; file_size: number }[]>([]);
+  const [attachIds, setAttachIds] = useState<string[]>(
+    () => JSON.parse(localStorage.getItem("garf.outreach.attachIds") || "[]")
+  );
+
+  useEffect(() => {
+    localStorage.setItem("garf.outreach.attachIds", JSON.stringify(attachIds));
+  }, [attachIds]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("foundation_documents")
+        .select("id, title, file_name, file_size")
+        .order("created_at", { ascending: false });
+      setDocuments(data || []);
+    })();
+  }, []);
+
+  const attachedDocs = useMemo(
+    () => documents.filter((d) => attachIds.includes(d.id)),
+    [documents, attachIds],
+  );
+
+  const toggleAttachment = (id: string) =>
+    setAttachIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  const AttachmentPicker = () => (
+    <div className="rounded-sm border border-border p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <Paperclip className="w-3.5 h-3.5" />
+        <Label className="text-xs">Attachments (added to every letter)</Label>
+      </div>
+      {documents.length === 0 ? (
+        <p className="text-xs text-muted-foreground">
+          No documents yet — upload the PDF under Foundation → Documents first.
+        </p>
+      ) : (
+        <div className="max-h-32 overflow-y-auto space-y-1">
+          {documents.map((d) => (
+            <label key={d.id} className="flex items-start gap-2 text-xs cursor-pointer">
+              <Checkbox checked={attachIds.includes(d.id)} onCheckedChange={() => toggleAttachment(d.id)} />
+              <span className="leading-tight">
+                {d.title || d.file_name}
+                <span className="text-muted-foreground"> · {(Number(d.file_size || 0) / 1024 / 1024).toFixed(1)} MB</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+      {attachedDocs.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          {attachedDocs.length} file{attachedDocs.length === 1 ? "" : "s"} attached · keep the total under 6 MB.
+        </p>
+      )}
+    </div>
+  );
+
+
   const load = async () => {
     setLoading(true);
     setLoadError(null);
