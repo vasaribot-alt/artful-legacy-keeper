@@ -614,6 +614,18 @@ export default function ArtistInviteUpload() {
         </div>
       </section>
 
+      <section className="border border-border rounded-sm p-6 space-y-3">
+        <h2 className="text-lg font-medium">Invitation letters to artists</h2>
+        <p className="text-sm text-muted-foreground">
+          {withEmail.length.toLocaleString()} of {saved.length.toLocaleString()} tracked artists have an email address.
+          {" "}{pendingWithEmail.length.toLocaleString()} not yet written to. Each letter carries the artist's personal
+          access code and mentions their gallery. Sent today: {sentToday} / {DAILY_SEND_CAP}.
+        </p>
+        <Button onClick={() => setBatchOpen(true)} disabled={pendingWithEmail.length === 0}>
+          <Mail className="h-4 w-4 mr-1" /> Draft &amp; send letters
+        </Button>
+      </section>
+
       <section className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h2 className="text-lg font-medium">Tracked Artists ({saved.length})</h2>
@@ -628,6 +640,7 @@ export default function ArtistInviteUpload() {
             )}
           </div>
         </div>
+
 
         {saved.length > 5 && (
           <div className="relative max-w-xs">
