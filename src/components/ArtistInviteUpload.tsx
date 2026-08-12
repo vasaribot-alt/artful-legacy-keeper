@@ -9,8 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Upload, Plus, Trash2, Copy, Download, Search, Sparkles, Mail, Loader2, ExternalLink } from "lucide-react";
+import { Upload, Plus, Trash2, Copy, Download, Search, Sparkles, Mail, Loader2, ExternalLink, Send } from "lucide-react";
+import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import * as XLSX from "xlsx";
+
+const DAILY_SEND_CAP = 55;
+const FROM_NAME = "Jan S. Kindem — Global Artist Registry Foundation";
+const LANGUAGES = ["English", "Norwegian", "Swedish", "Danish", "German", "Dutch", "French", "Spanish", "Italian"];
+
 
 type Tier = "internationally_established" | "mid_career" | "emerging";
 
@@ -60,6 +66,9 @@ interface SavedInvite {
   bio: string | null;
   ranking: string | null;
   email_draft: string | null;
+  email_subject: string | null;
+  email_sent_at: string | null;
+
   enrichment_status: string | null;
   enriched_at: string | null;
   enrichment_sources: { urls?: string[]; used_firecrawl?: boolean } | null;
@@ -121,6 +130,18 @@ export default function ArtistInviteUpload() {
   const [availableSheets, setAvailableSheets] = useState<string[]>([]);
   const [selectedSheets, setSelectedSheets] = useState<Set<string>>(new Set());
   const [workbookBinary, setWorkbookBinary] = useState<string | ArrayBuffer | null>(null);
+
+  // Batch letters to artists we have an email address for
+  const [batchOpen, setBatchOpen] = useState(false);
+  const [batchSize, setBatchSize] = useState(10);
+  const [batchLanguage, setBatchLanguage] = useState("English");
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchSending, setBatchSending] = useState(false);
+  const [batchProgress, setBatchProgress] = useState("");
+  const [batchResults, setBatchResults] = useState<
+    { id: string; artist_name: string; email: string; subject: string; body: string; error?: string }[]
+  >([]);
+
 
   const fetchSaved = async () => {
     const { data } = await supabase
@@ -335,6 +356,128 @@ export default function ArtistInviteUpload() {
     }
   };
 
+  const isSameDay = (iso: string | null) =>
+    !!iso && new Date(iso).toDateString() === new Date().toDateString();
+  const sentToday = saved.filter((s) => isSameDay(s.email_sent_at)).length;
+  const withEmail = saved.filter((s) => (s.email || "").includes("@"));
+  const pendingWithEmail = withEmail.filter((s) => !s.email_sent_at && s.status !== "sent");
+
+  const readFunctionError = async (error: any, data: any) => {
+    let payload = data;
+    try {
+      const res = error?.context as Response | undefined;
+      if (res && typeof res.text === "function") {
+        const raw = await res.clone().text();
+        try { payload = JSON.parse(raw); } catch { payload = { error: raw || undefined }; }
+      }
+    } catch { /* keep original */ }
+    return payload;
+  };
+
+  const generateBatch = async () => {
+    const targets = pendingWithEmail.slice(0, Math.max(1, batchSize));
+    if (!targets.length) { toast.error("No artists with an email address left to write to."); return; }
+    setBatchRunning(true);
+    setBatchResults([]);
+    const results: typeof batchResults = [];
+    for (let i = 0; i < targets.length; i++) {
+      const row = targets[i];
+      setBatchProgress(`Drafting ${i + 1} of ${targets.length} — ${row.artist_name}`);
+      try {
+        const { data, error } = await supabase.functions.invoke("generate-invite-draft", {
+          body: { invite_id: row.id, language: batchLanguage },
+        });
+        if (error || !data?.success) throw new Error(error?.message || data?.error || "Failed");
+        results.push({
+          id: row.id, artist_name: row.artist_name, email: row.email || "",
+          subject: data.subject || "", body: data.body || data.draft || "",
+        });
+      } catch (e: any) {
+        results.push({
+          id: row.id, artist_name: row.artist_name, email: row.email || "",
+          subject: "", body: "", error: e.message || "Draft failed",
+        });
+      }
+      setBatchResults([...results]);
+    }
+    setBatchProgress("");
+    setBatchRunning(false);
+    await fetchSaved();
+    toast.success(`Drafted ${results.filter((r) => r.body).length} of ${targets.length} letters`);
+  };
+
+  const markSent = async (ids: string[]) => {
+    const now = new Date().toISOString();
+    await supabase.from("artist_invites").update({ status: "sent", email_sent_at: now }).in("id", ids);
+    await fetchSaved();
+  };
+
+  const sendLetters = async (
+    letters: { id: string; artist_name: string; email: string; subject: string; body: string }[],
+  ) => {
+    const ready = letters.filter((l) => l.body && l.email.includes("@"));
+    if (!ready.length) { toast.error("No letters with an email address to send."); return false; }
+    const remaining = Math.max(0, DAILY_SEND_CAP - sentToday);
+    if (remaining === 0) {
+      toast.error(`Daily limit reached — ${DAILY_SEND_CAP} letters already sent today. Continue tomorrow to protect deliverability.`, { duration: 10000 });
+      return false;
+    }
+    if (ready.length > remaining) {
+      toast.error(`Only ${remaining} letter${remaining === 1 ? "" : "s"} left within today's limit of ${DAILY_SEND_CAP}.`, { duration: 10000 });
+      return false;
+    }
+    if (!window.confirm(`Send ${ready.length} invitation${ready.length === 1 ? "" : "s"} now from outreach@globalartistregistry.org?`)) return false;
+
+    const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
+      body: {
+        fromName: FROM_NAME,
+        campaignTag: "artist_invites",
+        letters: ready.map((l) => ({
+          to: l.email,
+          toName: l.artist_name,
+          subject: l.subject || "An invitation from the Global Artist Registry Foundation",
+          bodyHtml: markdownToHtml(l.body),
+          bodyText: markdownToPlainText(l.body),
+        })),
+      },
+    });
+    const payload = error ? await readFunctionError(error, data) : (data as any);
+    if (error || !payload?.sent) {
+      const detail = payload?.error
+        || (Array.isArray(payload?.failures) && payload.failures.length
+          ? payload.failures.map((f: { to: string; error: string }) => `${f.to}: ${f.error}`).join(" · ")
+          : null)
+        || error?.message || "Could not send the letters";
+      toast.error(detail, { duration: 12000 });
+      console.error("send-outreach-brevo failed", payload || error);
+      return false;
+    }
+    const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
+    const sentIds = ready.filter((l) => sentAddresses.size === 0 || sentAddresses.has(l.email)).map((l) => l.id);
+    if (sentIds.length) await markSent(sentIds);
+    toast.success(`${sentIds.length} invitation${sentIds.length === 1 ? "" : "s"} sent.`);
+    return true;
+  };
+
+  const sendBatch = async () => {
+    setBatchSending(true);
+    const ok = await sendLetters(batchResults.filter((r) => r.body));
+    setBatchSending(false);
+    if (ok) { setBatchResults([]); setBatchOpen(false); }
+  };
+
+  const sendSingle = async (row: SavedInvite) => {
+    if (!row.email || !row.email_draft) { toast.error("Generate a draft and add an email first."); return; }
+    setBatchSending(true);
+    const ok = await sendLetters([{
+      id: row.id, artist_name: row.artist_name, email: row.email,
+      subject: row.email_subject || "", body: row.email_draft,
+    }]);
+    setBatchSending(false);
+    if (ok) setDraftOpen(null);
+  };
+
+
   const handleCopy = (text: string, label = "Copied") => {
     navigator.clipboard.writeText(text);
     toast.success(label);
@@ -471,6 +614,18 @@ export default function ArtistInviteUpload() {
         </div>
       </section>
 
+      <section className="border border-border rounded-sm p-6 space-y-3">
+        <h2 className="text-lg font-medium">Invitation letters to artists</h2>
+        <p className="text-sm text-muted-foreground">
+          {withEmail.length.toLocaleString()} of {saved.length.toLocaleString()} tracked artists have an email address.
+          {" "}{pendingWithEmail.length.toLocaleString()} not yet written to. Each letter carries the artist's personal
+          access code and mentions their gallery. Sent today: {sentToday} / {DAILY_SEND_CAP}.
+        </p>
+        <Button onClick={() => setBatchOpen(true)} disabled={pendingWithEmail.length === 0}>
+          <Mail className="h-4 w-4 mr-1" /> Draft &amp; send letters
+        </Button>
+      </section>
+
       <section className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h2 className="text-lg font-medium">Tracked Artists ({saved.length})</h2>
@@ -485,6 +640,7 @@ export default function ArtistInviteUpload() {
             )}
           </div>
         </div>
+
 
         {saved.length > 5 && (
           <div className="relative max-w-xs">
@@ -506,6 +662,8 @@ export default function ArtistInviteUpload() {
                 <TableHead>Email</TableHead>
                 <TableHead>Enrichment</TableHead>
                 <TableHead>Code</TableHead>
+                <TableHead>Letter</TableHead>
+
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow></TableHeader>
               <TableBody>
@@ -532,8 +690,16 @@ export default function ArtistInviteUpload() {
                           </button>
                         ) : "—"}
                       </TableCell>
+                      <TableCell>
+                        {s.email_sent_at
+                          ? <Badge variant="default" className="text-xs">Sent</Badge>
+                          : s.email_draft
+                            ? <button onClick={() => setDraftOpen(s)}><Badge variant="secondary" className="text-xs">Drafted</Badge></button>
+                            : <Badge variant="outline" className="text-xs">—</Badge>}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+
                           <Button variant="ghost" size="sm" disabled={isEnriching} onClick={() => handleEnrich(s.id)} title="Enrich with AI">
                             {isEnriching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
                           </Button>
@@ -623,7 +789,7 @@ export default function ArtistInviteUpload() {
               <DialogHeader>
                 <DialogTitle>Invite draft — {draftOpen.artist_name}</DialogTitle>
                 <DialogDescription>
-                  Copy and send from your own email client. To: {draftOpen.email || "(no email on file)"}
+                  Subject: {draftOpen.email_subject || "(none)"} · To: {draftOpen.email || "(no email on file)"}
                 </DialogDescription>
               </DialogHeader>
               <Textarea value={draftOpen.email_draft || ""} readOnly rows={18} className="font-mono text-xs" />
@@ -631,14 +797,94 @@ export default function ArtistInviteUpload() {
                 <Button variant="outline" onClick={() => handleCopy(draftOpen.email_draft || "", "Draft copied")}>
                   <Copy className="h-4 w-4 mr-1" /> Copy
                 </Button>
-                <Button onClick={() => handleGenerateDraft(draftOpen)} disabled={drafting.has(draftOpen.id)}>
+                <Button variant="outline" onClick={() => handleGenerateDraft(draftOpen)} disabled={drafting.has(draftOpen.id)}>
                   <Sparkles className="h-4 w-4 mr-1" /> Regenerate
+                </Button>
+                <Button
+                  onClick={() => sendSingle(draftOpen)}
+                  disabled={batchSending || !draftOpen.email || !draftOpen.email_draft}
+                >
+                  {batchSending ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Send className="h-4 w-4 mr-1" />}
+                  Send now
                 </Button>
               </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Batch letters dialog */}
+      <Dialog open={batchOpen} onOpenChange={(o) => !batchRunning && !batchSending && setBatchOpen(o)}>
+        <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Invitation letters to artists</DialogTitle>
+            <DialogDescription>
+              Letters go to artists with an email address, include their personal access code and mention their gallery.
+              Sent today: {sentToday} / {DAILY_SEND_CAP}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-wrap gap-3 items-end">
+            <div>
+              <Label className="text-xs">How many</Label>
+              <Input
+                type="number" min={1} max={50} value={batchSize}
+                onChange={(e) => setBatchSize(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))}
+                className="w-24 mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Language</Label>
+              <Select value={batchLanguage} onValueChange={setBatchLanguage}>
+                <SelectTrigger className="w-40 mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={generateBatch} disabled={batchRunning || pendingWithEmail.length === 0}>
+              {batchRunning ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
+              Generate
+            </Button>
+            <span className="text-xs text-muted-foreground">{batchProgress}</span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+            {batchResults.map((r) => (
+              <div key={r.id} className="border border-border rounded-sm p-3 space-y-2">
+                <div className="flex justify-between gap-2 flex-wrap">
+                  <span className="text-sm font-medium">{r.artist_name}</span>
+                  <span className="text-xs text-muted-foreground">{r.email || "(no email)"}</span>
+                </div>
+                {r.error ? (
+                  <p className="text-xs text-destructive">{r.error}</p>
+                ) : (
+                  <>
+                    <p className="text-xs text-muted-foreground">Subject: {r.subject || "(none)"}</p>
+                    <Textarea
+                      value={r.body}
+                      onChange={(e) => setBatchResults((prev) => prev.map((p) => p.id === r.id ? { ...p, body: e.target.value } : p))}
+                      rows={10}
+                      className="font-mono text-xs"
+                    />
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-2 justify-end border-t border-border pt-3">
+            <Button variant="outline" onClick={() => setBatchOpen(false)} disabled={batchRunning || batchSending}>
+              Close
+            </Button>
+            <Button onClick={sendBatch} disabled={batchSending || batchRunning || batchResults.filter((r) => r.body).length === 0}>
+              {batchSending ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Send className="h-4 w-4 mr-1" />}
+              Send {batchResults.filter((r) => r.body).length} now
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
