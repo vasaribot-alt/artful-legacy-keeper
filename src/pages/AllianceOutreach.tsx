@@ -124,6 +124,8 @@ export default function AllianceOutreach() {
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [tagFilter, setTagFilter] = useState<string>("all");
   const [researching, setResearching] = useState<string | null>(null);
+  const [expandedIds, setExpandedIds] = useState<string[]>([]);
+
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
