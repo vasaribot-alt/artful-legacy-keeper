@@ -238,10 +238,40 @@ With kind regards,
     toast.success("Template applied — edit freely, then Save draft");
   };
 
+  // Detect the language a saved email text is written in, so picking a
+  // Norwegian/Danish/Swedish/German letter does not silently get translated
+  // into English by the AI rewrite step.
+  const detectTextLanguage = (text: string): string | null => {
+    const t = ` ${(text || "").toLowerCase()} `;
+    const has = (words: string[]) => words.some(w => t.includes(` ${w} `) || t.includes(` ${w},`) || t.includes(` ${w}.`));
+    if (has(["og", "ikke", "vi", "hilsen", "kunstsamling", "stiftelse", "være", "kjære"])) {
+      if (t.includes("ø") || t.includes("å")) {
+        if (has(["mvh", "vennlig", "kunstnere", "også", "være"])) return "Norwegian";
+        return "Norwegian";
+      }
+      if (t.includes("ä") || t.includes("ö")) return "Swedish";
+    }
+    if (has(["und", "der", "wir", "nicht", "sehr", "freundlichen"])) return "German";
+    if (has(["en", "het", "wij", "niet", "vriendelijke"])) return "Dutch";
+    if (has(["et", "nous", "pas", "cordialement"])) return "French";
+    return null;
+  };
+
+  // Picking a saved text also aligns the language selector with that text.
+  const pickEmailText = (id: string) => {
+    setPickedTextId(id);
+    const tpl = emailTexts.find(x => x.id === id);
+    const lang = tpl ? detectTextLanguage(`${tpl.name} ${tpl.body}`) : null;
+    if (lang) {
+      setDraftLanguage(lang);
+      toast.info(`Language set to ${lang} to match “${tpl?.name}”`);
+    }
+  };
+
   const applySavedTextToDraft = (id: string) => {
     const tpl = emailTexts.find(x => x.id === id);
     if (!tpl || !draftTarget) return;
-    setPickedTextId(id);
+    pickEmailText(id);
     setDraftSubject(fillTemplate(draftTarget, tpl.subject || ""));
     setDraftBody(fillTemplate(draftTarget, tpl.body || ""));
     toast.success(`“${tpl.name}” applied — edit freely, then Save draft`);
@@ -250,7 +280,7 @@ With kind regards,
   const applySavedTextToSelected = async (id: string) => {
     const tpl = emailTexts.find(x => x.id === id);
     if (!tpl) return;
-    setPickedTextId(id);
+    pickEmailText(id);
     const list = selectedIds
       .map(sid => targets.find(t => t.id === sid))
       .filter(Boolean) as Target[];
@@ -1166,7 +1196,7 @@ With kind regards,
                 Sync to Brevo
               </Button>
               {emailTexts.length > 0 && (
-                <Select value={pickedTextId} onValueChange={(v) => setPickedTextId(v)}>
+                <Select value={pickedTextId} onValueChange={pickEmailText}>
                   <SelectTrigger className="w-[260px] h-8 text-xs">
                     <SelectValue placeholder="Choose email text…" />
                   </SelectTrigger>
@@ -1411,7 +1441,7 @@ With kind regards,
             <div className="rounded-md border border-border p-3 space-y-2">
               <Label className="text-xs">Email text used for this batch</Label>
               <div className="flex flex-wrap items-center gap-2">
-                <Select value={pickedTextId} onValueChange={setPickedTextId}>
+                <Select value={pickedTextId} onValueChange={pickEmailText}>
                   <SelectTrigger className="w-[280px] h-8 text-xs">
                     <SelectValue placeholder={emailTexts.length ? "Choose saved email text…" : "No saved email texts yet"} />
                   </SelectTrigger>
