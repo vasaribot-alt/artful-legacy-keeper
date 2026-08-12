@@ -1550,17 +1550,19 @@ With kind regards,
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="text-xs">Language</Label>
-                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
-                      <SelectItem key={l} value={l}>{l}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {!pickedTextId && (
+                <div>
+                  <Label className="text-xs">Language</Label>
+                  <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
+                        <SelectItem key={l} value={l}>{l}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <Label className="text-xs">Sender name</Label>
                 <Input value={draftSenderName} onChange={e => setDraftSenderName(e.target.value)} placeholder="Jan S Kindem" />
