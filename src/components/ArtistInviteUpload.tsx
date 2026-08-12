@@ -662,6 +662,8 @@ export default function ArtistInviteUpload() {
                 <TableHead>Email</TableHead>
                 <TableHead>Enrichment</TableHead>
                 <TableHead>Code</TableHead>
+                <TableHead>Letter</TableHead>
+
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow></TableHeader>
               <TableBody>
