@@ -9,8 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Upload, Plus, Trash2, Copy, Download, Search, Sparkles, Mail, Loader2, ExternalLink } from "lucide-react";
+import { Upload, Plus, Trash2, Copy, Download, Search, Sparkles, Mail, Loader2, ExternalLink, Send } from "lucide-react";
+import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import * as XLSX from "xlsx";
+
+const DAILY_SEND_CAP = 55;
+const FROM_NAME = "Jan S. Kindem — Global Artist Registry Foundation";
+const LANGUAGES = ["English", "Norwegian", "Swedish", "Danish", "German", "Dutch", "French", "Spanish", "Italian"];
+
 
 type Tier = "internationally_established" | "mid_career" | "emerging";
 
