@@ -1215,6 +1215,8 @@ const GalleryOutreach = () => {
                 <Input value={draftSenderName} onChange={(e) => setDraftSenderName(e.target.value)} placeholder="Jan S Kindem" />
               </div>
             </div>
+            <AttachmentPicker />
+
             {batchRunning && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
