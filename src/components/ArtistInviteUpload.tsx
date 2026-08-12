@@ -690,7 +690,14 @@ export default function ArtistInviteUpload() {
                           </button>
                         ) : "—"}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell>
+                        {s.email_sent_at
+                          ? <Badge variant="default" className="text-xs">Sent</Badge>
+                          : s.email_draft
+                            ? <button onClick={() => setDraftOpen(s)}><Badge variant="secondary" className="text-xs">Drafted</Badge></button>
+                            : <Badge variant="outline" className="text-xs">—</Badge>}
+                      </TableCell>
+
                         <div className="flex justify-end gap-1">
                           <Button variant="ghost" size="sm" disabled={isEnriching} onClick={() => handleEnrich(s.id)} title="Enrich with AI">
                             {isEnriching ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
