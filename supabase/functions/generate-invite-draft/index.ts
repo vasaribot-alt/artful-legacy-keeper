@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { invite_id, sender_name } = await req.json();
+    const { invite_id, sender_name, signature, language } = await req.json();
     const { data: row, error } = await supabase
       .from("artist_invites").select("*, invite_codes(code)").eq("id", invite_id).single();
     if (error || !row) {
@@ -49,9 +49,28 @@ Deno.serve(async (req) => {
     }
 
     const code = (row.invite_codes as any)?.code || "";
-    const galleries = (row.galleries || []).join(", ");
+    const galleryList: string[] = (row.galleries || []).filter(Boolean);
+    const galleries = galleryList.join(", ");
+    const primaryGallery = galleryList[0] || "";
 
-    const prompt = `Write a warm, personal invitation email to the contemporary visual artist ${row.artist_name} inviting them to join the Global Artist Registry Foundation (GARF) — a Dutch non-profit foundation building a permanent 100-year archival registry to preserve artist legacies.
+    // Has GARF already written to this artist's gallery?
+    let galleryContacted = false;
+    if (primaryGallery) {
+      const { data: g } = await supabase
+        .from("galleries").select("id").ilike("name", primaryGallery).limit(1).maybeSingle();
+      if (g) {
+        const { data: go } = await supabase
+          .from("gallery_outreach").select("status").eq("gallery_id", g.id).maybeSingle();
+        galleryContacted = !!go && ["sent", "replied", "queued", "joined"].includes(String(go.status));
+      }
+    }
+
+    const lang = (language || "english").toLowerCase();
+    const langInstruction = lang === "english"
+      ? "Write in clear, professional English."
+      : `Write in ${language}. Use a natural, professional register for that language.`;
+
+    const prompt = `Write a warm, personal invitation email to the contemporary visual artist ${row.artist_name} inviting them to join the Global Artist Registry Foundation (GARF) — an independent Dutch non-profit foundation (stichting) registered in The Hague, building a permanent 100-year archival registry to preserve artist legacies. GARF has no commercial owners, sells nothing and brokers nothing.
 
 Context about the artist (use anything relevant, ignore blanks):
 - Country: ${row.country || "unknown"}
@@ -59,14 +78,21 @@ Context about the artist (use anything relevant, ignore blanks):
 - Representing galleries: ${galleries || "unknown"}
 - Bio: ${row.bio || "unknown"}
 
-Tone: respectful, concise (under 250 words), personal — reference something specific about their practice if the bio allows. Avoid generic flattery. Explain that GARF is non-commercial, free for founding artists, and serves as an authoritative, independent registry of works for posterity, scholarship, and provenance.
+${primaryGallery ? `Gallery: mention ${primaryGallery} naturally in the opening — ${galleryContacted
+  ? `say that we have also written to ${primaryGallery}, so the invitation does not arrive unannounced.`
+  : `say that we are approaching ${primaryGallery} as a Supporting Gallery of GARF, and that this invitation is addressed to the artist directly.`} Make clear that any documentation a gallery shares is only a COPY placed in the artist's own GARF archive — nothing is transferred, and the artist owns the content and can export it at any time.` : ""}
+
+Tone: respectful, concise (200–280 words), personal — reference something specific about their practice if the bio allows. Avoid generic flattery, exclamation marks and marketing superlatives. Explain that GARF is non-commercial, free for life as a Legacy Circle Artist, and serves as an authoritative, independent registry of works for posterity, scholarship and provenance.
+
+${langInstruction}
 
 End with:
-- Their personal invite code: ${code}
+- Their personal access code on its own line, exactly: ${code || "(no code on file — omit the code line)"}
 - Sign-up link: https://globalartistregistry.org
-- Signed by: ${sender_name || "The GARF Team"}
+${signature ? `- Then a short closing line, a blank line, and this signature block VERBATIM (do not translate or reformat):\n---\n${signature}\n---` : `- Signed by: ${sender_name || "Jan S. Kindem"}, Global Artist Registry Foundation`}
 
-Return ONLY the email body as plain text. Include a Subject line as the first line prefixed with "Subject: ".`;
+Return ONLY the email as plain text. First line must be the subject prefixed with "Subject: ", then a blank line, then the body.`;
+
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
