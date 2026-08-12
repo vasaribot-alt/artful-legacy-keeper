@@ -407,6 +407,42 @@ With kind regards,
     try { localStorage.setItem(SEL_KEY, JSON.stringify(selectedIds)); } catch { /* quota */ }
   }, [selectedIds]);
 
+  // Named saved batches (contacts + generated letters), stored locally.
+  const SAVED_BATCHES_KEY = "garf.outreach.savedBatches";
+  type SavedBatch = { id: string; name: string; createdAt: string; ids: string[]; results: BatchResult[] };
+  const [savedBatches, setSavedBatches] = useState<SavedBatch[]>(() =>
+    readStored<SavedBatch[]>(SAVED_BATCHES_KEY, [])
+  );
+  const [saveBatchOpen, setSaveBatchOpen] = useState(false);
+  const [savedListOpen, setSavedListOpen] = useState(false);
+  const [saveBatchName, setSaveBatchName] = useState("");
+
+  const persistSavedBatches = (next: SavedBatch[]) => {
+    setSavedBatches(next);
+    try { localStorage.setItem(SAVED_BATCHES_KEY, JSON.stringify(next)); } catch { /* quota */ }
+  };
+
+  const saveCurrentBatch = () => {
+    const name = saveBatchName.trim() || `Batch ${new Date().toLocaleString()}`;
+    persistSavedBatches([
+      { id: crypto.randomUUID(), name, createdAt: new Date().toISOString(), ids: selectedIds, results: batchResults },
+      ...savedBatches,
+    ]);
+    setSaveBatchName("");
+    setSaveBatchOpen(false);
+    toast.success(`Batch “${name}” saved`);
+  };
+
+  const openSavedBatch = (b: SavedBatch) => {
+    setSelectedIds(b.ids);
+    setBatchResults(b.results);
+    setSavedListOpen(false);
+    if (b.results.length > 0) setBatchOpen(true);
+    toast.success(`Opened “${b.name}”`);
+  };
+
+
+
 
   const openDraft = (t: Target) => {
     setDraftTarget(t);
@@ -1143,125 +1179,163 @@ With kind regards,
               </SelectContent>
             </Select>
           )}
-          <Button
-            variant="outline"
-            disabled={!!researching}
-            onClick={() => researchDecisionMakers(
-              filtered.filter(t => !t.decision_maker_research).slice(0, 10).map(t => t.id),
-              "batch"
-            )}
-          >
-            <UserSearch className="w-4 h-4 mr-1.5" />
-            {researching === "batch" ? "Researching…" : "Find decision makers (next 10)"}
-          </Button>
         </div>
 
         {/* Batch mailing bar */}
-        <div className="border border-border rounded-md px-3 py-2 flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-muted-foreground">Batch mailing —</span>
-          <Button size="sm" variant="outline" onClick={selectNextTen}>Select next 10</Button>
-          {batchResults.length > 0 && (
-            <>
-              <Button size="sm" variant="secondary" onClick={() => setBatchOpen(true)}>
-                Reopen last batch ({batchResults.length})
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => { setBatchResults([]); setBatchProgress(null); toast.success("Saved batch cleared"); }}
-              >
-                Discard saved batch
-              </Button>
-            </>
-          )}
+        <div className="border border-border rounded-md px-3 py-3 space-y-2">
+          {/* Row 1 — batch handling */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground mr-1">Batch mailing</span>
+            <Button size="sm" variant="outline" onClick={() => setSaveBatchOpen(true)} disabled={selectedIds.length === 0 && batchResults.length === 0}>
+              Save batch
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setSavedListOpen(true)}>
+              Open saved batch list{savedBatches.length ? ` (${savedBatches.length})` : ""}
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setTextsOpen(true)}>
+              Upload email text to preloaded letter list
+            </Button>
+            {selectedIds.length > 0 && (
+              <>
+                <Badge variant="secondary" className="ml-auto">{selectedIds.length} selected</Badge>
+                <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+                <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
+                  {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                  Generate {selectedIds.length} letters
+                </Button>
+              </>
+            )}
+          </div>
 
-          {selectedIds.length > 0 && (
-            <>
-              <Badge variant="secondary">{selectedIds.length} selected</Badge>
-              <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
-              <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
-                {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
-                {pickedTextId
-                  ? aiRewriteFromTemplate
-                    ? `Generate from saved text for ${selectedIds.length}`
-                    : `Apply saved text to ${selectedIds.length}`
-                  : `Generate ${selectedIds.length} letters`}
+          {/* Row 2 — letter choice */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="text-sm border border-border rounded-md px-3 h-9 flex items-center">
+              {selectedIds.length} contact{selectedIds.length === 1 ? "" : "s"} chosen
+            </div>
+            {emailTexts.length > 0 && (
+              <Select value={pickedTextId} onValueChange={pickEmailText}>
+                <SelectTrigger className="w-[280px] h-9 text-sm">
+                  <SelectValue placeholder="Choose letter from pre-loaded letters…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {emailTexts.map(t => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.name}{t.category ? ` — ${CATEGORY_LABELS[t.category as Category] || t.category}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {pickedTextId ? (
+              <>
+                <div className="text-sm border border-border rounded-md px-3 h-9 flex items-center max-w-[420px] truncate">
+                  {emailTexts.find(t => t.id === pickedTextId)?.name || "Letter chosen"}
+                </div>
+                <div className="flex items-center rounded-md border border-border overflow-hidden">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                    className="rounded-none h-8 px-2 text-[11px]"
+                    onClick={() => setAiRewriteFromTemplate(false)}
+                  >
+                    Verbatim
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                    className="rounded-none h-8 px-2 text-[11px]"
+                    onClick={() => setAiRewriteFromTemplate(true)}
+                  >
+                    AI rewrite
+                  </Button>
+                </div>
+                <Button size="sm" variant="ghost" onClick={() => setPickedTextId("")}>Clear letter</Button>
+              </>
+            ) : (
+              <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                <SelectTrigger className="w-[140px] h-9 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
+                    <SelectItem key={l} value={l}>{l}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {batchResults.length > 0 && (
+              <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
+                <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
               </Button>
-              <Button size="sm" variant="outline" onClick={applyTemplateToSelected} disabled={batchRunning || !hasTemplate}>
-                Use saved template for {selectedIds.length}
-              </Button>
-              <Button size="sm" variant="outline" onClick={applyCuratorLetterToSelected} disabled={batchRunning}>
-                Curator Partner letter for {selectedIds.length}
-              </Button>
-              <Button size="sm" variant="outline" onClick={syncToBrevo} disabled={syncing}>
+            )}
+            {selectedIds.length > 0 && (
+              <Button size="sm" variant="ghost" onClick={syncToBrevo} disabled={syncing}>
                 {syncing ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Upload className="w-3.5 h-3.5 mr-1" />}
                 Sync to Brevo
               </Button>
-              {emailTexts.length > 0 && (
-                <Select value={pickedTextId} onValueChange={pickEmailText}>
-                  <SelectTrigger className="w-[260px] h-8 text-xs">
-                    <SelectValue placeholder="Choose email text…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {emailTexts.map(t => (
-                      <SelectItem key={t.id} value={t.id}>
-                        {t.name}{t.category ? ` — ${CATEGORY_LABELS[t.category as Category] || t.category}` : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {!pickedTextId && (
-                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
-                  <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
-                      <SelectItem key={l} value={l}>{l}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-
-              {pickedTextId && (
-                <>
-                  <div className="flex items-center rounded-md border border-border overflow-hidden">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant={aiRewriteFromTemplate ? "ghost" : "default"}
-                      className="rounded-none h-7 px-2 text-[11px]"
-                      onClick={() => setAiRewriteFromTemplate(false)}
-                    >
-                      Verbatim
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant={aiRewriteFromTemplate ? "default" : "ghost"}
-                      className="rounded-none h-7 px-2 text-[11px]"
-                      onClick={() => setAiRewriteFromTemplate(true)}
-                    >
-                      AI rewrite
-                    </Button>
-                  </div>
-                  <Button size="sm" variant="ghost" onClick={() => setPickedTextId("")}>
-                    Clear text
-                  </Button>
-                </>
-              )}
-
-            </>
-
-          )}
-          {batchResults.length > 0 && (
-            <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
-              <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
-            </Button>
-          )}
-          <span className="text-[11px] text-muted-foreground ml-auto">
-            Letters are sent in-app from {senderEmail} — no Outlook drafts involved.
-          </span>
+            )}
+            <span className="text-[11px] text-muted-foreground ml-auto">
+              Letters are sent in-app from {senderEmail} — no Outlook drafts involved.
+            </span>
+          </div>
         </div>
+
+        {/* Save batch dialog */}
+        <Dialog open={saveBatchOpen} onOpenChange={setSaveBatchOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader><DialogTitle>Save batch</DialogTitle></DialogHeader>
+            <div className="space-y-2">
+              <Label>Name</Label>
+              <Input
+                autoComplete="off"
+                value={saveBatchName}
+                onChange={e => setSaveBatchName(e.target.value)}
+                placeholder="e.g. Norwegian corporate collections — round 1"
+              />
+              <p className="text-xs text-muted-foreground">
+                Saves {selectedIds.length} contact{selectedIds.length === 1 ? "" : "s"} and {batchResults.length} generated letter{batchResults.length === 1 ? "" : "s"}.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setSaveBatchOpen(false)}>Cancel</Button>
+              <Button onClick={saveCurrentBatch}>Save batch</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Saved batch list dialog */}
+        <Dialog open={savedListOpen} onOpenChange={setSavedListOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader><DialogTitle>Saved batches</DialogTitle></DialogHeader>
+            {savedBatches.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No saved batches yet. Select contacts and press “Save batch”.</p>
+            ) : (
+              <div className="divide-y border border-border rounded-md max-h-[60vh] overflow-y-auto">
+                {savedBatches.map(b => (
+                  <div key={b.id} className="flex items-center justify-between gap-3 p-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{b.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {b.ids.length} contacts · {b.results.length} letters · {new Date(b.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button size="sm" variant="outline" onClick={() => openSavedBatch(b)}>Open</Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => persistSavedBatches(savedBatches.filter(x => x.id !== b.id))}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
 
         {loading ? (
           <p className="text-muted-foreground text-sm">Loading…</p>
