@@ -13,7 +13,15 @@ const CATEGORY_GUIDANCE: Record<string, string> = {
   art_critics:
     "The recipient is an art critics' association. Frame GARF as an independent, non-commercial reference source for verified artist information, works, exhibitions, and provenance — a citable resource for critical writing.",
   galleries:
-    "The recipient is a gallery. Frame GARF as a neutral archival registry that complements (does not replace) gallery inventory tools — improving provenance, catalogue raisonné readiness, and long-term legacy for the artists they represent. Invite them to join as a Supporting Gallery of GARF.",
+    `The recipient is a gallery. Frame GARF as a neutral archival registry that complements (does not replace) gallery inventory tools — improving provenance, catalogue raisonné readiness, and long-term legacy for the artists they represent. Invite them to join as a Supporting Gallery of GARF.
+The email MUST include a clearly marked section headed "What we are asking — and what we are not asking" containing, in this order and with this meaning (you may keep the wording essentially as given):
+- We are asking you to share documentation on artworks that you have documented for each artist, so it can be added to that artist's list of works using our automated upload. We would also appreciate that you encourage your artists to keep their own records and preferably store them with GARF.
+- A short line noting that some points must be completely clear because they are easy to misread: we are not proposing to take over any function the gallery performs, and we are not asking them to hand anything over.
+Then these four bullets, kept verbatim:
+• Your records stay exactly where they are. Your database, your inventory system and your files remain untouched and fully under your control.
+• We ask only for a copy — a supplementary archival copy of the documentation relating to the artist's work — to be placed in the artist's own GARF archive.
+• Ownership does not move. The documentation and information in a GARF archive is owned by the artist, not by GARF and not by us. GARF provides the archive; the artist owns the content and can export or download it at any time.
+• GARF is not a marketplace, a dealer, an agent or a sales platform. It takes no commission and does not broker works. It is an archive.`,
   museums:
     "The recipient is a museum or museum association. Emphasise archival permanence (100-year plan), scholarly reliability, loan/exhibition history tracking, and the willingness-to-lend feature useful for exhibition planning.",
   universities:
