@@ -97,6 +97,8 @@ export type Database = {
           died: number | null
           email: string | null
           email_draft: string | null
+          email_sent_at: string | null
+          email_subject: string | null
           enriched_at: string | null
           enrichment_sources: Json | null
           enrichment_status: string | null
@@ -125,6 +127,8 @@ export type Database = {
           died?: number | null
           email?: string | null
           email_draft?: string | null
+          email_sent_at?: string | null
+          email_subject?: string | null
           enriched_at?: string | null
           enrichment_sources?: Json | null
           enrichment_status?: string | null
@@ -153,6 +157,8 @@ export type Database = {
           died?: number | null
           email?: string | null
           email_draft?: string | null
+          email_sent_at?: string | null
+          email_subject?: string | null
           enriched_at?: string | null
           enrichment_sources?: Json | null
           enrichment_status?: string | null
