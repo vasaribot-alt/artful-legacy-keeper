@@ -789,7 +789,7 @@ export default function ArtistInviteUpload() {
               <DialogHeader>
                 <DialogTitle>Invite draft — {draftOpen.artist_name}</DialogTitle>
                 <DialogDescription>
-                  Copy and send from your own email client. To: {draftOpen.email || "(no email on file)"}
+                  Subject: {draftOpen.email_subject || "(none)"} · To: {draftOpen.email || "(no email on file)"}
                 </DialogDescription>
               </DialogHeader>
               <Textarea value={draftOpen.email_draft || ""} readOnly rows={18} className="font-mono text-xs" />
@@ -797,14 +797,94 @@ export default function ArtistInviteUpload() {
                 <Button variant="outline" onClick={() => handleCopy(draftOpen.email_draft || "", "Draft copied")}>
                   <Copy className="h-4 w-4 mr-1" /> Copy
                 </Button>
-                <Button onClick={() => handleGenerateDraft(draftOpen)} disabled={drafting.has(draftOpen.id)}>
+                <Button variant="outline" onClick={() => handleGenerateDraft(draftOpen)} disabled={drafting.has(draftOpen.id)}>
                   <Sparkles className="h-4 w-4 mr-1" /> Regenerate
+                </Button>
+                <Button
+                  onClick={() => sendSingle(draftOpen)}
+                  disabled={batchSending || !draftOpen.email || !draftOpen.email_draft}
+                >
+                  {batchSending ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Send className="h-4 w-4 mr-1" />}
+                  Send now
                 </Button>
               </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Batch letters dialog */}
+      <Dialog open={batchOpen} onOpenChange={(o) => !batchRunning && !batchSending && setBatchOpen(o)}>
+        <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Invitation letters to artists</DialogTitle>
+            <DialogDescription>
+              Letters go to artists with an email address, include their personal access code and mention their gallery.
+              Sent today: {sentToday} / {DAILY_SEND_CAP}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-wrap gap-3 items-end">
+            <div>
+              <Label className="text-xs">How many</Label>
+              <Input
+                type="number" min={1} max={50} value={batchSize}
+                onChange={(e) => setBatchSize(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))}
+                className="w-24 mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Language</Label>
+              <Select value={batchLanguage} onValueChange={setBatchLanguage}>
+                <SelectTrigger className="w-40 mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={generateBatch} disabled={batchRunning || pendingWithEmail.length === 0}>
+              {batchRunning ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1" />}
+              Generate
+            </Button>
+            <span className="text-xs text-muted-foreground">{batchProgress}</span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+            {batchResults.map((r) => (
+              <div key={r.id} className="border border-border rounded-sm p-3 space-y-2">
+                <div className="flex justify-between gap-2 flex-wrap">
+                  <span className="text-sm font-medium">{r.artist_name}</span>
+                  <span className="text-xs text-muted-foreground">{r.email || "(no email)"}</span>
+                </div>
+                {r.error ? (
+                  <p className="text-xs text-destructive">{r.error}</p>
+                ) : (
+                  <>
+                    <p className="text-xs text-muted-foreground">Subject: {r.subject || "(none)"}</p>
+                    <Textarea
+                      value={r.body}
+                      onChange={(e) => setBatchResults((prev) => prev.map((p) => p.id === r.id ? { ...p, body: e.target.value } : p))}
+                      rows={10}
+                      className="font-mono text-xs"
+                    />
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-2 justify-end border-t border-border pt-3">
+            <Button variant="outline" onClick={() => setBatchOpen(false)} disabled={batchRunning || batchSending}>
+              Close
+            </Button>
+            <Button onClick={sendBatch} disabled={batchSending || batchRunning || batchResults.filter((r) => r.body).length === 0}>
+              {batchSending ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Send className="h-4 w-4 mr-1" />}
+              Send {batchResults.filter((r) => r.body).length} now
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
