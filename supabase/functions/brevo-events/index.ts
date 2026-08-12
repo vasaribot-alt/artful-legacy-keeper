@@ -26,9 +26,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { status: 200 });
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
-  const secret = Deno.env.get("BREVO_WEBHOOK_SECRET");
+  const accepted = [Deno.env.get("BREVO_WEBHOOK_SECRET"), Deno.env.get("BREVO_EVENTS_TOKEN")].filter(Boolean) as string[];
   const token = new URL(req.url).searchParams.get("token");
-  if (!secret || token !== secret) {
+  if (accepted.length === 0 || !token || !accepted.includes(token)) {
     console.error("brevo-events: rejected request with bad token");
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
