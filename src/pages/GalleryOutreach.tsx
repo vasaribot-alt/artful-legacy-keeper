@@ -668,6 +668,7 @@ const GalleryOutreach = () => {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
         campaignTag: "gallery_outreach",
+        attachmentDocumentIds: attachIds,
         letters: ready.map((r) => ({
           to: r.email,
           subject: r.subject || "",
