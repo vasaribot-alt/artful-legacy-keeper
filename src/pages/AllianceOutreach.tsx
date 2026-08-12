@@ -271,7 +271,7 @@ With kind regards,
   const applySavedTextToDraft = (id: string) => {
     const tpl = emailTexts.find(x => x.id === id);
     if (!tpl || !draftTarget) return;
-    setPickedTextId(id);
+    pickEmailText(id);
     setDraftSubject(fillTemplate(draftTarget, tpl.subject || ""));
     setDraftBody(fillTemplate(draftTarget, tpl.body || ""));
     toast.success(`“${tpl.name}” applied — edit freely, then Save draft`);
@@ -280,7 +280,7 @@ With kind regards,
   const applySavedTextToSelected = async (id: string) => {
     const tpl = emailTexts.find(x => x.id === id);
     if (!tpl) return;
-    setPickedTextId(id);
+    pickEmailText(id);
     const list = selectedIds
       .map(sid => targets.find(t => t.id === sid))
       .filter(Boolean) as Target[];
@@ -1196,7 +1196,7 @@ With kind regards,
                 Sync to Brevo
               </Button>
               {emailTexts.length > 0 && (
-                <Select value={pickedTextId} onValueChange={(v) => setPickedTextId(v)}>
+                <Select value={pickedTextId} onValueChange={pickEmailText}>
                   <SelectTrigger className="w-[260px] h-8 text-xs">
                     <SelectValue placeholder="Choose email text…" />
                   </SelectTrigger>
@@ -1441,7 +1441,7 @@ With kind regards,
             <div className="rounded-md border border-border p-3 space-y-2">
               <Label className="text-xs">Email text used for this batch</Label>
               <div className="flex flex-wrap items-center gap-2">
-                <Select value={pickedTextId} onValueChange={setPickedTextId}>
+                <Select value={pickedTextId} onValueChange={pickEmailText}>
                   <SelectTrigger className="w-[280px] h-8 text-xs">
                     <SelectValue placeholder={emailTexts.length ? "Choose saved email text…" : "No saved email texts yet"} />
                   </SelectTrigger>
