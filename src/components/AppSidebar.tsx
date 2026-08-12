@@ -1,4 +1,4 @@
-import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, FolderOpen, Camera, UserPlus, Building2, TrendingUp, Network, ShieldCheck } from "lucide-react";
+import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, FolderOpen, Camera, UserPlus, Building2, TrendingUp, Network, ShieldCheck, Mail } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +30,7 @@ const getNavItems = (role: AppRole) => {
       { title: "Fundraising", url: "/foundation/fundraising", icon: TrendingUp },
       { title: "Global Alliance", url: "/foundation/alliance", icon: Network },
       { title: "Alliance Outreach", url: "/foundation/alliance-outreach", icon: Network },
+      { title: "Email Log", url: "/foundation/email-log", icon: Mail },
       { title: "Registrar Registry", url: "/foundation/registrars", icon: ShieldCheck },
       { title: "Documents", url: "/foundation/documents", icon: FolderOpen },
     ];

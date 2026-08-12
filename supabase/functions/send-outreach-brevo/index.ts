@@ -139,17 +139,59 @@ Deno.serve(async (req) => {
           const errBody = await res.text();
           console.error(`Brevo send failed for ${letter.to} [${res.status}]: ${errBody}`);
           failures.push({ to: letter.to, error: `Brevo API ${res.status}: ${errBody.slice(0, 200)}` });
+          await adminClient.from("email_send_log").insert({
+            message_id: `${campaignTag}-${letter.to}-${Date.now()}`,
+            template_name: campaignTag,
+            recipient_email: letter.to,
+            status: "failed",
+            error_message: `Brevo API ${res.status}: ${errBody.slice(0, 500)}`,
+            metadata: {
+              subject: letter.subject || "",
+              recipient_name: letter.toName || null,
+              from_name: fromName,
+              from_email: SENDER_EMAIL,
+              attachments: attachment.map((a) => a.name),
+              body_html: letter.bodyHtml.slice(0, 20000),
+              sent_by: user.id,
+              provider: "brevo",
+            },
+          });
           continue;
         }
 
         const result = await res.json();
         console.log(`Brevo send OK for ${letter.to}: messageId=${result?.messageId}`);
         sent.push(letter.to);
+        await adminClient.from("email_send_log").insert({
+          message_id: String(result?.messageId || `${campaignTag}-${letter.to}-${Date.now()}`),
+          template_name: campaignTag,
+          recipient_email: letter.to,
+          status: "sent",
+          metadata: {
+            subject: letter.subject || "",
+            recipient_name: letter.toName || null,
+            from_name: fromName,
+            from_email: SENDER_EMAIL,
+            attachments: attachment.map((a) => a.name),
+            body_html: letter.bodyHtml.slice(0, 20000),
+            sent_by: user.id,
+            provider: "brevo",
+          },
+        });
       } catch (e) {
         const msg = e instanceof Error ? e.message : "Send failed";
         console.error("Brevo send error for", letter.to, msg);
         failures.push({ to: letter.to, error: msg });
+        await adminClient.from("email_send_log").insert({
+          message_id: `${campaignTag}-${letter.to}-${Date.now()}`,
+          template_name: campaignTag,
+          recipient_email: letter.to,
+          status: "failed",
+          error_message: msg.slice(0, 500),
+          metadata: { subject: letter.subject || "", provider: "brevo", sent_by: user.id },
+        });
       }
+
     }
 
     return new Response(
