@@ -230,10 +230,12 @@ Deno.serve(async (req) => {
         console.log(`Brevo send OK for ${letter.to}: messageId=${result?.messageId}`);
         sent.push(letter.to);
         await adminClient.from("email_send_log").insert({
-          message_id: String(result?.messageId || `${campaignTag}-${letter.to}-${Date.now()}`),
+          message_id: String(result?.messageId || `${campaignTag}-${letter.to}-${Date.now()}`)
+            .replace(/^<|>$/g, "").trim(),
           template_name: campaignTag,
           recipient_email: letter.to,
           status: "sent",
+
           metadata: {
             subject: letter.subject || "",
             recipient_name: letter.toName || null,
