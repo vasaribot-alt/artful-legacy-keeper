@@ -66,6 +66,9 @@ interface SavedInvite {
   bio: string | null;
   ranking: string | null;
   email_draft: string | null;
+  email_subject: string | null;
+  email_sent_at: string | null;
+
   enrichment_status: string | null;
   enriched_at: string | null;
   enrichment_sources: { urls?: string[]; used_firecrawl?: boolean } | null;
