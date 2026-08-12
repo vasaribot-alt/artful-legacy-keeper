@@ -130,6 +130,7 @@ Deno.serve(async (req) => {
             subject: letter.subject || "",
             htmlContent: brandedHtml,
             ...(letter.bodyText ? { textContent: letter.bodyText } : {}),
+            ...(attachment.length > 0 ? { attachment } : {}),
             tags: [campaignTag],
           }),
         });
