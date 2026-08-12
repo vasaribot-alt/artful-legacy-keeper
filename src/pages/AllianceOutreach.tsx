@@ -1166,9 +1166,9 @@ With kind regards,
                 Sync to Brevo
               </Button>
               {emailTexts.length > 0 && (
-                <Select onValueChange={(v) => applySavedTextToSelected(v)}>
+                <Select value={pickedTextId} onValueChange={(v) => setPickedTextId(v)}>
                   <SelectTrigger className="w-[260px] h-8 text-xs">
-                    <SelectValue placeholder={`Use email text for ${selectedIds.length}…`} />
+                    <SelectValue placeholder="Choose email text…" />
                   </SelectTrigger>
                   <SelectContent>
                     {emailTexts.map(t => (
@@ -1179,28 +1179,42 @@ With kind regards,
                   </SelectContent>
                 </Select>
               )}
+              <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
+                    <SelectItem key={l} value={l}>{l}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {pickedTextId && (
-                <div className="flex items-center rounded-md border border-border overflow-hidden">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={aiRewriteFromTemplate ? "ghost" : "default"}
-                    className="rounded-none h-7 px-2 text-[11px]"
-                    onClick={() => setAiRewriteFromTemplate(false)}
-                  >
-                    Verbatim
+                <>
+                  <div className="flex items-center rounded-md border border-border overflow-hidden">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                      className="rounded-none h-7 px-2 text-[11px]"
+                      onClick={() => setAiRewriteFromTemplate(false)}
+                    >
+                      Verbatim
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                      className="rounded-none h-7 px-2 text-[11px]"
+                      onClick={() => setAiRewriteFromTemplate(true)}
+                    >
+                      AI rewrite
+                    </Button>
+                  </div>
+                  <Button size="sm" variant="ghost" onClick={() => setPickedTextId("")}>
+                    Clear text
                   </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={aiRewriteFromTemplate ? "default" : "ghost"}
-                    className="rounded-none h-7 px-2 text-[11px]"
-                    onClick={() => setAiRewriteFromTemplate(true)}
-                  >
-                    AI rewrite
-                  </Button>
-                </div>
+                </>
               )}
+
             </>
 
           )}
