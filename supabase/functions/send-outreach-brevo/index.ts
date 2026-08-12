@@ -175,17 +175,21 @@ Deno.serve(async (req) => {
     const sent: string[] = [];
     const failures: { to: string; error: string }[] = [];
 
+    const gwHeaders = {
+      "Authorization": `Bearer ${lovableApiKey}`,
+      "X-Connection-Api-Key": brevoApiKey,
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    };
+    const listId = await resolveOutreachListId(gwHeaders);
+
     for (const letter of letters) {
       try {
+        await upsertContact(gwHeaders, listId, letter.to, letter.toName, campaignTag);
         const brandedHtml = outreachEmailHtml(letter.bodyHtml);
         const res = await fetch(`${GATEWAY_URL}/smtp/email`, {
           method: "POST",
-          headers: {
-            "Authorization": `Bearer ${lovableApiKey}`,
-            "X-Connection-Api-Key": brevoApiKey,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
+          headers: gwHeaders,
           body: JSON.stringify({
             sender: { name: fromName, email: SENDER_EMAIL },
             to: [{ email: letter.to, name: letter.toName || undefined }],
@@ -196,6 +200,7 @@ Deno.serve(async (req) => {
             tags: [campaignTag],
           }),
         });
+
 
         if (!res.ok) {
           const errBody = await res.text();
