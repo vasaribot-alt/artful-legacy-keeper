@@ -18,7 +18,18 @@ interface LogRow {
   error_message: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;
+  delivered_at: string | null;
+  first_opened_at: string | null;
+  last_opened_at: string | null;
+  open_count: number | null;
+  first_clicked_at: string | null;
+  click_count: number | null;
+  bounced_at: string | null;
+  unsubscribed_at: string | null;
+  last_event: string | null;
+  last_event_at: string | null;
 }
+
 
 type Preset = "24h" | "7d" | "30d" | "custom";
 const PAGE_SIZE = 50;
