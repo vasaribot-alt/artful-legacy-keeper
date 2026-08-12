@@ -131,6 +131,18 @@ export default function ArtistInviteUpload() {
   const [selectedSheets, setSelectedSheets] = useState<Set<string>>(new Set());
   const [workbookBinary, setWorkbookBinary] = useState<string | ArrayBuffer | null>(null);
 
+  // Batch letters to artists we have an email address for
+  const [batchOpen, setBatchOpen] = useState(false);
+  const [batchSize, setBatchSize] = useState(10);
+  const [batchLanguage, setBatchLanguage] = useState("English");
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchSending, setBatchSending] = useState(false);
+  const [batchProgress, setBatchProgress] = useState("");
+  const [batchResults, setBatchResults] = useState<
+    { id: string; artist_name: string; email: string; subject: string; body: string; error?: string }[]
+  >([]);
+
+
   const fetchSaved = async () => {
     const { data } = await supabase
       .from("artist_invites")
