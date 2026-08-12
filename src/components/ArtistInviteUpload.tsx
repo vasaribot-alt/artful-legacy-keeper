@@ -356,6 +356,128 @@ export default function ArtistInviteUpload() {
     }
   };
 
+  const isSameDay = (iso: string | null) =>
+    !!iso && new Date(iso).toDateString() === new Date().toDateString();
+  const sentToday = saved.filter((s) => isSameDay(s.email_sent_at)).length;
+  const withEmail = saved.filter((s) => (s.email || "").includes("@"));
+  const pendingWithEmail = withEmail.filter((s) => !s.email_sent_at && s.status !== "sent");
+
+  const readFunctionError = async (error: any, data: any) => {
+    let payload = data;
+    try {
+      const res = error?.context as Response | undefined;
+      if (res && typeof res.text === "function") {
+        const raw = await res.clone().text();
+        try { payload = JSON.parse(raw); } catch { payload = { error: raw || undefined }; }
+      }
+    } catch { /* keep original */ }
+    return payload;
+  };
+
+  const generateBatch = async () => {
+    const targets = pendingWithEmail.slice(0, Math.max(1, batchSize));
+    if (!targets.length) { toast.error("No artists with an email address left to write to."); return; }
+    setBatchRunning(true);
+    setBatchResults([]);
+    const results: typeof batchResults = [];
+    for (let i = 0; i < targets.length; i++) {
+      const row = targets[i];
+      setBatchProgress(`Drafting ${i + 1} of ${targets.length} — ${row.artist_name}`);
+      try {
+        const { data, error } = await supabase.functions.invoke("generate-invite-draft", {
+          body: { invite_id: row.id, language: batchLanguage },
+        });
+        if (error || !data?.success) throw new Error(error?.message || data?.error || "Failed");
+        results.push({
+          id: row.id, artist_name: row.artist_name, email: row.email || "",
+          subject: data.subject || "", body: data.body || data.draft || "",
+        });
+      } catch (e: any) {
+        results.push({
+          id: row.id, artist_name: row.artist_name, email: row.email || "",
+          subject: "", body: "", error: e.message || "Draft failed",
+        });
+      }
+      setBatchResults([...results]);
+    }
+    setBatchProgress("");
+    setBatchRunning(false);
+    await fetchSaved();
+    toast.success(`Drafted ${results.filter((r) => r.body).length} of ${targets.length} letters`);
+  };
+
+  const markSent = async (ids: string[]) => {
+    const now = new Date().toISOString();
+    await supabase.from("artist_invites").update({ status: "sent", email_sent_at: now }).in("id", ids);
+    await fetchSaved();
+  };
+
+  const sendLetters = async (
+    letters: { id: string; artist_name: string; email: string; subject: string; body: string }[],
+  ) => {
+    const ready = letters.filter((l) => l.body && l.email.includes("@"));
+    if (!ready.length) { toast.error("No letters with an email address to send."); return false; }
+    const remaining = Math.max(0, DAILY_SEND_CAP - sentToday);
+    if (remaining === 0) {
+      toast.error(`Daily limit reached — ${DAILY_SEND_CAP} letters already sent today. Continue tomorrow to protect deliverability.`, { duration: 10000 });
+      return false;
+    }
+    if (ready.length > remaining) {
+      toast.error(`Only ${remaining} letter${remaining === 1 ? "" : "s"} left within today's limit of ${DAILY_SEND_CAP}.`, { duration: 10000 });
+      return false;
+    }
+    if (!window.confirm(`Send ${ready.length} invitation${ready.length === 1 ? "" : "s"} now from outreach@globalartistregistry.org?`)) return false;
+
+    const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
+      body: {
+        fromName: FROM_NAME,
+        campaignTag: "artist_invites",
+        letters: ready.map((l) => ({
+          to: l.email,
+          toName: l.artist_name,
+          subject: l.subject || "An invitation from the Global Artist Registry Foundation",
+          bodyHtml: markdownToHtml(l.body),
+          bodyText: markdownToPlainText(l.body),
+        })),
+      },
+    });
+    const payload = error ? await readFunctionError(error, data) : (data as any);
+    if (error || !payload?.sent) {
+      const detail = payload?.error
+        || (Array.isArray(payload?.failures) && payload.failures.length
+          ? payload.failures.map((f: { to: string; error: string }) => `${f.to}: ${f.error}`).join(" · ")
+          : null)
+        || error?.message || "Could not send the letters";
+      toast.error(detail, { duration: 12000 });
+      console.error("send-outreach-brevo failed", payload || error);
+      return false;
+    }
+    const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
+    const sentIds = ready.filter((l) => sentAddresses.size === 0 || sentAddresses.has(l.email)).map((l) => l.id);
+    if (sentIds.length) await markSent(sentIds);
+    toast.success(`${sentIds.length} invitation${sentIds.length === 1 ? "" : "s"} sent.`);
+    return true;
+  };
+
+  const sendBatch = async () => {
+    setBatchSending(true);
+    const ok = await sendLetters(batchResults.filter((r) => r.body));
+    setBatchSending(false);
+    if (ok) { setBatchResults([]); setBatchOpen(false); }
+  };
+
+  const sendSingle = async (row: SavedInvite) => {
+    if (!row.email || !row.email_draft) { toast.error("Generate a draft and add an email first."); return; }
+    setBatchSending(true);
+    const ok = await sendLetters([{
+      id: row.id, artist_name: row.artist_name, email: row.email,
+      subject: row.email_subject || "", body: row.email_draft,
+    }]);
+    setBatchSending(false);
+    if (ok) setDraftOpen(null);
+  };
+
+
   const handleCopy = (text: string, label = "Copied") => {
     navigator.clipboard.writeText(text);
     toast.success(label);
