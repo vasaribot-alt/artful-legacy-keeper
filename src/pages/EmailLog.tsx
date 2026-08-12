@@ -135,6 +135,18 @@ export default function EmailLog() {
   const pageRows = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 
+  const [enabling, setEnabling] = useState(false);
+  const enableTracking = async () => {
+    setEnabling(true);
+    const { data, error } = await supabase.functions.invoke("brevo-register-webhook");
+    setEnabling(false);
+    if (error) {
+      toast.error("Could not switch on read tracking. Check the Brevo connection.");
+      return;
+    }
+    toast.success((data as any)?.updated ? "Read tracking refreshed." : "Read tracking is now switched on.");
+  };
+
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
@@ -142,13 +154,20 @@ export default function EmailLog() {
           <div>
             <h1 className="text-2xl font-serif">Email log</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Every letter sent from the app, including outreach batches. Click a row to read the letter that went out.
+              Every letter sent from the app, including outreach batches. Click a row to read the letter that went out —
+              opens and link clicks appear here once tracking is switched on.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-            <RefreshCw className="h-4 w-4 mr-2" /> Refresh
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={enableTracking} disabled={enabling}>
+              {enabling ? "Switching on…" : "Enable read tracking"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+              <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+            </Button>
+          </div>
         </div>
+
 
         {/* Time range */}
         <div className="flex flex-wrap items-center gap-2">
