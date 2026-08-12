@@ -130,12 +130,19 @@ Deno.serve(async (req) => {
       : `Address the recipient formally (e.g. "Dear colleagues," or "To the team at ${name},")`;
 
     const lang = (language || "english").toLowerCase();
-    const langInstruction = lang === "english"
-      ? "Write in clear, professional English."
-      : `Write in ${language}. Use natural, professional register for that language.`;
+    const langInstruction = template_body
+      ? "Write in the same language as the saved email text below — do not translate it."
+      : (lang === "english"
+        ? "Write in clear, professional English."
+        : `Write in ${language}. Use natural, professional register for that language.`);
 
     const templateInstruction = template_body
-      ? `Use the following saved email text as the base. Preserve its core message, structure, tone, and any specific phrases or facts, but rewrite it naturally for this recipient and language. Do not invent facts that are not in the saved text or recipient details. Keep roughly the same length.
+      ? `Use the following saved email text as the base and stay as close to it as possible — this is a rewrite, not a new letter.
+STRICT RULES for the saved text:
+- Write the email in the SAME LANGUAGE as the saved text. Never translate it into another language, and ignore any language instruction that conflicts with the saved text's own language.
+- Keep the saved wording, sentence order, paragraph structure and terminology essentially verbatim. Only adapt the salutation and the few recipient-specific details (organisation name, contact person, country).
+- Do not add, remove or reorder arguments, and do not add facts that are not in the saved text.
+- Keep the same length.
 
 Saved subject: ${template_subject || "(none — derive a concise subject from the body)"}
 Saved body:
