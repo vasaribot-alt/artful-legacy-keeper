@@ -178,7 +178,7 @@ ${templateInstruction}
 Instructions:
 - ${salutation}
 - ${langInstruction}
-- Length: 180–260 words in the body.
+- Length: ${category === "galleries" ? "300–420 words in the body, so the clarity section fits in full" : "180–260 words in the body"}.
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
 - Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) a clear, low-commitment ask (a short introductory call or written reply), (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
