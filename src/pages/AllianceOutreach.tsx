@@ -238,6 +238,36 @@ With kind regards,
     toast.success("Template applied — edit freely, then Save draft");
   };
 
+  // Detect the language a saved email text is written in, so picking a
+  // Norwegian/Danish/Swedish/German letter does not silently get translated
+  // into English by the AI rewrite step.
+  const detectTextLanguage = (text: string): string | null => {
+    const t = ` ${(text || "").toLowerCase()} `;
+    const has = (words: string[]) => words.some(w => t.includes(` ${w} `) || t.includes(` ${w},`) || t.includes(` ${w}.`));
+    if (has(["og", "ikke", "vi", "hilsen", "kunstsamling", "stiftelse", "være", "kjære"])) {
+      if (t.includes("ø") || t.includes("å")) {
+        if (has(["mvh", "vennlig", "kunstnere", "også", "være"])) return "Norwegian";
+        return "Norwegian";
+      }
+      if (t.includes("ä") || t.includes("ö")) return "Swedish";
+    }
+    if (has(["und", "der", "wir", "nicht", "sehr", "freundlichen"])) return "German";
+    if (has(["en", "het", "wij", "niet", "vriendelijke"])) return "Dutch";
+    if (has(["et", "nous", "pas", "cordialement"])) return "French";
+    return null;
+  };
+
+  // Picking a saved text also aligns the language selector with that text.
+  const pickEmailText = (id: string) => {
+    setPickedTextId(id);
+    const tpl = emailTexts.find(x => x.id === id);
+    const lang = tpl ? detectTextLanguage(`${tpl.name} ${tpl.body}`) : null;
+    if (lang) {
+      setDraftLanguage(lang);
+      toast.info(`Language set to ${lang} to match “${tpl?.name}”`);
+    }
+  };
+
   const applySavedTextToDraft = (id: string) => {
     const tpl = emailTexts.find(x => x.id === id);
     if (!tpl || !draftTarget) return;
