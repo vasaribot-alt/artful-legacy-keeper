@@ -289,6 +289,20 @@ export default function EmailLog() {
               <div>To: {selected?.recipient_email}</div>
               <div>From: {String((selected?.metadata as any)?.from_email || "—")}</div>
               <div>Sent: {selected ? new Date(selected.created_at).toLocaleString() : ""}</div>
+              {selected?.delivered_at && <div>Delivered: {new Date(selected.delivered_at).toLocaleString()}</div>}
+              <div>
+                Opened: {selected?.first_opened_at
+                  ? `${new Date(selected.first_opened_at).toLocaleString()}${selected.open_count && selected.open_count > 1 ? ` (${selected.open_count} times, last ${new Date(selected.last_opened_at || selected.first_opened_at).toLocaleString()})` : ""}`
+                  : "not yet registered"}
+              </div>
+              <div>
+                Clicked a link: {selected?.first_clicked_at
+                  ? `${new Date(selected.first_clicked_at).toLocaleString()}${selected.click_count && selected.click_count > 1 ? ` (${selected.click_count} times)` : ""}`
+                  : "no"}
+              </div>
+              {selected?.bounced_at && <div className="text-destructive">Bounced: {new Date(selected.bounced_at).toLocaleString()}</div>}
+              {selected?.unsubscribed_at && <div>Unsubscribed: {new Date(selected.unsubscribed_at).toLocaleString()}</div>}
+
               {Array.isArray((selected?.metadata as any)?.attachments) && ((selected?.metadata as any).attachments as string[]).length > 0 && (
                 <div>Attachments: {((selected?.metadata as any).attachments as string[]).join(", ")}</div>
               )}
