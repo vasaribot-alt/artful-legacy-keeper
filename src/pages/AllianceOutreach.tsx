@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
-import { AlertTriangle, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, Upload, UserSearch } from "lucide-react";
+import { AlertTriangle, ChevronDown, ChevronUp, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, Upload, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
 const nameKey = (s: string) =>
@@ -124,6 +124,8 @@ export default function AllianceOutreach() {
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [tagFilter, setTagFilter] = useState<string>("all");
   const [researching, setResearching] = useState<string | null>(null);
+  const [expandedIds, setExpandedIds] = useState<string[]>([]);
+
   const [addOpen, setAddOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
@@ -1209,14 +1211,17 @@ With kind regards,
                   </SelectContent>
                 </Select>
               )}
-              <Select value={draftLanguage} onValueChange={setDraftLanguage}>
-                <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
-                    <SelectItem key={l} value={l}>{l}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {!pickedTextId && (
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+
               {pickedTextId && (
                 <>
                   <div className="flex items-center rounded-md border border-border overflow-hidden">
@@ -1263,33 +1268,66 @@ With kind regards,
         ) : filtered.length === 0 ? (
           <p className="text-muted-foreground text-sm">No outreach targets match the current filters.</p>
         ) : (
-          <div className="space-y-3">
-            {filtered.map(t => (
-              <div key={t.id} className="border border-border rounded-lg p-4 space-y-3">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0 flex items-start gap-3">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{filtered.length} target{filtered.length !== 1 ? "s" : ""}</span>
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500" /> complete</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> 1 missing</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> 2+ missing</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs"
+                  onClick={() =>
+                    setExpandedIds(expandedIds.length ? [] : filtered.map(f => f.id))
+                  }
+                >
+                  {expandedIds.length ? "Collapse all" : "Expand all"}
+                </Button>
+              </div>
+            </div>
+            {filtered.map(t => {
+              const missing = [t.contact_person, t.contact_title, t.contact_email].filter(v => !v || !String(v).trim()).length;
+              const dotClass = missing === 0 ? "bg-emerald-500" : missing === 1 ? "bg-amber-500" : "bg-red-500";
+              const expanded = expandedIds.includes(t.id);
+              return (
+              <div key={t.id} className="border border-border rounded-lg px-3 py-2.5 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0 flex items-center gap-3">
                     <input
                       type="checkbox"
-                      className="mt-1"
                       checked={selectedIds.includes(t.id)}
                       onChange={() => toggleSelectOne(t.id)}
                       aria-label={`Select ${t.name} for batch mailing`}
                     />
-                    <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-medium">{t.name}</h3>
-                      <Badge variant="outline">{CATEGORY_LABELS[t.category]}</Badge>
-                      <Badge variant={STATUS_VARIANT[t.status]}>{STATUS_LABELS[t.status]}</Badge>
-                      {t.tag && <Badge variant="secondary">{TAG_LABELS[t.tag] || t.tag}</Badge>}
-                    </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {t.country || "—"}
-                      {t.contact_person && <> · {t.contact_person}</>}
-                      {t.last_contacted_at && <> · last contacted {new Date(t.last_contacted_at).toLocaleDateString()}</>}
-                    </div>
-                    </div>
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full shrink-0 ${dotClass}`}
+                      title={missing === 0 ? "Name, title and email present" : `${missing} field(s) missing`}
+                    />
+                    <button
+                      type="button"
+                      className="min-w-0 text-left"
+                      onClick={() =>
+                        setExpandedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])
+                      }
+                    >
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-medium truncate">{t.name}</h3>
+                        <Badge variant="outline">{CATEGORY_LABELS[t.category]}</Badge>
+                        <Badge variant={STATUS_VARIANT[t.status]}>{STATUS_LABELS[t.status]}</Badge>
+                        {t.tag && <Badge variant="secondary">{TAG_LABELS[t.tag] || t.tag}</Badge>}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-0.5 truncate">
+                        {t.country || "—"}
+                        {t.contact_person && <> · {t.contact_person}</>}
+                        {t.contact_title && <> · {t.contact_title}</>}
+                        {t.contact_email && <> · {t.contact_email}</>}
+                        {t.last_contacted_at && <> · last contacted {new Date(t.last_contacted_at).toLocaleDateString()}</>}
+                      </div>
+                    </button>
                   </div>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-2 flex-wrap items-center">
                     {t.contact_email && (
                       <Button asChild size="sm" variant="outline">
                         <a href={`mailto:${t.contact_email}`}><Mail className="w-3.5 h-3.5 mr-1.5" />Email</a>
@@ -1319,9 +1357,21 @@ With kind regards,
                     <Button size="sm" variant="ghost" onClick={() => remove(t.id)}>
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      aria-label={expanded ? "Collapse" : "Expand"}
+                      onClick={() =>
+                        setExpandedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])
+                      }
+                    >
+                      {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </Button>
                   </div>
                 </div>
 
+                {expanded && (
+                  <>
                 {t.decision_maker_research && (
                   <div className="rounded-md bg-muted/50 p-3 text-sm whitespace-pre-wrap">
                     {t.decision_maker_research}
@@ -1394,9 +1444,13 @@ With kind regards,
                     />
                   </div>
                 </div>
+                  </>
+                )}
               </div>
-            ))}
+              );
+            })}
           </div>
+
         )}
       </div>
 
