@@ -1211,14 +1211,17 @@ With kind regards,
                   </SelectContent>
                 </Select>
               )}
-              <Select value={draftLanguage} onValueChange={setDraftLanguage}>
-                <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
-                    <SelectItem key={l} value={l}>{l}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {!pickedTextId && (
+                <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                  <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
+                      <SelectItem key={l} value={l}>{l}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+
               {pickedTextId && (
                 <>
                   <div className="flex items-center rounded-md border border-border overflow-hidden">
