@@ -13,6 +13,68 @@ type Letter = {
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/brevo";
 const SENDER_EMAIL = "outreach@globalartistregistry.org";
 const SENDER_NAME_DEFAULT = "Global Artist Registry Foundation";
+const CONTACT_LIST_NAME = "GARF Outreach";
+
+// Find (or create) the Brevo list every outreach recipient is added to,
+// so Brevo's own statistics and segmentation cover these sends too.
+async function resolveOutreachListId(gwHeaders: Record<string, string>): Promise<number | null> {
+  try {
+    const res = await fetch(`${GATEWAY_URL}/contacts/lists?limit=50&offset=0`, { headers: gwHeaders });
+    if (res.ok) {
+      const body = await res.json();
+      const existing = (body?.lists || []).find((l: { id: number; name: string }) => l.name === CONTACT_LIST_NAME);
+      if (existing?.id) return existing.id;
+    } else {
+      console.error(`Brevo list fetch failed [${res.status}]: ${await res.text()}`);
+    }
+    const created = await fetch(`${GATEWAY_URL}/contacts/lists`, {
+      method: "POST",
+      headers: gwHeaders,
+      body: JSON.stringify({ name: CONTACT_LIST_NAME, folderId: 1 }),
+    });
+    if (!created.ok) {
+      console.error(`Brevo list create failed [${created.status}]: ${await created.text()}`);
+      return null;
+    }
+    const body = await created.json();
+    return body?.id ?? null;
+  } catch (e) {
+    console.error("Brevo list resolve error:", e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+// Upsert the recipient as a Brevo contact so opens/clicks roll up per contact.
+async function upsertContact(
+  gwHeaders: Record<string, string>,
+  listId: number | null,
+  email: string,
+  name: string | undefined,
+  campaignTag: string,
+) {
+  try {
+    const res = await fetch(`${GATEWAY_URL}/contacts`, {
+      method: "POST",
+      headers: gwHeaders,
+      body: JSON.stringify({
+        email,
+        updateEnabled: true,
+        ...(listId ? { listIds: [listId] } : {}),
+        attributes: {
+          ...(name ? { CONTACT_PERSON: name } : {}),
+          CAMPAIGN: campaignTag,
+          GAR_STATUS: "contacted",
+        },
+      }),
+    });
+    if (!res.ok) {
+      console.error(`Brevo contact upsert failed for ${email} [${res.status}]: ${await res.text()}`);
+    }
+  } catch (e) {
+    console.error("Brevo contact upsert error:", e instanceof Error ? e.message : e);
+  }
+}
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -113,17 +175,21 @@ Deno.serve(async (req) => {
     const sent: string[] = [];
     const failures: { to: string; error: string }[] = [];
 
+    const gwHeaders = {
+      "Authorization": `Bearer ${lovableApiKey}`,
+      "X-Connection-Api-Key": brevoApiKey,
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    };
+    const listId = await resolveOutreachListId(gwHeaders);
+
     for (const letter of letters) {
       try {
+        await upsertContact(gwHeaders, listId, letter.to, letter.toName, campaignTag);
         const brandedHtml = outreachEmailHtml(letter.bodyHtml);
         const res = await fetch(`${GATEWAY_URL}/smtp/email`, {
           method: "POST",
-          headers: {
-            "Authorization": `Bearer ${lovableApiKey}`,
-            "X-Connection-Api-Key": brevoApiKey,
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-          },
+          headers: gwHeaders,
           body: JSON.stringify({
             sender: { name: fromName, email: SENDER_EMAIL },
             to: [{ email: letter.to, name: letter.toName || undefined }],
@@ -134,6 +200,7 @@ Deno.serve(async (req) => {
             tags: [campaignTag],
           }),
         });
+
 
         if (!res.ok) {
           const errBody = await res.text();
@@ -163,10 +230,12 @@ Deno.serve(async (req) => {
         console.log(`Brevo send OK for ${letter.to}: messageId=${result?.messageId}`);
         sent.push(letter.to);
         await adminClient.from("email_send_log").insert({
-          message_id: String(result?.messageId || `${campaignTag}-${letter.to}-${Date.now()}`),
+          message_id: String(result?.messageId || `${campaignTag}-${letter.to}-${Date.now()}`)
+            .replace(/^<|>$/g, "").trim(),
           template_name: campaignTag,
           recipient_email: letter.to,
           status: "sent",
+
           metadata: {
             subject: letter.subject || "",
             recipient_name: letter.toName || null,

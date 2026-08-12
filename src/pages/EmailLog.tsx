@@ -18,7 +18,18 @@ interface LogRow {
   error_message: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;
+  delivered_at: string | null;
+  first_opened_at: string | null;
+  last_opened_at: string | null;
+  open_count: number | null;
+  first_clicked_at: string | null;
+  click_count: number | null;
+  bounced_at: string | null;
+  unsubscribed_at: string | null;
+  last_event: string | null;
+  last_event_at: string | null;
 }
+
 
 type Preset = "24h" | "7d" | "30d" | "custom";
 const PAGE_SIZE = 50;
@@ -104,15 +115,37 @@ export default function EmailLog() {
     return true;
   }), [deduped, templateFilter, statusFilter, q]);
 
-  const stats = useMemo(() => ({
-    total: filtered.length,
-    sent: filtered.filter(r => r.status === "sent").length,
-    failed: filtered.filter(r => ["failed", "dlq", "bounced"].includes(r.status)).length,
-    suppressed: filtered.filter(r => r.status === "suppressed").length,
-  }), [filtered]);
+  const stats = useMemo(() => {
+    const sent = filtered.filter(r => r.status === "sent").length;
+    const opened = filtered.filter(r => !!r.first_opened_at).length;
+    const clicked = filtered.filter(r => !!r.first_clicked_at).length;
+    return {
+      total: filtered.length,
+      sent,
+      failed: filtered.filter(r => ["failed", "dlq", "bounced"].includes(r.status)).length,
+      suppressed: filtered.filter(r => r.status === "suppressed").length,
+      opened,
+      clicked,
+      openRate: sent ? Math.round((opened / sent) * 100) : 0,
+      clickRate: sent ? Math.round((clicked / sent) * 100) : 0,
+    };
+  }, [filtered]);
+
 
   const pageRows = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  const [enabling, setEnabling] = useState(false);
+  const enableTracking = async () => {
+    setEnabling(true);
+    const { data, error } = await supabase.functions.invoke("brevo-register-webhook");
+    setEnabling(false);
+    if (error) {
+      toast.error("Could not switch on read tracking. Check the Brevo connection.");
+      return;
+    }
+    toast.success((data as any)?.updated ? "Read tracking refreshed." : "Read tracking is now switched on.");
+  };
 
   return (
     <AppLayout>
@@ -121,13 +154,20 @@ export default function EmailLog() {
           <div>
             <h1 className="text-2xl font-serif">Email log</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Every letter sent from the app, including outreach batches. Click a row to read the letter that went out.
+              Every letter sent from the app, including outreach batches. Click a row to read the letter that went out —
+              opens and link clicks appear here once tracking is switched on.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-            <RefreshCw className="h-4 w-4 mr-2" /> Refresh
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={enableTracking} disabled={enabling}>
+              {enabling ? "Switching on…" : "Enable read tracking"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+              <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+            </Button>
+          </div>
         </div>
+
 
         {/* Time range */}
         <div className="flex flex-wrap items-center gap-2">
@@ -179,17 +219,25 @@ export default function EmailLog() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[["Total emails", stats.total], ["Sent", stats.sent], ["Failed", stats.failed], ["Suppressed", stats.suppressed]].map(([label, value]) => (
-            <div key={String(label)} className="border rounded-lg p-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {([
+            ["Total emails", stats.total, null],
+            ["Sent", stats.sent, null],
+            ["Opened", stats.opened, `${stats.openRate}% of sent`],
+            ["Clicked", stats.clicked, `${stats.clickRate}% of sent`],
+            ["Failed", stats.failed, null],
+            ["Suppressed", stats.suppressed, null],
+          ] as [string, number, string | null][]).map(([label, value, hint]) => (
+            <div key={label} className="border rounded-lg p-4">
               <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-              <div className="text-2xl font-serif mt-1">{value as number}</div>
+              <div className="text-2xl font-serif mt-1">{value}</div>
+              {hint && <div className="text-xs text-muted-foreground mt-1">{hint}</div>}
             </div>
           ))}
         </div>
 
         {/* Table */}
-        <div className="border rounded-lg overflow-hidden">
+        <div className="border rounded-lg overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-left">
               <tr>
@@ -197,15 +245,17 @@ export default function EmailLog() {
                 <th className="px-3 py-2 font-medium">Recipient</th>
                 <th className="px-3 py-2 font-medium">Subject</th>
                 <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium">Opened</th>
+                <th className="px-3 py-2 font-medium">Clicked</th>
                 <th className="px-3 py-2 font-medium">Sent</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={5} className="px-3 py-6 text-center text-muted-foreground">Loading…</td></tr>
+                <tr><td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">Loading…</td></tr>
               )}
               {!loading && pageRows.length === 0 && (
-                <tr><td colSpan={5} className="px-3 py-6 text-center text-muted-foreground">No emails in this period.</td></tr>
+                <tr><td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">No emails in this period.</td></tr>
               )}
               {pageRows.map(r => (
                 <tr key={r.id} className="border-t hover:bg-muted/30 cursor-pointer" onClick={() => setSelected(r)}>
@@ -215,6 +265,16 @@ export default function EmailLog() {
                   <td className="px-3 py-2">
                     <Badge className={statusVariant(r.status)}>{r.status}</Badge>
                   </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {r.first_opened_at
+                      ? <Badge className="bg-foreground text-background">{r.open_count && r.open_count > 1 ? `${r.open_count}×` : "Yes"}</Badge>
+                      : <span className="text-muted-foreground">—</span>}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {r.first_clicked_at
+                      ? <Badge className="bg-foreground text-background">{r.click_count && r.click_count > 1 ? `${r.click_count}×` : "Yes"}</Badge>
+                      : <span className="text-muted-foreground">—</span>}
+                  </td>
                   <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
                     {new Date(r.created_at).toLocaleString()}
                   </td>
@@ -222,6 +282,7 @@ export default function EmailLog() {
               ))}
             </tbody>
           </table>
+
         </div>
 
         {pageCount > 1 && (
@@ -247,6 +308,20 @@ export default function EmailLog() {
               <div>To: {selected?.recipient_email}</div>
               <div>From: {String((selected?.metadata as any)?.from_email || "—")}</div>
               <div>Sent: {selected ? new Date(selected.created_at).toLocaleString() : ""}</div>
+              {selected?.delivered_at && <div>Delivered: {new Date(selected.delivered_at).toLocaleString()}</div>}
+              <div>
+                Opened: {selected?.first_opened_at
+                  ? `${new Date(selected.first_opened_at).toLocaleString()}${selected.open_count && selected.open_count > 1 ? ` (${selected.open_count} times, last ${new Date(selected.last_opened_at || selected.first_opened_at).toLocaleString()})` : ""}`
+                  : "not yet registered"}
+              </div>
+              <div>
+                Clicked a link: {selected?.first_clicked_at
+                  ? `${new Date(selected.first_clicked_at).toLocaleString()}${selected.click_count && selected.click_count > 1 ? ` (${selected.click_count} times)` : ""}`
+                  : "no"}
+              </div>
+              {selected?.bounced_at && <div className="text-destructive">Bounced: {new Date(selected.bounced_at).toLocaleString()}</div>}
+              {selected?.unsubscribed_at && <div>Unsubscribed: {new Date(selected.unsubscribed_at).toLocaleString()}</div>}
+
               {Array.isArray((selected?.metadata as any)?.attachments) && ((selected?.metadata as any).attachments as string[]).length > 0 && (
                 <div>Attachments: {((selected?.metadata as any).attachments as string[]).join(", ")}</div>
               )}

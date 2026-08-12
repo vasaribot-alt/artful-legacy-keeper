@@ -3,6 +3,10 @@ project_id = "ofqaxojjqryylcugegke"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.brevo-events]
+    verify_jwt = false
+  [functions.brevo-register-webhook]
+    verify_jwt = false
   [functions.create-donation-checkout]
     verify_jwt = false
   [functions.donor-portal]

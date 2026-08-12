@@ -1308,34 +1308,64 @@ export type Database = {
       }
       email_send_log: {
         Row: {
+          bounced_at: string | null
+          click_count: number
           created_at: string
+          delivered_at: string | null
           error_message: string | null
+          first_clicked_at: string | null
+          first_opened_at: string | null
           id: string
+          last_event: string | null
+          last_event_at: string | null
+          last_opened_at: string | null
           message_id: string | null
           metadata: Json | null
+          open_count: number
           recipient_email: string
           status: string
           template_name: string
+          unsubscribed_at: string | null
         }
         Insert: {
+          bounced_at?: string | null
+          click_count?: number
           created_at?: string
+          delivered_at?: string | null
           error_message?: string | null
+          first_clicked_at?: string | null
+          first_opened_at?: string | null
           id?: string
+          last_event?: string | null
+          last_event_at?: string | null
+          last_opened_at?: string | null
           message_id?: string | null
           metadata?: Json | null
+          open_count?: number
           recipient_email: string
           status: string
           template_name: string
+          unsubscribed_at?: string | null
         }
         Update: {
+          bounced_at?: string | null
+          click_count?: number
           created_at?: string
+          delivered_at?: string | null
           error_message?: string | null
+          first_clicked_at?: string | null
+          first_opened_at?: string | null
           id?: string
+          last_event?: string | null
+          last_event_at?: string | null
+          last_opened_at?: string | null
           message_id?: string | null
           metadata?: Json | null
+          open_count?: number
           recipient_email?: string
           status?: string
           template_name?: string
+          unsubscribed_at?: string | null
         }
         Relationships: []
       }
