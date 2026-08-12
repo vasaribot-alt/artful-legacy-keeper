@@ -1166,9 +1166,9 @@ With kind regards,
                 Sync to Brevo
               </Button>
               {emailTexts.length > 0 && (
-                <Select onValueChange={(v) => applySavedTextToSelected(v)}>
+                <Select value={pickedTextId} onValueChange={(v) => setPickedTextId(v)}>
                   <SelectTrigger className="w-[260px] h-8 text-xs">
-                    <SelectValue placeholder={`Use email text for ${selectedIds.length}…`} />
+                    <SelectValue placeholder="Choose email text…" />
                   </SelectTrigger>
                   <SelectContent>
                     {emailTexts.map(t => (
@@ -1179,28 +1179,42 @@ With kind regards,
                   </SelectContent>
                 </Select>
               )}
+              <Select value={draftLanguage} onValueChange={setDraftLanguage}>
+                <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["English", "French", "German", "Spanish", "Italian", "Dutch", "Portuguese", "Norwegian", "Swedish", "Danish"].map(l => (
+                    <SelectItem key={l} value={l}>{l}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {pickedTextId && (
-                <div className="flex items-center rounded-md border border-border overflow-hidden">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={aiRewriteFromTemplate ? "ghost" : "default"}
-                    className="rounded-none h-7 px-2 text-[11px]"
-                    onClick={() => setAiRewriteFromTemplate(false)}
-                  >
-                    Verbatim
+                <>
+                  <div className="flex items-center rounded-md border border-border overflow-hidden">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                      className="rounded-none h-7 px-2 text-[11px]"
+                      onClick={() => setAiRewriteFromTemplate(false)}
+                    >
+                      Verbatim
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                      className="rounded-none h-7 px-2 text-[11px]"
+                      onClick={() => setAiRewriteFromTemplate(true)}
+                    >
+                      AI rewrite
+                    </Button>
+                  </div>
+                  <Button size="sm" variant="ghost" onClick={() => setPickedTextId("")}>
+                    Clear text
                   </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={aiRewriteFromTemplate ? "default" : "ghost"}
-                    className="rounded-none h-7 px-2 text-[11px]"
-                    onClick={() => setAiRewriteFromTemplate(true)}
-                  >
-                    AI rewrite
-                  </Button>
-                </div>
+                </>
               )}
+
             </>
 
           )}
@@ -1394,6 +1408,66 @@ With kind regards,
                 <Input value={draftSenderName} onChange={e => setDraftSenderName(e.target.value)} placeholder="Jan S Kindem" />
               </div>
             </div>
+            <div className="rounded-md border border-border p-3 space-y-2">
+              <Label className="text-xs">Email text used for this batch</Label>
+              <div className="flex flex-wrap items-center gap-2">
+                <Select value={pickedTextId} onValueChange={setPickedTextId}>
+                  <SelectTrigger className="w-[280px] h-8 text-xs">
+                    <SelectValue placeholder={emailTexts.length ? "Choose saved email text…" : "No saved email texts yet"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {emailTexts.map(t => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}{t.category ? ` — ${CATEGORY_LABELS[t.category as Category] || t.category}` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {pickedTextId && (
+                  <>
+                    <div className="flex items-center rounded-md border border-border overflow-hidden">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={aiRewriteFromTemplate ? "ghost" : "default"}
+                        className="rounded-none h-7 px-2 text-[11px]"
+                        onClick={() => setAiRewriteFromTemplate(false)}
+                      >
+                        Verbatim
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={aiRewriteFromTemplate ? "default" : "ghost"}
+                        className="rounded-none h-7 px-2 text-[11px]"
+                        onClick={() => setAiRewriteFromTemplate(true)}
+                      >
+                        AI rewrite
+                      </Button>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => setPickedTextId("")}>Clear</Button>
+                  </>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={generateBatchDrafts}
+                  disabled={batchRunning || selectedIds.length === 0}
+                >
+                  {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
+                  {pickedTextId
+                    ? aiRewriteFromTemplate
+                      ? `Generate in ${draftLanguage} for ${selectedIds.length}`
+                      : `Apply text word-for-word to ${selectedIds.length}`
+                    : `Generate ${selectedIds.length} letters in ${draftLanguage}`}
+                </Button>
+                <span className="text-[11px] text-muted-foreground">
+                  Set language and email text above, then generate — nothing is drafted until you click.
+                </span>
+              </div>
+            </div>
+
             <div>
               <Label className="text-xs">Signature (appended verbatim)</Label>
               <Textarea
