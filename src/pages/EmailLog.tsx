@@ -115,12 +115,22 @@ export default function EmailLog() {
     return true;
   }), [deduped, templateFilter, statusFilter, q]);
 
-  const stats = useMemo(() => ({
-    total: filtered.length,
-    sent: filtered.filter(r => r.status === "sent").length,
-    failed: filtered.filter(r => ["failed", "dlq", "bounced"].includes(r.status)).length,
-    suppressed: filtered.filter(r => r.status === "suppressed").length,
-  }), [filtered]);
+  const stats = useMemo(() => {
+    const sent = filtered.filter(r => r.status === "sent").length;
+    const opened = filtered.filter(r => !!r.first_opened_at).length;
+    const clicked = filtered.filter(r => !!r.first_clicked_at).length;
+    return {
+      total: filtered.length,
+      sent,
+      failed: filtered.filter(r => ["failed", "dlq", "bounced"].includes(r.status)).length,
+      suppressed: filtered.filter(r => r.status === "suppressed").length,
+      opened,
+      clicked,
+      openRate: sent ? Math.round((opened / sent) * 100) : 0,
+      clickRate: sent ? Math.round((clicked / sent) * 100) : 0,
+    };
+  }, [filtered]);
+
 
   const pageRows = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
