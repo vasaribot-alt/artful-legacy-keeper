@@ -1170,7 +1170,9 @@ const GalleryOutreach = () => {
               <Label>Body</Label>
               <Textarea rows={14} value={draftBody} onChange={(e) => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
             </div>
+            <AttachmentPicker />
           </div>
+
           <p className="text-xs text-muted-foreground">Letters are sent through GARF's verified email service.</p>
           <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
 
