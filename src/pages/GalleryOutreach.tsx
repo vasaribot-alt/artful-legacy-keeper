@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail, Upload } from "lucide-react";
+import { Loader2, Sparkles, Download, Play, RefreshCw, Copy, Mail, Upload, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 
@@ -133,6 +133,66 @@ const GalleryOutreach = () => {
   const [batchProgress, setBatchProgress] = useState<{ done: number; total: number } | null>(null);
   const [batchResults, setBatchResults] = useState<{ id: string; name: string; email: string; subject: string; body: string }[]>([]);
   const [batchOpen, setBatchOpen] = useState(false);
+
+  // Attachments (from Foundation Documents) added to every letter in a send
+  const [documents, setDocuments] = useState<{ id: string; title: string; file_name: string; file_size: number }[]>([]);
+  const [attachIds, setAttachIds] = useState<string[]>(
+    () => JSON.parse(localStorage.getItem("garf.outreach.attachIds") || "[]")
+  );
+
+  useEffect(() => {
+    localStorage.setItem("garf.outreach.attachIds", JSON.stringify(attachIds));
+  }, [attachIds]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("foundation_documents")
+        .select("id, title, file_name, file_size")
+        .order("created_at", { ascending: false });
+      setDocuments(data || []);
+    })();
+  }, []);
+
+  const attachedDocs = useMemo(
+    () => documents.filter((d) => attachIds.includes(d.id)),
+    [documents, attachIds],
+  );
+
+  const toggleAttachment = (id: string) =>
+    setAttachIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
+  const AttachmentPicker = () => (
+    <div className="rounded-sm border border-border p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <Paperclip className="w-3.5 h-3.5" />
+        <Label className="text-xs">Attachments (added to every letter)</Label>
+      </div>
+      {documents.length === 0 ? (
+        <p className="text-xs text-muted-foreground">
+          No documents yet — upload the PDF under Foundation → Documents first.
+        </p>
+      ) : (
+        <div className="max-h-32 overflow-y-auto space-y-1">
+          {documents.map((d) => (
+            <label key={d.id} className="flex items-start gap-2 text-xs cursor-pointer">
+              <Checkbox checked={attachIds.includes(d.id)} onCheckedChange={() => toggleAttachment(d.id)} />
+              <span className="leading-tight">
+                {d.title || d.file_name}
+                <span className="text-muted-foreground"> · {(Number(d.file_size || 0) / 1024 / 1024).toFixed(1)} MB</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+      {attachedDocs.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          {attachedDocs.length} file{attachedDocs.length === 1 ? "" : "s"} attached · keep the total under 6 MB.
+        </p>
+      )}
+    </div>
+  );
+
 
   const load = async () => {
     setLoading(true);
@@ -566,6 +626,7 @@ const GalleryOutreach = () => {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
         campaignTag: "gallery_outreach",
+        attachmentDocumentIds: attachIds,
         letters: [{
           to: emailDraft,
           subject: draftSubject,
@@ -601,12 +662,13 @@ const GalleryOutreach = () => {
       toast.error(`Only ${remainingToday} letter${remainingToday === 1 ? "" : "s"} left within today's limit of ${DAILY_SEND_CAP}. Reduce the batch and try again.`, { duration: 10000 });
       return;
     }
-    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?`)) return;
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?${attachedDocs.length ? `\n\nAttachments: ${attachedDocs.map((d) => d.file_name).join(", ")}` : ""}`)) return;
     setBatchRunning(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
         campaignTag: "gallery_outreach",
+        attachmentDocumentIds: attachIds,
         letters: ready.map((r) => ({
           to: r.email,
           subject: r.subject || "",
@@ -1108,7 +1170,9 @@ const GalleryOutreach = () => {
               <Label>Body</Label>
               <Textarea rows={14} value={draftBody} onChange={(e) => setDraftBody(e.target.value)} placeholder="Email body — click Generate to draft with AI." />
             </div>
+            <AttachmentPicker />
           </div>
+
           <p className="text-xs text-muted-foreground">Letters are sent through GARF's verified email service.</p>
           <DialogFooter className="flex-wrap gap-2 shrink-0 border-t border-border pt-3 mt-2">
 
@@ -1153,6 +1217,8 @@ const GalleryOutreach = () => {
                 <Input value={draftSenderName} onChange={(e) => setDraftSenderName(e.target.value)} placeholder="Jan S Kindem" />
               </div>
             </div>
+            <AttachmentPicker />
+
             {batchRunning && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…

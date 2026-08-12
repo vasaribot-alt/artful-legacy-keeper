@@ -51,11 +51,16 @@ Deno.serve(async (req) => {
 
     const payload = await req.json().catch(() => null);
     console.log("send-outreach-brevo invoked by", user.id);
-    const letters = Array.isArray(payload?.letters) ? (payload.letters as Letter[]).slice(0, 50) : [];
+    const letters = Array.isArray(payload?.letters) ? (payload.letters as Letter[]).slice(0, 60) : [];
     const fromName = typeof payload?.fromName === "string" && payload.fromName.trim()
       ? payload.fromName.trim().slice(0, 120)
       : SENDER_NAME_DEFAULT;
     const campaignTag = typeof payload?.campaignTag === "string" ? payload.campaignTag : "outreach";
+    const attachmentDocumentIds: string[] = Array.isArray(payload?.attachmentDocumentIds)
+      ? (payload.attachmentDocumentIds as unknown[])
+        .filter((id): id is string => typeof id === "string" && /^[0-9a-f-]{36}$/i.test(id))
+        .slice(0, 3)
+      : [];
 
     if (letters.length === 0) {
       return new Response(JSON.stringify({ error: "No letters supplied" }), { status: 400, headers: jsonHeaders });
@@ -65,6 +70,44 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: `Invalid letter for "${invalid?.to || "unknown recipient"}"` }), {
         status: 400, headers: jsonHeaders,
       });
+    }
+
+    // Build attachments once for the whole batch (Brevo wants base64 content).
+    const attachment: { name: string; content: string }[] = [];
+    if (attachmentDocumentIds.length > 0) {
+      const { data: docs, error: docsError } = await adminClient
+        .from("foundation_documents")
+        .select("id, file_name, file_path, file_size")
+        .in("id", attachmentDocumentIds);
+      if (docsError) {
+        return new Response(JSON.stringify({ error: `Could not read attachments: ${docsError.message}` }), {
+          status: 400, headers: jsonHeaders,
+        });
+      }
+      let totalBytes = 0;
+      for (const doc of docs || []) {
+        const { data: file, error: dlError } = await adminClient.storage
+          .from("foundation-documents")
+          .download(doc.file_path);
+        if (dlError || !file) {
+          return new Response(JSON.stringify({ error: `Could not download attachment "${doc.file_name}"` }), {
+            status: 400, headers: jsonHeaders,
+          });
+        }
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        totalBytes += bytes.byteLength;
+        if (totalBytes > 6 * 1024 * 1024) {
+          return new Response(JSON.stringify({ error: "Attachments exceed the 6 MB limit for email sending." }), {
+            status: 400, headers: jsonHeaders,
+          });
+        }
+        let binary = "";
+        for (let i = 0; i < bytes.length; i += 8192) {
+          binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+        }
+        attachment.push({ name: doc.file_name, content: btoa(binary) });
+      }
+      console.log(`Attaching ${attachment.length} file(s), ${totalBytes} bytes total`);
     }
 
     const sent: string[] = [];
@@ -87,6 +130,7 @@ Deno.serve(async (req) => {
             subject: letter.subject || "",
             htmlContent: brandedHtml,
             ...(letter.bodyText ? { textContent: letter.bodyText } : {}),
+            ...(attachment.length > 0 ? { attachment } : {}),
             tags: [campaignTag],
           }),
         });
