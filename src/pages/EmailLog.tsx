@@ -200,17 +200,25 @@ export default function EmailLog() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[["Total emails", stats.total], ["Sent", stats.sent], ["Failed", stats.failed], ["Suppressed", stats.suppressed]].map(([label, value]) => (
-            <div key={String(label)} className="border rounded-lg p-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {([
+            ["Total emails", stats.total, null],
+            ["Sent", stats.sent, null],
+            ["Opened", stats.opened, `${stats.openRate}% of sent`],
+            ["Clicked", stats.clicked, `${stats.clickRate}% of sent`],
+            ["Failed", stats.failed, null],
+            ["Suppressed", stats.suppressed, null],
+          ] as [string, number, string | null][]).map(([label, value, hint]) => (
+            <div key={label} className="border rounded-lg p-4">
               <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-              <div className="text-2xl font-serif mt-1">{value as number}</div>
+              <div className="text-2xl font-serif mt-1">{value}</div>
+              {hint && <div className="text-xs text-muted-foreground mt-1">{hint}</div>}
             </div>
           ))}
         </div>
 
         {/* Table */}
-        <div className="border rounded-lg overflow-hidden">
+        <div className="border rounded-lg overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-left">
               <tr>
@@ -218,15 +226,17 @@ export default function EmailLog() {
                 <th className="px-3 py-2 font-medium">Recipient</th>
                 <th className="px-3 py-2 font-medium">Subject</th>
                 <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium">Opened</th>
+                <th className="px-3 py-2 font-medium">Clicked</th>
                 <th className="px-3 py-2 font-medium">Sent</th>
               </tr>
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={5} className="px-3 py-6 text-center text-muted-foreground">Loading…</td></tr>
+                <tr><td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">Loading…</td></tr>
               )}
               {!loading && pageRows.length === 0 && (
-                <tr><td colSpan={5} className="px-3 py-6 text-center text-muted-foreground">No emails in this period.</td></tr>
+                <tr><td colSpan={7} className="px-3 py-6 text-center text-muted-foreground">No emails in this period.</td></tr>
               )}
               {pageRows.map(r => (
                 <tr key={r.id} className="border-t hover:bg-muted/30 cursor-pointer" onClick={() => setSelected(r)}>
@@ -236,6 +246,16 @@ export default function EmailLog() {
                   <td className="px-3 py-2">
                     <Badge className={statusVariant(r.status)}>{r.status}</Badge>
                   </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {r.first_opened_at
+                      ? <Badge className="bg-foreground text-background">{r.open_count && r.open_count > 1 ? `${r.open_count}×` : "Yes"}</Badge>
+                      : <span className="text-muted-foreground">—</span>}
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">
+                    {r.first_clicked_at
+                      ? <Badge className="bg-foreground text-background">{r.click_count && r.click_count > 1 ? `${r.click_count}×` : "Yes"}</Badge>
+                      : <span className="text-muted-foreground">—</span>}
+                  </td>
                   <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
                     {new Date(r.created_at).toLocaleString()}
                   </td>
@@ -243,6 +263,7 @@ export default function EmailLog() {
               ))}
             </tbody>
           </table>
+
         </div>
 
         {pageCount > 1 && (
