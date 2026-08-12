@@ -13,6 +13,68 @@ type Letter = {
 const GATEWAY_URL = "https://connector-gateway.lovable.dev/brevo";
 const SENDER_EMAIL = "outreach@globalartistregistry.org";
 const SENDER_NAME_DEFAULT = "Global Artist Registry Foundation";
+const CONTACT_LIST_NAME = "GARF Outreach";
+
+// Find (or create) the Brevo list every outreach recipient is added to,
+// so Brevo's own statistics and segmentation cover these sends too.
+async function resolveOutreachListId(gwHeaders: Record<string, string>): Promise<number | null> {
+  try {
+    const res = await fetch(`${GATEWAY_URL}/contacts/lists?limit=50&offset=0`, { headers: gwHeaders });
+    if (res.ok) {
+      const body = await res.json();
+      const existing = (body?.lists || []).find((l: { id: number; name: string }) => l.name === CONTACT_LIST_NAME);
+      if (existing?.id) return existing.id;
+    } else {
+      console.error(`Brevo list fetch failed [${res.status}]: ${await res.text()}`);
+    }
+    const created = await fetch(`${GATEWAY_URL}/contacts/lists`, {
+      method: "POST",
+      headers: gwHeaders,
+      body: JSON.stringify({ name: CONTACT_LIST_NAME, folderId: 1 }),
+    });
+    if (!created.ok) {
+      console.error(`Brevo list create failed [${created.status}]: ${await created.text()}`);
+      return null;
+    }
+    const body = await created.json();
+    return body?.id ?? null;
+  } catch (e) {
+    console.error("Brevo list resolve error:", e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
+// Upsert the recipient as a Brevo contact so opens/clicks roll up per contact.
+async function upsertContact(
+  gwHeaders: Record<string, string>,
+  listId: number | null,
+  email: string,
+  name: string | undefined,
+  campaignTag: string,
+) {
+  try {
+    const res = await fetch(`${GATEWAY_URL}/contacts`, {
+      method: "POST",
+      headers: gwHeaders,
+      body: JSON.stringify({
+        email,
+        updateEnabled: true,
+        ...(listId ? { listIds: [listId] } : {}),
+        attributes: {
+          ...(name ? { CONTACT_PERSON: name } : {}),
+          CAMPAIGN: campaignTag,
+          GAR_STATUS: "contacted",
+        },
+      }),
+    });
+    if (!res.ok) {
+      console.error(`Brevo contact upsert failed for ${email} [${res.status}]: ${await res.text()}`);
+    }
+  } catch (e) {
+    console.error("Brevo contact upsert error:", e instanceof Error ? e.message : e);
+  }
+}
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
