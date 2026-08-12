@@ -407,6 +407,42 @@ With kind regards,
     try { localStorage.setItem(SEL_KEY, JSON.stringify(selectedIds)); } catch { /* quota */ }
   }, [selectedIds]);
 
+  // Named saved batches (contacts + generated letters), stored locally.
+  const SAVED_BATCHES_KEY = "garf.outreach.savedBatches";
+  type SavedBatch = { id: string; name: string; createdAt: string; ids: string[]; results: BatchResult[] };
+  const [savedBatches, setSavedBatches] = useState<SavedBatch[]>(() =>
+    readStored<SavedBatch[]>(SAVED_BATCHES_KEY, [])
+  );
+  const [saveBatchOpen, setSaveBatchOpen] = useState(false);
+  const [savedListOpen, setSavedListOpen] = useState(false);
+  const [saveBatchName, setSaveBatchName] = useState("");
+
+  const persistSavedBatches = (next: SavedBatch[]) => {
+    setSavedBatches(next);
+    try { localStorage.setItem(SAVED_BATCHES_KEY, JSON.stringify(next)); } catch { /* quota */ }
+  };
+
+  const saveCurrentBatch = () => {
+    const name = saveBatchName.trim() || `Batch ${new Date().toLocaleString()}`;
+    persistSavedBatches([
+      { id: crypto.randomUUID(), name, createdAt: new Date().toISOString(), ids: selectedIds, results: batchResults },
+      ...savedBatches,
+    ]);
+    setSaveBatchName("");
+    setSaveBatchOpen(false);
+    toast.success(`Batch “${name}” saved`);
+  };
+
+  const openSavedBatch = (b: SavedBatch) => {
+    setSelectedIds(b.ids);
+    setBatchResults(b.results);
+    setSavedListOpen(false);
+    if (b.results.length > 0) setBatchOpen(true);
+    toast.success(`Opened “${b.name}”`);
+  };
+
+
+
 
   const openDraft = (t: Target) => {
     setDraftTarget(t);
