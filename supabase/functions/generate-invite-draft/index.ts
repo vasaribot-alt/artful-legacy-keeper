@@ -111,13 +111,27 @@ Return ONLY the email as plain text. First line must be the subject prefixed wit
       });
     }
     const data = await res.json();
-    const draft = data?.choices?.[0]?.message?.content || "";
+    const raw: string = data?.choices?.[0]?.message?.content || "";
 
-    await supabase.from("artist_invites").update({ email_draft: draft }).eq("id", invite_id);
+    let subject = "";
+    let body = raw.trim();
+    const m = body.match(/^\s*Subject:\s*(.+?)\r?\n([\s\S]*)$/i);
+    if (m) {
+      subject = m[1].trim();
+      body = m[2].trim();
+    }
+    if (code && !body.includes(code)) {
+      body = `${body}\n\nYour personal access code: ${code}\nRedeem it at https://globalartistregistry.org`;
+    }
 
-    return new Response(JSON.stringify({ success: true, draft }), {
+    await supabase.from("artist_invites")
+      .update({ email_draft: body, email_subject: subject || null })
+      .eq("id", invite_id);
+
+    return new Response(JSON.stringify({ success: true, draft: body, subject, body, code }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
   } catch (e) {
     console.error(e);
     return new Response(JSON.stringify({ error: (e as Error).message }), {
