@@ -205,9 +205,9 @@ ${templateInstruction}
 Instructions:
 - ${salutation}
 - ${langInstruction}
-- Length: ${category === "galleries" ? "300–420 words in the body, so the clarity section fits in full" : "180–260 words in the body"}.
+- Length: ${category === "galleries" || category === "artist_organisations" ? "280–400 words in the body, so the clarity section fits in full" : "180–260 words in the body"}.
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
-- Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) a clear, low-commitment ask (a short introductory call or written reply), (5) sign-off.
+- Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) ${category === "artist_organisations" ? "a clear, low-commitment ask: forward the attached invitation to your members (a short reply is welcome but not required)" : "a clear, low-commitment ask (a short introductory call or written reply)"}, (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
  - ${recipient_capacity ? `In the opening sentence, acknowledge only the recipient's professional role: "${recipient_capacity}". Write this naturally as "in your capacity as [role] at ${name}". The recipient's personal name must not appear in this sentence or anywhere after the salutation, even if it is included in the capacity text.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
