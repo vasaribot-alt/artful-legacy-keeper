@@ -1694,6 +1694,7 @@ With kind regards,
                 className="font-mono text-xs"
               />
             </div>
+            <AttachmentPicker />
             {batchRunning && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="w-4 h-4 animate-spin" /> Drafting letters…
