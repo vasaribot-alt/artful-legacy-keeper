@@ -165,12 +165,6 @@ function detectSizeGroups(headers: string[]): { groups: { height?: number; width
   return { groups, isSizeLayout: true };
 }
 
-function parseNumber(val: unknown): number | null {
-  if (val == null || val === "") return null;
-  const n = Number(val);
-  return isNaN(n) ? null : n;
-}
-
 /** Normalize filename for matching: strip path, lowercase, remove extension */
 function normalizeFilename(name: string): string {
   return name.replace(/^.*[\\/]/, "").toLowerCase().replace(/\.[^.]+$/, "").trim();
