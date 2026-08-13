@@ -259,32 +259,43 @@ Subject: <one-line subject>
     }
 
 
-    // Safety net: make sure the invited artists and their access codes are always present.
+    // Safety net: the invited-artist list is rebuilt deterministically so every artist
+    // and code is always present exactly once (the model sometimes drops one).
     if (invitedArtists) {
       const artistLines = invitedArtists
         .split(/\r?\n|;/)
         .map((l) => l.trim())
         .filter(Boolean);
-      const missing = artistLines.filter((l) => {
-        const code = l.match(/FOUNDING-[A-Z0-9-]+/i)?.[0];
-        const nameOnly = l.split("—")[0].split("-")[0].trim();
-        return code ? !body.includes(code) : !body.includes(nameOnly);
-      });
-      if (missing.length) {
-        const block = [
-          "",
-          "The following artists you represent are invited to register with GARF free of charge for life. Each personal access code below can be redeemed at https://globalartistregistry.org — we would be grateful if you could pass them on:",
-          "",
-          ...artistLines,
-          "",
-        ].join("\n");
-        // Insert before the closing/sign-off if we can find it, otherwise append.
-        const closing = body.search(/\n\s*(With kind regards|Kind regards|Yours sincerely|Sincerely|Med vennlig hilsen|Mit freundlichen Grüßen|Bien cordialement|Met vriendelijke groet)/i);
-        body = closing > -1
-          ? `${body.slice(0, closing)}\n${block}${body.slice(closing)}`
-          : `${body}\n${block}`;
+
+      if (artistLines.length) {
+        const isCodeLine = (l: string) => /FOUNDING-[A-Z0-9-]+/i.test(l);
+        const lines = body.split(/\r?\n/);
+        const firstIdx = lines.findIndex(isCodeLine);
+        const kept = lines.filter((l) => !isCodeLine(l));
+
+        if (firstIdx > -1) {
+          // Re-insert the canonical list where the model put its (partial) list.
+          const before = lines.slice(0, firstIdx).filter((l) => !isCodeLine(l));
+          const after = lines.slice(firstIdx).filter((l) => !isCodeLine(l));
+          body = [...before, ...artistLines, ...after].join("\n");
+        } else {
+          const block = [
+            "",
+            "The following artists you represent are invited to register with GARF free of charge for life. Each personal access code below can be redeemed at https://globalartistregistry.org — we would be grateful if you could pass them on:",
+            "",
+            ...artistLines,
+            "",
+          ].join("\n");
+          body = kept.join("\n");
+          const closing = body.search(/\n\s*(With kind regards|Kind regards|Yours sincerely|Sincerely|Med vennlig hilsen|Mit freundlichen Grüßen|Bien cordialement|Met vriendelijke groet)/i);
+          body = closing > -1
+            ? `${body.slice(0, closing)}\n${block}${body.slice(closing)}`
+            : `${body}\n${block}`;
+        }
+        body = body.replace(/\n{3,}/g, "\n\n");
       }
     }
+
 
 
 
