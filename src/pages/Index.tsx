@@ -162,54 +162,60 @@ const Index = () => {
             </Link>
           </div>
 
-          {/* Proof: real registry figures */}
-          {stats && (
-            <div className="w-full pt-12 border-t border-border flex flex-col items-center">
-              <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 mb-12">
-                {[
-                  { value: stats.artists.toLocaleString(), label: "Registered artists" },
-                  { value: stats.artworks.toLocaleString(), label: "Documented works" },
-                  { value: stats.countries.toLocaleString(), label: "Countries represented" },
-                ].map((s) => (
-                  <div key={s.label} className="text-center">
-                    <span className="block text-2xl italic">{s.value}</span>
-                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {s.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Proof: verified artists from the registry */}
-              {featuredArtists.length > 0 && (
-                <div className="w-full">
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-6 font-semibold">
-                    Verified in the Registry
-                  </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
-                    {featuredArtists.map((a) => (
-                      <Link
-                        key={a.user_id}
-                        to={`/artist/${a.user_id}`}
-                        className="flex items-center gap-3 p-4 border border-border bg-surface hover:border-foreground/30 transition-colors"
-                      >
-                        <Avatar className="w-10 h-10 shrink-0 grayscale">
-                          {a.avatar_url && <AvatarImage src={a.avatar_url} alt={a.full_name || "Artist"} />}
-                          <AvatarFallback className="text-[10px]">{initials(a.full_name)}</AvatarFallback>
-                        </Avatar>
-                        <div className="text-left overflow-hidden">
-                          <p className="text-xs font-semibold truncate">{a.full_name || "Registered artist"}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">
-                            {[a.city, a.country].filter(Boolean).join(", ")}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+          {/* Proof: registry figures when available, foundation credentials otherwise */}
+          <div className="w-full pt-12 border-t border-border flex flex-col items-center">
+            <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 mb-12">
+              {(stats
+                ? [
+                    { value: stats.artists.toLocaleString(), label: "Registered artists" },
+                    { value: stats.artworks.toLocaleString(), label: "Documented works" },
+                    { value: stats.countries.toLocaleString(), label: "Countries represented" },
+                  ]
+                : [
+                    { value: "100", label: "Year preservation plan" },
+                    { value: "KvK 42024490", label: "Stichting under Dutch law" },
+                    { value: "Non-profit", label: "No commercial ownership" },
+                  ]
+              ).map((s) => (
+                <div key={s.label} className="text-center">
+                  <span className="block text-2xl italic">{s.value}</span>
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {s.label}
+                  </span>
                 </div>
-              )}
+              ))}
             </div>
-          )}
+
+            {/* Proof: verified artists from the registry */}
+            {featuredArtists.length > 0 && (
+              <div className="w-full">
+                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-6 font-semibold">
+                  Verified in the Registry
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+                  {featuredArtists.map((a) => (
+                    <Link
+                      key={a.user_id}
+                      to={`/artist/${a.user_id}`}
+                      className="flex items-center gap-3 p-4 border border-border bg-surface hover:border-foreground/30 transition-colors"
+                    >
+                      <Avatar className="w-10 h-10 shrink-0 grayscale">
+                        {a.avatar_url && <AvatarImage src={a.avatar_url} alt={a.full_name || "Artist"} />}
+                        <AvatarFallback className="text-[10px]">{initials(a.full_name)}</AvatarFallback>
+                      </Avatar>
+                      <div className="text-left overflow-hidden">
+                        <p className="text-xs font-semibold truncate">{a.full_name || "Registered artist"}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">
+                          {[a.city, a.country].filter(Boolean).join(", ")}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
 
           {/* Audience paths */}
           <nav className="flex flex-wrap justify-center gap-6 pt-4">
