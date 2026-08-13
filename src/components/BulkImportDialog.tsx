@@ -227,6 +227,11 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [imageProgress, setImageProgress] = useState(0);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [editableMappings, setEditableMappings] = useState<ColumnMapping[]>([]);
+  const [rawHeaders, setRawHeaders] = useState<string[]>([]);
+  const [rawRows, setRawRows] = useState<unknown[][]>([]);
+  const [sizeGroupDefs, setSizeGroupDefs] = useState<{ height?: number; width?: number; editionCount?: number; artistProofs?: number; price?: number }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
