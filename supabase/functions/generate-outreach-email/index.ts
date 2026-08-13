@@ -240,6 +240,25 @@ Subject: <one-line subject>
       }).join("\n");
     }
 
+    // Factual-accuracy net: never claim artists/galleries are already part of GARF.
+    {
+      const falseClaim =
+        /(already|currently)\s+(a\s+)?(part|member|members|registered|included|participating|listed|in)\b[^.!?]*|are\s+(already\s+)?(part of|members of|included in|registered (with|in))[^.!?]*|(?:we are|we're)\s+(pleased|delighted|glad)\s+to\s+(note|see|confirm)\s+that[^.!?]*(GARF|Legacy Circle|registry|register)[^.!?]*/gi;
+      body = body
+        .split(/\n/)
+        .map((line) =>
+          line
+            .split(/(?<=[.!?])\s+/)
+            .filter((s) => !falseClaim.test(s))
+            .join(" ")
+            .replace(/\s{2,}/g, " ")
+            .trimEnd(),
+        )
+        .join("\n")
+        .replace(/\n{3,}/g, "\n\n");
+    }
+
+
     // Safety net: make sure the invited artists and their access codes are always present.
     if (invitedArtists) {
       const artistLines = invitedArtists
