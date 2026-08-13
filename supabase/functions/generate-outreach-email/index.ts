@@ -243,7 +243,7 @@ Subject: <one-line subject>
     // Factual-accuracy net: never claim artists/galleries are already part of GARF.
     {
       const falseClaim =
-        /(already|currently)\s+(a\s+)?(part|member|members|registered|included|participating|listed|in)\b[^.!?]*|are\s+(already\s+)?(part of|members of|included in|registered (with|in))[^.!?]*|(?:we are|we're)\s+(pleased|delighted|glad)\s+to\s+(note|see|confirm)\s+that[^.!?]*(GARF|Legacy Circle|registry|register)[^.!?]*/gi;
+        /(already|currently)\s+(a\s+)?(part|member|members|registered|included|participating|listed|in)\b[^.!?]*|are\s+(already\s+)?(part of|members of|included in|registered (with|in))[^.!?]*|(?:we are|we're)\s+(pleased|delighted|glad)\s+to\s+(note|see|confirm)\s+that[^.!?]*(GARF|Legacy Circle|registry|register)[^.!?]*/i;
       body = body
         .split(/\n/)
         .map((line) =>
