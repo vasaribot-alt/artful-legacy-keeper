@@ -169,10 +169,11 @@ Recipient:
 - Contact person: ${personName || "n/a"}
 - Website: ${website || "n/a"}
 - Internal notes: ${notes || "n/a"}
-${invitedArtists ? `- Artists represented by this gallery whom GARF is inviting, each with their personal access code:\n${invitedArtists}` : ""}
+${invitedArtists ? `- Artists represented by this gallery whom GARF is INVITING (they are NOT yet registered, NOT members, and have NOT joined anything), each with an unused personal access code:\n${invitedArtists}` : ""}
 
 Category-specific framing: ${guidance}
-${invitedArtists ? `\nName the artists listed above in the email and include each artist's personal access code exactly as given, as a clearly formatted list of "Artist name — CODE" lines near the end of the email (before the sign-off), introduced by a short sentence explaining that each code gives that artist free lifetime registration at https://globalartistregistry.org and asking the gallery to pass it on. Copy names and codes verbatim — never alter, shorten or invent a name or code, and if an artist has no code listed, include the name without a code.` : ""}
+${invitedArtists ? `\nName the artists listed above in the email and include each artist's personal access code exactly as given, as a clearly formatted list of "Artist name — CODE" lines near the end of the email (before the sign-off), introduced by a short sentence explaining that each code gives that artist free lifetime registration at https://globalartistregistry.org and asking the gallery to pass it on. Copy names and codes verbatim — never alter, shorten or invent a name or code, and if an artist has no code listed, include the name without a code.
+FACTUAL ACCURACY — ABSOLUTE RULE: these artists are invitees only. Never write or imply that they are "already part of", "members of", "already registered with", "included in" the GARF Legacy Circle / registry / archive, that GARF already holds their records, or that they have accepted anything. Do not state or imply any existing relationship between GARF and this gallery or its artists. Never invent facts, statistics, endorsements, participating institutions or named collaborators that are not given above.` : ""}
 
 ${templateInstruction}
 
@@ -238,6 +239,25 @@ Subject: <one-line subject>
           .trimEnd();
       }).join("\n");
     }
+
+    // Factual-accuracy net: never claim artists/galleries are already part of GARF.
+    {
+      const falseClaim =
+        /(already|currently)\s+(a\s+)?(part|member|members|registered|included|participating|listed|in)\b[^.!?]*|are\s+(already\s+)?(part of|members of|included in|registered (with|in))[^.!?]*|(?:we are|we're)\s+(pleased|delighted|glad)\s+to\s+(note|see|confirm)\s+that[^.!?]*(GARF|Legacy Circle|registry|register)[^.!?]*/i;
+      body = body
+        .split(/\n/)
+        .map((line) =>
+          line
+            .split(/(?<=[.!?])\s+/)
+            .filter((s) => !falseClaim.test(s))
+            .join(" ")
+            .replace(/\s{2,}/g, " ")
+            .trimEnd(),
+        )
+        .join("\n")
+        .replace(/\n{3,}/g, "\n\n");
+    }
+
 
     // Safety net: make sure the invited artists and their access codes are always present.
     if (invitedArtists) {
