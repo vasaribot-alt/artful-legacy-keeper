@@ -170,7 +170,7 @@ function normalizeFilename(name: string): string {
   return name.replace(/^.*[\\/]/, "").toLowerCase().replace(/\.[^.]+$/, "").trim();
 }
 
-type Step = "upload" | "preview" | "importing" | "images" | "uploading";
+type Step = "upload" | "analyse" | "preview" | "importing" | "images" | "uploading";
 
 const ARTIST_UNIQUE_HEADERS = [
   "Title", "Category", "Series", "Year", "Medium", "Support",
