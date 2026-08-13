@@ -1837,6 +1837,7 @@ With kind regards,
                 className="font-mono text-xs"
               />
             </div>
+            <AttachmentPicker />
             <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
               <div>
                 <Label>Language</Label>
