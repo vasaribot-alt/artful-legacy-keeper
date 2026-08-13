@@ -135,7 +135,23 @@ Deno.serve(async (req) => {
       personName = personName || row.contact_person;
     }
 
-    const guidance = CATEGORY_GUIDANCE[category] || CATEGORY_GUIDANCE.other;
+    // Merge fields for the gallery letter: artist count (spelled out) and gallery name.
+    const artistCount = invitedArtists
+      ? invitedArtists.split(/\r?\n|;/).map((l) => l.trim()).filter(Boolean).length
+      : 0;
+    const NUMBER_WORDS = [
+      "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+      "eleven", "twelve",
+    ];
+    const artistCountWord = artistCount > 0
+      ? (NUMBER_WORDS[artistCount] || String(artistCount))
+      : "";
+    const guidance = (CATEGORY_GUIDANCE[category] || CATEGORY_GUIDANCE.other)
+      .replaceAll("{{GALLERY_NAME}}", name)
+      .replaceAll(
+        "{{ARTIST_COUNT}}",
+        artistCountWord || "listed",
+      );
     const salutation = personName
       ? `Open with the salutation "Dear ${personName}," and then never repeat the recipient's personal name anywhere else in the email.`
       : `Address the recipient formally (e.g. "Dear colleagues," or "To the team at ${name},")`;
