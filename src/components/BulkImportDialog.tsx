@@ -7,10 +7,21 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2, Download } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2, Download, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import {
+  analyzeSpreadsheet,
+  parseDimensions,
+  splitMediumSupport,
+  parseNumber,
+  GALLERY_HANDOVER_HEADERS,
+  TARGET_FIELDS,
+  type ColumnMapping,
+  type AnalysisResult,
+} from "@/lib/spreadsheetAnalysis";
 
 interface Props {
   open: boolean;
@@ -154,18 +165,12 @@ function detectSizeGroups(headers: string[]): { groups: { height?: number; width
   return { groups, isSizeLayout: true };
 }
 
-function parseNumber(val: unknown): number | null {
-  if (val == null || val === "") return null;
-  const n = Number(val);
-  return isNaN(n) ? null : n;
-}
-
 /** Normalize filename for matching: strip path, lowercase, remove extension */
 function normalizeFilename(name: string): string {
   return name.replace(/^.*[\\/]/, "").toLowerCase().replace(/\.[^.]+$/, "").trim();
 }
 
-type Step = "upload" | "preview" | "importing" | "images" | "uploading";
+type Step = "upload" | "analyse" | "preview" | "importing" | "images" | "uploading";
 
 const ARTIST_UNIQUE_HEADERS = [
   "Title", "Category", "Series", "Year", "Medium", "Support",
@@ -222,6 +227,11 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [imageProgress, setImageProgress] = useState(0);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [editableMappings, setEditableMappings] = useState<ColumnMapping[]>([]);
+  const [rawHeaders, setRawHeaders] = useState<string[]>([]);
+  const [rawRows, setRawRows] = useState<unknown[][]>([]);
+  const [sizeGroupDefs, setSizeGroupDefs] = useState<{ height?: number; width?: number; editionCount?: number; artistProofs?: number; price?: number }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -234,6 +244,102 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     setImportedArtworks([]);
     setDroppedFiles([]);
     setImageProgress(0);
+    setAnalysis(null);
+    setEditableMappings([]);
+    setRawHeaders([]);
+    setRawRows([]);
+    setSizeGroupDefs([]);
+  };
+
+  const parseRowsFromMappings = (
+    headers: string[],
+    json: unknown[][],
+    mappings: ColumnMapping[],
+    sizeGroupDefs: { height?: number; width?: number; editionCount?: number; artistProofs?: number; price?: number }[]
+  ): ParsedRow[] => {
+    const parsed: ParsedRow[] = [];
+    const isSizeLayout = sizeGroupDefs.length > 1;
+    const sizeColIndices = new Set<number>();
+    if (isSizeLayout) {
+      for (const g of sizeGroupDefs) {
+        if (g.height != null) sizeColIndices.add(g.height);
+        if (g.width != null) sizeColIndices.add(g.width);
+        if (g.editionCount != null) sizeColIndices.add(g.editionCount);
+        if (g.artistProofs != null) sizeColIndices.add(g.artistProofs);
+        if (g.price != null) sizeColIndices.add(g.price);
+      }
+    }
+
+    // Build field -> source index from mappings. Later mappings win.
+    const fieldToIndex: Record<string, number> = {};
+    for (const m of mappings) {
+      fieldToIndex[m.targetField] = m.sourceIndex;
+    }
+
+    for (let i = 1; i < json.length; i++) {
+      const row = json[i] as unknown[];
+      if (!row || row.length === 0) continue;
+
+      const r: ParsedRow = {
+        title: "", artworkType: "", series: "", year: null, medium: "", support: "",
+        height: null, width: null, depth: null, signed: "", location: "", provenance: "",
+        exhibitionHistory: "", description: "", imageFilename: "", selected: true,
+        sizes: [], price: null, currency: "EUR",
+      };
+
+      // Map simple columns
+      for (const [field, colIdx] of Object.entries(fieldToIndex)) {
+        if (isSizeLayout && sizeColIndices.has(colIdx)) continue;
+        const val = row[colIdx];
+        if (val == null || val === "") continue;
+
+        if (field === "medium" && headers[colIdx].toLowerCase().includes("medium and support")) {
+          const split = splitMediumSupport(String(val));
+          if (split.medium) r.medium = split.medium;
+          if (split.support) r.support = split.support;
+          continue;
+        }
+
+        if (field === "height" && headers[colIdx].toLowerCase().includes("dimensions")) {
+          const dims = parseDimensions(String(val));
+          if (dims.height != null) r.height = dims.height;
+          if (dims.width != null) r.width = dims.width;
+          if (dims.depth != null) r.depth = dims.depth;
+          if (dims.note) r.description = r.description ? `${r.description}\n${dims.note}` : dims.note;
+          continue;
+        }
+
+        if (field === "year" || field === "height" || field === "width" || field === "depth" || field === "price") {
+          (r as any)[field] = parseNumber(val);
+        } else {
+          (r as any)[field] = String(val).trim();
+        }
+      }
+
+      // Parse size groups
+      if (isSizeLayout) {
+        const sizes: SizeGroup[] = [];
+        for (const g of sizeGroupDefs) {
+          const h = g.height != null ? parseNumber(row[g.height]) : null;
+          const w = g.width != null ? parseNumber(row[g.width]) : null;
+          const ec = g.editionCount != null ? parseNumber(row[g.editionCount]) : null;
+          const ap = g.artistProofs != null ? parseNumber(row[g.artistProofs]) : null;
+          const p = g.price != null ? parseNumber(row[g.price]) : null;
+          // Only add if there's at least a height or width
+          if (h || w) {
+            sizes.push({ height: h, width: w, editionCount: ec, artistProofs: ap, price: p });
+          }
+        }
+        r.sizes = sizes;
+        // For non-size-layout fields, use first size as fallback for dimensions
+        if (sizes.length > 0 && !r.height) r.height = sizes[0].height;
+        if (sizes.length > 0 && !r.width) r.width = sizes[0].width;
+      }
+
+      if (r.title) parsed.push(r);
+    }
+
+    return parsed;
   };
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -249,91 +355,35 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       if (json.length < 2) { toast.error("Spreadsheet appears empty"); return; }
 
       const headers = (json[0] as string[]).map(String);
+      const rows = json.slice(1) as unknown[][];
 
-      // Detect multi-size layout
-      const { groups: sizeGroupDefs, isSizeLayout } = detectSizeGroups(headers);
+      const { groups: sizeGroups } = detectSizeGroups(headers);
+      const result = analyzeSpreadsheet(headers, rows);
 
-      // Build simple column mapping (skip columns that belong to size groups when in size layout)
-      const sizeColIndices = new Set<number>();
-      if (isSizeLayout) {
-        for (const g of sizeGroupDefs) {
-          if (g.height != null) sizeColIndices.add(g.height);
-          if (g.width != null) sizeColIndices.add(g.width);
-          if (g.editionCount != null) sizeColIndices.add(g.editionCount);
-          if (g.artistProofs != null) sizeColIndices.add(g.artistProofs);
-          if (g.price != null) sizeColIndices.add(g.price);
-        }
-      }
-
-      const colMap: Record<number, string> = {};
-      headers.forEach((h, i) => {
-        if (isSizeLayout && sizeColIndices.has(i)) return;
-        const key = h.toLowerCase().trim();
-        if (COLUMN_MAP[key] && !Object.values(colMap).includes(COLUMN_MAP[key])) {
-          colMap[i] = COLUMN_MAP[key];
-        }
-      });
-
-      if (!Object.values(colMap).includes("title")) {
-        toast.error("No 'Title' column found in spreadsheet");
-        return;
-      }
-
-      const parsed: ParsedRow[] = [];
-      for (let i = 1; i < json.length; i++) {
-        const row = json[i] as unknown[];
-        if (!row || row.length === 0) continue;
-
-        const r: ParsedRow = {
-          title: "", artworkType: "", series: "", year: null, medium: "", support: "",
-          height: null, width: null, depth: null, signed: "", location: "", provenance: "",
-          exhibitionHistory: "", description: "", imageFilename: "", selected: true,
-          sizes: [], price: null, currency: "EUR",
-        };
-
-        // Map simple columns
-        for (const [colIdx, field] of Object.entries(colMap)) {
-          const val = row[Number(colIdx)];
-          if (val == null || val === "") continue;
-          if (field === "year" || field === "height" || field === "width" || field === "depth" || field === "price") {
-            (r as any)[field] = parseNumber(val);
-          } else {
-            (r as any)[field] = String(val).trim();
-          }
-        }
-
-        // Parse size groups
-        if (isSizeLayout) {
-          const sizes: SizeGroup[] = [];
-          for (const g of sizeGroupDefs) {
-            const h = g.height != null ? parseNumber(row[g.height]) : null;
-            const w = g.width != null ? parseNumber(row[g.width]) : null;
-            const ec = g.editionCount != null ? parseNumber(row[g.editionCount]) : null;
-            const ap = g.artistProofs != null ? parseNumber(row[g.artistProofs]) : null;
-            const p = g.price != null ? parseNumber(row[g.price]) : null;
-            // Only add if there's at least a height or width
-            if (h || w) {
-              sizes.push({ height: h, width: w, editionCount: ec, artistProofs: ap, price: p });
-            }
-          }
-          r.sizes = sizes;
-          // For non-size-layout fields, use first size as fallback for dimensions
-          if (sizes.length > 0 && !r.height) r.height = sizes[0].height;
-          if (sizes.length > 0 && !r.width) r.width = sizes[0].width;
-        }
-
-        if (r.title) parsed.push(r);
-      }
-
-      if (parsed.length === 0) { toast.error("No valid rows found"); return; }
-
-      setRows(parsed);
-      setStep("preview");
+      setRawHeaders(headers);
+      setRawRows(rows);
+      setSizeGroupDefs(sizeGroups);
+      setAnalysis(result);
+      setEditableMappings(result.mappings);
+      setStep("analyse");
     } catch {
       toast.error("Failed to parse file");
     }
 
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const confirmAnalysis = () => {
+    if (!analysis) return;
+    const hasTitle = editableMappings.some((m) => m.targetField === "title");
+    if (!hasTitle) {
+      toast.error("A Title mapping is required before continuing.");
+      return;
+    }
+    const parsed = parseRowsFromMappings(rawHeaders, rawRows, editableMappings, sizeGroupDefs);
+    if (parsed.length === 0) { toast.error("No valid rows found"); return; }
+    setRows(parsed);
+    setStep("preview");
   };
 
   const toggleRow = (index: number) => {
@@ -637,8 +687,99 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                 </>
               )}
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-xs h-8"
+              onClick={() => downloadTemplate(GALLERY_HANDOVER_HEADERS, "gallery-handover-template.xlsx")}
+            >
+              <Download className="w-3 h-3" /> Gallery Handover Template
+            </Button>
             <div className="text-xs text-muted-foreground mt-2 max-w-sm text-center">
               Or upload your own spreadsheet — just make sure it has a <strong>Title</strong> column.
+            </div>
+          </div>
+        )}
+
+        {step === "analyse" && analysis && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Review detected columns</p>
+                <p className="text-xs text-muted-foreground">
+                  {analysis.rowCount} rows · {editableMappings.length} mapped columns · Layout: {analysis.detectedLayout}
+                </p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={resetState}>Back</Button>
+            </div>
+
+            {analysis.issues.length > 0 && (
+              <div className="space-y-2">
+                {analysis.issues.map((issue, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs bg-secondary/50 p-2 rounded-sm">
+                    <Wand2 className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                    <span>{issue}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="border border-border rounded-sm overflow-hidden">
+              <div className="max-h-[45vh] overflow-y-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-secondary sticky top-0">
+                    <tr>
+                      <th className="p-2 text-left">Source column</th>
+                      <th className="p-2 text-left">Maps to</th>
+                      <th className="p-2 text-left">Sample</th>
+                      <th className="p-2 text-left">Match</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {editableMappings.map((m, i) => (
+                      <tr key={i} className="border-t border-border">
+                        <td className="p-2 font-medium">{m.sourceHeader}</td>
+                        <td className="p-2">
+                          <select
+                            className="bg-background border border-border rounded-sm px-1.5 py-1 text-xs w-full"
+                            value={m.targetField}
+                            onChange={(e) => {
+                              const next = [...editableMappings];
+                              next[i] = { ...next[i], targetField: e.target.value };
+                              setEditableMappings(next);
+                            }}
+                          >
+                            <option value="">— Ignore —</option>
+                            {Object.entries(TARGET_FIELDS).map(([field, label]) => (
+                              <option key={field} value={field}>{label}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="p-2 text-muted-foreground max-w-[180px] truncate">{m.sampleValue || "—"}</td>
+                        <td className="p-2">
+                          <Badge variant={m.confidence === "high" ? "default" : m.confidence === "medium" ? "secondary" : "outline"} className="text-[10px]">
+                            {m.confidence}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                    {analysis.unmappedHeaders.length > 0 && (
+                      <tr className="border-t border-border bg-secondary/30">
+                        <td colSpan={4} className="p-2 text-xs text-muted-foreground">
+                          {analysis.unmappedHeaders.length} unmapped columns hidden
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={resetState}>Cancel</Button>
+              <Button onClick={confirmAnalysis}>
+                Continue to preview
+              </Button>
             </div>
           </div>
         )}
