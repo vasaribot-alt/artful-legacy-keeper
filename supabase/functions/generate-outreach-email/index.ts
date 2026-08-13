@@ -24,7 +24,7 @@ Then these four bullets, kept verbatim:
 • Ownership does not move. The documentation and information in a GARF archive is owned by the artist, not by GARF and not by us. GARF provides the archive; the artist owns the content and can export or download it at any time.
 • GARF is not a marketplace, a dealer, an agent or a sales platform. It takes no commission and does not broker works. It is an archive.
 After those bullets, include this paragraph essentially verbatim, then the list of artists and codes:
-"GARF has chosen 100 artists in three categories: Internationally Established, Mid-Career, and Emerging & Global Voices. In each category, we have selected artists from all continents. {{GALLERY_NAME}} represents the {{ARTIST_COUNT}} artists below. Please share the following personal access codes with each artist, as these codes provide free lifetime registration at https://globalartistregistry.org:"
+"GARF has chosen 100 artists in three categories: Internationally Established, Mid-Career, and Emerging & Global Voices. In each category, we have selected artists from all continents. {{GALLERY_NAME}} represents the {{ARTIST_COUNT}} artists below. Please share the following personal access codes with each artist, as these codes provide free lifetime registration at https://globalartistregistry.org:"`,
   museums:
     "The recipient is a museum or museum association. Emphasise archival permanence (100-year plan), scholarly reliability, loan/exhibition history tracking, and the willingness-to-lend feature useful for exhibition planning.",
   universities:
