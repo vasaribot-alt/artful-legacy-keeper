@@ -16,7 +16,8 @@ import { toast } from "sonner";
 import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/OutreachEmailTextsDialog";
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
-import { AlertTriangle, ChevronDown, ChevronUp, Copy, ExternalLink, FileText, Loader2, Mail, Plus, Search, Sparkles, Trash2, Upload, UserSearch } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { AlertTriangle, ChevronDown, ChevronUp, Copy, ExternalLink, FileText, Loader2, Mail, Paperclip, Plus, Search, Sparkles, Trash2, Upload, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
 const nameKey = (s: string) =>
