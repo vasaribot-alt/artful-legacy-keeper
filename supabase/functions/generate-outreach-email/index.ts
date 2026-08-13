@@ -15,7 +15,7 @@ const CATEGORY_GUIDANCE: Record<string, string> = {
   galleries:
     `The recipient is a gallery. Frame GARF as a neutral archival registry that complements (does not replace) gallery inventory tools — improving provenance, catalogue raisonné readiness, and long-term legacy for the artists they represent. Invite them to join as a Supporting Gallery of GARF.
 The email MUST include a clearly marked section headed "What we are asking — and what we are not asking" containing, in this order and with this meaning (you may keep the wording essentially as given):
-- We are asking you to share documentation on artworks that you have documented for each artist, so it can be added to that artist's list of works using our automated upload. We would also appreciate that you encourage your artists to keep their own records and preferably store them with GARF.
+- We ask that you share the documentation you have with all your artists so that each artist can create their own database and archive. We also appreciate it if you encourage your artists to create their own archives and preferably store them at GARF. With the help of our automatic upload, the artist will get their own archive of their works safely stored for at least 100 years.
 - A short line noting that some points must be completely clear because they are easy to misread: we are not proposing to take over any function the gallery performs, and we are not asking them to hand anything over.
 Then these four bullets, kept verbatim:
 • Your records stay exactly where they are. Your database, your inventory system and your files remain untouched and fully under your control.
