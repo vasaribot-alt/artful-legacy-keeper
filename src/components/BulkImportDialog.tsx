@@ -251,83 +251,82 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     setSizeGroupDefs([]);
   };
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const parseRowsFromMappings = (
+    headers: string[],
+    json: unknown[][],
+    mappings: ColumnMapping[],
+    sizeGroupDefs: { height?: number; width?: number; editionCount?: number; artistProofs?: number; price?: number }[]
+  ): ParsedRow[] => {
+    const parsed: ParsedRow[] = [];
+    const isSizeLayout = sizeGroupDefs.length > 1;
+    const sizeColIndices = new Set<number>();
+    if (isSizeLayout) {
+      for (const g of sizeGroupDefs) {
+        if (g.height != null) sizeColIndices.add(g.height);
+        if (g.width != null) sizeColIndices.add(g.width);
+        if (g.editionCount != null) sizeColIndices.add(g.editionCount);
+        if (g.artistProofs != null) sizeColIndices.add(g.artistProofs);
+        if (g.price != null) sizeColIndices.add(g.price);
+      }
+    }
 
-    try {
-      const data = await file.arrayBuffer();
-      const wb = XLSX.read(data);
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 });
+    // Build field -> source index from mappings. Later mappings win.
+    const fieldToIndex: Record<string, number> = {};
+    for (const m of mappings) {
+      fieldToIndex[m.targetField] = m.sourceIndex;
+    }
 
-      if (json.length < 2) { toast.error("Spreadsheet appears empty"); return; }
+    for (let i = 1; i < json.length; i++) {
+      const row = json[i] as unknown[];
+      if (!row || row.length === 0) continue;
 
-      const headers = (json[0] as string[]).map(String);
+      const r: ParsedRow = {
+        title: "", artworkType: "", series: "", year: null, medium: "", support: "",
+        height: null, width: null, depth: null, signed: "", location: "", provenance: "",
+        exhibitionHistory: "", description: "", imageFilename: "", selected: true,
+        sizes: [], price: null, currency: "EUR",
+      };
 
-      // Detect multi-size layout
-      const { groups: sizeGroupDefs, isSizeLayout } = detectSizeGroups(headers);
+      // Map simple columns
+      for (const [field, colIdx] of Object.entries(fieldToIndex)) {
+        if (isSizeLayout && sizeColIndices.has(colIdx)) continue;
+        const val = row[colIdx];
+        if (val == null || val === "") continue;
 
-      // Build simple column mapping (skip columns that belong to size groups when in size layout)
-      const sizeColIndices = new Set<number>();
+        if (field === "medium" && headers[colIdx].toLowerCase().includes("medium and support")) {
+          const split = splitMediumSupport(String(val));
+          if (split.medium) r.medium = split.medium;
+          if (split.support) r.support = split.support;
+          continue;
+        }
+
+        if (field === "height" && headers[colIdx].toLowerCase().includes("dimensions")) {
+          const dims = parseDimensions(String(val));
+          if (dims.height != null) r.height = dims.height;
+          if (dims.width != null) r.width = dims.width;
+          if (dims.depth != null) r.depth = dims.depth;
+          if (dims.note) r.description = r.description ? `${r.description}\n${dims.note}` : dims.note;
+          continue;
+        }
+
+        if (field === "year" || field === "height" || field === "width" || field === "depth" || field === "price") {
+          (r as any)[field] = parseNumber(val);
+        } else {
+          (r as any)[field] = String(val).trim();
+        }
+      }
+
+      // Parse size groups
       if (isSizeLayout) {
+        const sizes: SizeGroup[] = [];
         for (const g of sizeGroupDefs) {
-          if (g.height != null) sizeColIndices.add(g.height);
-          if (g.width != null) sizeColIndices.add(g.width);
-          if (g.editionCount != null) sizeColIndices.add(g.editionCount);
-          if (g.artistProofs != null) sizeColIndices.add(g.artistProofs);
-          if (g.price != null) sizeColIndices.add(g.price);
-        }
-      }
-
-      const colMap: Record<number, string> = {};
-      headers.forEach((h, i) => {
-        if (isSizeLayout && sizeColIndices.has(i)) return;
-        const key = h.toLowerCase().trim();
-        if (COLUMN_MAP[key] && !Object.values(colMap).includes(COLUMN_MAP[key])) {
-          colMap[i] = COLUMN_MAP[key];
-        }
-      });
-
-      if (!Object.values(colMap).includes("title")) {
-        toast.error("No 'Title' column found in spreadsheet");
-        return;
-      }
-
-      const parsed: ParsedRow[] = [];
-      for (let i = 1; i < json.length; i++) {
-        const row = json[i] as unknown[];
-        if (!row || row.length === 0) continue;
-
-        const r: ParsedRow = {
-          title: "", artworkType: "", series: "", year: null, medium: "", support: "",
-          height: null, width: null, depth: null, signed: "", location: "", provenance: "",
-          exhibitionHistory: "", description: "", imageFilename: "", selected: true,
-          sizes: [], price: null, currency: "EUR",
-        };
-
-        // Map simple columns
-        for (const [colIdx, field] of Object.entries(colMap)) {
-          const val = row[Number(colIdx)];
-          if (val == null || val === "") continue;
-          if (field === "year" || field === "height" || field === "width" || field === "depth" || field === "price") {
-            (r as any)[field] = parseNumber(val);
-          } else {
-            (r as any)[field] = String(val).trim();
-          }
-        }
-
-        // Parse size groups
-        if (isSizeLayout) {
-          const sizes: SizeGroup[] = [];
-          for (const g of sizeGroupDefs) {
-            const h = g.height != null ? parseNumber(row[g.height]) : null;
-            const w = g.width != null ? parseNumber(row[g.width]) : null;
-            const ec = g.editionCount != null ? parseNumber(row[g.editionCount]) : null;
-            const ap = g.artistProofs != null ? parseNumber(row[g.artistProofs]) : null;
-            const p = g.price != null ? parseNumber(row[g.price]) : null;
-            // Only add if there's at least a height or width
-            if (h || w) {
+          const h = g.height != null ? parseNumber(row[g.height]) : null;
+          const w = g.width != null ? parseNumber(row[g.width]) : null;
+          const ec = g.editionCount != null ? parseNumber(row[g.editionCount]) : null;
+          const ap = g.artistProofs != null ? parseNumber(row[g.artistProofs]) : null;
+          const p = g.price != null ? parseNumber(row[g.price]) : null;
+          // Only add if there's at least a height or width
+          if (h || w) {
               sizes.push({ height: h, width: w, editionCount: ec, artistProofs: ap, price: p });
             }
           }
