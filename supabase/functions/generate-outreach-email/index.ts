@@ -14,15 +14,17 @@ const CATEGORY_GUIDANCE: Record<string, string> = {
     "The recipient is an art critics' association. Frame GARF as an independent, non-commercial reference source for verified artist information, works, exhibitions, and provenance — a citable resource for critical writing.",
   galleries:
     `The recipient is a gallery. Frame GARF as a neutral archival registry that complements (does not replace) gallery inventory tools — improving provenance, catalogue raisonné readiness, and long-term legacy for the artists they represent. Invite them to join as a Supporting Gallery of GARF.
-The email MUST include a clearly marked section headed "What we are asking — and what we are not asking" containing, in this order and with this meaning (you may keep the wording essentially as given):
-- We ask that you share the documentation you have with all your artists so that each artist can create their own database and archive. We also appreciate it if you encourage your artists to create their own archives and preferably store them at GARF. With the help of our automatic upload, the artist will get their own archive of their works safely stored for at least 100 years.
+The email MUST include a clearly marked section headed "What we are asking — and what we are not asking" containing the following text essentially verbatim (keep the order and meaning; merge the bracketed values exactly as given):
+- We ask that you share the artwork documentation you hold for the {{ARTIST_COUNT}} artists listed below so that each artist can create their own database and archive with GARF. With the help of our automatic upload, the artist will get their own GARF archive of their works safely stored for at least 100 years. GARF is free for all ID-verified artists.
 - To make the handover simple, GARF accepts Excel or CSV files. A ready-made gallery handover template is available in the artist's GARF account, and the artist can share it with you. We can also parse standard exports from common gallery systems.
-- A short line noting that some points must be completely clear because they are easy to misread: we are not proposing to take over any function the gallery performs, and we are not asking them to hand anything over.
+- Below a short list noting some points to avoid misreading:
 Then these four bullets, kept verbatim:
-• Your records stay exactly where they are. Your database, your inventory system and your files remain untouched and fully under your control.
+• Your records stay exactly where they are. Your database, your inventory system and your files remain untouched and fully under your control. We are not proposing to take over any function the gallery performs.
 • We ask only for a copy — a supplementary archival copy of the documentation relating to the artist's work — to be placed in the artist's own GARF archive.
 • Ownership does not move. The documentation and information in a GARF archive is owned by the artist, not by GARF and not by us. GARF provides the archive; the artist owns the content and can export or download it at any time.
-• GARF is not a marketplace, a dealer, an agent or a sales platform. It takes no commission and does not broker works. It is an archive.`,
+• GARF is not a marketplace, a dealer, an agent or a sales platform. It takes no commission and does not broker works. It is an archive.
+After those bullets, include this paragraph essentially verbatim, then the list of artists and codes:
+"GARF has chosen 100 artists in three categories: Internationally Established, Mid-Career, and Emerging & Global Voices. In each category, we have selected artists from all continents. {{GALLERY_NAME}} represents the {{ARTIST_COUNT}} artists below. Please share the following personal access codes with each artist, as these codes provide free lifetime registration at https://globalartistregistry.org:"
   museums:
     "The recipient is a museum or museum association. Emphasise archival permanence (100-year plan), scholarly reliability, loan/exhibition history tracking, and the willingness-to-lend feature useful for exhibition planning.",
   universities:
