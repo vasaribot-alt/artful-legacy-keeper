@@ -878,12 +878,13 @@ With kind regards,
       toast.error("No letters with an email address to send.");
       return;
     }
-    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?`)) return;
+    if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?${attachedDocs.length ? `\n\nAttachments: ${attachedDocs.map(d => d.file_name).join(", ")}` : ""}`)) return;
     setBatchRunning(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
         campaignTag: "alliance_outreach",
+        attachmentDocumentIds: attachIds,
         letters: ready.map(r => ({
           to: r.email,
           subject: r.subject || "",
