@@ -244,6 +244,11 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     setImportedArtworks([]);
     setDroppedFiles([]);
     setImageProgress(0);
+    setAnalysis(null);
+    setEditableMappings([]);
+    setRawHeaders([]);
+    setRawRows([]);
+    setSizeGroupDefs([]);
   };
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
