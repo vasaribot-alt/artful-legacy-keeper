@@ -953,6 +953,7 @@ With kind regards,
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
         campaignTag: "alliance_outreach",
+        attachmentDocumentIds: attachIds,
         letters: [{
           to: draftTarget.contact_email,
           subject: draftSubject || "",
