@@ -44,15 +44,22 @@ interface FeaturedArtist {
   country: string | null;
 }
 
+const audiencePaths = [
+  { label: "For artists", to: "/register" },
+  { label: "For collectors", to: "/collector-access" },
+  { label: "For galleries", to: "/about" },
+  { label: "For registrars", to: "/registrars" },
+];
+
 const Index = () => {
   const [featuredArtists, setFeaturedArtists] = useState<FeaturedArtist[]>([]);
+  const [stats, setStats] = useState<{ artists: number; artworks: number; countries: number } | null>(null);
 
   useEffect(() => {
     const fetchFeatured = async () => {
       const { data: foundingData } = await supabase
         .from("founding_artists")
-        .select("user_id")
-        .limit(8);
+        .select("user_id");
 
       if (foundingData && foundingData.length > 0) {
         const userIds = foundingData.map((f) => f.user_id);
@@ -61,13 +68,32 @@ const Index = () => {
           .select("user_id, full_name, avatar_url, city, country")
           .in("user_id", userIds);
 
+        const { count: artworkCount } = await supabase
+          .from("artworks")
+          .select("id", { count: "exact", head: true })
+          .in("owner_id", userIds);
+
         if (profiles) {
-          setFeaturedArtists(profiles);
+          const withAvatar = profiles.filter((p) => p.avatar_url);
+          const ordered = [...withAvatar, ...profiles.filter((p) => !p.avatar_url)];
+          setFeaturedArtists(ordered.slice(0, 4));
+          setStats({
+            artists: foundingData.length,
+            artworks: artworkCount ?? 0,
+            countries: new Set(profiles.map((p) => p.country).filter(Boolean)).size,
+          });
         }
       }
     };
     fetchFeatured();
   }, []);
+
+  const initials = (name: string | null) =>
+    (name || "—")
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("");
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,9 +115,6 @@ const Index = () => {
             <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Supporters
             </Link>
-            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              About us
-            </Link>
             <a
               href="https://catalogueraisonnefoundation.org"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
@@ -109,32 +132,100 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-6">
-            Archival-Grade Art Database
-          </p>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-6 text-balance">
-            The permanent record for art
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
-            Catalogue raisonné for artists. Collection management for collectors. 
-            Verified identity. Built to last 100 years.
-          </p>
-          <div className="flex items-center justify-center gap-4">
+      <section className="pt-32 pb-20 px-6 animate-in fade-in duration-700">
+        <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-12">
+          <div className="max-w-3xl space-y-6">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
+              Archival-Grade Art Database
+            </p>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl leading-[1.05] text-balance">
+              The permanent record for art
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              A non-profit foundation dedicated to preserving the documentation of art.
+              Catalogue raisonné for artists, collection management for collectors, verified
+              identity throughout — built to last 100 years.
+            </p>
+          </div>
+
+          {/* Primary actions */}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
             <Link to="/register">
               <Button size="lg" className="gap-2">
                 Create Your Vault <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/login">
+            <Link to="/founding-artists">
               <Button variant="outline" size="lg">
-                Sign In
+                Search the Registry
               </Button>
             </Link>
           </div>
+
+          {/* Proof: real registry figures */}
+          {stats && (
+            <div className="w-full pt-12 border-t border-border flex flex-col items-center">
+              <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 mb-12">
+                {[
+                  { value: stats.artists.toLocaleString(), label: "Registered artists" },
+                  { value: stats.artworks.toLocaleString(), label: "Documented works" },
+                  { value: stats.countries.toLocaleString(), label: "Countries represented" },
+                ].map((s) => (
+                  <div key={s.label} className="text-center">
+                    <span className="block text-2xl italic">{s.value}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                      {s.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Proof: verified artists from the registry */}
+              {featuredArtists.length > 0 && (
+                <div className="w-full">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-6 font-semibold">
+                    Verified in the Registry
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+                    {featuredArtists.map((a) => (
+                      <Link
+                        key={a.user_id}
+                        to={`/artist/${a.user_id}`}
+                        className="flex items-center gap-3 p-4 border border-border bg-surface hover:border-foreground/30 transition-colors"
+                      >
+                        <Avatar className="w-10 h-10 shrink-0 grayscale">
+                          {a.avatar_url && <AvatarImage src={a.avatar_url} alt={a.full_name || "Artist"} />}
+                          <AvatarFallback className="text-[10px]">{initials(a.full_name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="text-left overflow-hidden">
+                          <p className="text-xs font-semibold truncate">{a.full_name || "Registered artist"}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">
+                            {[a.city, a.country].filter(Boolean).join(", ")}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Audience paths */}
+          <nav className="flex flex-wrap justify-center gap-6 pt-4">
+            {audiencePaths.map((p) => (
+              <Link
+                key={p.label}
+                to={p.to}
+                className="text-[11px] uppercase tracking-widest font-medium text-muted-foreground hover:text-foreground border-b border-transparent hover:border-foreground transition-all pb-1"
+              >
+                {p.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </section>
+
 
       {/* Features */}
       <section className="py-20 px-6 border-t border-border">
