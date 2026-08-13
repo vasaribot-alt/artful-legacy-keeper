@@ -687,8 +687,99 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                 </>
               )}
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 text-xs h-8"
+              onClick={() => downloadTemplate(GALLERY_HANDOVER_HEADERS, "gallery-handover-template.xlsx")}
+            >
+              <Download className="w-3 h-3" /> Gallery Handover Template
+            </Button>
             <div className="text-xs text-muted-foreground mt-2 max-w-sm text-center">
               Or upload your own spreadsheet — just make sure it has a <strong>Title</strong> column.
+            </div>
+          </div>
+        )}
+
+        {step === "analyse" && analysis && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Review detected columns</p>
+                <p className="text-xs text-muted-foreground">
+                  {analysis.rowCount} rows · {editableMappings.length} mapped columns · Layout: {analysis.detectedLayout}
+                </p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={resetState}>Back</Button>
+            </div>
+
+            {analysis.issues.length > 0 && (
+              <div className="space-y-2">
+                {analysis.issues.map((issue, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs bg-secondary/50 p-2 rounded-sm">
+                    <Wand2 className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                    <span>{issue}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="border border-border rounded-sm overflow-hidden">
+              <div className="max-h-[45vh] overflow-y-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-secondary sticky top-0">
+                    <tr>
+                      <th className="p-2 text-left">Source column</th>
+                      <th className="p-2 text-left">Maps to</th>
+                      <th className="p-2 text-left">Sample</th>
+                      <th className="p-2 text-left">Match</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {editableMappings.map((m, i) => (
+                      <tr key={i} className="border-t border-border">
+                        <td className="p-2 font-medium">{m.sourceHeader}</td>
+                        <td className="p-2">
+                          <select
+                            className="bg-background border border-border rounded-sm px-1.5 py-1 text-xs w-full"
+                            value={m.targetField}
+                            onChange={(e) => {
+                              const next = [...editableMappings];
+                              next[i] = { ...next[i], targetField: e.target.value };
+                              setEditableMappings(next);
+                            }}
+                          >
+                            <option value="">— Ignore —</option>
+                            {Object.entries(TARGET_FIELDS).map(([field, label]) => (
+                              <option key={field} value={field}>{label}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="p-2 text-muted-foreground max-w-[180px] truncate">{m.sampleValue || "—"}</td>
+                        <td className="p-2">
+                          <Badge variant={m.confidence === "high" ? "default" : m.confidence === "medium" ? "secondary" : "outline"} className="text-[10px]">
+                            {m.confidence}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                    {analysis.unmappedHeaders.length > 0 && (
+                      <tr className="border-t border-border bg-secondary/30">
+                        <td colSpan={4} className="p-2 text-xs text-muted-foreground">
+                          {analysis.unmappedHeaders.length} unmapped columns hidden
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={resetState}>Cancel</Button>
+              <Button onClick={confirmAnalysis}>
+                Continue to preview
+              </Button>
             </div>
           </div>
         )}
