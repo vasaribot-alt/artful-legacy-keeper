@@ -254,7 +254,10 @@ export function parseNumber(val: unknown): number | null {
 export function parseDimensions(input: string): ParsedDimensions {
   if (!input) return {};
   const cleaned = String(input)
+    .replace(/_x000D_/g, "\r")
     .replace(/\r\n/g, " / ")
+    .replace(/\r/g, " / ")
+    .replace(/\n/g, " / ")
     .replace(/[×xX]/g, " x ")
     .replace(/,/g, ".")
     .replace(/cm/gi, "")
