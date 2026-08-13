@@ -292,6 +292,23 @@ export function splitMediumSupport(input: string): ParsedMediumSupport {
   if (!input) return {};
   const value = String(input).trim();
   const supportKeywords = [
+    " on canvas",
+    " on paper",
+    " on board",
+    " on panel",
+    " on wood",
+    " on aluminum",
+    " on aluminium",
+    " on steel",
+    " on bronze",
+    " on marble",
+    " on glass",
+    " on acrylic",
+    " on plexiglas",
+    " on plexiglass",
+    " in frame",
+    " in maple frame",
+    " in mahogany frame",
     "canvas",
     "paper",
     "board",
@@ -307,8 +324,6 @@ export function splitMediumSupport(input: string): ParsedMediumSupport {
     "plexiglas",
     "plexiglass",
     "frame",
-    "photograph",
-    "print",
   ];
 
   const lower = value.toLowerCase();
@@ -324,9 +339,12 @@ export function splitMediumSupport(input: string): ParsedMediumSupport {
     return { medium: value };
   }
 
-  const medium = value.slice(0, splitIndex).trim().replace(/[,.;\-]+$/, "");
-  const support = value.slice(splitIndex).trim();
-  return { medium: medium || undefined, support: support || undefined };
+  // If the keyword was found with a leading " on " or " in ", include the preposition in the support part
+  const leading = value.slice(0, splitIndex).trim().replace(/[,.;\-]+$/, "");
+  const trailing = value.slice(splitIndex).trim();
+  const medium = leading || undefined;
+  const support = trailing || undefined;
+  return { medium, support };
 }
 
 function detectLayout(headers: string[]): AnalysisResult["detectedLayout"] {
