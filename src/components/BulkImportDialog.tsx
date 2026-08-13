@@ -7,10 +7,21 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2, Download } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2, Download, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import {
+  analyzeSpreadsheet,
+  parseDimensions,
+  splitMediumSupport,
+  parseNumber,
+  GALLERY_HANDOVER_HEADERS,
+  TARGET_FIELDS,
+  type ColumnMapping,
+  type AnalysisResult,
+} from "@/lib/spreadsheetAnalysis";
 
 interface Props {
   open: boolean;
