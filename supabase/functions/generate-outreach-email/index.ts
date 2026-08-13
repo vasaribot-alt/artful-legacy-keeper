@@ -38,7 +38,14 @@ After those bullets, include this paragraph essentially verbatim, then the list 
   organisations:
     "The recipient is an umbrella organisation representing many member institutions. Frame the proposal as a framework partnership under which their members can each join individually, and highlight the value across their member base.",
   artist_organisations:
-    "The recipient is a national artist organisation (typically an IAA/UNESCO-affiliated national committee). Emphasise GARF's alignment with UNESCO's cultural heritage mission, the free lifetime access for their member artists as Founding Artists, and the value of a permanent, non-commercial archival registry protecting artist legacy across generations.",
+    `The recipient is a national artist organisation (typically an IAA/UNESCO-affiliated national committee). Emphasise GARF's alignment with UNESCO's cultural heritage mission, the free lifetime access for their member artists as Legacy Artists, and the value of a permanent, non-commercial archival registry protecting artist legacy across generations.
+The central ask is DISTRIBUTION, not membership: kindly ask the organisation to forward the attached invitation letter to all of their members. Say plainly that the invitation is attached to this email as a PDF that can be forwarded as-is, shared in a members' newsletter, or posted in their members' area, and that the same information is available at https://globalartistregistry.org.
+Include a short, clearly marked section headed "What we are asking — and what we are not asking" with these points, kept close to this wording:
+• We ask only that you forward the attached invitation to your members. Nothing more is required of the organisation.
+• Membership data stays with you. We do not ask for your member list, email addresses or any personal data.
+• Registration is free for life for ID-verified artists, and each artist owns their own archive — they can export or download their material at any time.
+• GARF is not a marketplace, dealer, agent or sales platform. It takes no commission and does not broker works. It is an archive.
+Do not include personal access codes for this category, and do not imply that the organisation or its members have already joined anything.`,
   other:
     "The recipient is an allied art-world organisation. Frame the invitation broadly around GARF's archival mission and the mutual benefit of partnership.",
 };
@@ -198,9 +205,9 @@ ${templateInstruction}
 Instructions:
 - ${salutation}
 - ${langInstruction}
-- Length: ${category === "galleries" ? "300–420 words in the body, so the clarity section fits in full" : "180–260 words in the body"}.
+- Length: ${category === "galleries" || category === "artist_organisations" ? "280–400 words in the body, so the clarity section fits in full" : "180–260 words in the body"}.
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
-- Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) a clear, low-commitment ask (a short introductory call or written reply), (5) sign-off.
+- Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) ${category === "artist_organisations" ? "a clear, low-commitment ask: forward the attached invitation to your members (a short reply is welcome but not required)" : "a clear, low-commitment ask (a short introductory call or written reply)"}, (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
  - ${recipient_capacity ? `In the opening sentence, acknowledge only the recipient's professional role: "${recipient_capacity}". Write this naturally as "in your capacity as [role] at ${name}". The recipient's personal name must not appear in this sentence or anywhere after the salutation, even if it is included in the capacity text.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
