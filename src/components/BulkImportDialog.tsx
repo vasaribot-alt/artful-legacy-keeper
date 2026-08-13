@@ -327,27 +327,63 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
           const p = g.price != null ? parseNumber(row[g.price]) : null;
           // Only add if there's at least a height or width
           if (h || w) {
-              sizes.push({ height: h, width: w, editionCount: ec, artistProofs: ap, price: p });
-            }
+            sizes.push({ height: h, width: w, editionCount: ec, artistProofs: ap, price: p });
           }
-          r.sizes = sizes;
-          // For non-size-layout fields, use first size as fallback for dimensions
-          if (sizes.length > 0 && !r.height) r.height = sizes[0].height;
-          if (sizes.length > 0 && !r.width) r.width = sizes[0].width;
         }
-
-        if (r.title) parsed.push(r);
+        r.sizes = sizes;
+        // For non-size-layout fields, use first size as fallback for dimensions
+        if (sizes.length > 0 && !r.height) r.height = sizes[0].height;
+        if (sizes.length > 0 && !r.width) r.width = sizes[0].width;
       }
 
-      if (parsed.length === 0) { toast.error("No valid rows found"); return; }
+      if (r.title) parsed.push(r);
+    }
 
-      setRows(parsed);
-      setStep("preview");
+    return parsed;
+  };
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const data = await file.arrayBuffer();
+      const wb = XLSX.read(data);
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 });
+
+      if (json.length < 2) { toast.error("Spreadsheet appears empty"); return; }
+
+      const headers = (json[0] as string[]).map(String);
+      const rows = json.slice(1) as unknown[][];
+
+      const { groups: sizeGroups } = detectSizeGroups(headers);
+      const result = analyzeSpreadsheet(headers, rows);
+
+      setRawHeaders(headers);
+      setRawRows(rows);
+      setSizeGroupDefs(sizeGroups);
+      setAnalysis(result);
+      setEditableMappings(result.mappings);
+      setStep("analyse");
     } catch {
       toast.error("Failed to parse file");
     }
 
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const confirmAnalysis = () => {
+    if (!analysis) return;
+    const hasTitle = editableMappings.some((m) => m.targetField === "title");
+    if (!hasTitle) {
+      toast.error("A Title mapping is required before continuing.");
+      return;
+    }
+    const parsed = parseRowsFromMappings(rawHeaders, rawRows, editableMappings, sizeGroupDefs);
+    if (parsed.length === 0) { toast.error("No valid rows found"); return; }
+    setRows(parsed);
+    setStep("preview");
   };
 
   const toggleRow = (index: number) => {
