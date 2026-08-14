@@ -120,6 +120,7 @@ const App = () => (
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
           <Route path="/donate" element={<Donate />} />
           <Route path="/support" element={<Support />} />
+          <Route path="/invitation" element={<InvitationDownloads />} />
           <Route path="/donate/thanks" element={<DonateThanks />} />
           <Route path="/collector-access" element={<CollectorAccess />} />
           <Route path="/capture" element={<Capture />} />
