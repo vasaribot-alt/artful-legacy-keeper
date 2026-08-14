@@ -40,6 +40,7 @@ After those bullets, include this paragraph essentially verbatim, then the list 
   artist_organisations:
     `The recipient is a national artist organisation (typically an IAA/UNESCO-affiliated national committee). Emphasise GARF's alignment with UNESCO's cultural heritage mission, the free lifetime access for their member artists as Legacy Artists, and the value of a permanent, non-commercial archival registry protecting artist legacy across generations.
 The central ask is DISTRIBUTION, not membership: kindly ask the organisation to forward the attached invitation letter to all of their members. Say plainly that the invitation is attached to this email as a PDF that can be forwarded as-is, shared in a members' newsletter, or posted in their members' area, and that the same information is available at https://globalartistregistry.org.
+Also state, in one short sentence, that the invitation can be downloaded in English, German, French, Spanish, Italian and Polish at https://globalartistregistry.org/invitation, so members can read it in their own language (the English version being the authoritative one).
 Include a short, clearly marked section headed "What we are asking — and what we are not asking" with these points, kept close to this wording:
 • We ask only that you forward the attached invitation to your members. Nothing more is required of the organisation.
 • Membership data stays with you. We do not ask for your member list, email addresses or any personal data.
