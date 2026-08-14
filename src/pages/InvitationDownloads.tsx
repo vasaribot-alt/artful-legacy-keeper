@@ -73,7 +73,6 @@ const LANGUAGES: LangEntry[] = [
 
 export default function InvitationDownloads() {
   const [confirmLang, setConfirmLang] = useState<LangEntry | null>(null);
-  const downloadAnchorRef = useRef<HTMLAnchorElement | null>(null);
 
   useEffect(() => {
     document.title = "Invitation to artists — download in your language | GARF";
