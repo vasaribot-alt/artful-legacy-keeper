@@ -72,6 +72,9 @@ const LANGUAGES: LangEntry[] = [
 ];
 
 export default function InvitationDownloads() {
+  const [confirmLang, setConfirmLang] = useState<LangEntry | null>(null);
+  const downloadAnchorRef = useRef<HTMLAnchorElement | null>(null);
+
   useEffect(() => {
     document.title = "Invitation to artists — download in your language | GARF";
     const desc =
@@ -84,6 +87,30 @@ export default function InvitationDownloads() {
     }
     meta.setAttribute("content", desc);
   }, []);
+
+  const triggerDownload = (lang: LangEntry) => {
+    const a = document.createElement("a");
+    a.href = lang.file;
+    a.download = lang.file.split("/").pop() || "";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleDownloadClick = (lang: LangEntry) => {
+    if (lang.code === "EN") {
+      triggerDownload(lang);
+      return;
+    }
+    setConfirmLang(lang);
+  };
+
+  const confirmDownload = () => {
+    if (confirmLang) {
+      triggerDownload(confirmLang);
+      setConfirmLang(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
