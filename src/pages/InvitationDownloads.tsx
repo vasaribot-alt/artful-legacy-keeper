@@ -184,6 +184,28 @@ export default function InvitationDownloads() {
           .
         </p>
       </main>
+
+      <Dialog open={confirmLang !== null} onOpenChange={(open) => !open && setConfirmLang(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>English is the authoritative version</DialogTitle>
+            <DialogDescription>
+              You are about to download the {confirmLang?.english} translation of the artist invitation.
+              Translations are provided for information only. The English version is the legally authoritative
+              version and prevails in case of any discrepancy.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmLang(null)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmDownload}>
+              <Download className="mr-2 h-4 w-4" />
+              I understand — download {confirmLang?.english}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
