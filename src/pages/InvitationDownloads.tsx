@@ -149,11 +149,9 @@ export default function InvitationDownloads() {
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">{lang.lead}</p>
                 </div>
-                <Button asChild variant="outline" className="shrink-0">
-                  <a href={lang.file} download>
-                    <Download className="mr-2 h-4 w-4" />
-                    {lang.cta}
-                  </a>
+                <Button variant="outline" className="shrink-0" onClick={() => handleDownloadClick(lang)}>
+                  <Download className="mr-2 h-4 w-4" />
+                  {lang.cta}
                 </Button>
               </li>
             ))}
