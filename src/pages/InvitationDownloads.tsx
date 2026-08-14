@@ -1,7 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Download, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type LangEntry = {
   code: string;
@@ -64,6 +72,8 @@ const LANGUAGES: LangEntry[] = [
 ];
 
 export default function InvitationDownloads() {
+  const [confirmLang, setConfirmLang] = useState<LangEntry | null>(null);
+
   useEffect(() => {
     document.title = "Invitation to artists — download in your language | GARF";
     const desc =
@@ -76,6 +86,30 @@ export default function InvitationDownloads() {
     }
     meta.setAttribute("content", desc);
   }, []);
+
+  const triggerDownload = (lang: LangEntry) => {
+    const a = document.createElement("a");
+    a.href = lang.file;
+    a.download = lang.file.split("/").pop() || "";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleDownloadClick = (lang: LangEntry) => {
+    if (lang.code === "EN") {
+      triggerDownload(lang);
+      return;
+    }
+    setConfirmLang(lang);
+  };
+
+  const confirmDownload = () => {
+    if (confirmLang) {
+      triggerDownload(confirmLang);
+      setConfirmLang(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -115,11 +149,9 @@ export default function InvitationDownloads() {
                   </div>
                   <p className="mt-1 text-sm text-muted-foreground">{lang.lead}</p>
                 </div>
-                <Button asChild variant="outline" className="shrink-0">
-                  <a href={lang.file} download>
-                    <Download className="mr-2 h-4 w-4" />
-                    {lang.cta}
-                  </a>
+                <Button variant="outline" className="shrink-0" onClick={() => handleDownloadClick(lang)}>
+                  <Download className="mr-2 h-4 w-4" />
+                  {lang.cta}
                 </Button>
               </li>
             ))}
@@ -152,6 +184,28 @@ export default function InvitationDownloads() {
           .
         </p>
       </main>
+
+      <Dialog open={confirmLang !== null} onOpenChange={(open) => !open && setConfirmLang(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>English is the authoritative version</DialogTitle>
+            <DialogDescription>
+              You are about to download the {confirmLang?.english} translation of the artist invitation.
+              Translations are provided for information only. The English version is the legally authoritative
+              version and prevails in case of any discrepancy.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmLang(null)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmDownload}>
+              <Download className="mr-2 h-4 w-4" />
+              I understand — download {confirmLang?.english}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
