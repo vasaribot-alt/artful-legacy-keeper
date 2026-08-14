@@ -40,6 +40,7 @@ import Files from "./pages/Files";
 import StorageTiers from "./pages/StorageTiers";
 import Donate from "./pages/Donate";
 import Support from "./pages/Support";
+import InvitationDownloads from "./pages/InvitationDownloads";
 import DonateThanks from "./pages/DonateThanks";
 import CollectorAccess from "./pages/CollectorAccess";
 import Capture from "./pages/Capture";
