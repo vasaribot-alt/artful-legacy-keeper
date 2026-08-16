@@ -93,5 +93,13 @@ export const RemotionRoot = () => (
       width={1080}
       height={1920}
     />
+    <Composition
+      id="instagram-gallery"
+      component={InstagramGallery}
+      durationInFrames={765}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
   </>
 );
