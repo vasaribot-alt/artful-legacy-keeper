@@ -60,6 +60,38 @@ const SceneHook = () => {
   );
 };
 
+const BottomBand = ({
+  src,
+  delay,
+  height,
+}: {
+  src: string;
+  delay: number;
+  height: number;
+}) => {
+  const frame = useCurrentFrame();
+  const o = interpolate(frame, [delay, delay + 30], [0, 1], { extrapolateRight: "clamp" });
+  const scale = interpolate(frame, [delay, delay + 130], [1.08, 1.0]);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height,
+        overflow: "hidden",
+        opacity: o,
+      }}
+    >
+      <Img
+        src={staticFile(src)}
+        style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${scale})` }}
+      />
+    </div>
+  );
+};
+
 const FileCard = ({
   label,
   sub,
