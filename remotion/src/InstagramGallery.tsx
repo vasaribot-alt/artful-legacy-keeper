@@ -230,14 +230,14 @@ const Strip = ({ delay }: { delay: number }) => {
   const frame = useCurrentFrame();
   const shift = interpolate(frame, [delay, delay + 150], [0, -160]);
   const o = interpolate(frame, [delay, delay + 26], [0, 1], { extrapolateRight: "clamp" });
-  const imgs = ["images/art1.jpg", "images/art3.jpg", "images/art5.jpg", "images/art2.jpg"];
+  const imgs = ["images/install1.jpg", "images/art4.jpg", "images/catalogue-cover.jpg", "images/install2.jpg"];
   return (
     <div
       style={{
         position: "absolute",
         left: 0,
         right: 0,
-        bottom: 200,
+        bottom: 110,
         display: "flex",
         gap: 20,
         opacity: o,
@@ -248,8 +248,8 @@ const Strip = ({ delay }: { delay: number }) => {
         <div
           key={src}
           style={{
-            width: 340,
-            height: 420,
+            width: 620,
+            height: 860,
             flexShrink: 0,
             borderRadius: 10,
             overflow: "hidden",
