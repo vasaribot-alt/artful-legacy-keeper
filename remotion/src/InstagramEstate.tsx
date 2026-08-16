@@ -212,7 +212,7 @@ const SceneArchive = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          height: 520,
+          height: 800,
           overflow: "hidden",
           opacity: imgO,
         }}
