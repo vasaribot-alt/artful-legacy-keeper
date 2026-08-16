@@ -283,8 +283,52 @@ const SceneCta = () => {
   );
 };
 
-export const InstagramArtist: React.FC = () => {
+const Chrome = () => {
+  const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none", padding: "44px 44px 50px" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: 44,
+          left: 44,
+          right: 44,
+          display: "flex",
+          justifyContent: "space-between",
+          fontFamily: SANS,
+          fontSize: 13,
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          color: theme.muted,
+        }}
+      >
+        <span>GARF</span>
+        <span>01 / 05</span>
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 50,
+          left: 44,
+          right: 44,
+          height: 2,
+          background: `${theme.ink}12`,
+        }}
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${(frame / durationInFrames) * 100}%`,
+            background: theme.ink,
+          }}
+        />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+export const InstagramArtist: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
@@ -304,45 +348,7 @@ export const InstagramArtist: React.FC = () => {
       <Sequence from={330} durationInFrames={120}>
         <SceneCta />
       </Sequence>
-      {/* Global chrome */}
-      <AbsoluteFill style={{ pointerEvents: "none", padding: "44px 44px 50px" }}>
-        <div
-          style={{
-            position: "absolute",
-            top: 44,
-            left: 44,
-            right: 44,
-            display: "flex",
-            justifyContent: "space-between",
-            fontFamily: SANS,
-            fontSize: 13,
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: theme.muted,
-          }}
-        >
-          <span>GARF</span>
-          <span>01 / 05</span>
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            bottom: 50,
-            left: 44,
-            right: 44,
-            height: 2,
-            background: `${theme.ink}12`,
-          }}
-        >
-          <div
-            style={{
-              height: "100%",
-              width: `${(useCurrentFrame() / durationInFrames) * 100}%`,
-              background: theme.ink,
-            }}
-          />
-        </div>
-      </AbsoluteFill>
+      <Chrome />
     </AbsoluteFill>
   );
 };
