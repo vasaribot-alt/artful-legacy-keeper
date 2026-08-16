@@ -8,6 +8,7 @@ import { HowToCatalogues } from "./HowToCatalogues";
 import { HowToDuplicate } from "./HowToDuplicate";
 import { InstagramArtist } from "./InstagramArtist";
 import { InstagramCollector } from "./InstagramCollector";
+import { InstagramEstate } from "./InstagramEstate";
 
 export const RemotionRoot = () => (
   <>
@@ -79,6 +80,14 @@ export const RemotionRoot = () => (
       id="instagram-collector"
       component={InstagramCollector}
       durationInFrames={705}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
+    <Composition
+      id="instagram-estate"
+      component={InstagramEstate}
+      durationInFrames={765}
       fps={30}
       width={1080}
       height={1920}
