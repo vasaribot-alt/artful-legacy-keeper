@@ -102,5 +102,13 @@ export const RemotionRoot = () => (
       width={1080}
       height={1920}
     />
+    <Composition
+      id="instagram-mission"
+      component={InstagramMission}
+      durationInFrames={780}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
   </>
 );
