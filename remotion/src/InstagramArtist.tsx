@@ -332,20 +332,20 @@ export const InstagramArtist: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
-      {/* Scene 1: 0-90 frames (0-3s) */}
-      <Sequence from={0} durationInFrames={90}>
+      {/* Scene 1: 0-105 frames (0-3.5s) */}
+      <Sequence from={0} durationInFrames={105}>
         <SceneHook />
       </Sequence>
-      {/* Scene 2: 90-210 frames (3-7s) */}
-      <Sequence from={90} durationInFrames={120}>
+      {/* Scene 2: 105-255 frames (3.5-8.5s) */}
+      <Sequence from={105} durationInFrames={150}>
         <SceneProblem />
       </Sequence>
-      {/* Scene 3: 210-330 frames (7-11s) */}
-      <Sequence from={210} durationInFrames={120}>
+      {/* Scene 3: 255-405 frames (8.5-13.5s) */}
+      <Sequence from={255} durationInFrames={150}>
         <SceneSolution />
       </Sequence>
-      {/* Scene 4: 330-450 frames (11-15s) */}
-      <Sequence from={330} durationInFrames={120}>
+      {/* Scene 4: 405-540 frames (13.5-18s) */}
+      <Sequence from={405} durationInFrames={135}>
         <SceneCta />
       </Sequence>
       <Chrome />
