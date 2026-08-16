@@ -10,6 +10,7 @@ import { InstagramArtist } from "./InstagramArtist";
 import { InstagramCollector } from "./InstagramCollector";
 import { InstagramEstate } from "./InstagramEstate";
 import { InstagramGallery } from "./InstagramGallery";
+import { InstagramMission } from "./InstagramMission";
 
 export const RemotionRoot = () => (
   <>
@@ -97,6 +98,14 @@ export const RemotionRoot = () => (
       id="instagram-gallery"
       component={InstagramGallery}
       durationInFrames={765}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
+    <Composition
+      id="instagram-mission"
+      component={InstagramMission}
+      durationInFrames={780}
       fps={30}
       width={1080}
       height={1920}
