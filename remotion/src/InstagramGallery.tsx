@@ -110,7 +110,7 @@ const SceneRisk = () => {
           position: "absolute",
           left: 64,
           right: 64,
-          bottom: 300,
+          top: 620,
           display: "flex",
           flexDirection: "column",
           gap: 22,
@@ -120,6 +120,7 @@ const SceneRisk = () => {
         <FileCard label="Exhibition files" sub="Solo and group, venues, dates" delay={58} rotate={0.8} />
         <FileCard label="Image archives" sub="Installation views, credits" delay={70} rotate={-0.6} />
       </div>
+      <BottomBand src="images/install6.jpg" delay={80} height={520} />
     </AbsoluteFill>
   );
 };
