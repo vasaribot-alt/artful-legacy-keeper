@@ -9,6 +9,7 @@ import { HowToDuplicate } from "./HowToDuplicate";
 import { InstagramArtist } from "./InstagramArtist";
 import { InstagramCollector } from "./InstagramCollector";
 import { InstagramEstate } from "./InstagramEstate";
+import { InstagramGallery } from "./InstagramGallery";
 
 export const RemotionRoot = () => (
   <>
