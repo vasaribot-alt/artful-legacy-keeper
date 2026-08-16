@@ -6,6 +6,7 @@ import { HowToCapture } from "./HowToCapture";
 import { HowToExhibition } from "./HowToExhibition";
 import { HowToCatalogues } from "./HowToCatalogues";
 import { HowToDuplicate } from "./HowToDuplicate";
+import { InstagramArtist } from "./InstagramArtist";
 
 export const RemotionRoot = () => (
   <>
@@ -64,6 +65,14 @@ export const RemotionRoot = () => (
       fps={30}
       width={1920}
       height={1080}
+    />
+    <Composition
+      id="instagram-artist"
+      component={InstagramArtist}
+      durationInFrames={450}
+      fps={30}
+      width={1080}
+      height={1920}
     />
   </>
 );
