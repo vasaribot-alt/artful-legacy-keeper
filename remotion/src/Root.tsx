@@ -66,5 +66,13 @@ export const RemotionRoot = () => (
       width={1920}
       height={1080}
     />
+    <Composition
+      id="instagram-artist"
+      component={InstagramArtist}
+      durationInFrames={450}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
   </>
 );
