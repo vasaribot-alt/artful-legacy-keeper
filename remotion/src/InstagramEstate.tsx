@@ -256,6 +256,35 @@ const StepChip = ({ text, delay }: { text: string; delay: number }) => {
   );
 };
 
+const StewardBand = () => {
+  const frame = useCurrentFrame();
+  const o = interpolate(frame, [70, 100], [0, 1], { extrapolateRight: "clamp" });
+  const x = interpolate(frame, [70, 165], [-40, 0]);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 470,
+        height: 500,
+        overflow: "hidden",
+        opacity: o,
+      }}
+    >
+      <Img
+        src={staticFile("images/install5.jpg")}
+        style={{
+          width: "110%",
+          height: "100%",
+          objectFit: "cover",
+          transform: `translateX(${x}px)`,
+        }}
+      />
+    </div>
+  );
+};
+
 const SceneStewardship = () => {
   const frame = useCurrentFrame();
   const years = Math.round(
@@ -285,6 +314,7 @@ const SceneStewardship = () => {
         <StepChip text="Approve each record" delay={54} />
         <StepChip text="Control public visibility" delay={64} />
       </div>
+      <StewardBand />
       <div
         style={{
           position: "absolute",
