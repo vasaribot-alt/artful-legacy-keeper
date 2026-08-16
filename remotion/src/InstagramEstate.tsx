@@ -127,7 +127,7 @@ const SceneLoss = () => {
           position: "absolute",
           left: 64,
           right: 64,
-          bottom: 300,
+          bottom: 620,
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 30,
