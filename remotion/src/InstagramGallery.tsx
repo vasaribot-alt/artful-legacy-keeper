@@ -221,6 +221,7 @@ const SceneAsk = () => {
         <AskRow text="No transfer of ownership, clients or sales data" delay={58} positive={false} />
         <AskRow text="No member or contact lists requested" delay={70} positive={false} />
       </div>
+      <BottomBand src="images/install5.jpg" delay={84} height={940} />
     </AbsoluteFill>
   );
 };
