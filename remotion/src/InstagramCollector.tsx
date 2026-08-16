@@ -161,6 +161,35 @@ const SceneSolution = () => {
   );
 };
 
+const LoanImage = () => {
+  const frame = useCurrentFrame();
+  const o = interpolate(frame, [34, 60], [0, 1], { extrapolateRight: "clamp" });
+  const scale = interpolate(frame, [34, 150], [1.08, 1.0]);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 820,
+        overflow: "hidden",
+        opacity: o,
+      }}
+    >
+      <Img
+        src={staticFile("images/install4.jpg")}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transform: `scale(${scale})`,
+        }}
+      />
+    </div>
+  );
+};
+
 const SceneLend = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -196,6 +225,7 @@ const SceneLend = () => {
       >
         Willing to lend · enabled
       </div>
+      <LoanImage />
     </AbsoluteFill>
   );
 };
