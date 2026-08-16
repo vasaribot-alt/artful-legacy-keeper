@@ -354,7 +354,7 @@ const SceneCta = () => {
     >
       <Eyebrow text="Global Artist Registry Foundation" delay={2} />
       <div style={{ marginTop: 28 }}>
-        <BigWords lines={["Secure the", "legacy while", "it is still here."]} delay={8} size={76} italicIndex={2} />
+        <BigWords lines={["Secure your", "legacy while", "you are still here."]} delay={8} size={76} italicIndex={2} />
       </div>
       <div
         style={{
