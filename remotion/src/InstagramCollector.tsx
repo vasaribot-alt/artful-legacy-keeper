@@ -61,7 +61,7 @@ const GridTile = ({
         overflow: "hidden",
       }}
     >
-      <div style={{ height: 190, overflow: "hidden" }}>
+      <div style={{ height: 300, overflow: "hidden" }}>
         <Img src={staticFile(src)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
       <div
@@ -96,14 +96,14 @@ const SceneProblem = () => {
           position: "absolute",
           left: 64,
           right: 64,
-          bottom: 150,
+          bottom: 300,
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 22,
         }}
       >
-        <GridTile src="images/art1.jpg" delay={44} label="No provenance" />
-        <GridTile src="images/art3.jpg" delay={54} label="No condition" />
+        <GridTile src="images/artwork-bold.jpg" delay={44} label="No provenance" />
+        <GridTile src="images/install2.jpg" delay={54} label="No condition" />
       </div>
     </AbsoluteFill>
   );
@@ -149,7 +149,7 @@ const SceneSolution = () => {
         <PhoneFrame delay={62} rotate={7} translateY={70}>
           <div style={{ padding: "48px 14px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ height: 150, borderRadius: 10, overflow: "hidden", background: theme.card }}>
-              <Img src={staticFile("images/art2.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <Img src={staticFile("images/artwork-bold.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             <div style={{ height: 16, borderRadius: 4, background: `${theme.ink}10`, width: "72%" }} />
             <div style={{ height: 12, borderRadius: 4, background: `${theme.ink}0c`, width: "48%" }} />
