@@ -145,8 +145,8 @@ const SceneSolution = () => {
         <Row text="Where each work hangs — room by room" delay={46} />
         <Row text="Condition reports and loan history" delay={58} />
       </div>
-      <div style={{ position: "absolute", right: -40, bottom: 120, opacity: 0.5 }}>
-        <PhoneFrame delay={62} rotate={7} translateY={70}>
+      <div style={{ position: "absolute", right: 70, bottom: 180, opacity: 0.75 }}>
+        <PhoneFrame delay={62} rotate={-4} translateY={0}>
           <div style={{ padding: "48px 14px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ height: 150, borderRadius: 10, overflow: "hidden", background: theme.card }}>
               <Img src={staticFile("images/artwork-bold.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
