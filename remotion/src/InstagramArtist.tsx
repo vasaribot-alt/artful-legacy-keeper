@@ -198,7 +198,7 @@ const SceneProblem = () => {
         <BigWords lines={["Galleries close.", "Clouds change.", "Records disappear."]} delay={8} size={78} />
       </div>
       <BodyLine text="Without a single verified archive, the story of your work can fragment — or vanish entirely." delay={30} />
-      <div style={{ position: "absolute", right: -30, bottom: 140, opacity: 0.35 }}>
+      <div style={{ position: "absolute", right: -30, bottom: 140, opacity: 0.55 }}>
         <PhoneFrame delay={40} rotate={8} translateY={60}>
           <div style={{ paddingTop: 48, padding: "48px 14px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ height: 140, borderRadius: 10, background: theme.card, border: `1px solid ${theme.ink}12`, overflow: "hidden" }}>
