@@ -202,7 +202,7 @@ const SceneProblem = () => {
         <PhoneFrame delay={40} rotate={8} translateY={60}>
           <div style={{ paddingTop: 48, padding: "48px 14px 14px", flex: 1, display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ height: 140, borderRadius: 10, background: theme.card, border: `1px solid ${theme.ink}12`, overflow: "hidden" }}>
-              <Img src={staticFile("images/art1.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(100%)" }} />
+              <Img src={staticFile("images/artwork-bold.jpg")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
             <div style={{ height: 18, borderRadius: 4, background: `${theme.ink}08`, width: "70%" }} />
             <div style={{ height: 14, borderRadius: 4, background: `${theme.ink}08`, width: "45%" }} />
