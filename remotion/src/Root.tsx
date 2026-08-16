@@ -9,6 +9,7 @@ import { HowToDuplicate } from "./HowToDuplicate";
 import { InstagramArtist } from "./InstagramArtist";
 import { InstagramCollector } from "./InstagramCollector";
 import { InstagramEstate } from "./InstagramEstate";
+import { InstagramGallery } from "./InstagramGallery";
 
 export const RemotionRoot = () => (
   <>
@@ -87,6 +88,14 @@ export const RemotionRoot = () => (
     <Composition
       id="instagram-estate"
       component={InstagramEstate}
+      durationInFrames={765}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
+    <Composition
+      id="instagram-gallery"
+      component={InstagramGallery}
       durationInFrames={765}
       fps={30}
       width={1080}
