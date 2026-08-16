@@ -10,6 +10,7 @@ import { InstagramArtist } from "./InstagramArtist";
 import { InstagramCollector } from "./InstagramCollector";
 import { InstagramEstate } from "./InstagramEstate";
 import { InstagramGallery } from "./InstagramGallery";
+import { InstagramMission } from "./InstagramMission";
 
 export const RemotionRoot = () => (
   <>
