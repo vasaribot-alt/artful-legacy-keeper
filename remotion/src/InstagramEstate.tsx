@@ -198,7 +198,7 @@ const SceneArchive = () => {
           italicIndex={2}
         />
       </div>
-      <div style={{ marginTop: 40, maxWidth": 0 } as never} />
+      <div style={{ marginTop: 32 }} />
       <div style={{ marginTop: 8, maxWidth: 860 }}>
         <LedgerRow field="GAWID" value="GAWID-10024187" delay={34} />
         <LedgerRow field="Medium" value="Oil on linen" delay={44} />
