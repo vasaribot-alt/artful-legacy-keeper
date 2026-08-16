@@ -266,14 +266,14 @@ const StewardBand = () => {
         position: "absolute",
         left: 0,
         right: 0,
-        bottom: 470,
-        height: 500,
+        bottom: 430,
+        height: 700,
         overflow: "hidden",
         opacity: o,
       }}
     >
       <Img
-        src={staticFile("images/install5.jpg")}
+        src={staticFile("images/install1.jpg")}
         style={{
           width: "110%",
           height: "100%",
