@@ -21,6 +21,7 @@ interface ImportRow {
   id: string;
   file_name: string;
   file_size: number;
+  storage_path: string;
   status: string;
   message_count: number;
   ingested_count: number;
