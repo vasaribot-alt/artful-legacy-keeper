@@ -37,6 +37,7 @@ import RegistrarDashboard from "./pages/RegistrarDashboard";
 import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
 import Files from "./pages/Files";
+import Correspondence from "./pages/Correspondence";
 import StorageTiers from "./pages/StorageTiers";
 import Donate from "./pages/Donate";
 import Support from "./pages/Support";
@@ -97,6 +98,7 @@ const App = () => (
           <Route path="/series" element={<Series />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/files" element={<Files />} />
+          <Route path="/correspondence" element={<Correspondence />} />
           <Route path="/storage-tiers" element={<StorageTiers />} />
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />

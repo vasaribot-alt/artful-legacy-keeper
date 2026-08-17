@@ -17,6 +17,8 @@ const SOURCE_LABEL: Record<string, string> = {
   "exhibition-document": "Exhibition documents",
   "catalogue-cover": "Catalogue covers",
   "cv-image": "CV images",
+  "correspondence-original": "Mail archives",
+  "correspondence-attachment": "Mail attachments",
 };
 
 export const StorageUsageMeter = ({ userId }: { userId: string }) => {
