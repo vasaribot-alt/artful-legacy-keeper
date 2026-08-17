@@ -195,6 +195,9 @@ const About = () => {
                 +31 850 600 529
               </a>
             </div>
+            <div className="mt-2">
+              <InstagramLink variant="inline" />
+            </div>
           </div>
           <div>
             <div className="font-medium text-foreground mb-2">Registration</div>
