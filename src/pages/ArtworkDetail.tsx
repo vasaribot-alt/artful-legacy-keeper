@@ -28,6 +28,7 @@ import {
 import { ArrowLeft, ChevronLeft, ChevronRight, ImagePlus, X, FileUp, FileText, Trash2, Eye, ShieldCheck, ShieldOff, ShieldX, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { LocationHistoryManager } from "@/components/LocationHistoryManager";
+import { CorrespondencePanel } from "@/components/CorrespondencePanel";
 import { CollectorValuationSection } from "@/components/CollectorValuationSection";
 import { StructuredLocationSection } from "@/components/StructuredLocationSection";
 import { PhotographySizesManager } from "@/components/PhotographySizesManager";
@@ -902,6 +903,11 @@ const ArtworkDetail = () => {
             onLocationChange={(loc) => setArtworkLocation(loc)}
           />
         )}
+
+        {/* Correspondence linked to this work */}
+        {id && <CorrespondencePanel artworkId={id} />}
+
+
 
         {/* Collector-only: structured location + valuation */}
         {id && localStorage.getItem("activeRole") === "collector" && (
