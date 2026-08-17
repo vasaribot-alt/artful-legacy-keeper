@@ -158,6 +158,9 @@ Deno.serve(async (req) => {
     // ---------- INGEST ----------
     let inserted = 0;
     let skipped = 0;
+    let skippedEmpty = 0;
+    let skippedFiltered = 0;
+    let skippedDuplicate = 0;
     let attachmentBytes = 0;
     let minDate: string | null = null;
     let maxDate: string | null = null;
@@ -172,7 +175,9 @@ Deno.serve(async (req) => {
 
     for (const raw of slice) {
       const msg = parseRawMessage(raw);
-      if (excluded(msg, filters)) { skipped += 1; continue; }
+      if (isEmptyMessage(msg)) { skipped += 1; skippedEmpty += 1; continue; }
+      if (excluded(msg, filters)) { skipped += 1; skippedFiltered += 1; continue; }
+
 
       const { data: row, error: insErr } = await supabase
         .from("correspondence_messages")
