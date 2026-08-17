@@ -139,6 +139,15 @@ Deno.serve(async (req) => {
       const processedTo = offset + slice.length;
       const done = processedTo >= total;
 
+      // Diagnostics: what did the reader actually see?
+      const samples = slice.slice(0, 3).map((r) => r.slice(0, 300));
+      console.log("analyze diagnostics", JSON.stringify({
+        file: imp.file_name,
+        total,
+        samples,
+      }));
+
+
       if (done) {
         await supabase
           .from("correspondence_imports")
