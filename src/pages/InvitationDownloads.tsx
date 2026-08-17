@@ -71,8 +71,46 @@ const LANGUAGES: LangEntry[] = [
   },
 ];
 
+// Ready-to-forward notice organisations can paste into a newsletter, members'
+// area or email, so members who read English with difficulty find translations.
+const FORWARD_NOTICE: { code: string; native: string; text: string }[] = [
+  {
+    code: "EN",
+    native: "English",
+    text: "Invitation to artists — Global Artist Registry Foundation (GARF)\n\nGARF is a Dutch non-profit foundation building a permanent archival registry of artists' works, with a documented 100-year preservation plan. Registration is free for life for every ID-verified artist, and each artist owns their archive and can export it at any time.\n\nThe attached invitation is in English (the legally authoritative version). If you prefer to read it in your own language, translations in German, French, Spanish, Italian and Polish can be downloaded free of charge at https://globalartistregistry.org/invitation\n\nMore information: https://globalartistregistry.org",
+  },
+  {
+    code: "DE",
+    native: "Deutsch",
+    text: "Einladung an Künstlerinnen und Künstler — Global Artist Registry Foundation (GARF)\n\nGARF ist eine niederländische Non-Profit-Stiftung, die ein dauerhaftes Archivregister für Werke von Künstlerinnen und Künstlern aufbaut, mit einem dokumentierten 100-Jahre-Erhaltungsplan. Die Registrierung ist für alle identitätsgeprüften Künstlerinnen und Künstler lebenslang kostenlos; das Archiv gehört der Künstlerin bzw. dem Künstler und kann jederzeit exportiert werden.\n\nDie beigefügte Einladung ist auf Englisch (rechtlich verbindliche Version). Übersetzungen in Deutsch, Französisch, Spanisch, Italienisch und Polnisch stehen kostenlos zum Download bereit: https://globalartistregistry.org/invitation\n\nWeitere Informationen: https://globalartistregistry.org",
+  },
+  {
+    code: "FR",
+    native: "Français",
+    text: "Invitation aux artistes — Global Artist Registry Foundation (GARF)\n\nGARF est une fondation néerlandaise à but non lucratif qui constitue un registre d'archives permanent des œuvres d'artistes, avec un plan de conservation documenté sur 100 ans. L'inscription est gratuite à vie pour tout artiste dont l'identité est vérifiée ; chaque artiste est propriétaire de ses archives et peut les exporter à tout moment.\n\nL'invitation ci-jointe est en anglais (version juridiquement faisant foi). Des traductions en allemand, français, espagnol, italien et polonais peuvent être téléchargées gratuitement sur https://globalartistregistry.org/invitation\n\nPlus d'informations : https://globalartistregistry.org",
+  },
+  {
+    code: "ES",
+    native: "Español",
+    text: "Invitación a artistas — Global Artist Registry Foundation (GARF)\n\nGARF es una fundación neerlandesa sin ánimo de lucro que construye un registro archivístico permanente de las obras de los artistas, con un plan de conservación documentado a 100 años. El registro es gratuito de por vida para todo artista con identidad verificada; cada artista es propietario de su archivo y puede exportarlo en cualquier momento.\n\nLa invitación adjunta está en inglés (versión jurídicamente vinculante). Las traducciones al alemán, francés, español, italiano y polaco pueden descargarse gratuitamente en https://globalartistregistry.org/invitation\n\nMás información: https://globalartistregistry.org",
+  },
+  {
+    code: "IT",
+    native: "Italiano",
+    text: "Invito agli artisti — Global Artist Registry Foundation (GARF)\n\nGARF è una fondazione non profit olandese che costruisce un registro archivistico permanente delle opere degli artisti, con un piano di conservazione documentato di 100 anni. La registrazione è gratuita per tutta la vita per ogni artista con identità verificata; ogni artista è proprietario del proprio archivio e può esportarlo in qualsiasi momento.\n\nL'invito allegato è in inglese (versione giuridicamente valida). Le traduzioni in tedesco, francese, spagnolo, italiano e polacco possono essere scaricate gratuitamente su https://globalartistregistry.org/invitation\n\nMaggiori informazioni: https://globalartistregistry.org",
+  },
+  {
+    code: "PL",
+    native: "Polski",
+    text: "Zaproszenie dla artystów — Global Artist Registry Foundation (GARF)\n\nGARF to holenderska fundacja non-profit tworząca stały rejestr archiwalny dzieł artystów, z udokumentowanym planem konserwacji na 100 lat. Rejestracja jest dożywotnio bezpłatna dla każdego artysty zweryfikowanego na podstawie tożsamości; archiwum należy do artysty i może być w każdej chwili wyeksportowane.\n\nZałączone zaproszenie jest w języku angielskim (wersja wiążąca prawnie). Tłumaczenia na język niemiecki, francuski, hiszpański, włoski i polski można bezpłatnie pobrać na stronie https://globalartistregistry.org/invitation\n\nWięcej informacji: https://globalartistregistry.org",
+  },
+];
+
 export default function InvitationDownloads() {
   const [confirmLang, setConfirmLang] = useState<LangEntry | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [noticeLang, setNoticeLang] = useState("EN");
+
 
   useEffect(() => {
     document.title = "Invitation to artists — download in your language | GARF";
