@@ -20,6 +20,13 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
+/** macOS zips carry AppleDouble resource forks (__MACOSX/._name.eml) — never real mail. */
+const isJunkEntry = (name: string): boolean => {
+  const n = name.toLowerCase();
+  const base = n.split("/").pop() ?? n;
+  return n.includes("__macosx/") || base.startsWith("._") || base === ".ds_store" || base === "";
+};
+
 const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
   const lower = fileName.toLowerCase();
   const latin1 = new TextDecoder("iso-8859-1").decode(bytes);
@@ -29,7 +36,8 @@ const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
     const out: string[] = [];
     for (const [name, content] of Object.entries(files)) {
       const n = name.toLowerCase();
-      if (n.endsWith("/") || (!n.endsWith(".eml") && !n.endsWith(".mbox") && !n.endsWith(".txt"))) continue;
+      if (n.endsWith("/") || isJunkEntry(n)) continue;
+      if (!n.endsWith(".eml") && !n.endsWith(".mbox") && !n.endsWith(".txt")) continue;
       const text = new TextDecoder("iso-8859-1").decode(content as Uint8Array);
       if (n.endsWith(".mbox")) out.push(...splitMbox(text));
       else out.push(text);
@@ -40,6 +48,10 @@ const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
   if (lower.endsWith(".mbox") || /^From .+\r?\n/.test(latin1)) return splitMbox(latin1);
   return [latin1];
 };
+
+/** A message with no sender, no subject, no date and no body is not correspondence. */
+const isEmptyMessage = (msg: ParsedMessage): boolean =>
+  !msg.fromEmail && !msg.subject && !msg.sentAt && msg.bodyText.trim().length === 0;
 
 const excluded = (msg: ParsedMessage, filters: Filters): boolean => {
   const addresses = [msg.fromEmail, ...msg.toEmails, ...msg.ccEmails].filter(Boolean) as string[];
@@ -110,6 +122,7 @@ Deno.serve(async (req) => {
 
       for (const raw of slice) {
         const msg = parseRawMessage(raw);
+        if (isEmptyMessage(msg)) continue;
         for (const addr of [msg.fromEmail, ...msg.toEmails].filter(Boolean) as string[]) {
           correspondents[addr] = (correspondents[addr] ?? 0) + 1;
         }
@@ -145,6 +158,9 @@ Deno.serve(async (req) => {
     // ---------- INGEST ----------
     let inserted = 0;
     let skipped = 0;
+    let skippedEmpty = 0;
+    let skippedFiltered = 0;
+    let skippedDuplicate = 0;
     let attachmentBytes = 0;
     let minDate: string | null = null;
     let maxDate: string | null = null;
@@ -159,7 +175,9 @@ Deno.serve(async (req) => {
 
     for (const raw of slice) {
       const msg = parseRawMessage(raw);
-      if (excluded(msg, filters)) { skipped += 1; continue; }
+      if (isEmptyMessage(msg)) { skipped += 1; skippedEmpty += 1; continue; }
+      if (excluded(msg, filters)) { skipped += 1; skippedFiltered += 1; continue; }
+
 
       const { data: row, error: insErr } = await supabase
         .from("correspondence_messages")
@@ -184,6 +202,7 @@ Deno.serve(async (req) => {
         // duplicate message-id → already archived
         if ((insErr as { code?: string }).code === "23505" || /duplicate key/i.test(insErr.message)) {
           skipped += 1;
+          skippedDuplicate += 1;
           continue;
         }
         throw insErr;
@@ -265,7 +284,19 @@ Deno.serve(async (req) => {
       })
       .eq("id", importId);
 
-    return json({ action, total, processed_to: processedTo, done, inserted, skipped, attachment_bytes: attachmentBytes, warnings });
+    return json({
+      action,
+      total,
+      processed_to: processedTo,
+      done,
+      inserted,
+      skipped,
+      skipped_empty: skippedEmpty,
+      skipped_filtered: skippedFiltered,
+      skipped_duplicate: skippedDuplicate,
+      attachment_bytes: attachmentBytes,
+      warnings,
+    });
   } catch (e) {
     console.error("parse-correspondence error", e);
     return json({ error: e instanceof Error ? e.message : "Unable to parse correspondence" }, 500);
