@@ -11,6 +11,7 @@ import {
 import { loadFont as loadSerif } from "@remotion/google-fonts/DMSerifDisplay";
 import { loadFont as loadSans } from "@remotion/google-fonts/DMSans";
 import { theme } from "./theme";
+import { ReelSafe } from "./InstagramShared";
 
 loadSerif();
 loadSans();
@@ -332,6 +333,7 @@ export const InstagramArtist: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
+      <ReelSafe>
       {/* Scene 1: 0-105 frames (0-3.5s) */}
       <Sequence from={0} durationInFrames={105}>
         <SceneHook />
@@ -349,6 +351,7 @@ export const InstagramArtist: React.FC = () => {
         <SceneCta />
       </Sequence>
       <Chrome />
+    </ReelSafe>
     </AbsoluteFill>
   );
 };

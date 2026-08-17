@@ -225,3 +225,18 @@ export const Chrome = ({ index }: { index: string }) => {
     </AbsoluteFill>
   );
 };
+
+// Keeps every reel's content inside Instagram's safe zone: the 4:5 grid crop
+// (top/bottom trimmed on profile grids) and the Reels UI overlays.
+export const ReelSafe: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <AbsoluteFill>
+    <AbsoluteFill
+      style={{
+        transform: "scale(0.8) translateY(-40px)",
+        transformOrigin: "center center",
+      }}
+    >
+      {children}
+    </AbsoluteFill>
+  </AbsoluteFill>
+);
