@@ -66,6 +66,7 @@ const About = () => {
             <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Supporters
             </Link>
+            <InstagramLink />
             <Link to="/register">
               <Button size="sm">Get Started</Button>
             </Link>

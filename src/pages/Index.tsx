@@ -122,6 +122,7 @@ const Index = () => {
             >
               CR Foundation <ExternalLink className="w-3 h-3" />
             </a>
+            <InstagramLink />
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sign In
             </Link>
