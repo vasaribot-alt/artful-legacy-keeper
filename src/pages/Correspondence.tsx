@@ -278,7 +278,7 @@ export default function Correspondence() {
     const { data: msgs } = await supabase.from("correspondence_messages").select("id").eq("import_id", imp.id);
     const ids = (msgs ?? []).map((m) => m.id);
     if (ids.length) await supabase.from("correspondence_messages").delete().in("id", ids);
-    await supabase.storage.from("correspondence-originals").remove([imp.storage_path as unknown as string].filter(Boolean));
+    if (imp.storage_path) await supabase.storage.from("correspondence-originals").remove([imp.storage_path]);
     await supabase.from("correspondence_imports").delete().eq("id", imp.id);
     toast.success("Deposit deleted");
     await Promise.all([loadImports(userId), runSearch(userId)]);
