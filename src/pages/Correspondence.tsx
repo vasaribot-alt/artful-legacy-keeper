@@ -227,7 +227,11 @@ export default function Correspondence() {
       let offset = 0;
       let done = false;
       let inserted = 0;
+      let filteredOut = 0;
+      let duplicates = 0;
       const warnings = new Set<string>();
+      const narrowedFrom = dateFrom && dateFrom !== defaultRange.from ? dateFrom : null;
+      const narrowedTo = dateTo && dateTo !== defaultRange.to ? `${dateTo}T23:59:59Z` : null;
       while (!done) {
         setProgress(`Preserving messages… ${inserted}`);
         const { data, error } = await supabase.functions.invoke("parse-correspondence", {
@@ -236,8 +240,8 @@ export default function Correspondence() {
             action: "ingest",
             offset,
             filters: {
-              date_from: dateFrom || null,
-              date_to: dateTo ? `${dateTo}T23:59:59Z` : null,
+              date_from: narrowedFrom,
+              date_to: narrowedTo,
               exclude_emails: Array.from(excluded),
               skip_attachments: skipAttachments,
             },
@@ -246,11 +250,17 @@ export default function Correspondence() {
         if (error) throw error;
         if (data?.error) throw new Error(data.error);
         inserted += data.inserted ?? 0;
+        filteredOut += data.skipped_filtered ?? 0;
+        duplicates += data.skipped_duplicate ?? 0;
         (data.warnings ?? []).forEach((w: string) => warnings.add(w));
         offset = data.processed_to;
         done = data.done;
       }
-      toast.success(`${inserted} messages preserved`);
+      const detail = [
+        filteredOut ? `${filteredOut} left out by your filters` : null,
+        duplicates ? `${duplicates} already archived` : null,
+      ].filter(Boolean).join(" · ");
+      toast.success(`${inserted} messages preserved`, { description: detail || undefined });
       warnings.forEach((w) => toast.warning(w));
       setWizardImport(null);
       setAnalysis(null);
