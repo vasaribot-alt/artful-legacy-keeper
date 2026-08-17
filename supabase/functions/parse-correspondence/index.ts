@@ -122,6 +122,7 @@ Deno.serve(async (req) => {
 
       for (const raw of slice) {
         const msg = parseRawMessage(raw);
+        if (isEmptyMessage(msg)) continue;
         for (const addr of [msg.fromEmail, ...msg.toEmails].filter(Boolean) as string[]) {
           correspondents[addr] = (correspondents[addr] ?? 0) + 1;
         }
