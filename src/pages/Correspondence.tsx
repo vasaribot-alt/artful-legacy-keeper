@@ -71,6 +71,8 @@ export default function Correspondence() {
   const [analysis, setAnalysis] = useState<AnalysisSummary | null>(null);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  // Defaults come from the analysis; they are only sent as filters if the artist narrows them.
+  const [defaultRange, setDefaultRange] = useState<{ from: string; to: string }>({ from: "", to: "" });
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
   const [skipAttachments, setSkipAttachments] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
