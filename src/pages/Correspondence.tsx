@@ -198,8 +198,11 @@ export default function Correspondence() {
         done = data.done;
       }
       setAnalysis(merged);
-      setDateFrom(merged.min_date ? merged.min_date.slice(0, 10) : "");
-      setDateTo(merged.max_date ? merged.max_date.slice(0, 10) : "");
+      const defFrom = merged.min_date ? merged.min_date.slice(0, 10) : "";
+      const defTo = merged.max_date ? merged.max_date.slice(0, 10) : "";
+      setDateFrom(defFrom);
+      setDateTo(defTo);
+      setDefaultRange({ from: defFrom, to: defTo });
       setExcluded(new Set());
       setSkipAttachments(false);
       setAcknowledged(false);
