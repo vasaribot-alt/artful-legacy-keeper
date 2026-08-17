@@ -12,3 +12,5 @@ type: feature
 - Privacy: never public. Visibility is `private` or `embargoed` (+ `embargo_until_year` as archival metadata only). Approved registrars can read and confirm/reject suggestions, never delete. A counsel-drafted deposit agreement should replace the in-app acknowledgement before public promotion.
 - Correspondence bytes count toward storage tiers via `get_user_storage_usage` sources `correspondence-original` / `correspondence-attachment`.
 - `CorrespondencePanel` shows linked messages on artwork detail and exhibition edit views.
+- Ingest hygiene: zip entries in `__MACOSX/`, files starting with `._` and `.DS_Store` are dropped, and messages with no sender, subject, date and body are never inserted (they produced "(no subject) / Unknown sender" rows).
+- The review step pre-fills the date range from the analysis; those defaults are NOT sent as filters — only a range the artist actually narrows is applied, otherwise real messages get excluded.
