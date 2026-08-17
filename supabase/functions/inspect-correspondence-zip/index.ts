@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { unzipSync } from "https://esm.sh/fflate@0.8.2";
 import { corsHeaders } from "../_shared/cors.ts";
-import { parseRawMessage } from "../parse-correspondence/mime.ts";
+import { parseRawMessage } from "./mime.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
