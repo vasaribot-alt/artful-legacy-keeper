@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { InstagramLink } from "@/components/SocialLinks";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
 
 const tutorials = [
