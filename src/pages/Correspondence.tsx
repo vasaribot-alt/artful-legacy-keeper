@@ -243,6 +243,7 @@ export default function Correspondence() {
       let inserted = 0;
       let filteredOut = 0;
       let duplicates = 0;
+      let unreadable = 0;
       const warnings = new Set<string>();
       const narrowedFrom = dateFrom && dateFrom !== defaultRange.from ? dateFrom : null;
       const narrowedTo = dateTo && dateTo !== defaultRange.to ? `${dateTo}T23:59:59Z` : null;
@@ -266,6 +267,7 @@ export default function Correspondence() {
         inserted += data.inserted ?? 0;
         filteredOut += data.skipped_filtered ?? 0;
         duplicates += data.skipped_duplicate ?? 0;
+        unreadable += data.skipped_empty ?? 0;
         (data.warnings ?? []).forEach((w: string) => warnings.add(w));
         offset = data.processed_to;
         done = data.done;
@@ -273,8 +275,11 @@ export default function Correspondence() {
       const detail = [
         filteredOut ? `${filteredOut} left out by your filters` : null,
         duplicates ? `${duplicates} already archived` : null,
+        unreadable ? `${unreadable} not readable as mail` : null,
       ].filter(Boolean).join(" · ");
-      toast.success(`${inserted} messages preserved`, { description: detail || undefined });
+      if (inserted === 0) toast.error("No messages were preserved", { description: detail || "The file contained no readable messages." });
+      else toast.success(`${inserted} messages preserved`, { description: detail || undefined });
+
       warnings.forEach((w) => toast.warning(w));
       setWizardImport(null);
       setAnalysis(null);
