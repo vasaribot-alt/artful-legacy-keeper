@@ -210,6 +210,62 @@ export default function InvitationDownloads() {
           </p>
         </section>
 
+        <section aria-labelledby="forward" className="mt-16">
+          <h2 id="forward" className="text-sm uppercase tracking-widest text-muted-foreground">
+            For organisations — ready-to-forward text
+          </h2>
+          <p className="mt-4 max-w-2xl text-sm text-muted-foreground">
+            Attach the English PDF (or paste the text below) and send it to your members. Every PDF carries a
+            footer pointing artists to this page, so members who find English difficult can download the
+            invitation in their own language.
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            {FORWARD_NOTICE.map((n) => (
+              <button
+                key={n.code}
+                type="button"
+                onClick={() => setNoticeLang(n.code)}
+                className={`border px-3 py-1.5 text-xs uppercase tracking-widest transition-colors ${
+                  noticeLang === n.code
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {n.native}
+              </button>
+            ))}
+          </div>
+
+          {FORWARD_NOTICE.filter((n) => n.code === noticeLang).map((n) => (
+            <div key={n.code} className="mt-4 border border-border">
+              <pre className="max-h-72 overflow-auto whitespace-pre-wrap p-5 text-sm leading-relaxed">
+                {n.text}
+              </pre>
+              <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-3">
+                <span className="text-xs text-muted-foreground">
+                  Paste into a newsletter, members' area or email.
+                </span>
+                <Button variant="outline" size="sm" onClick={() => copyNotice(n.code, n.text)}>
+                  {copied === n.code ? (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="mr-2 h-4 w-4" />
+                      Copy text
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </section>
+
+
+
         <section className="mt-14 rounded-md border border-border p-6">
           <div className="flex items-start gap-3">
             <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
