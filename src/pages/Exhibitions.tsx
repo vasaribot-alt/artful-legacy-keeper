@@ -28,6 +28,7 @@ import { ImportCvExhibitionsDialog } from "@/components/ImportCvExhibitionsDialo
 import { ExhibitionArtworkPicker } from "@/components/ExhibitionArtworkPicker";
 import { SortableExhibitionImageGrid } from "@/components/SortableExhibitionImageGrid";
 import { ExhibitionDocuments } from "@/components/ExhibitionDocuments";
+import { CorrespondencePanel } from "@/components/CorrespondencePanel";
 
 interface Exhibition {
   id: string;
@@ -527,6 +528,7 @@ const Exhibitions = () => {
               <div className="space-y-2">
                 <Label>Documents</Label>
                 <ExhibitionDocuments exhibitionId={editingId} />
+                <CorrespondencePanel exhibitionId={editingId} />
               </div>
             ) : (
               <p className="text-xs text-muted-foreground">Save exhibition first to add documents.</p>

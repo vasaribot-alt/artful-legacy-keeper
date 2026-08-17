@@ -805,6 +805,245 @@ export type Database = {
         }
         Relationships: []
       }
+      correspondence_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number
+          id: string
+          message_id: string
+          mime_type: string | null
+          owner_id: string
+          sha256: string
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number
+          id?: string
+          message_id: string
+          mime_type?: string | null
+          owner_id: string
+          sha256: string
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          id?: string
+          message_id?: string
+          mime_type?: string | null
+          owner_id?: string
+          sha256?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "correspondence_attachments_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "correspondence_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      correspondence_imports: {
+        Row: {
+          attachment_bytes: number
+          created_at: string
+          date_from: string | null
+          date_to: string | null
+          error_message: string | null
+          file_name: string
+          file_size: number
+          id: string
+          ingested_count: number
+          message_count: number
+          owner_id: string
+          role_context: string
+          status: string
+          storage_path: string
+          updated_at: string
+        }
+        Insert: {
+          attachment_bytes?: number
+          created_at?: string
+          date_from?: string | null
+          date_to?: string | null
+          error_message?: string | null
+          file_name: string
+          file_size?: number
+          id?: string
+          ingested_count?: number
+          message_count?: number
+          owner_id: string
+          role_context?: string
+          status?: string
+          storage_path: string
+          updated_at?: string
+        }
+        Update: {
+          attachment_bytes?: number
+          created_at?: string
+          date_from?: string | null
+          date_to?: string | null
+          error_message?: string | null
+          file_name?: string
+          file_size?: number
+          id?: string
+          ingested_count?: number
+          message_count?: number
+          owner_id?: string
+          role_context?: string
+          status?: string
+          storage_path?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      correspondence_links: {
+        Row: {
+          artwork_id: string | null
+          confidence: number | null
+          created_at: string
+          exhibition_id: string | null
+          id: string
+          message_id: string
+          owner_id: string
+          reasoning: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          artwork_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          exhibition_id?: string | null
+          id?: string
+          message_id: string
+          owner_id: string
+          reasoning?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          artwork_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          exhibition_id?: string | null
+          id?: string
+          message_id?: string
+          owner_id?: string
+          reasoning?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "correspondence_links_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "correspondence_links_exhibition_id_fkey"
+            columns: ["exhibition_id"]
+            isOneToOne: false
+            referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "correspondence_links_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "correspondence_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      correspondence_messages: {
+        Row: {
+          body_html_path: string | null
+          body_text: string | null
+          cc_emails: string[]
+          created_at: string
+          embargo_until_year: number | null
+          from_email: string | null
+          from_name: string | null
+          has_attachments: boolean
+          id: string
+          import_id: string | null
+          message_id_header: string | null
+          notes: string | null
+          owner_id: string
+          role_context: string
+          search_tsv: unknown
+          sent_at: string | null
+          subject: string | null
+          thread_key: string | null
+          to_emails: string[]
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          body_html_path?: string | null
+          body_text?: string | null
+          cc_emails?: string[]
+          created_at?: string
+          embargo_until_year?: number | null
+          from_email?: string | null
+          from_name?: string | null
+          has_attachments?: boolean
+          id?: string
+          import_id?: string | null
+          message_id_header?: string | null
+          notes?: string | null
+          owner_id: string
+          role_context?: string
+          search_tsv?: unknown
+          sent_at?: string | null
+          subject?: string | null
+          thread_key?: string | null
+          to_emails?: string[]
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          body_html_path?: string | null
+          body_text?: string | null
+          cc_emails?: string[]
+          created_at?: string
+          embargo_until_year?: number | null
+          from_email?: string | null
+          from_name?: string | null
+          has_attachments?: boolean
+          id?: string
+          import_id?: string | null
+          message_id_header?: string | null
+          notes?: string | null
+          owner_id?: string
+          role_context?: string
+          search_tsv?: unknown
+          sent_at?: string | null
+          subject?: string | null
+          thread_key?: string | null
+          to_emails?: string[]
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "correspondence_messages_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "correspondence_imports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cr_audit_log: {
         Row: {
           action: string
