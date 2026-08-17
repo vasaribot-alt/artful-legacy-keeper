@@ -17,6 +17,7 @@ import {
   BodyLine,
   PhoneFrame,
   Chrome,
+  ReelSafe,
 } from "./InstagramShared";
 
 const SceneHook = () => {
@@ -285,6 +286,7 @@ export const InstagramCollector: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
+      <ReelSafe>
       <Sequence from={0} durationInFrames={105}>
         <SceneHook />
       </Sequence>
@@ -301,6 +303,7 @@ export const InstagramCollector: React.FC = () => {
         <SceneCta />
       </Sequence>
       <Chrome index="02 / 05" />
+    </ReelSafe>
     </AbsoluteFill>
   );
 };

@@ -16,6 +16,7 @@ import {
   BigWords,
   BodyLine,
   Chrome,
+  ReelSafe,
 } from "./InstagramShared";
 
 const SceneHook = () => {
@@ -358,6 +359,7 @@ export const InstagramGallery: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
+      <ReelSafe>
       <Sequence from={0} durationInFrames={120}>
         <SceneHook />
       </Sequence>
@@ -374,6 +376,7 @@ export const InstagramGallery: React.FC = () => {
         <SceneCta />
       </Sequence>
       <Chrome index="04 / 05" />
+    </ReelSafe>
     </AbsoluteFill>
   );
 };

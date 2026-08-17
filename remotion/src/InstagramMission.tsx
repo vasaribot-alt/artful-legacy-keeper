@@ -17,6 +17,7 @@ import {
   BigWords,
   BodyLine,
   Chrome,
+  ReelSafe,
 } from "./InstagramShared";
 
 const ImageBand = ({
@@ -309,6 +310,7 @@ export const InstagramMission: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
+      <ReelSafe>
       <Sequence from={0} durationInFrames={125}>
         <SceneHook />
       </Sequence>
@@ -325,6 +327,7 @@ export const InstagramMission: React.FC = () => {
         <SceneCta />
       </Sequence>
       <Chrome index="05 / 05" />
+    </ReelSafe>
     </AbsoluteFill>
   );
 };

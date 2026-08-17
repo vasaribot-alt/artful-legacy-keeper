@@ -17,6 +17,7 @@ import {
   BigWords,
   BodyLine,
   Chrome,
+  ReelSafe,
 } from "./InstagramShared";
 
 /* ---------------- Scene 1 — Hook ---------------- */
@@ -392,6 +393,7 @@ export const InstagramEstate: React.FC = () => {
   return (
     <AbsoluteFill>
       <PaperGrain />
+      <ReelSafe>
       <Sequence from={0} durationInFrames={120}>
         <SceneHook />
       </Sequence>
@@ -408,6 +410,7 @@ export const InstagramEstate: React.FC = () => {
         <SceneCta />
       </Sequence>
       <Chrome index="03 / 05" />
+    </ReelSafe>
     </AbsoluteFill>
   );
 };
