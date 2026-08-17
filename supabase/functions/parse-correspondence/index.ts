@@ -20,6 +20,13 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
+/** macOS zips carry AppleDouble resource forks (__MACOSX/._name.eml) — never real mail. */
+const isJunkEntry = (name: string): boolean => {
+  const n = name.toLowerCase();
+  const base = n.split("/").pop() ?? n;
+  return n.includes("__macosx/") || base.startsWith("._") || base === ".ds_store" || base === "";
+};
+
 const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
   const lower = fileName.toLowerCase();
   const latin1 = new TextDecoder("iso-8859-1").decode(bytes);
@@ -29,7 +36,8 @@ const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
     const out: string[] = [];
     for (const [name, content] of Object.entries(files)) {
       const n = name.toLowerCase();
-      if (n.endsWith("/") || (!n.endsWith(".eml") && !n.endsWith(".mbox") && !n.endsWith(".txt"))) continue;
+      if (n.endsWith("/") || isJunkEntry(n)) continue;
+      if (!n.endsWith(".eml") && !n.endsWith(".mbox") && !n.endsWith(".txt")) continue;
       const text = new TextDecoder("iso-8859-1").decode(content as Uint8Array);
       if (n.endsWith(".mbox")) out.push(...splitMbox(text));
       else out.push(text);
@@ -40,6 +48,10 @@ const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
   if (lower.endsWith(".mbox") || /^From .+\r?\n/.test(latin1)) return splitMbox(latin1);
   return [latin1];
 };
+
+/** A message with no sender, no subject, no date and no body is not correspondence. */
+const isEmptyMessage = (msg: ParsedMessage): boolean =>
+  !msg.fromEmail && !msg.subject && !msg.sentAt && msg.bodyText.trim().length === 0;
 
 const excluded = (msg: ParsedMessage, filters: Filters): boolean => {
   const addresses = [msg.fromEmail, ...msg.toEmails, ...msg.ccEmails].filter(Boolean) as string[];
