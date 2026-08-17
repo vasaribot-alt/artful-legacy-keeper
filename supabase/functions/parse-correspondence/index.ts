@@ -284,7 +284,19 @@ Deno.serve(async (req) => {
       })
       .eq("id", importId);
 
-    return json({ action, total, processed_to: processedTo, done, inserted, skipped, attachment_bytes: attachmentBytes, warnings });
+    return json({
+      action,
+      total,
+      processed_to: processedTo,
+      done,
+      inserted,
+      skipped,
+      skipped_empty: skippedEmpty,
+      skipped_filtered: skippedFiltered,
+      skipped_duplicate: skippedDuplicate,
+      attachment_bytes: attachmentBytes,
+      warnings,
+    });
   } catch (e) {
     console.error("parse-correspondence error", e);
     return json({ error: e instanceof Error ? e.message : "Unable to parse correspondence" }, 500);
