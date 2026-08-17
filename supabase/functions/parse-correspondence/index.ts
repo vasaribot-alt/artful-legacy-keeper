@@ -34,20 +34,25 @@ const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
   if (lower.endsWith(".zip")) {
     const files = unzipSync(bytes);
     const out: string[] = [];
+    const kept: string[] = [];
+    const dropped: string[] = [];
     for (const [name, content] of Object.entries(files)) {
       const n = name.toLowerCase();
-      if (n.endsWith("/") || isJunkEntry(n)) continue;
-      if (!n.endsWith(".eml") && !n.endsWith(".mbox") && !n.endsWith(".txt")) continue;
+      if (n.endsWith("/") || isJunkEntry(n)) { dropped.push(name); continue; }
+      if (!n.endsWith(".eml") && !n.endsWith(".mbox") && !n.endsWith(".txt")) { dropped.push(name); continue; }
+      kept.push(name);
       const text = new TextDecoder("iso-8859-1").decode(content as Uint8Array);
       if (n.endsWith(".mbox")) out.push(...splitMbox(text));
       else out.push(text);
     }
+    console.log("zip entries", JSON.stringify({ kept: kept.slice(0, 40), dropped: dropped.slice(0, 40), keptCount: kept.length, droppedCount: dropped.length }));
     return out;
   }
 
   if (lower.endsWith(".mbox") || /^From .+\r?\n/.test(latin1)) return splitMbox(latin1);
   return [latin1];
 };
+
 
 /** Without a sender, subject, date or Message-ID this is not a mail message (resource forks, stray binaries). */
 const isEmptyMessage = (msg: ParsedMessage): boolean =>
