@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { InstagramLink } from "@/components/SocialLinks";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
 
 const tutorials = [
@@ -121,6 +122,7 @@ const Index = () => {
             >
               CR Foundation <ExternalLink className="w-3 h-3" />
             </a>
+            <InstagramLink />
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sign In
             </Link>
@@ -395,6 +397,9 @@ const Index = () => {
             </div>
             <div>
               <a href="tel:+31850600529" className="hover:text-foreground">+31 850 600 529</a>
+            </div>
+            <div className="mt-2">
+              <InstagramLink variant="inline" />
             </div>
           </div>
           <div>

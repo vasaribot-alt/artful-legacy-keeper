@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { InstagramLink } from "@/components/SocialLinks";
 import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Download, Handshake } from "lucide-react";
 
 const principles = [
@@ -65,6 +66,7 @@ const About = () => {
             <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Supporters
             </Link>
+            <InstagramLink />
             <Link to="/register">
               <Button size="sm">Get Started</Button>
             </Link>
@@ -192,6 +194,9 @@ const About = () => {
               <a href="tel:+31850600529" className="hover:text-foreground">
                 +31 850 600 529
               </a>
+            </div>
+            <div className="mt-2">
+              <InstagramLink variant="inline" />
             </div>
           </div>
           <div>
