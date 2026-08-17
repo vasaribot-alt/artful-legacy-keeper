@@ -149,6 +149,17 @@ export default function InvitationDownloads() {
     }
   };
 
+  const copyNotice = async (code: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(code);
+      setTimeout(() => setCopied((c) => (c === code ? null : c)), 2000);
+    } catch {
+      setCopied(null);
+    }
+  };
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border">
