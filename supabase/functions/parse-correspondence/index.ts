@@ -202,6 +202,7 @@ Deno.serve(async (req) => {
         // duplicate message-id → already archived
         if ((insErr as { code?: string }).code === "23505" || /duplicate key/i.test(insErr.message)) {
           skipped += 1;
+          skippedDuplicate += 1;
           continue;
         }
         throw insErr;
