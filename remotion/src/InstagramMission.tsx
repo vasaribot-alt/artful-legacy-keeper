@@ -167,7 +167,7 @@ const SceneWhat = () => {
     <AbsoluteFill style={{ padding: "140px 64px 0" }}>
       <Eyebrow text="What we do" delay={2} />
       <div style={{ marginTop: 24 }}>
-        <BigWords lines={["One record.", "Verified.", "Permanent."]} delay={8} size={76} italicIndex={1} />
+        <BigWords lines={["One record.", "Permanent."]} delay={8} size={76} italicIndex={1} />
       </div>
       <div
         style={{
