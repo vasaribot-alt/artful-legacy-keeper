@@ -189,8 +189,19 @@ Deno.serve(async (req) => {
 
     for (const raw of slice) {
       const msg = parseRawMessage(raw);
-      if (isEmptyMessage(msg)) { skipped += 1; skippedEmpty += 1; continue; }
-      if (excluded(msg, filters)) { skipped += 1; skippedFiltered += 1; continue; }
+      if (isEmptyMessage(msg)) {
+        skipped += 1;
+        skippedEmpty += 1;
+        if (skippedEmpty <= 3) console.log("skipped-empty sample", JSON.stringify(raw.slice(0, 400)));
+        continue;
+      }
+      if (excluded(msg, filters)) {
+        skipped += 1;
+        skippedFiltered += 1;
+        if (skippedFiltered <= 3) console.log("skipped-filtered sample", JSON.stringify({ from: msg.fromEmail, sentAt: msg.sentAt, filters }));
+        continue;
+      }
+
 
 
       const { data: row, error: insErr } = await supabase
