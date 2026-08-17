@@ -150,32 +150,11 @@ export default function Correspondence() {
     return Array.from(set).sort().reverse();
   }, [results]);
 
-  // ---------- upload + analyze ----------
-  const handleFile = async (file: File) => {
+  // ---------- analyze an already-uploaded deposit ----------
+  const analyzeAndOpen = async (imp: ImportRow) => {
     if (!userId) return;
-    const name = file.name.toLowerCase();
-    if (!/\.(mbox|eml|zip|txt)$/.test(name)) {
-      toast.error("Unsupported file", { description: "Upload a .mbox, .eml, or .zip of .eml files." });
-      return;
-    }
     setUploading(true);
-    setProgress("Uploading…");
     try {
-      await assertWithinQuota(userId, file.size);
-      const path = `${userId}/${crypto.randomUUID()}-${file.name.replace(/[^\w.\-]+/g, "_")}`;
-      const { error: upErr } = await supabase.storage
-        .from("correspondence-originals")
-        .upload(path, file, { upsert: false });
-      if (upErr) throw upErr;
-
-      const { data: imp, error: impErr } = await supabase
-        .from("correspondence_imports")
-        .insert({ owner_id: userId, file_name: file.name, file_size: file.size, storage_path: path, status: "uploaded" })
-        .select("*")
-        .single();
-      if (impErr) throw impErr;
-
-      // analyze in chunks
       const merged: AnalysisSummary = { correspondents: {}, attachment_bytes: 0, attachment_count: 0, min_date: null, max_date: null, undated: 0, total: 0 };
       let offset = 0;
       let done = false;
@@ -206,19 +185,54 @@ export default function Correspondence() {
       setExcluded(new Set());
       setSkipAttachments(false);
       setAcknowledged(false);
-      setWizardImport(imp as ImportRow);
+      setWizardImport(imp);
       await loadImports(userId);
+    } catch (e) {
+      toast.error("Could not read the deposit", { description: e instanceof Error ? e.message : "Unknown error" });
+    } finally {
+      setUploading(false);
+      setProgress(null);
+    }
+  };
+
+  // ---------- upload + analyze ----------
+  const handleFile = async (file: File) => {
+    if (!userId) return;
+    const name = file.name.toLowerCase();
+    if (!/\.(mbox|eml|zip|txt)$/.test(name)) {
+      toast.error("Unsupported file", { description: "Upload a .mbox, .eml, or .zip of .eml files." });
+      return;
+    }
+    setUploading(true);
+    setProgress("Uploading…");
+    try {
+      await assertWithinQuota(userId, file.size);
+      const path = `${userId}/${crypto.randomUUID()}-${file.name.replace(/[^\w.\-]+/g, "_")}`;
+      const { error: upErr } = await supabase.storage
+        .from("correspondence-originals")
+        .upload(path, file, { upsert: false });
+      if (upErr) throw upErr;
+
+      const { data: imp, error: impErr } = await supabase
+        .from("correspondence_imports")
+        .insert({ owner_id: userId, file_name: file.name, file_size: file.size, storage_path: path, status: "uploaded" })
+        .select("*")
+        .single();
+      if (impErr) throw impErr;
+
+      setUploading(false);
+      await analyzeAndOpen(imp as ImportRow);
     } catch (e) {
       if (e instanceof QuotaExceededError) {
         toast.error("Storage quota exceeded", { description: "Upgrade your storage tier to deposit this mailbox." });
       } else {
         toast.error("Upload failed", { description: e instanceof Error ? e.message : "Unknown error" });
       }
-    } finally {
       setUploading(false);
       setProgress(null);
     }
   };
+
 
   const runIngest = async () => {
     if (!wizardImport || !userId) return;
@@ -376,6 +390,11 @@ export default function Correspondence() {
                     </div>
                   </div>
                   <Badge variant="outline" className="text-[10px] uppercase">{i.status}</Badge>
+                  {i.ingested_count === 0 && (
+                    <Button variant="outline" size="sm" onClick={() => analyzeAndOpen(i)} disabled={uploading || !!progress}>
+                      Review & preserve
+                    </Button>
+                  )}
                   <Button variant="ghost" size="icon" onClick={() => deleteImport(i)} aria-label="Delete deposit">
                     <Trash2 className="w-4 h-4" />
                   </Button>
