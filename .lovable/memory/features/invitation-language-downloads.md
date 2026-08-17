@@ -11,3 +11,5 @@ Artist organisations forward the artist invitation to their members. To remove t
 - The page repeats the "What we are asking — and what we are not asking" section (forward only, no member data, free for life, not a marketplace).
 - The `generate-outreach-email` edge function tells artist organisations that the invitation can be downloaded in those six languages at https://globalartistregistry.org/invitation.
 - To add a language: translate the JSON content, render a new PDF into `public/invitation/`, and add an entry to `LANGUAGES` in the page.
+- Every invitation PDF (all six languages) carries a stamped grey footer band: "Translations / Übersetzungen / … — globalartistregistry.org/invitation" plus the note that English is legally authoritative, so a forwarded PDF alone tells artists where to find their language.
+- `/invitation` also has a "For organisations — ready-to-forward text" section: language tabs with a copy-to-clipboard announcement in EN/DE/FR/ES/IT/PL that organisations paste into a newsletter, members' area or email.
