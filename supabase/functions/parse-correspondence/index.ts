@@ -49,9 +49,9 @@ const rawMessagesFromFile = (fileName: string, bytes: Uint8Array): string[] => {
   return [latin1];
 };
 
-/** A message with no sender, no subject, no date and no body is not correspondence. */
+/** Without a sender, subject, date or Message-ID this is not a mail message (resource forks, stray binaries). */
 const isEmptyMessage = (msg: ParsedMessage): boolean =>
-  !msg.fromEmail && !msg.subject && !msg.sentAt && msg.bodyText.trim().length === 0;
+  !msg.fromEmail && !msg.subject && !msg.sentAt && !msg.messageIdHeader;
 
 const excluded = (msg: ParsedMessage, filters: Filters): boolean => {
   const addresses = [msg.fromEmail, ...msg.toEmails, ...msg.ccEmails].filter(Boolean) as string[];
