@@ -120,6 +120,7 @@ const paramOf = (headerValue: string, name: string): string | null => {
 
 interface Collected {
   text: string[];
+  html: string[];
   attachments: ParsedAttachment[];
 }
 
@@ -161,14 +162,14 @@ const walkPart = (raw: string, depth: number, acc: Collected) => {
     return;
   }
 
-  if (mime === "text/html" && acc.text.length === 0) {
+  if (mime === "text/html") {
     const html = bytesToText(decodeTransfer(body, encoding), paramOf(contentType, "charset") ?? undefined);
-    acc.text.push(
+    acc.html.push(
       html
         .replace(/<style[\s\S]*?<\/style>/gi, " ")
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
         .replace(/<br\s*\/?>/gi, "\n")
-        .replace(/<\/p>/gi, "\n\n")
+        .replace(/<\/(p|div|tr|li|h[1-6])>/gi, "\n")
         .replace(/<[^>]+>/g, " ")
         .replace(/&nbsp;/g, " ")
         .replace(/&amp;/g, "&")
@@ -223,7 +224,7 @@ const normalizeSubject = (subject: string | null): string | null => {
 export const parseRawMessage = (raw: string): ParsedMessage => {
   const [headerBlock] = splitHeadersBody(raw);
   const headers = parseHeaders(headerBlock);
-  const acc: Collected = { text: [], attachments: [] };
+  const acc: Collected = { text: [], html: [], attachments: [] };
   walkPart(raw, 0, acc);
 
   const from = parseAddressList(headers["from"])[0] ?? null;
@@ -255,7 +256,14 @@ export const parseRawMessage = (raw: string): ParsedMessage => {
     toEmails: to,
     ccEmails: cc,
     subject,
-    bodyText: acc.text.join("\n\n").trim(),
+    // Some senders ship a placeholder text/plain part (a stray number, "See the
+    // HTML version") next to the real HTML body — take whichever is substantive.
+    bodyText: (() => {
+      const plain = acc.text.join("\n\n").trim();
+      const html = acc.html.join("\n\n").trim();
+      if (plain.length >= 40 || !html) return plain;
+      return html.length > plain.length ? html : plain;
+    })(),
     attachments: acc.attachments.filter((a) => a.bytes.length > 0),
   };
 };
