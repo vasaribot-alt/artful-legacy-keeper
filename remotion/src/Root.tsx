@@ -8,6 +8,7 @@ import { HowToCatalogues } from "./HowToCatalogues";
 import { HowToDuplicate } from "./HowToDuplicate";
 import { InstagramArtist } from "./InstagramArtist";
 import { InstagramCollector } from "./InstagramCollector";
+import { InstagramCorrespondence } from "./InstagramCorrespondence";
 import { InstagramEstate } from "./InstagramEstate";
 import { InstagramGallery } from "./InstagramGallery";
 import { InstagramMission } from "./InstagramMission";
