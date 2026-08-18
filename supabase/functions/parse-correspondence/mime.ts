@@ -120,6 +120,7 @@ const paramOf = (headerValue: string, name: string): string | null => {
 
 interface Collected {
   text: string[];
+  html: string[];
   attachments: ParsedAttachment[];
 }
 
