@@ -59,12 +59,14 @@ const isEmptyMessage = (msg: ParsedMessage): boolean =>
   !msg.fromEmail && !msg.subject && !msg.sentAt && !msg.messageIdHeader;
 
 const excluded = (msg: ParsedMessage, filters: Filters): boolean => {
-  const addresses = [msg.fromEmail, ...msg.toEmails, ...msg.ccEmails].filter(Boolean) as string[];
+  // Only the sender decides exclusion. Matching on To/Cc would drop the whole
+  // archive as soon as the depositor excludes their own address.
+  const sender = (msg.fromEmail ?? "").toLowerCase();
   const emails = (filters.exclude_emails ?? []).map((e) => e.toLowerCase().trim()).filter(Boolean);
   const domains = (filters.exclude_domains ?? []).map((d) => d.toLowerCase().trim().replace(/^@/, "")).filter(Boolean);
 
-  if (emails.length && addresses.some((a) => emails.includes(a))) return true;
-  if (domains.length && addresses.some((a) => domains.some((d) => a.endsWith(`@${d}`)))) return true;
+  if (sender && emails.includes(sender)) return true;
+  if (sender && domains.some((d) => sender.endsWith(`@${d}`))) return true;
 
   if (msg.sentAt) {
     const t = new Date(msg.sentAt).getTime();
@@ -73,6 +75,7 @@ const excluded = (msg: ParsedMessage, filters: Filters): boolean => {
   }
   return false;
 };
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
