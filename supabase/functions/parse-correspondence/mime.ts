@@ -169,7 +169,7 @@ const walkPart = (raw: string, depth: number, acc: Collected) => {
         .replace(/<style[\s\S]*?<\/style>/gi, " ")
         .replace(/<script[\s\S]*?<\/script>/gi, " ")
         .replace(/<br\s*\/?>/gi, "\n")
-        .replace(/<\/p>/gi, "\n\n")
+        .replace(/<\/(p|div|tr|li|h[1-6])>/gi, "\n")
         .replace(/<[^>]+>/g, " ")
         .replace(/&nbsp;/g, " ")
         .replace(/&amp;/g, "&")
