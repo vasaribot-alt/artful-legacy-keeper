@@ -224,7 +224,7 @@ const normalizeSubject = (subject: string | null): string | null => {
 export const parseRawMessage = (raw: string): ParsedMessage => {
   const [headerBlock] = splitHeadersBody(raw);
   const headers = parseHeaders(headerBlock);
-  const acc: Collected = { text: [], attachments: [] };
+  const acc: Collected = { text: [], html: [], attachments: [] };
   walkPart(raw, 0, acc);
 
   const from = parseAddressList(headers["from"])[0] ?? null;
