@@ -256,7 +256,14 @@ export const parseRawMessage = (raw: string): ParsedMessage => {
     toEmails: to,
     ccEmails: cc,
     subject,
-    bodyText: acc.text.join("\n\n").trim(),
+    // Some senders ship a placeholder text/plain part (a stray number, "See the
+    // HTML version") next to the real HTML body — take whichever is substantive.
+    bodyText: (() => {
+      const plain = acc.text.join("\n\n").trim();
+      const html = acc.html.join("\n\n").trim();
+      if (plain.length >= 40 || !html) return plain;
+      return html.length > plain.length ? html : plain;
+    })(),
     attachments: acc.attachments.filter((a) => a.bytes.length > 0),
   };
 };
