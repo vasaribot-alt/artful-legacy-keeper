@@ -506,8 +506,10 @@ export default function Correspondence() {
 
             <div>
               <div className="text-xs text-muted-foreground mb-2">
-                Exclude correspondents (bank, family, anything private)
+                Exclude senders (bank, family, anything private) — messages <em>from</em> these addresses are left out.
+                Do not tick your own address, or your sent mail will be skipped.
               </div>
+
               <div className="border border-border rounded-sm max-h-56 overflow-y-auto divide-y divide-border">
                 {topCorrespondents.map(([email, count]) => (
                   <label key={email} className="flex items-center gap-2 p-2 text-sm cursor-pointer">
