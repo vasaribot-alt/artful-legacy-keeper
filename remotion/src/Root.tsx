@@ -8,6 +8,7 @@ import { HowToCatalogues } from "./HowToCatalogues";
 import { HowToDuplicate } from "./HowToDuplicate";
 import { InstagramArtist } from "./InstagramArtist";
 import { InstagramCollector } from "./InstagramCollector";
+import { InstagramCorrespondence } from "./InstagramCorrespondence";
 import { InstagramEstate } from "./InstagramEstate";
 import { InstagramGallery } from "./InstagramGallery";
 import { InstagramMission } from "./InstagramMission";
@@ -105,6 +106,14 @@ export const RemotionRoot = () => (
     <Composition
       id="instagram-mission"
       component={InstagramMission}
+      durationInFrames={780}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
+    <Composition
+      id="instagram-correspondence"
+      component={InstagramCorrespondence}
       durationInFrames={780}
       fps={30}
       width={1080}
