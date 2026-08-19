@@ -277,7 +277,8 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       fieldToIndex[m.targetField] = m.sourceIndex;
     }
 
-    for (let i = 1; i < json.length; i++) {
+    // `json` here already excludes the header row, so start at 0.
+    for (let i = 0; i < json.length; i++) {
       const row = json[i] as unknown[];
       if (!row || row.length === 0) continue;
 
