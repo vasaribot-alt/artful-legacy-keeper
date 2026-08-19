@@ -162,6 +162,11 @@ const About = () => {
                 Background and Founding Rationale (PDF) <Download className="w-4 h-4" />
               </Button>
             </a>
+            <a href="/GARF_Governance_Overview.pdf" download>
+              <Button className="gap-2">
+                Governance Overview (PDF) <Download className="w-4 h-4" />
+              </Button>
+            </a>
             <Link to="/donate">
               <Button variant="outline" className="gap-2">
                 Support the foundation <ArrowRight className="w-4 h-4" />
