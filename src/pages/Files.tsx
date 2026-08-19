@@ -408,7 +408,9 @@ const Files = () => {
         kind: "image",
         source: "unlinked-upload",
         linked_id: r.id,
-        linked_title: "Not yet attached",
+        linked_title: r.folder_label
+          ? `Folder: ${r.folder_number !== null && r.folder_number !== undefined ? `${r.folder_number} - ` : ""}${r.folder_label}`
+          : "Not yet attached",
         linked_route: undefined,
         year: null,
         medium: null,
@@ -417,7 +419,7 @@ const Files = () => {
         exhibition_type: null,
         exhibition_id: null,
         extension: extOf(r.file_name),
-        caption: null,
+        caption: r.folder_label || null,
         created_at: r.created_at,
       });
     });
