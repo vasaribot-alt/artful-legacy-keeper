@@ -638,7 +638,7 @@ const ArtworkDetail = () => {
               </span>
             </Button>
           )}
-          {isOwner && verificationStatus !== "declined" && (
+          {isOwner && localStorage.getItem("activeRole") !== "collector" && verificationStatus !== "declined" && (
             <Button
               variant="outline"
               size="sm"
