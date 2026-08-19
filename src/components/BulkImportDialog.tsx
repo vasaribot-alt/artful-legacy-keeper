@@ -939,8 +939,26 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
               }`}
             >
               <ImagePlus className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-              <p className="text-sm font-medium">Drop images here</p>
-              <p className="text-xs text-muted-foreground mt-1">or click to browse</p>
+              <p className="text-sm font-medium">Drop images or a folder here</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                or click to browse — nested subfolders are read automatically
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <Button variant="outline" size="sm" asChild>
+                <label className="cursor-pointer">
+                  Choose folder…
+                  <input
+                    type="file"
+                    className="hidden"
+                    multiple
+                    // @ts-expect-error non-standard but supported in all major browsers
+                    webkitdirectory="true"
+                    directory=""
+                    onChange={(e) => { if (e.target.files) addFiles(Array.from(e.target.files)); e.currentTarget.value = ""; }}
+                  />
+                </label>
+              </Button>
             </div>
             <input
               ref={imageInputRef}
@@ -950,6 +968,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
               onChange={handleImageSelect}
               className="hidden"
             />
+
 
             {/* Match results */}
             {droppedFiles.length > 0 && (
