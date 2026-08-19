@@ -11,6 +11,7 @@ import { StorageUsageMeter } from "@/components/StorageUsageMeter";
 import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X, Folder, FolderOpen, Upload, Trash2, Link2Off } from "lucide-react";
 import { toast } from "sonner";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
+import { FolderUploadDialog, readDroppedItems, type PickedFile } from "@/components/FolderUploadDialog";
 
 type FileKind = "image" | "document";
 type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload";
@@ -392,7 +393,7 @@ const Files = () => {
     // Unlinked uploads (files not yet attached to any artwork)
     const { data: unlinked } = await supabase
       .from("user_uploads")
-      .select("id, storage_path, web_storage_path, file_name, file_size, original_size, mime_type, series, created_at")
+      .select("id, storage_path, web_storage_path, file_name, file_size, original_size, mime_type, series, folder_label, folder_number, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     (unlinked || []).forEach((r: any) => {
@@ -408,7 +409,9 @@ const Files = () => {
         kind: "image",
         source: "unlinked-upload",
         linked_id: r.id,
-        linked_title: "Not yet attached",
+        linked_title: r.folder_label
+          ? `Folder: ${r.folder_number !== null && r.folder_number !== undefined ? `${r.folder_number} - ` : ""}${r.folder_label}`
+          : "Not yet attached",
         linked_route: undefined,
         year: null,
         medium: null,
@@ -417,7 +420,7 @@ const Files = () => {
         exhibition_type: null,
         exhibition_id: null,
         extension: extOf(r.file_name),
-        caption: null,
+        caption: r.folder_label || null,
         created_at: r.created_at,
       });
     });
@@ -566,6 +569,8 @@ const Files = () => {
   // Upload unlinked files
   const [uploading, setUploading] = useState(false);
   const [dragOverUnlinked, setDragOverUnlinked] = useState(false);
+  const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+  const [droppedFolderFiles, setDroppedFolderFiles] = useState<PickedFile[]>([]);
 
   const handleUploadUnlinked = async (fileList: File[]) => {
     if (!userId || fileList.length === 0) return;
@@ -633,13 +638,24 @@ const Files = () => {
         {/* Storage usage meter */}
         {userId && <StorageUsageMeter userId={userId} />}
 
-        {/* Upload unlinked files — drop zone */}
+        {/* Upload unlinked files — drop zone (accepts folders too) */}
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOverUnlinked(true); }}
           onDragLeave={() => setDragOverUnlinked(false)}
-          onDrop={(e) => {
+          onDrop={async (e) => {
             e.preventDefault();
             setDragOverUnlinked(false);
+            const hasDirectory = Array.from(e.dataTransfer.items).some((i) => {
+              const entry = typeof (i as any).webkitGetAsEntry === "function" ? (i as any).webkitGetAsEntry() : null;
+              return entry?.isDirectory;
+            });
+            if (hasDirectory) {
+              const picked = await readDroppedItems(e.dataTransfer);
+              if (picked.length === 0) { toast.error("No images found in that folder"); return; }
+              setDroppedFolderFiles(picked);
+              setFolderDialogOpen(true);
+              return;
+            }
             handleUploadUnlinked(Array.from(e.dataTransfer.files));
           }}
           className={`rounded-sm border-2 border-dashed px-4 py-5 transition-colors ${
@@ -652,25 +668,48 @@ const Files = () => {
               <div>
                 <div className="text-sm font-medium">Upload images to your library</div>
                 <div className="text-xs text-muted-foreground">
-                  Drop image files here, or browse. Files stay "Unlinked" until you attach them to an artwork.
+                  Drop image files — or a whole folder with subfolders — here, or browse. Files stay "Unlinked" until
+                  you attach them to an artwork.
                 </div>
               </div>
             </div>
-            <Button variant="outline" size="sm" asChild disabled={uploading}>
-              <label className="cursor-pointer">
-                {uploading ? "Uploading…" : "Browse files"}
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  disabled={uploading}
-                  onChange={(e) => e.target.files && handleUploadUnlinked(Array.from(e.target.files))}
-                />
-              </label>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={uploading}
+                onClick={() => { setDroppedFolderFiles([]); setFolderDialogOpen(true); }}
+              >
+                <FolderOpen className="w-3.5 h-3.5 mr-2" />
+                Upload folder
+              </Button>
+              <Button variant="outline" size="sm" asChild disabled={uploading}>
+                <label className="cursor-pointer">
+                  {uploading ? "Uploading…" : "Browse files"}
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => e.target.files && handleUploadUnlinked(Array.from(e.target.files))}
+                  />
+                </label>
+              </Button>
+            </div>
           </div>
         </div>
+
+        {userId && (
+          <FolderUploadDialog
+            open={folderDialogOpen}
+            onOpenChange={setFolderDialogOpen}
+            userId={userId}
+            roleContext={activeRole}
+            initialFiles={droppedFolderFiles}
+            onComplete={fetchAll}
+          />
+        )}
 
         {/* Series folders — drag-and-drop image files to add artworks to a series */}
         {seriesGroups.length > 0 && (
