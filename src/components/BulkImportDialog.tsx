@@ -565,7 +565,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
   /** Split a cell value like "img1.jpg; img2.jpg, img3.jpg" into normalized names */
   const parseImageFilenames = (raw: string): string[] => {
     if (!raw) return [];
-    return raw.split(/[;,]/).map((s) => normalizeFilename(s.trim())).filter(Boolean);
+    return raw.split(/[;,|\n\r\t]+/).map((s) => normalizeFilename(s.trim())).filter(Boolean);
   };
 
   // Match dropped files to artworks by filename (supports multiple filenames per artwork)
