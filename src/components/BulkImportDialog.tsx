@@ -537,9 +537,16 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
   };
   const isJunkName = (name: string) => name.startsWith("._") || name === ".DS_Store" || name.startsWith(".");
 
-  const addFiles = (files: File[]) => {
+  /** Natural sort so "2 - …" comes before "10 - …" and folder order is top-down. */
+  const naturalCompare = (a: string, b: string) =>
+    a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+
+  const pathOf = (f: File) => (f as any).webkitRelativePath || f.name;
+
+  const addFiles = (files: File[], paths?: Map<File, string>) => {
     const keep = files.filter((f) => !isJunkName(f.name) && isImageFile(f));
     if (keep.length === 0) { toast.error("No image files found"); return; }
+    keep.sort((a, b) => naturalCompare(paths?.get(a) || pathOf(a), paths?.get(b) || pathOf(b)));
     setDroppedFiles((prev) => [...prev, ...keep]);
   };
 
@@ -550,11 +557,13 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     const dt = e.dataTransfer;
     try {
       const picked = await readDroppedItems(dt);
-      addFiles(picked.map((p) => p.file));
+      const paths = new Map<File, string>(picked.map((p) => [p.file, p.relativePath]));
+      addFiles(picked.map((p) => p.file), paths);
     } catch {
       addFiles(Array.from(dt.files));
     }
   }, []);
+
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     addFiles(Array.from(e.target.files || []));
