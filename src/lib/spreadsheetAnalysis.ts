@@ -425,11 +425,14 @@ export function analyzeSpreadsheet(
     const sample = sampleRows.slice(0, 3).map((r) => r[i]).filter((v) => v != null && String(v).trim() !== "").map(String);
     const sampleValue = sample.join("; ").slice(0, 80);
 
-    const patterns = HEADER_PATTERNS[h];
+    const exact = HEADER_PATTERNS[h];
+    const fallback = exact ? null : fuzzyField(h);
+    const patterns = exact || (fallback ? [fallback] : null);
     if (!patterns) {
       unmappedHeaders.push({ header: rawHeader, index: i, sampleValue });
       return;
     }
+
 
     for (const { field, confidence } of patterns) {
       // For medium+support combo, allow both to be claimed from the same source.
