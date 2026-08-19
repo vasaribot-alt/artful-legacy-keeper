@@ -392,7 +392,7 @@ const Files = () => {
     // Unlinked uploads (files not yet attached to any artwork)
     const { data: unlinked } = await supabase
       .from("user_uploads")
-      .select("id, storage_path, web_storage_path, file_name, file_size, original_size, mime_type, series, created_at")
+      .select("id, storage_path, web_storage_path, file_name, file_size, original_size, mime_type, series, folder_label, folder_number, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     (unlinked || []).forEach((r: any) => {
