@@ -14,6 +14,8 @@ interface VerificationBadgeProps {
  * - anything else (or unverified): nothing rendered
  */
 export const VerificationBadge = ({ status, size = "sm", className }: VerificationBadgeProps) => {
+  // Artist verification is an artist-registry concept — never surfaced in collector accounts.
+  if (typeof window !== "undefined" && localStorage.getItem("activeRole") === "collector") return null;
   if (status === "verified") {
     return (
       <span
