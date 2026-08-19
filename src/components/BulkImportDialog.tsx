@@ -611,31 +611,73 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     setImageProgress(0);
 
     let uploaded = 0;
+    const failedFiles: File[] = [];
     for (let i = 0; i < matches.length; i++) {
       const { file, artwork, displayOrder } = matches[i];
       const ext = file.name.split(".").pop() || "jpg";
       const path = `${user.id}/${artwork.id}/${crypto.randomUUID()}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("artwork-images")
-        .upload(path, file);
+      let uploadError: unknown = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const result = await supabase.storage
+          .from("artwork-images")
+          .upload(path, file);
+        uploadError = result.error;
+        if (!uploadError) break;
+        if (attempt < 2) await new Promise((resolve) => window.setTimeout(resolve, 500 * (attempt + 1)));
+      }
 
       if (!uploadError) {
-        await supabase.from("artwork_images").insert({
+        const imageRecord = {
           artwork_id: artwork.id,
           storage_path: path,
           display_order: displayOrder,
-        });
-        uploaded++;
-        setImportedArtworks((prev) =>
-          prev.map((a) => (a.id === artwork.id ? { ...a, matched: true } : a))
-        );
+        };
+        let recordSaved = false;
+
+        for (let attempt = 0; attempt < 2 && !recordSaved; attempt++) {
+          const { error: insertError } = await supabase.from("artwork_images").insert(imageRecord);
+          if (!insertError) {
+            recordSaved = true;
+            break;
+          }
+
+          // A lost response can report failure even though the row was saved.
+          const { data: existing } = await supabase
+            .from("artwork_images")
+            .select("id")
+            .eq("storage_path", path)
+            .maybeSingle();
+          recordSaved = Boolean(existing);
+          if (!recordSaved && attempt === 0) await new Promise((resolve) => window.setTimeout(resolve, 500));
+        }
+
+        if (recordSaved) {
+          uploaded++;
+          setImportedArtworks((prev) =>
+            prev.map((a) => (a.id === artwork.id ? { ...a, matched: true } : a))
+          );
+        } else {
+          // Avoid leaving an inaccessible orphan when only the database write failed.
+          await supabase.storage.from("artwork-images").remove([path]);
+          failedFiles.push(file);
+        }
+      } else {
+        failedFiles.push(file);
       }
 
       setImageProgress(((i + 1) / matches.length) * 100);
     }
 
-    toast.success(`Uploaded ${uploaded} images`);
+    if (failedFiles.length > 0) {
+      setDroppedFiles(failedFiles);
+      setStep("images");
+      toast.error(
+        `${uploaded} uploaded; ${failedFiles.length} failed. The failed ${failedFiles.length === 1 ? "image remains" : "images remain"} ready to retry.`,
+      );
+    } else {
+      toast.success(`Uploaded ${uploaded} images`);
+    }
     onSuccess();
   };
 
