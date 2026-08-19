@@ -635,13 +635,24 @@ const Files = () => {
         {/* Storage usage meter */}
         {userId && <StorageUsageMeter userId={userId} />}
 
-        {/* Upload unlinked files — drop zone */}
+        {/* Upload unlinked files — drop zone (accepts folders too) */}
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOverUnlinked(true); }}
           onDragLeave={() => setDragOverUnlinked(false)}
-          onDrop={(e) => {
+          onDrop={async (e) => {
             e.preventDefault();
             setDragOverUnlinked(false);
+            const hasDirectory = Array.from(e.dataTransfer.items).some((i) => {
+              const entry = typeof (i as any).webkitGetAsEntry === "function" ? (i as any).webkitGetAsEntry() : null;
+              return entry?.isDirectory;
+            });
+            if (hasDirectory) {
+              const picked = await readDroppedItems(e.dataTransfer);
+              if (picked.length === 0) { toast.error("No images found in that folder"); return; }
+              setDroppedFolderFiles(picked);
+              setFolderDialogOpen(true);
+              return;
+            }
             handleUploadUnlinked(Array.from(e.dataTransfer.files));
           }}
           className={`rounded-sm border-2 border-dashed px-4 py-5 transition-colors ${
@@ -654,25 +665,48 @@ const Files = () => {
               <div>
                 <div className="text-sm font-medium">Upload images to your library</div>
                 <div className="text-xs text-muted-foreground">
-                  Drop image files here, or browse. Files stay "Unlinked" until you attach them to an artwork.
+                  Drop image files — or a whole folder with subfolders — here, or browse. Files stay "Unlinked" until
+                  you attach them to an artwork.
                 </div>
               </div>
             </div>
-            <Button variant="outline" size="sm" asChild disabled={uploading}>
-              <label className="cursor-pointer">
-                {uploading ? "Uploading…" : "Browse files"}
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  disabled={uploading}
-                  onChange={(e) => e.target.files && handleUploadUnlinked(Array.from(e.target.files))}
-                />
-              </label>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={uploading}
+                onClick={() => { setDroppedFolderFiles([]); setFolderDialogOpen(true); }}
+              >
+                <FolderOpen className="w-3.5 h-3.5 mr-2" />
+                Upload folder
+              </Button>
+              <Button variant="outline" size="sm" asChild disabled={uploading}>
+                <label className="cursor-pointer">
+                  {uploading ? "Uploading…" : "Browse files"}
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => e.target.files && handleUploadUnlinked(Array.from(e.target.files))}
+                  />
+                </label>
+              </Button>
+            </div>
           </div>
         </div>
+
+        {userId && (
+          <FolderUploadDialog
+            open={folderDialogOpen}
+            onOpenChange={setFolderDialogOpen}
+            userId={userId}
+            roleContext={activeRole}
+            initialFiles={droppedFolderFiles}
+            onComplete={fetchAll}
+          />
+        )}
 
         {/* Series folders — drag-and-drop image files to add artworks to a series */}
         {seriesGroups.length > 0 && (
