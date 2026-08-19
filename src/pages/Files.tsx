@@ -11,6 +11,7 @@ import { StorageUsageMeter } from "@/components/StorageUsageMeter";
 import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, ExternalLink, Filter, X, Folder, FolderOpen, Upload, Trash2, Link2Off } from "lucide-react";
 import { toast } from "sonner";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
+import { FolderUploadDialog, readDroppedItems, type PickedFile } from "@/components/FolderUploadDialog";
 
 type FileKind = "image" | "document";
 type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload";
