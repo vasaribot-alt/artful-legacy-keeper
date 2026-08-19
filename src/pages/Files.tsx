@@ -569,6 +569,8 @@ const Files = () => {
   // Upload unlinked files
   const [uploading, setUploading] = useState(false);
   const [dragOverUnlinked, setDragOverUnlinked] = useState(false);
+  const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+  const [droppedFolderFiles, setDroppedFolderFiles] = useState<PickedFile[]>([]);
 
   const handleUploadUnlinked = async (fileList: File[]) => {
     if (!userId || fileList.length === 0) return;
