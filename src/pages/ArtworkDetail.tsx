@@ -617,7 +617,7 @@ const ArtworkDetail = () => {
           </div>
           <span className="text-sm text-muted-foreground flex-1 truncate">{title}</span>
           <VerificationBadge status={verificationStatus} size="md" className="hidden sm:inline-flex" />
-          {isOwner && (
+          {isOwner && localStorage.getItem("activeRole") !== "collector" && (
             <Button
               variant="outline"
               size="sm"
