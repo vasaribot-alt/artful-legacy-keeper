@@ -254,10 +254,33 @@ export const SIZE_HEADERS: Record<string, "height" | "width" | "editionCount" | 
 function normalizeHeader(header: string): string {
   return String(header || "")
     .toLowerCase()
-    .replace(/\s+/g, " ")
     .replace(/[\r\n]+/g, " ")
+    // drop unit / clarification suffixes: "Height (cm)" -> "height"
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[.:*]+/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
+
+/** Loose fallback matching for headers that are not an exact alias. */
+function fuzzyField(h: string): { field: string; confidence: Confidence } | null {
+  const has = (...w: string[]) => w.some((x) => h.includes(x));
+  if (has("height", "høyde", "hight", "hoyde")) return { field: "height", confidence: "medium" };
+  if (has("width", "bredde")) return { field: "width", confidence: "medium" };
+  if (has("depth", "dybde")) return { field: "depth", confidence: "medium" };
+  if (has("file", "image", "photo", "picture", "bilde")) return { field: "imageFilename", confidence: "medium" };
+  if (has("title", "tittel")) return { field: "title", confidence: "medium" };
+  if (has("artist")) return { field: "artistName", confidence: "medium" };
+  if (has("year", "år")) return { field: "year", confidence: "low" };
+  if (has("medium", "teknikk")) return { field: "medium", confidence: "medium" };
+  if (has("signature", "signed", "signert")) return { field: "signed", confidence: "medium" };
+  if (has("price", "pris")) return { field: "price", confidence: "low" };
+  if (has("provenance")) return { field: "provenance", confidence: "medium" };
+  if (has("location", "lokasjon")) return { field: "location", confidence: "low" };
+  if (has("categor")) return { field: "artworkType", confidence: "low" };
+  return null;
+}
+
 
 export function parseNumber(val: unknown): number | null {
   if (val == null || val === "") return null;
