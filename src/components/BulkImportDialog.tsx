@@ -12,6 +12,7 @@ import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2, D
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { readDroppedItems } from "@/components/FolderUploadDialog";
 import {
   analyzeSpreadsheet,
   parseDimensions,
