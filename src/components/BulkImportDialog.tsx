@@ -12,6 +12,7 @@ import { Upload, FileSpreadsheet, Check, AlertCircle, ImagePlus, CheckCircle2, D
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { readDroppedItems } from "@/components/FolderUploadDialog";
 import {
   analyzeSpreadsheet,
   parseDimensions,
@@ -528,19 +529,38 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
   };
 
   // Image drag-drop handling
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const IMAGE_EXT = ["jpg", "jpeg", "png", "webp", "gif", "tif", "tiff", "heic", "heif", "bmp"];
+  const isImageFile = (f: File) => {
+    if (f.type.startsWith("image/")) return true;
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    return IMAGE_EXT.includes(ext);
+  };
+  const isJunkName = (name: string) => name.startsWith("._") || name === ".DS_Store" || name.startsWith(".");
+
+  const addFiles = (files: File[]) => {
+    const keep = files.filter((f) => !isJunkName(f.name) && isImageFile(f));
+    if (keep.length === 0) { toast.error("No image files found"); return; }
+    setDroppedFiles((prev) => [...prev, ...keep]);
+  };
+
+  // Image / folder drag-drop handling (accepts nested folders)
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
-    if (files.length === 0) { toast.error("No image files found"); return; }
-    setDroppedFiles((prev) => [...prev, ...files]);
+    const dt = e.dataTransfer;
+    try {
+      const picked = await readDroppedItems(dt);
+      addFiles(picked.map((p) => p.file));
+    } catch {
+      addFiles(Array.from(dt.files));
+    }
   }, []);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith("image/"));
-    setDroppedFiles((prev) => [...prev, ...files]);
+    addFiles(Array.from(e.target.files || []));
     if (imageInputRef.current) imageInputRef.current.value = "";
   };
+
 
   /** Split a cell value like "img1.jpg; img2.jpg, img3.jpg" into normalized names */
   const parseImageFilenames = (raw: string): string[] => {
@@ -919,8 +939,26 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
               }`}
             >
               <ImagePlus className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-              <p className="text-sm font-medium">Drop images here</p>
-              <p className="text-xs text-muted-foreground mt-1">or click to browse</p>
+              <p className="text-sm font-medium">Drop images or a folder here</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                or click to browse — nested subfolders are read automatically
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <Button variant="outline" size="sm" asChild>
+                <label className="cursor-pointer">
+                  Choose folder…
+                  <input
+                    type="file"
+                    className="hidden"
+                    multiple
+                    // @ts-expect-error non-standard but supported in all major browsers
+                    webkitdirectory="true"
+                    directory=""
+                    onChange={(e) => { if (e.target.files) addFiles(Array.from(e.target.files)); e.currentTarget.value = ""; }}
+                  />
+                </label>
+              </Button>
             </div>
             <input
               ref={imageInputRef}
@@ -930,6 +968,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
               onChange={handleImageSelect}
               className="hidden"
             />
+
 
             {/* Match results */}
             {droppedFiles.length > 0 && (
