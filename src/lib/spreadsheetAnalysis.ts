@@ -185,10 +185,31 @@ const HEADER_PATTERNS: Record<string, { field: string; confidence: Confidence }[
   filename: [
     { field: "imageFilename", confidence: "high" },
   ],
+  "file name": [
+    { field: "imageFilename", confidence: "high" },
+  ],
+  "image filename": [
+    { field: "imageFilename", confidence: "high" },
+  ],
+  file: [
+    { field: "imageFilename", confidence: "high" },
+  ],
+  files: [
+    { field: "imageFilename", confidence: "high" },
+  ],
+  "image files": [
+    { field: "imageFilename", confidence: "high" },
+  ],
+  photo: [
+    { field: "imageFilename", confidence: "medium" },
+  ],
+  photos: [
+    { field: "imageFilename", confidence: "medium" },
+  ],
   images: [
     { field: "imageFilename", confidence: "high" },
   ],
-  "main image url (large)": [
+  "main image url": [
     { field: "imageFilename", confidence: "medium" },
   ],
   price: [
