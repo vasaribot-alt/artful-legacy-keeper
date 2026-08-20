@@ -259,6 +259,65 @@ const ArtistProfile = () => {
     setGalleries(updated);
   };
 
+  const applyAiDraft = (draft: ProfileDraft, keys: (keyof ProfileDraft)[]) => {
+    for (const key of keys) {
+      switch (key) {
+        case "biography":
+          if (draft.biography) setBiography(draft.biography);
+          break;
+        case "chronology":
+          if (draft.chronology) setChronology(draft.chronology);
+          break;
+        case "city":
+          if (draft.city) setCity(draft.city);
+          break;
+        case "country":
+          if (draft.country) setCountry(draft.country);
+          break;
+        case "birth_year":
+          if (draft.birth_year) setBirthYear(String(draft.birth_year));
+          break;
+        case "website":
+          if (draft.website) setWebsite(draft.website);
+          break;
+        case "galleries":
+          if (draft.galleries?.length) {
+            setGalleries((prev) => {
+              const existing = new Set(prev.map((g) => g.name.trim().toLowerCase()).filter(Boolean));
+              const additions = draft.galleries!
+                .filter((n) => n && !existing.has(n.trim().toLowerCase()))
+                .map((n) => ({ name: n, phone: "", website: "" }));
+              return [...prev, ...additions];
+            });
+          }
+          break;
+        case "social_links":
+          if (draft.social_links && Object.keys(draft.social_links).length) {
+            setSocialLinks((prev) => {
+              const existing = new Set(prev.map((l) => l.url.trim().toLowerCase()).filter(Boolean));
+              const additions = Object.values(draft.social_links!)
+                .filter((url) => url && !existing.has(url.trim().toLowerCase()))
+                .map((url) => ({ platform: detectPlatform(url), url }));
+              return [...prev, ...additions];
+            });
+          }
+          break;
+      }
+    }
+    toast.success("Suggestion added — review, then press Save");
+  };
+
+  const startVerification = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("veriff-session");
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+      else toast.error("Could not start verification session");
+    } catch {
+      toast.error("Failed to start ID verification");
+    }
+  };
+
   const isCollector = userRole === "collector";
   const isRegistrar = userRole === "registrar";
   const profileTitle = isRegistrar ? "Registrar Profile" : isCollector ? "Collector Profile" : "Artist Profile";
