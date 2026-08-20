@@ -18,6 +18,7 @@ import { ProfilePresentationView, type ProfileViewData } from "@/components/Prof
 import { ManageRegistrarAccess } from "@/components/ManageRegistrarAccess";
 import { UnitPreferenceSetting } from "@/components/UnitPreferenceSetting";
 import { RegistrarCredentialsSummary } from "@/components/RegistrarCredentialsSummary";
+import { AiProfileAssist, type ProfileDraft } from "@/components/AiProfileAssist";
 
 
 interface SocialLink {
