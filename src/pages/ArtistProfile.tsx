@@ -795,6 +795,14 @@ const ArtistProfile = () => {
 
         <Separator />
 
+        <AiProfileAssist
+          idVerified={idVerified}
+          onApply={applyAiDraft}
+          onVerifyClick={startVerification}
+        />
+
+        <Separator />
+
         <section id="biography" className="space-y-4 scroll-mt-6">
           <h2 className="text-2xl">Biography</h2>
           <Textarea value={biography} onChange={(e) => setBiography(e.target.value)} placeholder="Write your biography…" rows={8} />
