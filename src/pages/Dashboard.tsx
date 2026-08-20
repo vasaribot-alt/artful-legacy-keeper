@@ -82,6 +82,8 @@ function VerifyIdBanner({ onVerified }: { onVerified: () => void }) {
         <p className="text-sm font-medium">Identity verification required</p>
         <p className="text-xs text-muted-foreground">
           Complete government-approved ID verification to add artworks to your database.
+          Once verified, AI profile assistance also becomes available — it drafts your biography,
+          chronology and representation from public sources for you to review.
         </p>
       </div>
       <Button size="sm" variant="outline" onClick={handleVerify} disabled={starting} className="gap-1.5">
