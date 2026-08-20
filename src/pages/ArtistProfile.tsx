@@ -583,6 +583,7 @@ const ArtistProfile = () => {
     { id: "cv", label: "Solo exhibitions", indent: true },
     { id: "cv", label: "Group exhibitions", indent: true },
     { id: "chronology", label: "Chronology" },
+    { id: "ai-assist", label: "AI profile assistance" },
     { id: "access-management", label: "Access Management" },
   ];
 
