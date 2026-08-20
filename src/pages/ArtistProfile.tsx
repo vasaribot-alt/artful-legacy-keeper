@@ -18,6 +18,7 @@ import { ProfilePresentationView, type ProfileViewData } from "@/components/Prof
 import { ManageRegistrarAccess } from "@/components/ManageRegistrarAccess";
 import { UnitPreferenceSetting } from "@/components/UnitPreferenceSetting";
 import { RegistrarCredentialsSummary } from "@/components/RegistrarCredentialsSummary";
+import { AiProfileAssist, type ProfileDraft } from "@/components/AiProfileAssist";
 
 
 interface SocialLink {
@@ -256,6 +257,65 @@ const ArtistProfile = () => {
     const updated = [...galleries];
     updated[i] = { ...updated[i], [field]: value };
     setGalleries(updated);
+  };
+
+  const applyAiDraft = (draft: ProfileDraft, keys: (keyof ProfileDraft)[]) => {
+    for (const key of keys) {
+      switch (key) {
+        case "biography":
+          if (draft.biography) setBiography(draft.biography);
+          break;
+        case "chronology":
+          if (draft.chronology) setChronology(draft.chronology);
+          break;
+        case "city":
+          if (draft.city) setCity(draft.city);
+          break;
+        case "country":
+          if (draft.country) setCountry(draft.country);
+          break;
+        case "birth_year":
+          if (draft.birth_year) setBirthYear(String(draft.birth_year));
+          break;
+        case "website":
+          if (draft.website) setWebsite(draft.website);
+          break;
+        case "galleries":
+          if (draft.galleries?.length) {
+            setGalleries((prev) => {
+              const existing = new Set(prev.map((g) => g.name.trim().toLowerCase()).filter(Boolean));
+              const additions = draft.galleries!
+                .filter((n) => n && !existing.has(n.trim().toLowerCase()))
+                .map((n) => ({ name: n, phone: "", website: "" }));
+              return [...prev, ...additions];
+            });
+          }
+          break;
+        case "social_links":
+          if (draft.social_links && Object.keys(draft.social_links).length) {
+            setSocialLinks((prev) => {
+              const existing = new Set(prev.map((l) => l.url.trim().toLowerCase()).filter(Boolean));
+              const additions = Object.values(draft.social_links!)
+                .filter((url) => url && !existing.has(url.trim().toLowerCase()))
+                .map((url) => ({ platform: detectPlatform(url), url }));
+              return [...prev, ...additions];
+            });
+          }
+          break;
+      }
+    }
+    toast.success("Suggestion added — review, then press Save");
+  };
+
+  const startVerification = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("veriff-session");
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+      else toast.error("Could not start verification session");
+    } catch {
+      toast.error("Failed to start ID verification");
+    }
   };
 
   const isCollector = userRole === "collector";
@@ -523,6 +583,7 @@ const ArtistProfile = () => {
     { id: "cv", label: "Solo exhibitions", indent: true },
     { id: "cv", label: "Group exhibitions", indent: true },
     { id: "chronology", label: "Chronology" },
+    { id: "ai-assist", label: "AI profile assistance" },
     { id: "access-management", label: "Access Management" },
   ];
 
@@ -731,6 +792,14 @@ const ArtistProfile = () => {
           <h2 className="text-2xl">Galleries</h2>
           <GallerySearch galleries={galleries} onGalleriesChange={setGalleries} />
         </section>
+
+        <Separator />
+
+        <AiProfileAssist
+          idVerified={idVerified}
+          onApply={applyAiDraft}
+          onVerifyClick={startVerification}
+        />
 
         <Separator />
 
