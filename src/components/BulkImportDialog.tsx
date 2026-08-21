@@ -44,6 +44,7 @@ interface SizeGroup {
 
 interface ParsedRow {
   title: string;
+  artistName: string;
   artworkType: string;
   series: string;
   year: number | null;
@@ -283,7 +284,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       if (!row || row.length === 0) continue;
 
       const r: ParsedRow = {
-        title: "", artworkType: "", series: "", year: null, medium: "", support: "",
+        title: "", artistName: "", artworkType: "", series: "", year: null, medium: "", support: "",
         height: null, width: null, depth: null, signed: "", location: "", provenance: "",
         exhibitionHistory: "", description: "", imageFilename: "", selected: true,
         sizes: [], price: null, currency: "EUR",
@@ -436,6 +437,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       const { data: artworkData, error } = await supabase.from("artworks").insert({
         owner_id: effectiveOwnerId,
         title: r.title,
+        artist_name: r.artistName || null,
         artwork_type: r.artworkType || null,
         series: r.series || null,
         year: r.year,
