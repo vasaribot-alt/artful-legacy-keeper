@@ -437,6 +437,8 @@ const Dashboard = () => {
       if (locationFilter === "none" && full.artwork_location) return false;
       if (locationFilter !== "none" && full.artwork_location !== locationFilter) return false;
     }
+    if (imageFilter === "none" && a.imageUrl) return false;
+    if (imageFilter === "has" && !a.imageUrl) return false;
     return true;
   });
 
@@ -526,7 +528,7 @@ const Dashboard = () => {
             <div className="flex items-center gap-4 flex-wrap">
             <p className="text-sm text-muted-foreground">
               {filteredArtworks.length} artwork{filteredArtworks.length !== 1 ? "s" : ""}
-              {(statusFilter !== "all" || locationFilter !== "all" || searchQuery) && ` (filtered from ${artworks.length})`}
+              {(statusFilter !== "all" || locationFilter !== "all" || imageFilter !== "all" || searchQuery) && ` (filtered from ${artworks.length})`}
             </p>
             <div className="flex items-center gap-2 ml-auto">
               <Filter className="w-3.5 h-3.5 text-muted-foreground" />
@@ -566,12 +568,12 @@ const Dashboard = () => {
                 </Select>
               )}
               <Select value={imageFilter} onValueChange={setImageFilter}>
-                <SelectTrigger className="h-8 w-[140px] text-xs">
+                <SelectTrigger className="h-8 w-[150px] text-xs">
                   <SelectValue placeholder="Images" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All artworks</SelectItem>
-                  <SelectItem value="none">No image</SelectItem>
+                  <SelectItem value="none">Missing image</SelectItem>
                   <SelectItem value="has">Has image</SelectItem>
                 </SelectContent>
               </Select>
@@ -644,14 +646,57 @@ const Dashboard = () => {
       ) : (
         /* Gallery presentation view */
         <div className="max-w-5xl mx-auto px-6 py-10">
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by artist, title, series, medium, or year…"
-              className="pl-9"
-            />
+          <div className="mb-6 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by artist, title, series, medium, or year…"
+                className="pl-9"
+              />
+            </div>
+            <div className="flex items-center gap-4 flex-wrap">
+              <p className="text-sm text-muted-foreground">
+                {filteredGalleryArtworks.length} artwork{filteredGalleryArtworks.length !== 1 ? "s" : ""}
+                {(statusFilter !== "all" || locationFilter !== "all" || imageFilter !== "all" || searchQuery) && ` (filtered from ${galleryArtworks.length})`}
+              </p>
+              <div className="flex items-center gap-2 ml-auto">
+                <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="h-8 w-[120px] text-xs">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All status</SelectItem>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="sold">Sold</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={locationFilter} onValueChange={setLocationFilter}>
+                  <SelectTrigger className="h-8 w-[160px] text-xs">
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All locations</SelectItem>
+                    <SelectItem value="none">No location</SelectItem>
+                    {uniqueLocations.map(loc => (
+                      <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={imageFilter} onValueChange={setImageFilter}>
+                  <SelectTrigger className="h-8 w-[150px] text-xs">
+                    <SelectValue placeholder="Images" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All artworks</SelectItem>
+                    <SelectItem value="none">Missing image</SelectItem>
+                    <SelectItem value="has">Has image</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
