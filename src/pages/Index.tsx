@@ -313,7 +313,7 @@ const Index = () => {
           <h2 className="text-3xl mb-4">Find a verified registrar</h2>
           <p className="text-muted-foreground text-sm max-w-xl mx-auto mb-8 leading-relaxed">
             Our directory of Foundation-verified registrars connects artists and collectors
-            with professional documentation expertise, catalogue raisonné, provenance research,
+            with professional expertise in catalogue raisonné, provenance research,
             and collections care.
           </p>
           <Link to="/registrars">

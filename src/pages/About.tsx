@@ -94,7 +94,7 @@ const About = () => {
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
               We build and maintain a permanent, archival-grade record of contemporary artworks and the artists who
-              make them. Artists, estates, and collectors document their works, metadata, images, dimensions,
+              make them. Artists, estates, and collectors document their works, including metadata, images, dimensions,
               editions, provenance, exhibitions, catalogues, and professional history, in a system designed for
               accessibility now and preservation over a century. Every account is tied to a verified identity, and
               every work carries a permanent identifier.
