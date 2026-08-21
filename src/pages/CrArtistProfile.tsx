@@ -130,7 +130,7 @@ export default function CrArtistProfile() {
   const meta = [
     profile.nationality,
     profile.period_activity_start &&
-      `Active ${profile.period_activity_start}–${profile.period_activity_end ?? "present"}`,
+      `Active ${profile.period_activity_start} to ${profile.period_activity_end ?? "present"}`,
   ]
     .filter(Boolean)
     .join(" · ");
