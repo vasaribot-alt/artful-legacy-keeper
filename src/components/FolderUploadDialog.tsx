@@ -30,7 +30,8 @@ const IMAGE_EXT = new Set(["jpg", "jpeg", "png", "webp", "gif", "tif", "tiff", "
 const isImage = (f: File) => {
   if (f.type.startsWith("image/")) return true;
   const ext = (f.name.split(".").pop() || "").toLowerCase();
-  return IMAGE_EXT.has(ext);
+  // tolerate malformed compound extensions such as "tifjpg"
+  return IMAGE_EXT.has(ext) || [...IMAGE_EXT].some((e) => ext.includes(e));
 };
 
 const isJunk = (relativePath: string) => {
