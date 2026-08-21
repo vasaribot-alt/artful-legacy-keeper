@@ -899,6 +899,9 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                           </div>
                         </td>
                         <td className="p-2 font-medium">{r.title}</td>
+                        {userRole !== "artist" && (
+                          <td className="p-2 text-muted-foreground">{r.artistName || "—"}</td>
+                        )}
                         <td className="p-2 text-muted-foreground">{r.artworkType}</td>
                         <td className="p-2 text-muted-foreground">{r.year || "—"}</td>
                         <td className="p-2 text-muted-foreground truncate max-w-[120px]">{r.medium || "—"}</td>
