@@ -362,6 +362,11 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
 
       const { groups: sizeGroups } = detectSizeGroups(headers);
       const result = analyzeSpreadsheet(headers, rows);
+      if (userRole !== "artist" && !result.mappings.some((m) => m.targetField === "artistName")) {
+        result.issues.push(
+          "No 'Artist Name' column detected. Collection records should include the artist for each work, map a column below or add one to the file."
+        );
+      }
 
       setRawHeaders(headers);
       setRawRows(rows);
