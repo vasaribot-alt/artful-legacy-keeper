@@ -541,7 +541,8 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
   const isImageFile = (f: File) => {
     if (f.type.startsWith("image/")) return true;
     const ext = (f.name.split(".").pop() || "").toLowerCase();
-    return IMAGE_EXT.includes(ext);
+    // tolerate malformed compound extensions such as "tifjpg" or "jpg copy"
+    return IMAGE_EXT.includes(ext) || IMAGE_EXT.some((e) => ext.includes(e));
   };
   const isJunkName = (name: string) => name.startsWith("._") || name === ".DS_Store" || name.startsWith(".");
 
