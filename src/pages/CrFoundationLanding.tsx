@@ -7,7 +7,7 @@ const pillars = [
     icon: BookOpen,
     title: "Scholarly Catalogues Raisonnés",
     description:
-      "A permanent home for catalogue raisonné projects — in preparation, published, or online — with structured metadata, scope statements, and ISBN references.",
+      "A permanent home for catalogue raisonné projects, in preparation, published, or online, with structured metadata, scope statements, and ISBN references.",
   },
   {
     icon: Users,
@@ -144,7 +144,7 @@ const CrFoundationLanding = () => {
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">A Sister Initiative</p>
           <h2 className="text-3xl mb-4 font-serif">Global Artist Registry Foundation</h2>
           <p className="text-muted-foreground leading-relaxed mb-6 max-w-xl mx-auto">
-            The Catalogue Raisonné Foundation works alongside the Global Artist Registry Foundation —
+            The Catalogue Raisonné Foundation works alongside the Global Artist Registry Foundation,
             providing verified artist identity, collection management, and a 100-year preservation plan
             for primary archival records.
           </p>

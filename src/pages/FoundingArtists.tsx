@@ -139,7 +139,7 @@ const FoundingArtists = () => {
             The artists building art's permanent record
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
-            For the first time, artists can create their own authenticated, archival-grade catalogue raisonné — 
+            For the first time, artists can create their own authenticated, archival-grade catalogue raisonné, 
             a permanent record that outlasts galleries, institutions, and markets. Legacy Artists are the 
             pioneers who believe their work deserves a record as enduring as the art itself.
           </p>
@@ -169,7 +169,7 @@ const FoundingArtists = () => {
               },
               {
                 title: "Authenticated forever",
-                text: "Government-verified identity tied to every entry. No disputes, no forgeries, no ambiguity — for 100 years and beyond.",
+                text: "Government-verified identity tied to every entry. No disputes, no forgeries, no ambiguity, for 100 years and beyond.",
               },
               {
                 title: "First movers shape history",

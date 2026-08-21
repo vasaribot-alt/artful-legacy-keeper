@@ -146,7 +146,7 @@ const Index = () => {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               A non-profit foundation dedicated to preserving the documentation of art.
               Catalogue raisonné for artists, collection management for collectors, verified
-              identity throughout — built to last 100 years.
+              identity throughout, built to last 100 years.
             </p>
           </div>
 
@@ -313,7 +313,7 @@ const Index = () => {
           <h2 className="text-3xl mb-4">Find a verified registrar</h2>
           <p className="text-muted-foreground text-sm max-w-xl mx-auto mb-8 leading-relaxed">
             Our directory of Foundation-verified registrars connects artists and collectors
-            with professional documentation expertise — catalogue raisonné, provenance research,
+            with professional documentation expertise, catalogue raisonné, provenance research,
             and collections care.
           </p>
           <Link to="/registrars">

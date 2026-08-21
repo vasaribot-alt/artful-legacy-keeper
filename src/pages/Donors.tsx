@@ -84,7 +84,7 @@ const Donors = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Our donors make it possible to build a permanent, artist-controlled archive that will outlast 
             any single institution. Their generosity ensures that every artist's legacy is documented, 
-            authenticated, and preserved — not for years, but for centuries.
+            authenticated, and preserved, not for years, but for centuries.
           </p>
         </div>
       </section>
@@ -101,7 +101,7 @@ const Donors = () => {
               },
               {
                 title: "Empower artists",
-                text: "Funding ensures artists — not markets or institutions — control the definitive record of their life's work.",
+                text: "Funding ensures artists, not markets or institutions, control the definitive record of their life's work.",
               },
               {
                 title: "Build something permanent",

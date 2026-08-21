@@ -125,7 +125,7 @@ export default function CrArtistProfile() {
       `d. ${profile.death_year}${profile.death_country ? `, ${profile.death_country}` : ""}`,
   ]
     .filter(Boolean)
-    .join(" — ");
+    .join(" · ");
 
   const meta = [
     profile.nationality,

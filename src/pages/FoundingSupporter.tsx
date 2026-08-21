@@ -15,15 +15,15 @@ type ApplicantType = "individual" | "foundation" | "corporation";
 type Tier = "bronze" | "silver" | "gold" | "platinum";
 
 const TIERS: { id: Tier; name: string; range: string; benefits: string }[] = [
-  { id: "bronze",   name: "Bronze Founding Supporter",   range: "€10,000 – €24,999",  benefits: "Listed as a Founding Supporter in the Foundation's public register (unless anonymity is requested)." },
-  { id: "silver",   name: "Silver Founding Supporter",   range: "€25,000 – €49,999",  benefits: "Silver recognition on the Supporters wall; annual report and briefing." },
-  { id: "gold",     name: "Gold Founding Supporter",     range: "€50,000 – €99,999",  benefits: "Gold recognition; invitations to Foundation events and private briefings." },
+  { id: "bronze",   name: "Bronze Founding Supporter",   range: "€10,000 to €24,999",  benefits: "Listed as a Founding Supporter in the Foundation's public register (unless anonymity is requested)." },
+  { id: "silver",   name: "Silver Founding Supporter",   range: "€25,000 to €49,999",  benefits: "Silver recognition on the Supporters wall; annual report and briefing." },
+  { id: "gold",     name: "Gold Founding Supporter",     range: "€50,000 to €99,999",  benefits: "Gold recognition; invitations to Foundation events and private briefings." },
   { id: "platinum", name: "Platinum Founding Supporter", range: "€100,000+",          benefits: "Named in perpetuity in the archive; permanent recognition; direct board access." },
 ];
 
 const PILLARS = [
   { icon: Archive, title: "100-year preservation", body: "An archival record of contemporary art held independently for at least one century." },
-  { icon: Globe2, title: "Global, independent", body: "A Dutch stichting — no commercial ownership, no market influence, no advertising." },
+  { icon: Globe2, title: "Global, independent", body: "A Dutch stichting, no commercial ownership, no market influence, no advertising." },
   { icon: Users2, title: "Artist-first", body: "Built with and for artists, collectors, registrars and scholars." },
   { icon: Landmark, title: "Transparent governance", body: "Annual reports, board oversight, and audited financials." },
 ];
@@ -210,7 +210,7 @@ export default function FoundingSupporter() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {TIERS.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>{t.name} — {t.range}</SelectItem>
+                    <SelectItem key={t.id} value={t.id}>{t.name}, {t.range}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -224,7 +224,7 @@ export default function FoundingSupporter() {
           <div className="space-y-2">
             <Label htmlFor="message">Message (optional)</Label>
             <Textarea id="message" rows={4} value={message} onChange={(e) => setMessage(e.target.value)}
-              placeholder="Anything you'd like the board to know — questions, motivations, timing, or specific projects you care about." />
+              placeholder="Anything you'd like the board to know, questions, motivations, timing, or specific projects you care about." />
           </div>
 
           <label className="flex items-start gap-3 text-sm cursor-pointer">

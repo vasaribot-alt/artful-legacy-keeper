@@ -102,7 +102,7 @@ export default function InviteFriends() {
     const intro = message ? `${message}\n\n` : "";
     return `Hi ${name},
 
-${intro}I'd like to invite you to join the Global Artist Registry Foundation — a non-profit archival platform dedicated to documenting and preserving artists' work for the next 100 years. Verified artists receive a permanent profile and a secure archive of their oeuvre.
+${intro}I'd like to invite you to join the Global Artist Registry Foundation, a non-profit archival platform dedicated to documenting and preserving artists' work for the next 100 years. Verified artists receive a permanent profile and a secure archive of their oeuvre.
 
 You can register using this personal invite:
 ${url}
@@ -148,7 +148,7 @@ ${sender || "A friend"}`;
             <CardHeader>
               <CardTitle>ID verification required</CardTitle>
               <CardDescription>
-                Peer invitations are reserved for ID-verified artists. Once your Veriff verification is approved, you'll be able to invite up to {BASE_INVITES} fellow artists to join the registry — and earn one extra invite for every friend who also gets verified.
+                Peer invitations are reserved for ID-verified artists. Once your Veriff verification is approved, you'll be able to invite up to {BASE_INVITES} fellow artists to join the registry, and earn one extra invite for every friend who also gets verified.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -166,7 +166,7 @@ ${sender || "A friend"}`;
         <div>
           <h2 className="text-2xl font-serif mb-2">Invite fellow artists</h2>
           <p className="text-muted-foreground">
-            You can invite up to {maxInvites} peers ({BASE_INVITES} base{bonus > 0 ? ` + ${bonus} earned` : ""}). We'll generate a personal invite — you send it from your own email so it arrives as a note from a friend. Each invited artist who completes ID verification earns you one extra invite.
+            You can invite up to {maxInvites} peers ({BASE_INVITES} base{bonus > 0 ? ` + ${bonus} earned` : ""}). We'll generate a personal invite, you send it from your own email so it arrives as a note from a friend. Each invited artist who completes ID verification earns you one extra invite.
           </p>
           <p className="mt-3 text-sm flex items-center gap-2 flex-wrap">
             <Badge variant="secondary">{activeCount} of {maxInvites} used</Badge>
