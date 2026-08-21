@@ -44,6 +44,7 @@ interface SizeGroup {
 
 interface ParsedRow {
   title: string;
+  artistName: string;
   artworkType: string;
   series: string;
   year: number | null;
@@ -283,7 +284,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       if (!row || row.length === 0) continue;
 
       const r: ParsedRow = {
-        title: "", artworkType: "", series: "", year: null, medium: "", support: "",
+        title: "", artistName: "", artworkType: "", series: "", year: null, medium: "", support: "",
         height: null, width: null, depth: null, signed: "", location: "", provenance: "",
         exhibitionHistory: "", description: "", imageFilename: "", selected: true,
         sizes: [], price: null, currency: "EUR",
@@ -361,6 +362,11 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
 
       const { groups: sizeGroups } = detectSizeGroups(headers);
       const result = analyzeSpreadsheet(headers, rows);
+      if (userRole !== "artist" && !result.mappings.some((m) => m.targetField === "artistName")) {
+        result.issues.push(
+          "No 'Artist Name' column detected. Collection records should include the artist for each work, map a column below or add one to the file."
+        );
+      }
 
       setRawHeaders(headers);
       setRawRows(rows);
@@ -436,6 +442,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       const { data: artworkData, error } = await supabase.from("artworks").insert({
         owner_id: effectiveOwnerId,
         title: r.title,
+        artist_name: r.artistName || null,
         artwork_type: r.artworkType || null,
         series: r.series || null,
         year: r.year,
@@ -875,6 +882,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     <tr>
                       <th className="p-2 text-left w-8"></th>
                       <th className="p-2 text-left">Title</th>
+                      {userRole !== "artist" && <th className="p-2 text-left">Artist</th>}
                       <th className="p-2 text-left">Type</th>
                       <th className="p-2 text-left">Year</th>
                       <th className="p-2 text-left">Medium</th>
@@ -896,6 +904,9 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                           </div>
                         </td>
                         <td className="p-2 font-medium">{r.title}</td>
+                        {userRole !== "artist" && (
+                          <td className="p-2 text-muted-foreground">{r.artistName || "—"}</td>
+                        )}
                         <td className="p-2 text-muted-foreground">{r.artworkType}</td>
                         <td className="p-2 text-muted-foreground">{r.year || "—"}</td>
                         <td className="p-2 text-muted-foreground truncate max-w-[120px]">{r.medium || "—"}</td>
