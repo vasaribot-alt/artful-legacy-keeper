@@ -877,6 +877,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     <tr>
                       <th className="p-2 text-left w-8"></th>
                       <th className="p-2 text-left">Title</th>
+                      {userRole !== "artist" && <th className="p-2 text-left">Artist</th>}
                       <th className="p-2 text-left">Type</th>
                       <th className="p-2 text-left">Year</th>
                       <th className="p-2 text-left">Medium</th>
