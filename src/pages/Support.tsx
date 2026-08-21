@@ -31,7 +31,7 @@ const TIER_LADDER = [
 
 const PILLARS = [
   { icon: Archive, title: "100-year preservation", body: "An archival record of contemporary art held independently for at least one century." },
-  { icon: Globe2, title: "Global, independent", body: "A Dutch stichting — no commercial ownership, no market influence, no advertising." },
+  { icon: Globe2, title: "Global, independent", body: "A Dutch stichting, no commercial ownership, no market influence, no advertising." },
   { icon: Users2, title: "Artist-first", body: "Built with and for artists, collectors, registrars and scholars. Free for verified artists." },
   { icon: Landmark, title: "Transparent governance", body: "Annual reports, board oversight, and audited financials once active." },
 ];
@@ -102,7 +102,7 @@ export default function Support() {
             Foundation support
           </div>
           <h1 className="font-serif text-4xl leading-tight sm:text-5xl">
-            Help preserve the record of contemporary art — for the next hundred years.
+            Help preserve the record of contemporary art, for the next hundred years.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             The Global Artist Registry Foundation is building an independent, archival record
@@ -152,7 +152,7 @@ export default function Support() {
           <div className="space-y-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
             <p>
               Galleries close. Estates change hands. Websites disappear. The contemporary record
-              is, by default, fragile. The Foundation exists to fix that — by giving every verified
+              is, by default, fragile. The Foundation exists to fix that, by giving every verified
               artist a permanent, structured archive that they own, control, and pass on.
             </p>
             <p>
@@ -204,7 +204,7 @@ export default function Support() {
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
               For gifts of €10,000 or more we prefer to speak personally and arrange a direct
-              bank transfer — no card processing fees, full traceability, formal receipt.
+              bank transfer, no card processing fees, full traceability, formal receipt.
             </p>
           </div>
 
@@ -281,7 +281,7 @@ export default function Support() {
                   rows={5}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Anything you'd like the Foundation to know — restrictions, timing, naming preferences…"
+                  placeholder="Anything you'd like the Foundation to know, restrictions, timing, naming preferences…"
                 />
               </div>
 

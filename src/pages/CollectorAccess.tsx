@@ -81,7 +81,7 @@ export default function CollectorAccess() {
                   "Provenance, location & condition tracking",
                   "Linked artist & artwork records",
                   "Archival cloud storage",
-                  "Foundation receipt — no VAT (gift to Dutch stichting)",
+                  "Foundation receipt, no VAT (gift to Dutch stichting)",
                 ].map((f) => (
                   <li key={f} className="flex items-start gap-2">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#7ac143]" />

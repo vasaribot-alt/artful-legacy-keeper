@@ -65,12 +65,12 @@ export default function Donate() {
             <div className="mb-10 text-center">
               <h1 className="font-serif text-3xl leading-tight sm:text-4xl">Choose an amount you'd like to donate</h1>
               <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                Your gift helps build a permanent, archival record of contemporary art — stewarded for the next century.
+                Your gift helps build a permanent, archival record of contemporary art, stewarded for the next century.
               </p>
             </div>
 
             <div className="mx-auto max-w-md">
-              {/* Frequency toggle — green pill */}
+              {/* Frequency toggle, green pill */}
               <div className="relative flex w-full overflow-hidden rounded-full border border-[#7ac143]/40 bg-white p-1">
                 {(["one_off", "monthly"] as Frequency[]).map((f) => {
                   const active = frequency === f;
@@ -156,7 +156,7 @@ export default function Donate() {
                   />
                   {frequency === "monthly" && (
                     <p className="mt-2 text-xs text-muted-foreground">
-                      Custom monthly amounts coming soon — please choose a preset above, or switch to one-off.
+                      Custom monthly amounts coming soon, please choose a preset above, or switch to one-off.
                     </p>
                   )}
                 </div>

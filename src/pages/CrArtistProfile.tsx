@@ -125,12 +125,12 @@ export default function CrArtistProfile() {
       `d. ${profile.death_year}${profile.death_country ? `, ${profile.death_country}` : ""}`,
   ]
     .filter(Boolean)
-    .join(" — ");
+    .join(" · ");
 
   const meta = [
     profile.nationality,
     profile.period_activity_start &&
-      `Active ${profile.period_activity_start}–${profile.period_activity_end ?? "present"}`,
+      `Active ${profile.period_activity_start} to ${profile.period_activity_end ?? "present"}`,
   ]
     .filter(Boolean)
     .join(" · ");

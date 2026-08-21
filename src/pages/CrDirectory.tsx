@@ -88,7 +88,7 @@ export default function CrDirectory() {
                 Are you a scholar or compiler of a catalogue raisonné?
               </p>
               <p className="text-sm text-muted-foreground">
-                List your project in the directory — published, in preparation,
+                List your project in the directory, published, in preparation,
                 or online.
               </p>
             </div>

@@ -44,7 +44,7 @@ const About = () => {
     if (desc) {
       desc.setAttribute(
         "content",
-        "An independent non-profit foundation preserving the documentation of contemporary art — artist-authenticated records built for 100 years.",
+        "An independent non-profit foundation preserving the documentation of contemporary art, artist-authenticated records built for 100 years.",
       );
     }
   }, []);
@@ -94,8 +94,8 @@ const About = () => {
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
               We build and maintain a permanent, archival-grade record of contemporary artworks and the artists who
-              make them. Artists, estates, and collectors document their works — metadata, images, dimensions,
-              editions, provenance, exhibitions, catalogues, and professional history — in a system designed for
+              make them. Artists, estates, and collectors document their works, including metadata, images, dimensions,
+              editions, provenance, exhibitions, catalogues, and professional history, in a system designed for
               accessibility now and preservation over a century. Every account is tied to a verified identity, and
               every work carries a permanent identifier.
             </p>
@@ -111,7 +111,7 @@ const About = () => {
             <p>
               The documentation surrounding art has always been fragile, and today it lives mostly in digital form:
               scattered across gallery systems, private databases, personal websites, and commercial platforms. When
-              galleries close, services shut down, or artists lose access, the record disappears with them — leaving
+              galleries close, services shut down, or artists lose access, the record disappears with them, leaving
               artists without continuity, collectors without provenance, and researchers with gaps in the cultural
               record. No widely adopted, independent global infrastructure exists to prevent this.
             </p>

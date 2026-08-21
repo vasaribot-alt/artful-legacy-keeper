@@ -2,9 +2,9 @@ import { Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const tierLabels: Record<string, string> = {
-  internationally_established: "Legacy Artist — Internationally Established",
-  mid_career: "Legacy Artist — Mid-Career",
-  emerging: "Legacy Artist — Emerging & Global Voices",
+  internationally_established: "Legacy Artist: Internationally Established",
+  mid_career: "Legacy Artist: Mid-Career",
+  emerging: "Legacy Artist: Emerging & Global Voices",
 };
 
 interface FoundingArtistBadgeProps {

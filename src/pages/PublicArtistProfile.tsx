@@ -340,7 +340,7 @@ const PublicArtistProfile = () => {
     printWindow.document.write(`<!DOCTYPE html>
 <html>
 <head>
-<title>CV — ${profile.full_name || "Artist"}</title>
+<title>CV, ${profile.full_name || "Artist"}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
