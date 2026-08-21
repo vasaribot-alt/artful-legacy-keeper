@@ -200,6 +200,27 @@ export default function Donate() {
                 <ShieldCheck className="h-4 w-4 text-[#7ac143]" />
                 Secure payment processed by Stripe
               </div>
+
+              <div className="mt-6 rounded-lg border border-border bg-muted/30 p-5">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Prefer to pay by bank transfer?</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  You can send your gift directly to the Foundation account. Please include your email as the payment reference so we can send a receipt.
+                </p>
+                <div className="mt-4 space-y-2 text-sm">
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground">Account name</span>
+                    <span className="font-medium text-foreground">Global Artist Registry Foundation</span>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground">BIC</span>
+                    <span className="font-mono font-medium text-foreground">ABNANL2AXXX</span>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground">IBAN</span>
+                    <span className="font-mono font-medium text-foreground">NL93ABNA0156379376</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </>
         ) : (
