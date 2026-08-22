@@ -805,6 +805,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          handled: boolean
+          id: string
+          message: string
+          name: string
+          organisation: string | null
+          role: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          handled?: boolean
+          id?: string
+          message: string
+          name: string
+          organisation?: string | null
+          role?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          handled?: boolean
+          id?: string
+          message?: string
+          name?: string
+          organisation?: string | null
+          role?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
       correspondence_attachments: {
         Row: {
           created_at: string
