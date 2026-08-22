@@ -12,6 +12,7 @@ import { Search, Download, FileText, Image as ImageIcon, LayoutGrid, List, Exter
 import { toast } from "sonner";
 import { AddArtworkDialog, type ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 import { FolderUploadDialog, readDroppedItems, type PickedFile } from "@/components/FolderUploadDialog";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 type FileKind = "image" | "document";
 type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload";
@@ -83,6 +84,7 @@ const Files = () => {
   const [files, setFiles] = useState<FileRow[]>([]);
   const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("files", !loading);
   const [userId, setUserId] = useState<string | null>(null);
 
   // Filters

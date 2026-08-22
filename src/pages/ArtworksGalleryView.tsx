@@ -16,11 +16,13 @@ interface ArtworkWithImage {
 }
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 const ArtworksGalleryView = () => {
   const navigate = useNavigate();
   const { formatDims } = useUnitPreference();
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("artworks-gallery", !loading);
   const [artworks, setArtworks] = useState<ArtworkWithImage[]>([]);
 
   useEffect(() => {

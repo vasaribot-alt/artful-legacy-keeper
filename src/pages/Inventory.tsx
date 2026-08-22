@@ -51,12 +51,14 @@ const composeLocation = (a: ArtworkRow): string => {
 };
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 const Inventory = () => {
   const navigate = useNavigate();
   const { formatDims } = useUnitPreference();
   const [artworks, setArtworks] = useState<ArtworkRow[]>([]);
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("inventory", !loading);
   const [groupBy, setGroupBy] = useState<"location" | "status">("location");
   const [statusFilter, setStatusFilter] = useState<"all" | "available" | "considering" | "sold">("all");
   const [sortBy, setSortBy] = useState<"title" | "year" | "date_added">("title");

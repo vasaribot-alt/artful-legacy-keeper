@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { assertWithinQuota, QuotaExceededError, formatBytes } from "@/lib/storageQuota";
 import { CorrespondenceLinkEditor } from "@/components/CorrespondenceLinkEditor";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface ImportRow {
   id: string;
@@ -63,6 +64,7 @@ export default function Correspondence() {
   const [userId, setUserId] = useState<string | null>(null);
   const [imports, setImports] = useState<ImportRow[]>([]);
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("correspondence", !loading);
 
   // upload / wizard
   const [uploading, setUploading] = useState(false);

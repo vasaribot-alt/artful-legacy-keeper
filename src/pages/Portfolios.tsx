@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, Trash2, FolderOpen, Link as LinkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface Portfolio {
   id: string;
@@ -19,6 +20,7 @@ const Portfolios = () => {
   const navigate = useNavigate();
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("portfolios", !loading);
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
 
