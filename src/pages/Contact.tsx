@@ -16,8 +16,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, CalendarClock, Mail, MapPin, Phone, Video } from "lucide-react";
 
-// 30 minute meeting, availability configured in Calendly to 08:00 to 18:00 CET
-const CALENDLY_URL = "https://calendly.com/globalartistregistry/30min";
+// 30 minute meeting, availability configured in Calendly to 08:00 to 18:00 CET.
+// Set this to the real Calendly event link once the event type exists.
+// Leave as null to hide the embed and show the message form instead.
+const CALENDLY_URL: string | null = null;
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, { message: "Please enter your name" }).max(120),
@@ -76,6 +78,7 @@ const Contact = () => {
     }
     meta.setAttribute("content", desc);
 
+    if (!CALENDLY_URL) return;
     const script = document.createElement("script");
     script.src = "https://assets.calendly.com/assets/external/widget.js";
     script.async = true;
@@ -84,6 +87,7 @@ const Contact = () => {
       script.remove();
     };
   }, []);
+
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -266,22 +270,42 @@ const Contact = () => {
             <div className="text-center mb-10">
               <h2 className="text-3xl font-serif mb-4">Book a 30 minute video meeting</h2>
               <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                Pick a slot below. You will receive a confirmation with a video link, and you can
-                reschedule at any time. Available 08:00 to 18:00 CET.
+                {CALENDLY_URL
+                  ? "Pick a slot below. You will receive a confirmation with a video link, and you can reschedule at any time. Available 08:00 to 18:00 CET."
+                  : "Meetings are held 08:00 to 18:00 CET. Send a request with two or three times that suit you and we will confirm with a video link."}
               </p>
             </div>
-            <div
-              className="calendly-inline-widget border border-border rounded-sm overflow-hidden"
-              data-url={`${CALENDLY_URL}?hide_gdpr_banner=1&primary_color=111111`}
-              style={{ minWidth: "320px", height: "760px" }}
-            />
-            <p className="text-center text-sm text-muted-foreground mt-6">
-              Scheduling not loading?{" "}
-              <a href={CALENDLY_URL} target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-foreground">
-                Open the booking page in a new tab
-              </a>
-              .
-            </p>
+            {CALENDLY_URL ? (
+              <>
+                <div
+                  className="calendly-inline-widget border border-border rounded-sm overflow-hidden"
+                  data-url={`${CALENDLY_URL}?hide_gdpr_banner=1&primary_color=111111`}
+                  style={{ minWidth: "320px", height: "760px" }}
+                />
+                <p className="text-center text-sm text-muted-foreground mt-6">
+                  Scheduling not loading?{" "}
+                  <a href={CALENDLY_URL} target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-foreground">
+                    Open the booking page in a new tab
+                  </a>
+                  .
+                </p>
+              </>
+            ) : (
+              <div className="border border-border rounded-sm p-8 text-center">
+                <Video className="w-5 h-5 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
+                  Use the message form above and mention "video meeting" with your preferred times.
+                  We reply within one working day.
+                </p>
+                <a
+                  href="#message"
+                  className="inline-block px-5 py-2.5 text-sm bg-foreground text-background rounded-sm hover:opacity-90 transition-opacity"
+                >
+                  Request a meeting
+                </a>
+              </div>
+            )}
+
           </div>
         </section>
       </main>
