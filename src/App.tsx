@@ -63,6 +63,8 @@ import RegistrarProfile from "./pages/RegistrarProfile";
 import RegistrarApply from "./pages/RegistrarApply";
 import FoundationRegistrars from "./pages/FoundationRegistrars";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
