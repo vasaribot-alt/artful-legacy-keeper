@@ -78,6 +78,7 @@ const Contact = () => {
     }
     meta.setAttribute("content", desc);
 
+    if (!CALENDLY_URL) return;
     const script = document.createElement("script");
     script.src = "https://assets.calendly.com/assets/external/widget.js";
     script.async = true;
@@ -86,6 +87,7 @@ const Contact = () => {
       script.remove();
     };
   }, []);
+
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((f) => ({ ...f, [key]: value }));
