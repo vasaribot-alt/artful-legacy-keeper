@@ -19,7 +19,7 @@ import { ArrowLeft, CalendarClock, Mail, MapPin, Phone, Video } from "lucide-rea
 // 30 minute meeting, availability configured in Calendly to 08:00 to 18:00 CET.
 // Set this to the real Calendly event link once the event type exists.
 // Leave as null to hide the embed and show the message form instead.
-const CALENDLY_URL: string | null = null;
+const CALENDLY_URL: string | null = "https://calendly.com/jan-globalartistregistry/30min";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, { message: "Please enter your name" }).max(120),
