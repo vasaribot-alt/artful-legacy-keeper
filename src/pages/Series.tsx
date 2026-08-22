@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, Trash2, Pencil, Eye, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface SeriesGroup {
   id: string;
@@ -30,6 +31,7 @@ const Series = () => {
   const navigate = useNavigate();
   const [series, setSeries] = useState<SeriesGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("series", !loading);
   const [newName, setNewName] = useState("");
   const [adding, setAdding] = useState(false);
   const [editMode, setEditMode] = useState(false);

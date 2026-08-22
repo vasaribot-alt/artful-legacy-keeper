@@ -29,6 +29,7 @@ import { ExhibitionArtworkPicker } from "@/components/ExhibitionArtworkPicker";
 import { SortableExhibitionImageGrid } from "@/components/SortableExhibitionImageGrid";
 import { ExhibitionDocuments } from "@/components/ExhibitionDocuments";
 import { CorrespondencePanel } from "@/components/CorrespondencePanel";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface Exhibition {
   id: string;
@@ -59,6 +60,7 @@ const Exhibitions = () => {
   const [images, setImages] = useState<Record<string, ExhibitionImage[]>>({});
   const [typeFilter, setTypeFilter] = useState<"all" | "solo" | "group">("all");
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("exhibitions", !loading);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);

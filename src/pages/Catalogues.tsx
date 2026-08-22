@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface Catalogue {
   id: string;
@@ -32,6 +33,7 @@ const Catalogues = () => {
   const { ownerId, isRegistrarContext } = useActiveOwner();
   const [catalogues, setCatalogues] = useState<Catalogue[]>([]);
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("catalogues", !loading);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);

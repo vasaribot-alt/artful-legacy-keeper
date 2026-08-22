@@ -12,6 +12,7 @@ import { useActiveOwner } from "@/hooks/use-active-owner";
 import Exhibitions from "@/pages/Exhibitions";
 import Catalogues from "@/pages/Catalogues";
 import { CommitteeInbox, CommitteeSubmissionDetail } from "@/pages/CommitteeReview";
+import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface ClientArtwork {
   id: string;
@@ -26,6 +27,7 @@ function ArtworksSection({ ownerId, clientRole }: { ownerId: string; clientRole:
   const navigate = useNavigate();
   const [artworks, setArtworks] = useState<ClientArtwork[]>([]);
   const [loading, setLoading] = useState(true);
+  useScrollRestoration("registrar-client-artworks", !loading);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
 
