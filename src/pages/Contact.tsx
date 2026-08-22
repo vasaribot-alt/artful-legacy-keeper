@@ -16,8 +16,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, CalendarClock, Mail, MapPin, Phone, Video } from "lucide-react";
 
-// 30 minute meeting, availability configured in Calendly to 08:00 to 18:00 CET
-const CALENDLY_URL = "https://calendly.com/globalartistregistry/30min";
+// 30 minute meeting, availability configured in Calendly to 08:00 to 18:00 CET.
+// Set this to the real Calendly event link once the event type exists.
+// Leave as null to hide the embed and show the message form instead.
+const CALENDLY_URL: string | null = null;
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, { message: "Please enter your name" }).max(120),
