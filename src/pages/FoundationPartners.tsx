@@ -19,6 +19,7 @@ interface PartnerOrg {
   website: string | null;
   intro_text: string | null;
   dashboard_key: string;
+  parent_id: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -36,7 +37,7 @@ const FoundationPartners = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "" });
+  const [form, setForm] = useState({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "", parent_id: "" });
 
   useEffect(() => {
     const init = async () => {
@@ -84,13 +85,14 @@ const FoundationPartners = () => {
       contact_email: form.contact_email.trim() || null,
       website: form.website.trim() || null,
       intro_text: form.intro_text.trim() || null,
+      parent_id: form.parent_id || null,
     });
     if (error) {
       toast.error(error.message.includes("duplicate") ? "That link slug is already in use" : "Could not create partner");
       return;
     }
     toast.success("Partner organisation added");
-    setForm({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "" });
+    setForm({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "", parent_id: "" });
     fetchData();
   };
 
@@ -106,6 +108,11 @@ const FoundationPartners = () => {
   if (!allowed || loading) return null;
 
   const origin = window.location.origin;
+
+  const ordered = orgs
+    .filter((o) => !o.parent_id)
+    .flatMap((p) => [p, ...orgs.filter((c) => c.parent_id === p.id)])
+    .concat(orgs.filter((o) => o.parent_id && !orgs.some((p) => p.id === o.parent_id)));
 
   return (
     <AppLayout>
@@ -152,6 +159,29 @@ const FoundationPartners = () => {
               <Input id="website" value={form.website} autoComplete="off" onChange={(e) => setForm({ ...form, website: e.target.value })} className="mt-1.5" />
             </div>
             <div className="sm:col-span-2">
+              <Label htmlFor="parent_id">Umbrella organisation (optional)</Label>
+              <select
+                id="parent_id"
+                value={form.parent_id}
+                onChange={(e) => setForm({ ...form, parent_id: e.target.value })}
+                className="mt-1.5 w-full h-10 rounded-sm border border-input bg-background px-3 text-sm"
+              >
+                <option value="">None, this is a standalone or umbrella organisation</option>
+                {orgs
+                  .filter((o) => !o.parent_id)
+                  .map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name}
+                    </option>
+                  ))}
+              </select>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Pick an umbrella to make this a country level committee. The umbrella board sees the
+                combined figures plus a per country breakdown, while this committee's own key shows only
+                its own members.
+              </p>
+            </div>
+            <div className="sm:col-span-2">
               <Label htmlFor="intro_text">Intro text on the join page</Label>
               <Textarea id="intro_text" rows={3} value={form.intro_text} onChange={(e) => setForm({ ...form, intro_text: e.target.value })} className="mt-1.5" />
             </div>
@@ -169,14 +199,21 @@ const FoundationPartners = () => {
             <p className="text-sm text-muted-foreground">No partner organisations yet.</p>
           ) : (
             <div className="space-y-4">
-              {orgs.map((org) => {
+              {ordered.map((org) => {
+                const parent = org.parent_id ? orgs.find((o) => o.id === org.parent_id) : null;
                 const joinUrl = `${origin}/join/${org.slug}`;
                 const dashUrl = `${origin}/partners/${org.slug}?key=${org.dashboard_key}`;
                 return (
-                  <div key={org.id} className="border border-border rounded-sm p-5 space-y-3">
+                  <div
+                    key={org.id}
+                    className={`border border-border rounded-sm p-5 space-y-3 ${parent ? "ml-6" : ""}`}
+                  >
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="font-medium">{org.name}</span>
                       {org.country && <Badge variant="outline" className="text-xs">{org.country}</Badge>}
+                      {parent && (
+                        <Badge variant="outline" className="text-xs">Under {parent.name}</Badge>
+                      )}
                       <Badge variant={org.is_active ? "secondary" : "outline"} className="text-xs">
                         {org.is_active ? "Active" : "Inactive"}
                       </Badge>

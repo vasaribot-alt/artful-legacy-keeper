@@ -2341,6 +2341,7 @@ export type Database = {
           is_active: boolean
           logo_url: string | null
           name: string
+          parent_id: string | null
           slug: string
           updated_at: string
           website: string | null
@@ -2355,6 +2356,7 @@ export type Database = {
           is_active?: boolean
           logo_url?: string | null
           name: string
+          parent_id?: string | null
           slug: string
           updated_at?: string
           website?: string | null
@@ -2369,11 +2371,20 @@ export type Database = {
           is_active?: boolean
           logo_url?: string | null
           name?: string
+          parent_id?: string | null
           slug?: string
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "partner_organisations_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "partner_organisations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       peer_invites: {
         Row: {
@@ -3113,6 +3124,19 @@ export type Database = {
           action: string
           created_at: string
           payload: Json
+        }[]
+      }
+      get_partner_org_breakdown: {
+        Args: { _key: string; _slug: string }
+        Returns: {
+          artworks_archived: number
+          country: string
+          exhibitions_recorded: number
+          last_join_at: string
+          members_id_verified: number
+          members_joined: number
+          name: string
+          slug: string
         }[]
       }
       get_partner_org_public: {
