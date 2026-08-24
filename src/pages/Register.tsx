@@ -23,11 +23,23 @@ const Register = () => {
   const [selectedRole, setSelectedRole] = useState<Role>("artist");
   const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [partnerOrg, setPartnerOrg] = useState<{ slug: string; name: string } | null>(null);
+
+  const orgSlug = searchParams.get("org") || "";
 
   useEffect(() => {
     const fromUrl = searchParams.get("invite");
     if (fromUrl) setInviteCode(fromUrl.toUpperCase());
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!orgSlug) return;
+    supabase.rpc("get_partner_org_public", { _slug: orgSlug }).then(({ data }) => {
+      const row = Array.isArray(data) ? data[0] : data;
+      if (row) setPartnerOrg({ slug: row.slug, name: row.name });
+    });
+  }, [orgSlug]);
+
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
