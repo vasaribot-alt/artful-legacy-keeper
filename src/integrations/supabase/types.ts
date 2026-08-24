@@ -2330,6 +2330,51 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_organisations: {
+        Row: {
+          contact_email: string | null
+          country: string | null
+          created_at: string
+          dashboard_key: string
+          id: string
+          intro_text: string | null
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          country?: string | null
+          created_at?: string
+          dashboard_key?: string
+          id?: string
+          intro_text?: string | null
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          country?: string | null
+          created_at?: string
+          dashboard_key?: string
+          id?: string
+          intro_text?: string | null
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       peer_invites: {
         Row: {
           created_at: string
@@ -2480,6 +2525,7 @@ export type Database = {
           is_deceased: boolean
           lending_notes: string | null
           nationality: string | null
+          partner_org_id: string | null
           period_activity_end: number | null
           period_activity_start: number | null
           phone: string | null
@@ -2531,6 +2577,7 @@ export type Database = {
           is_deceased?: boolean
           lending_notes?: string | null
           nationality?: string | null
+          partner_org_id?: string | null
           period_activity_end?: number | null
           period_activity_start?: number | null
           phone?: string | null
@@ -2582,6 +2629,7 @@ export type Database = {
           is_deceased?: boolean
           lending_notes?: string | null
           nationality?: string | null
+          partner_org_id?: string | null
           period_activity_end?: number | null
           period_activity_start?: number | null
           phone?: string | null
@@ -2597,7 +2645,15 @@ export type Database = {
           website?: string | null
           willing_to_lend?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_partner_org_id_fkey"
+            columns: ["partner_org_id"]
+            isOneToOne: false
+            referencedRelation: "partner_organisations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       registrar_access: {
         Row: {
@@ -3057,6 +3113,31 @@ export type Database = {
           action: string
           created_at: string
           payload: Json
+        }[]
+      }
+      get_partner_org_public: {
+        Args: { _slug: string }
+        Returns: {
+          country: string
+          intro_text: string
+          logo_url: string
+          name: string
+          slug: string
+          website: string
+        }[]
+      }
+      get_partner_org_stats: {
+        Args: { _key: string; _slug: string }
+        Returns: {
+          artworks_archived: number
+          country: string
+          exhibitions_recorded: number
+          first_join_at: string
+          last_join_at: string
+          logo_url: string
+          members_id_verified: number
+          members_joined: number
+          name: string
         }[]
       }
       get_registrar_access_details: {
