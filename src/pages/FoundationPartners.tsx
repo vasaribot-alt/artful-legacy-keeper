@@ -19,6 +19,7 @@ interface PartnerOrg {
   website: string | null;
   intro_text: string | null;
   dashboard_key: string;
+  parent_id: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -36,7 +37,7 @@ const FoundationPartners = () => {
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "" });
+  const [form, setForm] = useState({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "", parent_id: "" });
 
   useEffect(() => {
     const init = async () => {
@@ -84,13 +85,14 @@ const FoundationPartners = () => {
       contact_email: form.contact_email.trim() || null,
       website: form.website.trim() || null,
       intro_text: form.intro_text.trim() || null,
+      parent_id: form.parent_id || null,
     });
     if (error) {
       toast.error(error.message.includes("duplicate") ? "That link slug is already in use" : "Could not create partner");
       return;
     }
     toast.success("Partner organisation added");
-    setForm({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "" });
+    setForm({ name: "", slug: "", country: "", contact_email: "", website: "", intro_text: "", parent_id: "" });
     fetchData();
   };
 
@@ -150,6 +152,29 @@ const FoundationPartners = () => {
             <div className="sm:col-span-2">
               <Label htmlFor="website">Website</Label>
               <Input id="website" value={form.website} autoComplete="off" onChange={(e) => setForm({ ...form, website: e.target.value })} className="mt-1.5" />
+            </div>
+            <div className="sm:col-span-2">
+              <Label htmlFor="parent_id">Umbrella organisation (optional)</Label>
+              <select
+                id="parent_id"
+                value={form.parent_id}
+                onChange={(e) => setForm({ ...form, parent_id: e.target.value })}
+                className="mt-1.5 w-full h-10 rounded-sm border border-input bg-background px-3 text-sm"
+              >
+                <option value="">None, this is a standalone or umbrella organisation</option>
+                {orgs
+                  .filter((o) => !o.parent_id)
+                  .map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name}
+                    </option>
+                  ))}
+              </select>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Pick an umbrella to make this a country level committee. The umbrella board sees the
+                combined figures plus a per country breakdown, while this committee's own key shows only
+                its own members.
+              </p>
             </div>
             <div className="sm:col-span-2">
               <Label htmlFor="intro_text">Intro text on the join page</Label>
