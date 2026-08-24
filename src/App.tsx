@@ -42,6 +42,9 @@ import StorageTiers from "./pages/StorageTiers";
 import Donate from "./pages/Donate";
 import Support from "./pages/Support";
 import InvitationDownloads from "./pages/InvitationDownloads";
+import PartnerJoin from "./pages/PartnerJoin";
+import PartnerDashboard from "./pages/PartnerDashboard";
+import FoundationPartners from "./pages/FoundationPartners";
 import DonateThanks from "./pages/DonateThanks";
 import CollectorAccess from "./pages/CollectorAccess";
 import Capture from "./pages/Capture";
@@ -141,6 +144,9 @@ const App = () => (
           <Route path="/registrar/apply" element={<RegistrarApply />} />
           <Route path="/foundation/registrars" element={<FoundationRegistrars />} />
           <Route path="/invite-friends" element={<InviteFriends />} />
+          <Route path="/join/:slug" element={<PartnerJoin />} />
+          <Route path="/partners/:slug" element={<PartnerDashboard />} />
+          <Route path="/foundation/partners" element={<FoundationPartners />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
