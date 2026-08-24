@@ -118,6 +118,51 @@ const PartnerDashboard = () => {
               ))}
             </div>
 
+            {breakdown.length > 0 && (
+              <section className="mt-12">
+                <h2 className="text-lg font-medium mb-1">By country</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Figures for each national committee, counted from the branded join link that committee
+                  uses. Aggregate only.
+                </p>
+                <div className="border border-border rounded-sm overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-left">
+                        <th className="p-3 font-medium">Country</th>
+                        <th className="p-3 font-medium text-right">Members</th>
+                        <th className="p-3 font-medium text-right">ID verified</th>
+                        <th className="p-3 font-medium text-right">Artworks</th>
+                        <th className="p-3 font-medium text-right">Exhibitions</th>
+                        <th className="p-3 font-medium text-right">Last join</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {breakdown.map((row) => (
+                        <tr key={row.slug} className="border-b border-border last:border-0">
+                          <td className="p-3">
+                            <div>{row.country || row.name}</div>
+                            <div className="text-xs text-muted-foreground">{row.name}</div>
+                          </td>
+                          <td className="p-3 text-right">{row.members_joined}</td>
+                          <td className="p-3 text-right">{row.members_id_verified}</td>
+                          <td className="p-3 text-right">{row.artworks_archived}</td>
+                          <td className="p-3 text-right">{row.exhibitions_recorded}</td>
+                          <td className="p-3 text-right">
+                            {row.last_join_at ? new Date(row.last_join_at).toLocaleDateString() : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Each national committee also has its own access key, so a committee can see only its own
+                  figures. Ask us for a committee key and we will send it to that committee's board.
+                </p>
+              </section>
+            )}
+
             <dl className="mt-10 text-sm space-y-2">
               <div className="flex gap-2">
                 <dt className="text-muted-foreground w-40">First member joined</dt>
@@ -136,6 +181,7 @@ const PartnerDashboard = () => {
                 </dd>
               </div>
             </dl>
+
 
             <p className="text-sm text-muted-foreground border-t border-border mt-10 pt-6">
               Need a figure that is not here?{" "}
