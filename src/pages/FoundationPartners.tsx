@@ -109,6 +109,11 @@ const FoundationPartners = () => {
 
   const origin = window.location.origin;
 
+  const ordered = orgs
+    .filter((o) => !o.parent_id)
+    .flatMap((p) => [p, ...orgs.filter((c) => c.parent_id === p.id)])
+    .concat(orgs.filter((o) => o.parent_id && !orgs.some((p) => p.id === o.parent_id)));
+
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto p-6 space-y-10">
@@ -194,14 +199,21 @@ const FoundationPartners = () => {
             <p className="text-sm text-muted-foreground">No partner organisations yet.</p>
           ) : (
             <div className="space-y-4">
-              {orgs.map((org) => {
+              {ordered.map((org) => {
+                const parent = org.parent_id ? orgs.find((o) => o.id === org.parent_id) : null;
                 const joinUrl = `${origin}/join/${org.slug}`;
                 const dashUrl = `${origin}/partners/${org.slug}?key=${org.dashboard_key}`;
                 return (
-                  <div key={org.id} className="border border-border rounded-sm p-5 space-y-3">
+                  <div
+                    key={org.id}
+                    className={`border border-border rounded-sm p-5 space-y-3 ${parent ? "ml-6" : ""}`}
+                  >
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="font-medium">{org.name}</span>
                       {org.country && <Badge variant="outline" className="text-xs">{org.country}</Badge>}
+                      {parent && (
+                        <Badge variant="outline" className="text-xs">Under {parent.name}</Badge>
+                      )}
                       <Badge variant={org.is_active ? "secondary" : "outline"} className="text-xs">
                         {org.is_active ? "Active" : "Inactive"}
                       </Badge>
