@@ -195,6 +195,10 @@ const FoundationDashboard = () => {
             <Button variant="outline" size="sm" onClick={() => navigate("/foundation/gallery-outreach")}>
               Supporting Galleries Outreach →
             </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate("/foundation/partners")}>
+              Partner Organisations →
+            </Button>
+
           </div>
         </div>
 

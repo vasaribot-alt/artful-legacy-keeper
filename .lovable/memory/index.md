@@ -1,1 +1,2 @@
 - [Folder Tree Upload](mem://features/folder-tree-upload) — Recursive folder/drag-drop ingest of nested photo archives, "1 - Title" folder labels, resumable queue
+- [Partner Organisations](mem://features/partner-organisations) — /join/:slug member links and aggregate-only /partners/:slug board dashboards for IAA bodies
