@@ -74,7 +74,12 @@ const Register = () => {
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { full_name: fullName, role: selectedRole, invite_code: inviteCode.trim().toUpperCase() || undefined },
+        data: {
+          full_name: fullName,
+          role: selectedRole,
+          invite_code: inviteCode.trim().toUpperCase() || undefined,
+          partner_org: partnerOrg?.slug || undefined,
+        },
       },
     });
     setLoading(false);
@@ -96,6 +101,16 @@ const Register = () => {
         <p className="text-sm text-muted-foreground mb-8">
           Register to start documenting and preserving art.
         </p>
+        {partnerOrg && (
+          <div className="border border-border rounded-sm p-3 mb-6">
+            <p className="text-sm">
+              You are joining through <span className="font-medium">{partnerOrg.name}</span>.
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Registration is free for life. Your organisation only sees anonymous totals, never your records.
+            </p>
+          </div>
+        )}
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
             <Label htmlFor="fullName">Full name</Label>
