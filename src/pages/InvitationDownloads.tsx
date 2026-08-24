@@ -179,8 +179,10 @@ export default function InvitationDownloads() {
         <h1 className="mt-3 font-serif text-4xl leading-tight md:text-5xl">Invitation to artists</h1>
         <p className="mt-4 max-w-2xl text-muted-foreground">
           This one-page invitation may be forwarded freely to members, by newsletter, members' area or email.
-          Choose a language below. Registration in the registry is free for life for every ID-verified artist.
+          Choose a language below. Registration in the registry is free for life for every ID-verified artist,
+          and records are kept in accordance with the foundation's 100-Year Preservation Plan.
         </p>
+
 
         <section aria-labelledby="downloads" className="mt-12">
           <h2 id="downloads" className="text-sm uppercase tracking-widest text-muted-foreground">
