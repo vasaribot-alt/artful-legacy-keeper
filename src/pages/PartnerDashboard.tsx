@@ -17,23 +17,40 @@ interface Stats {
   last_join_at: string | null;
 }
 
+interface BreakdownRow {
+  slug: string;
+  name: string;
+  country: string | null;
+  members_joined: number;
+  members_id_verified: number;
+  artworks_archived: number;
+  exhibitions_recorded: number;
+  last_join_at: string | null;
+}
+
 const PartnerDashboard = () => {
   const { slug = "" } = useParams();
   const [searchParams] = useSearchParams();
   const [key, setKey] = useState(searchParams.get("key") || "");
   const [stats, setStats] = useState<Stats | null>(null);
+  const [breakdown, setBreakdown] = useState<BreakdownRow[]>([]);
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const load = async (accessKey: string) => {
     if (!accessKey) return;
     setLoading(true);
-    const { data } = await supabase.rpc("get_partner_org_stats", { _slug: slug, _key: accessKey });
-    const row = Array.isArray(data) ? data[0] : data;
+    const [statsRes, breakdownRes] = await Promise.all([
+      supabase.rpc("get_partner_org_stats", { _slug: slug, _key: accessKey }),
+      supabase.rpc("get_partner_org_breakdown", { _slug: slug, _key: accessKey }),
+    ]);
+    const row = Array.isArray(statsRes.data) ? statsRes.data[0] : statsRes.data;
     setStats((row as Stats) ?? null);
+    setBreakdown(((breakdownRes.data as BreakdownRow[]) || []).filter((r) => r));
     setChecked(true);
     setLoading(false);
   };
+
 
   useEffect(() => {
     const fromUrl = searchParams.get("key");
