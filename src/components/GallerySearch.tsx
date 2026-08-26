@@ -54,7 +54,8 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
       setSearching(true);
       const { data, error } = await supabase
         .from("galleries")
-        .select("*")
+        .select("id, name, country, city, established_year, website")
+
         .ilike("name", `%${query}%`)
         .limit(20);
 
