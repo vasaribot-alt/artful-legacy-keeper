@@ -305,6 +305,8 @@ export function CommitteeSubmissionDetail() {
   const [rejectionNotes, setRejectionNotes] = useState("");
   const [showAudit, setShowAudit] = useState(true);
   const [images, setImages] = useState<SubmissionImage[]>([]);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+
   const [uploading, setUploading] = useState(false);
 
   const fetchAll = async () => {
