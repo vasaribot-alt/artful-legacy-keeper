@@ -68,6 +68,8 @@ interface AuditEntry {
   created_at: string;
 }
 
+const CR_IMAGE_BUCKET = "cr-submission-images";
+
 const STATUS_LABEL: Record<Status, string> = {
   submitted: "Submitted",
   under_review: "Under review",
