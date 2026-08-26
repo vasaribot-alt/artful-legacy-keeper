@@ -224,26 +224,23 @@ const GalleryOutreach = () => {
         return;
       }
 
-      const columns = "id, name, city, country, established_year, rank, email, phone, website, contact_name, contact_title, enrichment_status, enrichment_attempted_at";
+      // Contact details are foundation-only, served through a role-checked lookup
       let fallback = false;
-      let { data: gs, error: galleriesError } = await (supabase as any)
-        .from("galleries")
-        .select(columns)
-        .lte("rank", 1000)
-        .not("rank", "is", null)
-        .order("rank", { ascending: true });
+      const { data: allGalleries, error: galleriesError } = await (supabase as any)
+        .rpc("list_galleries_admin");
 
       if (galleriesError) throw galleriesError;
 
-      if (!gs || gs.length === 0) {
+      const all: Gallery[] = (allGalleries || []) as Gallery[];
+      let gs: Gallery[] = all
+        .filter((g: any) => g.rank != null && g.rank <= 1000)
+        .sort((a: any, b: any) => (a.rank ?? 0) - (b.rank ?? 0));
+
+      if (gs.length === 0) {
         fallback = true;
-        const fallbackResult = await (supabase as any)
-          .from("galleries")
-          .select(columns)
-          .order("name", { ascending: true })
-          .limit(1000);
-        if (fallbackResult.error) throw fallbackResult.error;
-        gs = fallbackResult.data || [];
+        gs = [...all]
+          .sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""))
+          .slice(0, 1000);
       }
 
       const { data: os, error: outreachError } = await (supabase as any)
@@ -257,17 +254,16 @@ const GalleryOutreach = () => {
 
       // Galleries in a campaign may be unranked (e.g. added from the artist
       // list), so pull those in explicitly and merge them into the list.
-      const known = new Set((gs || []).map((g: Gallery) => g.id));
-      const missingIds = (os || [])
-        .filter((o: Outreach) => o.campaign_tag && !known.has(o.gallery_id))
-        .map((o: Outreach) => o.gallery_id);
-      if (missingIds.length > 0) {
-        const extra = await (supabase as any)
-          .from("galleries")
-          .select(columns)
-          .in("id", missingIds.slice(0, 500));
-        if (!extra.error && extra.data) gs = [...(gs || []), ...extra.data];
+      const known = new Set(gs.map((g: Gallery) => g.id));
+      const missingIds = new Set(
+        (os || [])
+          .filter((o: Outreach) => o.campaign_tag && !known.has(o.gallery_id))
+          .map((o: Outreach) => o.gallery_id)
+      );
+      if (missingIds.size > 0) {
+        gs = [...gs, ...all.filter((g: Gallery) => missingIds.has(g.id))];
       }
+
 
       setGalleries(gs || []);
       setOutreach(orMap);

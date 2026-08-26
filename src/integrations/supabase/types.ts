@@ -3351,6 +3351,24 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_galleries_admin: {
+        Args: never
+        Returns: {
+          city: string
+          contact_name: string
+          contact_title: string
+          country: string
+          email: string
+          enrichment_attempted_at: string
+          enrichment_status: string
+          established_year: number
+          id: string
+          name: string
+          phone: string
+          rank: number
+          website: string
+        }[]
+      }
       lookup_cr_artist: {
         Args: { _query: string }
         Returns: {

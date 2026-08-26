@@ -68,6 +68,8 @@ interface AuditEntry {
   created_at: string;
 }
 
+const CR_IMAGE_BUCKET = "cr-submission-images";
+
 const STATUS_LABEL: Record<Status, string> = {
   submitted: "Submitted",
   under_review: "Under review",
@@ -305,6 +307,8 @@ export function CommitteeSubmissionDetail() {
   const [rejectionNotes, setRejectionNotes] = useState("");
   const [showAudit, setShowAudit] = useState(true);
   const [images, setImages] = useState<SubmissionImage[]>([]);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+
   const [uploading, setUploading] = useState(false);
 
   const fetchAll = async () => {
@@ -371,7 +375,23 @@ export function CommitteeSubmissionDetail() {
       .select("*")
       .eq("submission_id", submissionId)
       .order("display_order", { ascending: true });
-    setImages((imgs || []) as unknown as SubmissionImage[]);
+    const imageRows = (imgs || []) as unknown as SubmissionImage[];
+    setImages(imageRows);
+
+    // Private bucket: resolve short-lived signed URLs for authorized viewers
+    if (imageRows.length > 0) {
+      const { data: signed } = await supabase.storage
+        .from(CR_IMAGE_BUCKET)
+        .createSignedUrls(imageRows.map((i) => i.storage_path), 3600);
+      const map: Record<string, string> = {};
+      (signed || []).forEach((s: any, idx: number) => {
+        if (s?.signedUrl) map[imageRows[idx].storage_path] = s.signedUrl;
+      });
+      setImageUrls(map);
+    } else {
+      setImageUrls({});
+    }
+
 
     setLoading(false);
   };
@@ -382,8 +402,8 @@ export function CommitteeSubmissionDetail() {
     let nextOrder = images.length;
     for (const file of Array.from(files)) {
       const ext = file.name.split(".").pop() || "jpg";
-      const path = `cr-submissions/${submission.artist_owner_id}/${submissionId}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("artwork-images").upload(path, file, {
+      const path = `${submission.artist_owner_id}/${submissionId}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from(CR_IMAGE_BUCKET).upload(path, file, {
         cacheControl: "3600",
         upsert: false,
       });
@@ -399,7 +419,7 @@ export function CommitteeSubmissionDetail() {
       } as any);
       if (dbErr) {
         console.error(dbErr);
-        await supabase.storage.from("artwork-images").remove([path]);
+        await supabase.storage.from(CR_IMAGE_BUCKET).remove([path]);
         toast.error(`Could not record ${file.name}`);
       }
     }
@@ -409,10 +429,11 @@ export function CommitteeSubmissionDetail() {
 
   const handleDeleteImage = async (img: SubmissionImage) => {
     if (!confirm("Remove this image?")) return;
-    await supabase.storage.from("artwork-images").remove([img.storage_path]);
+    await supabase.storage.from(CR_IMAGE_BUCKET).remove([img.storage_path]);
     await supabase.from("cr_submission_images" as any).delete().eq("id", img.id);
     fetchAll();
   };
+
 
   useEffect(() => {
     fetchAll();
@@ -518,15 +539,33 @@ export function CommitteeSubmissionDetail() {
       update.resulting_artwork_id = artwork.id;
       update.cr_number = nextCr;
 
-      // Copy submission images into artwork_images (re-use same storage paths)
-      if (images.length > 0) {
-        const rows = images.map((img, idx) => ({
+      // Copy submission images from the private review bucket into the
+      // artwork image bucket, so accepted works display in the catalogue.
+      for (let idx = 0; idx < images.length; idx++) {
+        const img = images[idx];
+        const ext = img.storage_path.split(".").pop() || "jpg";
+        const targetPath = `${submission.artist_owner_id}/${artwork.id}/${crypto.randomUUID()}.${ext}`;
+        const { data: blob, error: dlErr } = await supabase.storage
+          .from(CR_IMAGE_BUCKET)
+          .download(img.storage_path);
+        if (dlErr || !blob) {
+          console.error(dlErr);
+          continue;
+        }
+        const { error: upErr } = await supabase.storage
+          .from("artwork-images")
+          .upload(targetPath, blob, { cacheControl: "3600", upsert: false });
+        if (upErr) {
+          console.error(upErr);
+          continue;
+        }
+        await supabase.from("artwork_images").insert({
           artwork_id: artwork.id,
-          storage_path: img.storage_path,
+          storage_path: targetPath,
           display_order: idx,
-        }));
-        await supabase.from("artwork_images").insert(rows as any);
+        } as any);
       }
+
     }
 
     const { error } = await supabase.from("cr_submissions" as any).update(update).eq("id", submissionId);
@@ -667,7 +706,7 @@ export function CommitteeSubmissionDetail() {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {images.map((img) => {
-                    const url = supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl;
+                    const url = imageUrls[img.storage_path];
                     return (
                       <div key={img.id} className="relative aspect-square rounded-sm overflow-hidden bg-secondary group">
                         <img src={url} alt="Submission" className="w-full h-full object-cover" />
