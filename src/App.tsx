@@ -38,6 +38,8 @@ import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
 import Files from "./pages/Files";
 import Correspondence from "./pages/Correspondence";
+import ArtistResearch from "./pages/ArtistResearch";
+
 import StorageTiers from "./pages/StorageTiers";
 import Donate from "./pages/Donate";
 import Support from "./pages/Support";

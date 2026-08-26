@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink, useNavigate, useParams, useLocation } from "react-router-dom";
-import { ArrowLeft, User, Images, Layers, Warehouse, Briefcase, FileText, Calendar, BookOpen, ScrollText, Gavel } from "lucide-react";
+import { ArrowLeft, User, Images, Layers, Warehouse, Briefcase, FileText, Calendar, BookOpen, ScrollText, Gavel, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveOwner } from "@/hooks/use-active-owner";
 
@@ -14,8 +14,10 @@ const navItems = [
   { label: "Exhibitions", path: "exhibitions", icon: Calendar },
   { label: "Catalogues", path: "catalogues", icon: BookOpen },
   { label: "Provenance", path: "provenance", icon: ScrollText },
+  { label: "Research", path: "research", icon: Sparkles },
   { label: "Committee", path: "committee", icon: Gavel },
 ];
+
 
 interface Props {
   children: ReactNode;
