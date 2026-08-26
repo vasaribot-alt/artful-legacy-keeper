@@ -183,7 +183,12 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
         } else if (f.field) {
           update[f.field] = f.value;
         }
-        const { error } = await supabase.from("profiles").update(update).eq("user_id", ownerId);
+        const { error } = await supabase
+          .from("profiles")
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .update(update as any)
+          .eq("user_id", ownerId);
+
         if (error) throw error;
         toast.success("Added to the profile");
       } else if (f.kind === "cv_entry") {
