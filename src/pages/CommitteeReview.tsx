@@ -373,7 +373,23 @@ export function CommitteeSubmissionDetail() {
       .select("*")
       .eq("submission_id", submissionId)
       .order("display_order", { ascending: true });
-    setImages((imgs || []) as unknown as SubmissionImage[]);
+    const imageRows = (imgs || []) as unknown as SubmissionImage[];
+    setImages(imageRows);
+
+    // Private bucket: resolve short-lived signed URLs for authorized viewers
+    if (imageRows.length > 0) {
+      const { data: signed } = await supabase.storage
+        .from(CR_IMAGE_BUCKET)
+        .createSignedUrls(imageRows.map((i) => i.storage_path), 3600);
+      const map: Record<string, string> = {};
+      (signed || []).forEach((s: any, idx: number) => {
+        if (s?.signedUrl) map[imageRows[idx].storage_path] = s.signedUrl;
+      });
+      setImageUrls(map);
+    } else {
+      setImageUrls({});
+    }
+
 
     setLoading(false);
   };
