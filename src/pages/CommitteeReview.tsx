@@ -382,8 +382,8 @@ export function CommitteeSubmissionDetail() {
     let nextOrder = images.length;
     for (const file of Array.from(files)) {
       const ext = file.name.split(".").pop() || "jpg";
-      const path = `cr-submissions/${submission.artist_owner_id}/${submissionId}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("artwork-images").upload(path, file, {
+      const path = `${submission.artist_owner_id}/${submissionId}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from(CR_IMAGE_BUCKET).upload(path, file, {
         cacheControl: "3600",
         upsert: false,
       });
@@ -399,7 +399,7 @@ export function CommitteeSubmissionDetail() {
       } as any);
       if (dbErr) {
         console.error(dbErr);
-        await supabase.storage.from("artwork-images").remove([path]);
+        await supabase.storage.from(CR_IMAGE_BUCKET).remove([path]);
         toast.error(`Could not record ${file.name}`);
       }
     }
@@ -409,10 +409,11 @@ export function CommitteeSubmissionDetail() {
 
   const handleDeleteImage = async (img: SubmissionImage) => {
     if (!confirm("Remove this image?")) return;
-    await supabase.storage.from("artwork-images").remove([img.storage_path]);
+    await supabase.storage.from(CR_IMAGE_BUCKET).remove([img.storage_path]);
     await supabase.from("cr_submission_images" as any).delete().eq("id", img.id);
     fetchAll();
   };
+
 
   useEffect(() => {
     fetchAll();
