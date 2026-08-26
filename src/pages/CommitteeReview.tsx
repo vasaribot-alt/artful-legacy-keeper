@@ -537,15 +537,33 @@ export function CommitteeSubmissionDetail() {
       update.resulting_artwork_id = artwork.id;
       update.cr_number = nextCr;
 
-      // Copy submission images into artwork_images (re-use same storage paths)
-      if (images.length > 0) {
-        const rows = images.map((img, idx) => ({
+      // Copy submission images from the private review bucket into the
+      // artwork image bucket, so accepted works display in the catalogue.
+      for (let idx = 0; idx < images.length; idx++) {
+        const img = images[idx];
+        const ext = img.storage_path.split(".").pop() || "jpg";
+        const targetPath = `${submission.artist_owner_id}/${artwork.id}/${crypto.randomUUID()}.${ext}`;
+        const { data: blob, error: dlErr } = await supabase.storage
+          .from(CR_IMAGE_BUCKET)
+          .download(img.storage_path);
+        if (dlErr || !blob) {
+          console.error(dlErr);
+          continue;
+        }
+        const { error: upErr } = await supabase.storage
+          .from("artwork-images")
+          .upload(targetPath, blob, { cacheControl: "3600", upsert: false });
+        if (upErr) {
+          console.error(upErr);
+          continue;
+        }
+        await supabase.from("artwork_images").insert({
           artwork_id: artwork.id,
-          storage_path: img.storage_path,
+          storage_path: targetPath,
           display_order: idx,
-        }));
-        await supabase.from("artwork_images").insert(rows as any);
+        } as any);
       }
+
     }
 
     const { error } = await supabase.from("cr_submissions" as any).update(update).eq("id", submissionId);
