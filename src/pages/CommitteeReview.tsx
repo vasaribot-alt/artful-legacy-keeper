@@ -686,7 +686,7 @@ export function CommitteeSubmissionDetail() {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {images.map((img) => {
-                    const url = supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl;
+                    const url = imageUrls[img.storage_path];
                     return (
                       <div key={img.id} className="relative aspect-square rounded-sm overflow-hidden bg-secondary group">
                         <img src={url} alt="Submission" className="w-full h-full object-cover" />
