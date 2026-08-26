@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Pencil, ArrowLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, ArrowLeft, FileText } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 
 interface ArtworkImage {
@@ -25,6 +26,7 @@ const ArtworkView = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [exhibitions, setExhibitions] = useState<any[]>([]);
   const [catalogues, setCatalogues] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   const [siblingIds, setSiblingIds] = useState<{ prev: string | null; next: string | null }>({ prev: null, next: null });
 
   // Load sibling artwork IDs for prev/next navigation
@@ -97,6 +99,14 @@ const ArtworkView = () => {
       );
     }
 
+    // Load attached documents
+    const { data: docs } = await supabase
+      .from("artwork_documents")
+      .select("*")
+      .eq("artwork_id", id!)
+      .order("created_at");
+    if (docs) setDocuments(docs);
+
     // Load linked exhibitions
     const { data: exhLinks } = await supabase
       .from("artwork_exhibitions")
@@ -130,6 +140,17 @@ const ArtworkView = () => {
     }
 
     setLoading(false);
+  };
+
+  const openDocument = async (doc: any) => {
+    const { data, error } = await supabase.storage
+      .from("artwork-documents")
+      .createSignedUrl(doc.storage_path, 60 * 10);
+    if (error || !data?.signedUrl) {
+      toast.error("Could not open document");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener");
   };
 
   if (loading) {
@@ -278,17 +299,24 @@ const ArtworkView = () => {
               {artwork.series && (
                 <DetailRow label="Series" value={artwork.series} />
               )}
-              {!artwork.is_unique && (
-                <>
-                  {artwork.edition_number && (
-                    <DetailRow label="Edition Number" value={artwork.edition_number} />
-                  )}
-                  <DetailRow label="Edition" value={`Edition of ${artwork.edition_count || "—"}`} />
-                  {artwork.artist_proofs && (
-                    <DetailRow label="Artist Proofs" value={`${artwork.artist_proofs} AP`} />
-                  )}
-                </>
-              )}
+              {!artwork.is_unique && (() => {
+                const [no, total] = String(artwork.edition_number || "").split("/").map((s: string) => s.trim());
+                const editionValue = no && total
+                  ? `${no} of ${total}`
+                  : artwork.edition_number
+                    ? artwork.edition_number
+                    : artwork.edition_count
+                      ? `Edition of ${artwork.edition_count}`
+                      : null;
+                return (
+                  <>
+                    {editionValue && <DetailRow label="Edition" value={editionValue} />}
+                    {artwork.artist_proofs && (
+                      <DetailRow label="Artist Proofs" value={`${artwork.artist_proofs} AP`} />
+                    )}
+                  </>
+                );
+              })()}
               {artwork.artwork_location && (
                 <DetailRow label="Location" value={artwork.artwork_location} />
               )}
@@ -343,6 +371,33 @@ const ArtworkView = () => {
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Provenance</p>
                   <p className="text-sm leading-relaxed whitespace-pre-line">{artwork.provenance}</p>
+                </div>
+              </>
+            )}
+
+            {documents.length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Documents</p>
+                  <div className="space-y-2">
+                    {documents.map((doc: any) => (
+                      <button
+                        key={doc.id}
+                        type="button"
+                        onClick={() => openDocument(doc)}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-sm border border-border bg-secondary/50 text-left hover:bg-secondary transition-colors"
+                      >
+                        <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <span className="text-sm truncate flex-1">{doc.file_name}</span>
+                        {doc.file_size && (
+                          <span className="text-[10px] text-muted-foreground shrink-0">
+                            {(doc.file_size / 1024).toFixed(0)} KB
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </>
             )}

@@ -782,12 +782,37 @@ const ArtworkDetail = () => {
           <Switch checked={isUnique} onCheckedChange={(v) => { setIsUnique(v); if (v) { setEditionCount(""); setArtistProofs(""); setEditionNumber(""); } }} />
         </div>
 
-        {!isUnique && localStorage.getItem("activeRole") === "collector" && (
-          <div>
-            <Label htmlFor="editionNumber">Edition number</Label>
-            <Input id="editionNumber" value={editionNumber} onChange={(e) => setEditionNumber(e.target.value)} placeholder="e.g. 3/8" className="mt-1.5" autoComplete="off" />
-          </div>
-        )}
+        {!isUnique && localStorage.getItem("activeRole") === "collector" && (() => {
+          const [editionNo, editionTotal] = (editionNumber || "").split("/").map((s) => s.trim());
+          const setParts = (no: string, total: string) =>
+            setEditionNumber(no || total ? `${no}/${total}` : "");
+          return (
+            <div>
+              <Label htmlFor="editionNumber">Edition number</Label>
+              <div className="flex items-center gap-2 mt-1.5">
+                <Input
+                  id="editionNumber"
+                  value={editionNo || ""}
+                  onChange={(e) => setParts(e.target.value, editionTotal || "")}
+                  placeholder="3"
+                  inputMode="numeric"
+                  className="w-24 text-center"
+                  autoComplete="off"
+                />
+                <span className="text-muted-foreground">of</span>
+                <Input
+                  value={editionTotal || ""}
+                  onChange={(e) => setParts(editionNo || "", e.target.value)}
+                  placeholder="8"
+                  inputMode="numeric"
+                  className="w-24 text-center"
+                  autoComplete="off"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5">Number of this copy and the total edition size.</p>
+            </div>
+          );
+        })()}
 
         {/* Multi-size editions for non-unique works (artists/registrars only — collectors own a single copy) */}
         {!isUnique && id && globalArtworkId > 0 && localStorage.getItem("activeRole") !== "collector" && (
