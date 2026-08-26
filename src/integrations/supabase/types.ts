@@ -2813,6 +2813,107 @@ export type Database = {
         }
         Relationships: []
       }
+      research_findings: {
+        Row: {
+          confidence: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          field: string | null
+          id: string
+          kind: string
+          label: string
+          owner_id: string
+          payload: Json
+          run_id: string
+          source_url: string | null
+          status: string
+          value: string | null
+        }
+        Insert: {
+          confidence?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          field?: string | null
+          id?: string
+          kind: string
+          label: string
+          owner_id: string
+          payload?: Json
+          run_id: string
+          source_url?: string | null
+          status?: string
+          value?: string | null
+        }
+        Update: {
+          confidence?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          field?: string | null
+          id?: string
+          kind?: string
+          label?: string
+          owner_id?: string
+          payload?: Json
+          run_id?: string
+          source_url?: string | null
+          status?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "research_findings_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "research_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      research_runs: {
+        Row: {
+          artist_name: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          error: string | null
+          hints: string | null
+          id: string
+          owner_id: string
+          seed_urls: string[]
+          sources: Json
+          status: string
+        }
+        Insert: {
+          artist_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          error?: string | null
+          hints?: string | null
+          id?: string
+          owner_id: string
+          seed_urls?: string[]
+          sources?: Json
+          status?: string
+        }
+        Update: {
+          artist_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          error?: string | null
+          hints?: string | null
+          id?: string
+          owner_id?: string
+          seed_urls?: string[]
+          sources?: Json
+          status?: string
+        }
+        Relationships: []
+      }
       series_groups: {
         Row: {
           created_at: string

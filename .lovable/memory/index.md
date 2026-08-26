@@ -1,2 +1,3 @@
 - [Folder Tree Upload](mem://features/folder-tree-upload) — Recursive folder/drag-drop ingest of nested photo archives, "1 - Title" folder labels, resumable queue
 - [Partner Organisations](mem://features/partner-organisations) — /join/:slug member links and aggregate-only /partners/:slug board dashboards, umbrella + per country committee keys
+- [AI Research Workspace](mem://features/ai-research-workspace) — /research staging area where AI-found profile, CV, artwork and image data is reviewed before entering the archive

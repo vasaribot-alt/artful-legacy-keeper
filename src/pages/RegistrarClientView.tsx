@@ -13,6 +13,8 @@ import Exhibitions from "@/pages/Exhibitions";
 import Catalogues from "@/pages/Catalogues";
 import { CommitteeInbox, CommitteeSubmissionDetail } from "@/pages/CommitteeReview";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
+import { ResearchWorkspace } from "@/components/ResearchWorkspace";
+
 
 interface ClientArtwork {
   id: string;
@@ -288,8 +290,20 @@ const RegistrarClientView = () => {
           />
         }
       />
+      <Route
+        path="research"
+        element={
+          <RegistrarWorkspaceLayout>
+            <div className="max-w-5xl mx-auto px-6 py-8">
+              <h2 className="text-2xl font-serif mb-4">Research workspace</h2>
+              <ResearchWorkspace ownerId={ownerId} asRegistrar />
+            </div>
+          </RegistrarWorkspaceLayout>
+        }
+      />
       <Route path="committee" element={<CommitteeInbox />} />
       <Route path="committee/:submissionId" element={<CommitteeSubmissionDetail />} />
+
       <Route path="inventory" element={<PlaceholderSection title="Inventory" message="Client-scoped inventory view is coming soon." />} />
       <Route path="cv" element={<PlaceholderSection title="CV" message="Client-scoped CV editing is coming soon." />} />
       <Route path="provenance" element={<PlaceholderSection title="Provenance" message="Client-scoped provenance is coming soon." />} />

@@ -38,6 +38,8 @@ import RegistrarClientView from "./pages/RegistrarClientView";
 import Inventory from "./pages/Inventory";
 import Files from "./pages/Files";
 import Correspondence from "./pages/Correspondence";
+import ArtistResearch from "./pages/ArtistResearch";
+
 import StorageTiers from "./pages/StorageTiers";
 import Donate from "./pages/Donate";
 import Support from "./pages/Support";
@@ -106,6 +108,8 @@ const App = () => (
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/files" element={<Files />} />
           <Route path="/correspondence" element={<Correspondence />} />
+          <Route path="/research" element={<ArtistResearch />} />
+
           <Route path="/storage-tiers" element={<StorageTiers />} />
           <Route path="/portfolios" element={<Portfolios />} />
           <Route path="/portfolio/:id" element={<PortfolioDetail />} />
