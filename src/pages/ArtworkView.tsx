@@ -278,17 +278,24 @@ const ArtworkView = () => {
               {artwork.series && (
                 <DetailRow label="Series" value={artwork.series} />
               )}
-              {!artwork.is_unique && (
-                <>
-                  {artwork.edition_number && (
-                    <DetailRow label="Edition Number" value={artwork.edition_number} />
-                  )}
-                  <DetailRow label="Edition" value={`Edition of ${artwork.edition_count || "—"}`} />
-                  {artwork.artist_proofs && (
-                    <DetailRow label="Artist Proofs" value={`${artwork.artist_proofs} AP`} />
-                  )}
-                </>
-              )}
+              {!artwork.is_unique && (() => {
+                const [no, total] = String(artwork.edition_number || "").split("/").map((s: string) => s.trim());
+                const editionValue = no && total
+                  ? `${no} of ${total}`
+                  : artwork.edition_number
+                    ? artwork.edition_number
+                    : artwork.edition_count
+                      ? `Edition of ${artwork.edition_count}`
+                      : null;
+                return (
+                  <>
+                    {editionValue && <DetailRow label="Edition" value={editionValue} />}
+                    {artwork.artist_proofs && (
+                      <DetailRow label="Artist Proofs" value={`${artwork.artist_proofs} AP`} />
+                    )}
+                  </>
+                );
+              })()}
               {artwork.artwork_location && (
                 <DetailRow label="Location" value={artwork.artwork_location} />
               )}
