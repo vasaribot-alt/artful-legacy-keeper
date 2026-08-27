@@ -314,6 +314,18 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
                   <p className="text-sm text-muted-foreground whitespace-pre-line break-words">{f.value}</p>
                 )
               )}
+              {kind === "artwork" && typeof f.payload?.image_url === "string" && (
+                <img
+                  src={f.payload.image_url as string}
+                  alt={f.label}
+                  loading="lazy"
+                  className="max-h-32 rounded-sm border border-border object-contain bg-secondary/30"
+                />
+              )}
+              {typeof f.payload?.quote === "string" && (
+                <p className="text-xs text-muted-foreground italic break-words">“{f.payload.quote as string}”</p>
+              )}
+
               {f.source_url && (
                 <a
                   href={f.source_url}
