@@ -239,22 +239,55 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
         toast.success(`Added to CV: ${section}`);
       } else if (f.kind === "artwork") {
         const p = f.payload as Record<string, unknown>;
-        const { error } = await supabase.from("artworks").insert({
-          owner_id: ownerId,
-          role_context: "artist",
-          title: String(p.title || f.label),
-          year: typeof p.year === "number" ? p.year : null,
-          medium: (p.medium as string) || null,
-          height: typeof p.height_cm === "number" ? p.height_cm : null,
-          width: typeof p.width_cm === "number" ? p.width_cm : null,
-          depth: typeof p.depth_cm === "number" ? p.depth_cm : null,
-          description: (p.description as string) || null,
-        });
+        const { data: created, error } = await supabase
+          .from("artworks")
+          .insert({
+            owner_id: ownerId,
+            role_context: "artist",
+            title: String(p.title || f.label),
+            year: typeof p.year === "number" ? p.year : null,
+            medium: (p.medium as string) || null,
+            height: typeof p.height_cm === "number" ? p.height_cm : null,
+            width: typeof p.width_cm === "number" ? p.width_cm : null,
+            depth: typeof p.depth_cm === "number" ? p.depth_cm : null,
+            description: (p.description as string) || null,
+          })
+          .select("id")
+          .single();
         if (error) throw error;
-        toast.success("Artwork record created");
+
+        const imageUrls = [
+          ...(typeof p.image_url === "string" ? [p.image_url] : []),
+          ...(Array.isArray(p.image_urls) ? (p.image_urls as unknown[]).filter((u): u is string => typeof u === "string") : []),
+        ].filter((u, i, arr) => arr.indexOf(u) === i);
+
+        let imported = 0;
+        for (const imageUrl of imageUrls) {
+          const { data: res, error: fnErr } = await supabase.functions.invoke("import-research-image", {
+            body: { image_url: imageUrl, artwork_id: created.id, owner_id: ownerId },
+          });
+          if (!fnErr && res?.ok) imported++;
+        }
+        toast.success(
+          imported > 0
+            ? `Artwork record created with ${imported} image${imported === 1 ? "" : "s"}`
+            : imageUrls.length > 0
+              ? "Artwork record created, but the image could not be downloaded from the source"
+              : "Artwork record created"
+        );
+      } else if (f.kind === "image") {
+        const p = f.payload as Record<string, unknown>;
+        const imageUrl = (typeof p.image_url === "string" && p.image_url) || (typeof f.value === "string" ? f.value : "");
+        if (!/^https?:\/\//i.test(imageUrl)) throw new Error("No usable image link on this finding");
+        const { data: res, error: fnErr } = await supabase.functions.invoke("import-research-image", {
+          body: { image_url: imageUrl, owner_id: ownerId, unlinked: true, role_context: "artist" },
+        });
+        if (fnErr || !res?.ok) throw new Error(res?.error || fnErr?.message || "Could not download the image");
+        toast.success("Image saved to your files");
       } else {
         toast.success("Kept in the workspace");
       }
+
       await mark(f.id, "accepted");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not accept this finding");
