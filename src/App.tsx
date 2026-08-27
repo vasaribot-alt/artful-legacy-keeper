@@ -124,7 +124,8 @@ const App = () => (
           <Route path="/shared-document/:token" element={<SharedDocument />} />
           <Route path="/donors" element={<Donors />} />
           <Route path="/foundation/gallery-outreach" element={<GalleryOutreach />} />
-          <Route path="/gallery" element={<GalleryWorkspace />} />
+          <Route path="/gallery/*" element={<GalleryWorkspace />} />
+          <Route path="/institution/*" element={<InstitutionWorkspace />} />
           <Route path="/founding-supporter" element={<FoundingSupporter />} />
           <Route path="/alliance/curators" element={<AllianceCurators />} />
           <Route path="/alliance/curator" element={<AllianceCurators />} />
