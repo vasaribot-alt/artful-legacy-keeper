@@ -125,7 +125,10 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
         toast.error(data.error);
         return;
       }
-      toast.success(`${data.count} findings collected (confidence: ${data.confidence})`);
+      toast.success(
+        `${data.count} findings from ${data.pages_read ?? 0} page${data.pages_read === 1 ? "" : "s"}` +
+          (data.pages_failed ? ` (${data.pages_failed} could not be read)` : ""),
+      );
       setActiveRun(data.run_id);
       await load();
     } catch {
