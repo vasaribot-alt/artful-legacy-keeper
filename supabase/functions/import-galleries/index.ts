@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getCallerId, callerHasRole } from "../_shared/auth.ts";
 import * as XLSX from "https://esm.sh/xlsx@0.18.5";
 
 const corsHeaders = {
@@ -10,6 +11,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    const callerId = await getCallerId(req);
+    if (!callerId || !(await callerHasRole(callerId, "foundation"))) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -17,6 +25,12 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const storagePath: string = body.storage_path || "galleries-import/Galleries_world_wide_ranked.xlsx";
+    // Only admin-controlled import folder may be read, never an arbitrary client path.
+    if (!/^galleries-import\/[A-Za-z0-9._\- ]+\.(xlsx|xls|csv)$/.test(storagePath)) {
+      return new Response(JSON.stringify({ error: "Invalid storage_path" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const maxRank: number | null = body.max_rank ?? 1000;
 
     const { data: fileData, error: dlError } = await supabase.storage
