@@ -1,4 +1,5 @@
 import { corsHeaders } from "../_shared/cors.ts";
+import { getCallerId } from "../_shared/auth.ts";
 
 interface CvEntry {
   id: string;
@@ -24,6 +25,13 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const callerId = await getCallerId(req);
+    if (!callerId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { entries } = (await req.json()) as { entries: CvEntry[] };
     if (!entries?.length) {
       return new Response(JSON.stringify({ exhibitions: [] }), {
