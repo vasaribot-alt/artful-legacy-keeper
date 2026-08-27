@@ -2,6 +2,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { PDFDocument, StandardFonts, rgb } from "npm:pdf-lib@1.17.1";
+import { getCallerId, callerHasRole } from "../_shared/auth.ts";
 
 // Foundation registration placeholders — fill in once KvK approves the stichting.
 const FOUNDATION = {
