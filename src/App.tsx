@@ -31,6 +31,8 @@ import FoundationDashboard from "./pages/FoundationDashboard";
 import FoundationPitch from "./pages/FoundationPitch";
 import Donors from "./pages/Donors";
 import GalleryOutreach from "./pages/GalleryOutreach";
+import GalleryWorkspace from "./pages/GalleryWorkspace";
+import InstitutionWorkspace from "./pages/InstitutionWorkspace";
 import FoundationDocuments from "./pages/FoundationDocuments";
 import SharedDocument from "./pages/SharedDocument";
 import RegistrarDashboard from "./pages/RegistrarDashboard";
@@ -122,6 +124,8 @@ const App = () => (
           <Route path="/shared-document/:token" element={<SharedDocument />} />
           <Route path="/donors" element={<Donors />} />
           <Route path="/foundation/gallery-outreach" element={<GalleryOutreach />} />
+          <Route path="/gallery/*" element={<GalleryWorkspace />} />
+          <Route path="/institution/*" element={<InstitutionWorkspace />} />
           <Route path="/founding-supporter" element={<FoundingSupporter />} />
           <Route path="/alliance/curators" element={<AllianceCurators />} />
           <Route path="/alliance/curator" element={<AllianceCurators />} />
