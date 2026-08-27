@@ -120,7 +120,23 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           hints: hints.trim() || undefined,
         },
       });
-      if (error) throw error;
+      if (error) {
+        // surface the function's own message instead of a generic failure
+        let message = error.message || "Research failed, please try again";
+        const ctx = (error as { context?: Response }).context;
+        if (ctx && typeof ctx.text === "function") {
+          try {
+            const body = await ctx.text();
+            const parsed = JSON.parse(body);
+            if (parsed?.error) message = String(parsed.error);
+            else if (body) message = body.slice(0, 300);
+          } catch {
+            /* keep the default message */
+          }
+        }
+        toast.error(message);
+        return;
+      }
       if (data?.error) {
         toast.error(data.error);
         return;
@@ -131,12 +147,13 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
       );
       setActiveRun(data.run_id);
       await load();
-    } catch {
-      toast.error("Research failed, please try again");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Research failed, please try again");
     } finally {
       setRunning(false);
     }
   };
+
 
   const mark = async (id: string, status: string) => {
     const { error } = await supabase
