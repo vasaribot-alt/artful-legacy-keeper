@@ -2503,6 +2503,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           biography: string | null
+          birth_city: string | null
           birth_country: string | null
           birth_year: number | null
           bonus_invites: number
@@ -2555,6 +2556,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           biography?: string | null
+          birth_city?: string | null
           birth_country?: string | null
           birth_year?: number | null
           bonus_invites?: number
@@ -2607,6 +2609,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           biography?: string | null
+          birth_city?: string | null
           birth_country?: string | null
           birth_year?: number | null
           bonus_invites?: number
