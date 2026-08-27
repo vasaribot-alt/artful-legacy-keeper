@@ -18,6 +18,19 @@ const corsHeaders = {
 // decode TIFF / other formats via UTIF (pure JS, no native deps)
 import UTIF from "https://esm.sh/utif@3.1.0";
 
+const ALLOWED_BUCKET_PAIRS: Record<string, string> = {
+  "artwork-images": "artwork-images-web",
+  "exhibition-images": "exhibition-images-web",
+};
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** First path segment must be the owning user's uuid. */
+function ownerFolder(path: string): string | null {
+  const first = path.split("/")[0] ?? "";
+  return UUID_RE.test(first) ? first.toLowerCase() : null;
+}
+
 const MAX_DIMENSION = 2000;
 const QUALITY = 0.85;
 
@@ -56,7 +69,27 @@ Deno.serve(async (req) => {
       return json({ error: "originalBucket, originalPath, webBucket, webPath required" }, 400);
     }
 
+    // Only known original/web bucket pairs may be touched.
+    if (ALLOWED_BUCKET_PAIRS[body.originalBucket] !== body.webBucket) {
+      return json({ error: "Unsupported bucket pair" }, 403);
+    }
+
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Both paths must live in a folder owned by the caller, or by an artist who
+    // has granted the caller approved registrar access.
+    const originalOwner = ownerFolder(body.originalPath);
+    const webOwner = ownerFolder(body.webPath);
+    if (!originalOwner || !webOwner || originalOwner !== webOwner) {
+      return json({ error: "Invalid storage path" }, 403);
+    }
+    if (originalOwner !== userData.user.id) {
+      const { data: allowed } = await admin.rpc("has_registrar_access", {
+        _registrar_id: userData.user.id,
+        _owner_id: originalOwner,
+      });
+      if (allowed !== true) return json({ error: "Forbidden" }, 403);
+    }
 
     // 1. Download original
     const { data: blob, error: dlErr } = await admin.storage
