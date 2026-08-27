@@ -143,6 +143,8 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
       }
       toast.success(
         `${data.count} findings from ${data.pages_read ?? 0} page${data.pages_read === 1 ? "" : "s"}` +
+          (data.images_kept != null ? `, ${data.images_kept} images kept` : "") +
+          (data.images_skipped ? `, ${data.images_skipped} unrelated images filtered out` : "") +
           (data.pages_failed ? ` (${data.pages_failed} could not be read)` : ""),
       );
       setActiveRun(data.run_id);

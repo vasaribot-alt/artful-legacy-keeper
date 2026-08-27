@@ -244,7 +244,8 @@ Extraction rules, follow them strictly:
 5. Put publications and books in cv_entries with section "publications", press and reviews under "bibliography".
 6. Attach the image shown next to a work as that work's image_url, using an exact URL from the list above.
 7. Every profile fact needs the quote from the page that states it. No quote means no fact.
-8. If this page is not about the named artist, set is_about_artist to false and return empty lists.`;
+8. Images: list only images the page presents as this artist's work, an installation view of their exhibition, a portrait of them, or a document about them. Leave out logos, interface graphics, adverts, other artists' works, and any image whose subject the page does not state. When in doubt, leave it out.
+9. If this page is not about the named artist, set is_about_artist to false and return empty lists.`;
 
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -278,6 +279,32 @@ Extraction rules, follow them strictly:
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+
+/** Site furniture, tracking pixels and interface assets that are never artist material. */
+const IMAGE_JUNK =
+  /(logo|favicon|sprite|icon|avatar|placeholder|spacer|pixel|tracking|banner|arrow|button|badge|cursor|pattern|newsletter|footer|header|menu|nav|social|share|instagram|facebook|twitter|wordpress|woocommerce|gravatar|emoji|captcha|loader|spinner|blank|default|1x1|transparent)/i;
+
+/** Tiny renditions named in the URL, e.g. -150x150, _thumb, w=80. */
+const IMAGE_TOO_SMALL = /(?:[-_])(\d{1,3})x(\d{1,3})(?:[-_.]|$)|(?:thumb|thumbnail|small|mini|tiny|preview)\b|[?&](?:w|width|h|height)=([1-9]?\d|1\d\d)(?:&|$)/i;
+
+function usableImage(url: string): boolean {
+  if (!/^https?:\/\//i.test(url)) return false;
+  const path = url.split("?")[0];
+  if (!/\.(jpe?g|png|webp|tiff?|avif)$/i.test(path) && !/\/(image|media|photo)/i.test(path)) return false;
+  if (IMAGE_JUNK.test(url)) return false;
+  const m = url.match(/(?:[-_])(\d{2,4})x(\d{2,4})(?:[-_.]|$)/);
+  if (m && (parseInt(m[1], 10) < 400 || parseInt(m[2], 10) < 400)) return false;
+  if (IMAGE_TOO_SMALL.test(url)) return false;
+  return true;
+}
+
+/** A page that plausibly documents this artist's work, used before keeping uncaptioned images. */
+function pageIsArtistMaterial(pageUrl: string, slugs: string[]): boolean {
+  const lower = pageUrl.toLowerCase();
+  if (slugs.some((s) => s.length > 3 && lower.includes(s))) return true;
+  return /(work|artwork|exhibition|show|installation|press|catalog|catalogue|project|selected)/i.test(lower);
+}
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -515,31 +542,51 @@ Deno.serve(async (req) => {
       }
     }
 
+    // images: only what the page ties to the artist, never every asset on the page
     const imgSeen = new Set<string>();
+    const artworkImages = new Set<string>();
+    for (const { result } of extractions) {
+      for (const a of (result.artworks as Record<string, unknown>[] | undefined) || []) {
+        if (typeof a?.image_url === "string" && /^https?:\/\//i.test(a.image_url)) artworkImages.add(a.image_url);
+      }
+    }
+    let imagesSkipped = 0;
     for (const { page, result } of extractions) {
       const listed = (result.images as Record<string, unknown>[] | undefined) || [];
-      const fromModel = listed
-        .map((i) => ({ url: typeof i.url === "string" ? i.url : "", caption: (i.caption as string) || null, category: (i.category as string) || "other" }))
-        .filter((i) => /^https?:\/\//i.test(i.url));
-      // keep every image the page actually contained, even if the model skipped it
-      const extra = page.images
-        .filter((u) => !fromModel.some((m) => m.url === u))
-        .map((u) => ({ url: u, caption: null, category: "other" }));
-      for (const img of [...fromModel, ...extra]) {
+      const candidates = listed
+        .map((i) => ({
+          url: typeof i.url === "string" ? i.url : "",
+          caption: (i.caption as string) || null,
+          category: (i.category as string) || "other",
+        }))
+        .filter((i) => i.url);
+
+      // only fall back to raw page images when the page itself is clearly artist material
+      if (!candidates.length && pageIsArtistMaterial(page.url, slugs)) {
+        for (const u of page.images.slice(0, 12)) candidates.push({ url: u, caption: null, category: "other" });
+      }
+
+      for (const img of candidates) {
+        const linkedToWork = artworkImages.has(img.url);
+        if (!linkedToWork && !usableImage(img.url)) {
+          imagesSkipped++;
+          continue;
+        }
         if (imgSeen.has(img.url)) continue;
         imgSeen.add(img.url);
         findings.push({
           ...base,
           kind: "image",
           field: img.category,
-          label: img.caption || img.url.split("/").pop() || "Image",
+          label: img.caption || img.url.split("/").pop()?.split("?")[0] || "Image",
           value: img.url,
           source_url: page.url,
-          confidence: "medium",
-          payload: img,
+          confidence: linkedToWork ? "high" : img.caption ? "medium" : "low",
+          payload: { ...img, linked_artwork_image: linkedToWork },
         });
       }
     }
+
 
     if (findings.length) {
       // insert in chunks so a large harvest does not hit statement limits
@@ -561,6 +608,8 @@ Deno.serve(async (req) => {
       count: findings.length,
       pages_read: pages.length,
       pages_failed: failed.length,
+      images_kept: imgSeen.size,
+      images_skipped: imagesSkipped,
       confidence: findings.length ? "medium" : "low",
       sources,
     });
