@@ -526,6 +526,17 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
               <Button variant="ghost" size="sm" onClick={load} className="gap-1.5">
                 <RefreshCw className="w-3.5 h-3.5" /> Refresh
               </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={importMissingImages}
+                disabled={busy === "backfill"}
+                className="gap-1.5"
+              >
+                {busy === "backfill" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                Import missing images
+              </Button>
+
               {!asRegistrar && (
                 <Button variant="ghost" size="sm" onClick={() => deleteRun(currentRun.id)} className="gap-1.5">
                   <Trash2 className="w-3.5 h-3.5" /> Clear
