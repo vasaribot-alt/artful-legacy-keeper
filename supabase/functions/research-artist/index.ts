@@ -244,7 +244,8 @@ Extraction rules, follow them strictly:
 5. Put publications and books in cv_entries with section "publications", press and reviews under "bibliography".
 6. Attach the image shown next to a work as that work's image_url, using an exact URL from the list above.
 7. Every profile fact needs the quote from the page that states it. No quote means no fact.
-8. If this page is not about the named artist, set is_about_artist to false and return empty lists.`;
+8. Images: list only images the page presents as this artist's work, an installation view of their exhibition, a portrait of them, or a document about them. Leave out logos, interface graphics, adverts, other artists' works, and any image whose subject the page does not state. When in doubt, leave it out.
+9. If this page is not about the named artist, set is_about_artist to false and return empty lists.`;
 
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
