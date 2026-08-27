@@ -35,14 +35,16 @@ Deno.serve(async (req) => {
 
     const rawBody = await req.text();
 
-    // Validate HMAC signature
+    // Validate HMAC signature — required on every request, no exceptions.
     const signature = req.headers.get("x-hmac-signature");
-    if (signature) {
-      const computed = await computeHmac(apiSecret, rawBody);
-      if (computed.toLowerCase() !== signature.toLowerCase()) {
-        console.error("HMAC mismatch");
-        return new Response("Invalid signature", { status: 403, headers: corsHeaders });
-      }
+    if (!signature) {
+      console.error("Missing x-hmac-signature header");
+      return new Response("Invalid signature", { status: 403, headers: corsHeaders });
+    }
+    const computed = await computeHmac(apiSecret, rawBody);
+    if (computed.toLowerCase() !== signature.toLowerCase()) {
+      console.error("HMAC mismatch");
+      return new Response("Invalid signature", { status: 403, headers: corsHeaders });
     }
 
     const payload = JSON.parse(rawBody);
