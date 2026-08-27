@@ -473,6 +473,13 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           page is kept, together with the sentence that states it. Everything lands in this temporary workspace:
           profile facts, CV lines, artwork records and images. Nothing reaches the archive until it is accepted here.
         </p>
+        <p className="text-sm text-muted-foreground max-w-2xl">
+          For your CV, upload your own PDF instead of letting us piece it together from what we find here and there.
+          Most artists already keep a complete CV, and it is the single most valuable document you can give us: it lists
+          your exhibitions, education, awards and collections, and it tells us where more information about your work
+          can be found. Upload it under CV, where it is read and turned into structured entries you can review.
+        </p>
+
 
         <div className="grid gap-3 md:grid-cols-2">
           <div>
