@@ -304,6 +304,55 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
     }
   };
 
+  /** Re-runs the image download for findings that were accepted before image import worked. */
+  const importMissingImages = async () => {
+    setBusy("backfill");
+    let done = 0;
+    let failed = 0;
+    try {
+      for (const f of findings.filter((x) => x.kind === "artwork" && x.status === "accepted")) {
+        const p = f.payload as Record<string, unknown>;
+        const imageUrl = typeof p.image_url === "string" ? p.image_url : "";
+        if (!/^https?:\/\//i.test(imageUrl)) continue;
+        const title = String(p.title || f.label);
+        const { data: art } = await supabase
+          .from("artworks")
+          .select("id")
+          .eq("owner_id", ownerId)
+          .eq("role_context", "artist")
+          .eq("title", title)
+          .order("created_at", { ascending: false })
+          .limit(1);
+        const artworkId = art?.[0]?.id;
+        if (!artworkId) continue;
+        const { count } = await supabase
+          .from("artwork_images")
+          .select("id", { count: "exact", head: true })
+          .eq("artwork_id", artworkId);
+        if ((count ?? 0) > 0) continue;
+        const { data: res, error } = await supabase.functions.invoke("import-research-image", {
+          body: { image_url: imageUrl, artwork_id: artworkId, owner_id: ownerId },
+        });
+        if (!error && res?.ok) done++;
+        else failed++;
+      }
+      for (const f of findings.filter((x) => x.kind === "image" && x.status === "accepted")) {
+        const p = f.payload as Record<string, unknown>;
+        const imageUrl = (typeof p.image_url === "string" && p.image_url) || f.value || "";
+        if (!/^https?:\/\//i.test(imageUrl)) continue;
+        const { data: res, error } = await supabase.functions.invoke("import-research-image", {
+          body: { image_url: imageUrl, owner_id: ownerId, unlinked: true, role_context: "artist" },
+        });
+        if (!error && res?.ok) done++;
+        else failed++;
+      }
+      toast.success(`${done} image${done === 1 ? "" : "s"} imported${failed ? `, ${failed} could not be downloaded` : ""}`);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+
   const deleteRun = async (id: string) => {
     const { error } = await supabase.from("research_runs").delete().eq("id", id);
     if (error) {
@@ -477,6 +526,17 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
               <Button variant="ghost" size="sm" onClick={load} className="gap-1.5">
                 <RefreshCw className="w-3.5 h-3.5" /> Refresh
               </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={importMissingImages}
+                disabled={busy === "backfill"}
+                className="gap-1.5"
+              >
+                {busy === "backfill" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                Import missing images
+              </Button>
+
               {!asRegistrar && (
                 <Button variant="ghost" size="sm" onClick={() => deleteRun(currentRun.id)} className="gap-1.5">
                   <Trash2 className="w-3.5 h-3.5" /> Clear
