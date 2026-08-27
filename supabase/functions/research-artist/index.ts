@@ -279,6 +279,32 @@ Extraction rules, follow them strictly:
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
+/** Site furniture, tracking pixels and interface assets that are never artist material. */
+const IMAGE_JUNK =
+  /(logo|favicon|sprite|icon|avatar|placeholder|spacer|pixel|tracking|banner|arrow|button|badge|cursor|pattern|newsletter|footer|header|menu|nav|social|share|instagram|facebook|twitter|wordpress|woocommerce|gravatar|emoji|captcha|loader|spinner|blank|default|1x1|transparent)/i;
+
+/** Tiny renditions named in the URL, e.g. -150x150, _thumb, w=80. */
+const IMAGE_TOO_SMALL = /(?:[-_])(\d{1,3})x(\d{1,3})(?:[-_.]|$)|(?:thumb|thumbnail|small|mini|tiny|preview)\b|[?&](?:w|width|h|height)=([1-9]?\d|1\d\d)(?:&|$)/i;
+
+function usableImage(url: string): boolean {
+  if (!/^https?:\/\//i.test(url)) return false;
+  const path = url.split("?")[0];
+  if (!/\.(jpe?g|png|webp|tiff?|avif)$/i.test(path) && !/\/(image|media|photo)/i.test(path)) return false;
+  if (IMAGE_JUNK.test(url)) return false;
+  const m = url.match(/(?:[-_])(\d{2,4})x(\d{2,4})(?:[-_.]|$)/);
+  if (m && (parseInt(m[1], 10) < 400 || parseInt(m[2], 10) < 400)) return false;
+  if (IMAGE_TOO_SMALL.test(url)) return false;
+  return true;
+}
+
+/** A page that plausibly documents this artist's work, used before keeping uncaptioned images. */
+function pageIsArtistMaterial(pageUrl: string, slugs: string[]): boolean {
+  const lower = pageUrl.toLowerCase();
+  if (slugs.some((s) => s.length > 3 && lower.includes(s))) return true;
+  return /(work|artwork|exhibition|show|installation|press|catalog|catalogue|project|selected)/i.test(lower);
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
