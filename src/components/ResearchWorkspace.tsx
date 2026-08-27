@@ -465,11 +465,13 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
     <div className="space-y-6">
       <section className="space-y-4">
         <p className="text-sm text-muted-foreground max-w-2xl">
-          Point the research at the artist website and any gallery pages. Each page is read on its own, and relevant
-          subpages such as works, exhibitions and publications are followed automatically. Only what is actually
-          written on a page is kept, together with the sentence that states it. Everything lands in this temporary
-          workspace: profile facts, CV lines, artwork records and images. Nothing reaches the archive until it is
-          accepted here.
+          Give the research tool direct listings from every website that holds information about you and your work:
+          your own site, gallery pages, exhibition listings and publications. Think of it as downloading information you
+          already control, not scraping the open internet. For the richest result, also contact every gallery you have
+          worked with and ask for a complete CSV or Excel file with all the works they have been involved with. Each
+          page is read on its own, and relevant subpages are followed automatically. Only what is actually written on a
+          page is kept, together with the sentence that states it. Everything lands in this temporary workspace:
+          profile facts, CV lines, artwork records and images. Nothing reaches the archive until it is accepted here.
         </p>
 
         <div className="grid gap-3 md:grid-cols-2">
