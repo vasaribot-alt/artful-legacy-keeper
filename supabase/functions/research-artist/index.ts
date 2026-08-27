@@ -542,33 +542,51 @@ Deno.serve(async (req) => {
       }
     }
 
-    // images: only what the page ties to the artist, never every asset on the page
+    // images: strict. Only images the page ties to this artist by name, by an extracted
+    // work, or by a stated caption on a page dedicated to the artist. No raw page harvesting.
     const imgSeen = new Set<string>();
     const artworkImages = new Set<string>();
+    const titleTokens = new Set<string>();
     for (const { result } of extractions) {
       for (const a of (result.artworks as Record<string, unknown>[] | undefined) || []) {
         if (typeof a?.image_url === "string" && /^https?:\/\//i.test(a.image_url)) artworkImages.add(a.image_url);
+        if (typeof a?.title === "string") {
+          for (const t of norm(a.title).split(" ")) if (t.length > 4) titleTokens.add(t);
+        }
       }
     }
+    const nameTokens = slugs.filter((s) => s.length > 3);
+
+    /** the image file itself names the artist or one of their work titles */
+    const urlNamesArtist = (url: string) => {
+      const file = norm(decodeURIComponent(url.split("?")[0].split("/").pop() || ""));
+      const whole = norm(decodeURIComponent(url));
+      return (
+        nameTokens.some((s) => whole.includes(s)) ||
+        Array.from(titleTokens).some((t) => file.includes(t))
+      );
+    };
+
     let imagesSkipped = 0;
     for (const { page, result } of extractions) {
-      const listed = (result.images as Record<string, unknown>[] | undefined) || [];
-      const candidates = listed
+      const artistPage = nameTokens.some((s) => page.url.toLowerCase().includes(s));
+      const listed = ((result.images as Record<string, unknown>[] | undefined) || [])
         .map((i) => ({
           url: typeof i.url === "string" ? i.url : "",
           caption: (i.caption as string) || null,
           category: (i.category as string) || "other",
         }))
-        .filter((i) => i.url);
+        .filter((i) => i.url && /^https?:\/\//i.test(i.url));
 
-      // only fall back to raw page images when the page itself is clearly artist material
-      if (!candidates.length && pageIsArtistMaterial(page.url, slugs)) {
-        for (const u of page.images.slice(0, 12)) candidates.push({ url: u, caption: null, category: "other" });
-      }
-
-      for (const img of candidates) {
+      for (const img of listed) {
         const linkedToWork = artworkImages.has(img.url);
-        if (!linkedToWork && !usableImage(img.url)) {
+        const captionNamesArtist = img.caption ? nameTokens.some((s) => norm(img.caption!).includes(s)) : false;
+        const keep =
+          linkedToWork ||
+          urlNamesArtist(img.url) ||
+          captionNamesArtist ||
+          (artistPage && !!img.caption && /work|artwork|installation|portrait|exhibition|document/i.test(img.category));
+        if (!keep || (!linkedToWork && !usableImage(img.url))) {
           imagesSkipped++;
           continue;
         }
@@ -581,11 +599,12 @@ Deno.serve(async (req) => {
           label: img.caption || img.url.split("/").pop()?.split("?")[0] || "Image",
           value: img.url,
           source_url: page.url,
-          confidence: linkedToWork ? "high" : img.caption ? "medium" : "low",
-          payload: { ...img, linked_artwork_image: linkedToWork },
+          confidence: linkedToWork || urlNamesArtist(img.url) ? "high" : "medium",
+          payload: { ...img, linked_artwork_image: linkedToWork, artist_page: artistPage },
         });
       }
     }
+
 
 
     if (findings.length) {
