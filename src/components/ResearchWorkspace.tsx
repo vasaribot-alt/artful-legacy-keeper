@@ -385,7 +385,7 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
             <Input
               value={hints}
               onChange={(e) => setHints(e.target.value)}
-              placeholder="e.g. born in Oslo, represented by Galleri K"
+              placeholder="e.g. represented by Galleri K (used to find pages, never as a fact)"
               className="mt-1"
               autoComplete="off"
             />
