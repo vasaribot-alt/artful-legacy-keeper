@@ -125,7 +125,10 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
         toast.error(data.error);
         return;
       }
-      toast.success(`${data.count} findings collected (confidence: ${data.confidence})`);
+      toast.success(
+        `${data.count} findings from ${data.pages_read ?? 0} page${data.pages_read === 1 ? "" : "s"}` +
+          (data.pages_failed ? ` (${data.pages_failed} could not be read)` : ""),
+      );
       setActiveRun(data.run_id);
       await load();
     } catch {
@@ -311,6 +314,18 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
                   <p className="text-sm text-muted-foreground whitespace-pre-line break-words">{f.value}</p>
                 )
               )}
+              {kind === "artwork" && typeof f.payload?.image_url === "string" && (
+                <img
+                  src={f.payload.image_url as string}
+                  alt={f.label}
+                  loading="lazy"
+                  className="max-h-32 rounded-sm border border-border object-contain bg-secondary/30"
+                />
+              )}
+              {typeof f.payload?.quote === "string" && (
+                <p className="text-xs text-muted-foreground italic break-words">“{f.payload.quote as string}”</p>
+              )}
+
               {f.source_url && (
                 <a
                   href={f.source_url}
@@ -349,10 +364,13 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
     <div className="space-y-6">
       <section className="space-y-4">
         <p className="text-sm text-muted-foreground max-w-2xl">
-          Point the research at the artist website and any gallery pages. Everything found is collected in this
-          temporary workspace: profile text, CV lines, artwork records and images. Nothing reaches the archive until
-          it is accepted here.
+          Point the research at the artist website and any gallery pages. Each page is read on its own, and relevant
+          subpages such as works, exhibitions and publications are followed automatically. Only what is actually
+          written on a page is kept, together with the sentence that states it. Everything lands in this temporary
+          workspace: profile facts, CV lines, artwork records and images. Nothing reaches the archive until it is
+          accepted here.
         </p>
+
         <div className="grid gap-3 md:grid-cols-2">
           <div>
             <Label className="text-xs text-muted-foreground">Websites to read (one per line)</Label>
@@ -370,7 +388,7 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
             <Input
               value={hints}
               onChange={(e) => setHints(e.target.value)}
-              placeholder="e.g. born in Oslo, represented by Galleri K"
+              placeholder="e.g. represented by Galleri K (used to find pages, never as a fact)"
               className="mt-1"
               autoComplete="off"
             />

@@ -20,6 +20,7 @@ import { CrCommitteeManager } from "@/components/CrCommitteeManager";
 
 interface CrFields {
   cr_listed: boolean;
+  birth_city: string;
   birth_country: string;
   death_country: string;
   nationality: string;
@@ -45,6 +46,7 @@ interface EditableProfile {
 
 const EMPTY: CrFields = {
   cr_listed: false,
+  birth_city: "",
   birth_country: "",
   death_country: "",
   nationality: "",
@@ -141,7 +143,7 @@ export default function CrProfileEditor() {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "global_artist_id, cr_listed, birth_country, death_country, nationality, period_activity_start, period_activity_end, cr_status, cr_scope, cr_compilers, cr_sponsor, cr_contact_email, cr_website_url, cr_first_volume_year, cr_publisher, cr_isbn"
+          "global_artist_id, cr_listed, birth_city, birth_country, death_country, nationality, period_activity_start, period_activity_end, cr_status, cr_scope, cr_compilers, cr_sponsor, cr_contact_email, cr_website_url, cr_first_volume_year, cr_publisher, cr_isbn"
         )
         .eq("user_id", activeId)
         .maybeSingle();
@@ -149,6 +151,7 @@ export default function CrProfileEditor() {
         setGar((data as { global_artist_id: number }).global_artist_id);
         setF({
           cr_listed: !!data.cr_listed,
+          birth_city: data.birth_city ?? "",
           birth_country: data.birth_country ?? "",
           death_country: data.death_country ?? "",
           nationality: data.nationality ?? "",
@@ -183,6 +186,7 @@ export default function CrProfileEditor() {
       .from("profiles")
       .update({
         cr_listed: f.cr_listed,
+        birth_city: f.birth_city || null,
         birth_country: f.birth_country || null,
         death_country: f.death_country || null,
         nationality: f.nationality || null,
@@ -313,6 +317,11 @@ export default function CrProfileEditor() {
             Artist
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field
+              label="Place of birth (city)"
+              value={f.birth_city}
+              onChange={(v) => setField("birth_city", v)}
+            />
             <Field
               label="Country of birth"
               value={f.birth_country}

@@ -8,40 +8,55 @@ const corsHeaders = {
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 
-const researchSchema = {
-  name: "artist_research_workspace",
-  description: "Everything that can be found about a visual artist from public web sources",
+const MAX_PAGES = 16;
+const PAGE_CHARS = 30000;
+const BATCH = 4;
+
+/** Schema used once per page, so nothing gets squeezed out by a single global answer. */
+const pageSchema = {
+  name: "page_extraction",
+  description: "Everything documented about the named artist on this one page",
   parameters: {
     type: "object",
     properties: {
-      profile: {
-        type: "object",
-        description: "Profile fields for the artist",
-        properties: {
-          biography: { type: ["string", "null"], description: "Factual biography in third person" },
-          chronology: { type: ["string", "null"], description: "One line per year: 'YYYY event'" },
-          city: { type: ["string", "null"] },
-          country: { type: ["string", "null"] },
-          birth_year: { type: ["integer", "null"] },
-          website: { type: ["string", "null"] },
-          galleries: { type: "array", items: { type: "string" } },
-          social_links: { type: "object", additionalProperties: { type: "string" } },
+      is_about_artist: {
+        type: "boolean",
+        description: "True only when this page clearly concerns the named artist",
+      },
+      profile_facts: {
+        type: "array",
+        description: "Discrete profile facts stated on this page, one entry per fact",
+        items: {
+          type: "object",
+          properties: {
+            field: {
+              type: "string",
+              description:
+                "One of: biography, chronology, birth_year, birth_city, birth_country, city, country, nationality, website, gallery, social_link",
+            },
+            value: { type: "string", description: "The value exactly as documented" },
+            quote: { type: "string", description: "The sentence or line on the page that states it" },
+          },
+          required: ["field", "value", "quote"],
+          additionalProperties: false,
         },
-        additionalProperties: false,
       },
       cv_entries: {
         type: "array",
-        description: "CV lines found in public sources",
+        description: "Every exhibition, award, grant, collection, education, residency, publication or press line on this page",
         items: {
           type: "object",
           properties: {
             section: {
               type: "string",
-              description: "One of: solo_exhibitions, group_exhibitions, awards, collections, education, publications, residencies",
+              description:
+                "One of: solo_exhibitions, group_exhibitions, awards, grants, collections, education, residencies, publications, bibliography",
             },
             year: { type: ["string", "null"] },
-            text: { type: "string", description: "The CV line, e.g. 'Galerie X, Berlin'" },
-            source_url: { type: ["string", "null"] },
+            text: {
+              type: "string",
+              description: "The line, e.g. 'Galerie X, Berlin' or 'Title, Publisher, 2019'",
+            },
           },
           required: ["section", "text"],
           additionalProperties: false,
@@ -49,7 +64,7 @@ const researchSchema = {
       },
       artworks: {
         type: "array",
-        description: "Individual artworks found, with whatever metadata is stated",
+        description: "Every individual work listed on this page, one entry per work, including works in checklists and captions",
         items: {
           type: "object",
           properties: {
@@ -59,9 +74,10 @@ const researchSchema = {
             height_cm: { type: ["number", "null"] },
             width_cm: { type: ["number", "null"] },
             depth_cm: { type: ["number", "null"] },
+            dimensions_text: { type: ["string", "null"], description: "Dimensions exactly as printed" },
+            edition: { type: ["string", "null"] },
             description: { type: ["string", "null"] },
-            image_url: { type: ["string", "null"] },
-            source_url: { type: ["string", "null"] },
+            image_url: { type: ["string", "null"], description: "Absolute URL of the image shown with this work, if any" },
           },
           required: ["title"],
           additionalProperties: false,
@@ -69,65 +85,137 @@ const researchSchema = {
       },
       images: {
         type: "array",
-        description: "Image URLs worth keeping (artwork photos, installation views, portraits)",
+        description: "Absolute image URLs on this page worth keeping, with their caption",
         items: {
           type: "object",
           properties: {
             url: { type: "string" },
             caption: { type: ["string", "null"] },
-            source_url: { type: ["string", "null"] },
+            category: { type: "string", description: "One of: artwork, installation, portrait, document, other" },
           },
           required: ["url"],
           additionalProperties: false,
         },
       },
-      sources: { type: "array", items: { type: "string" } },
-      confidence: { type: "string", enum: ["high", "medium", "low"] },
     },
-    required: ["profile", "cv_entries", "artworks", "images", "sources", "confidence"],
+    required: ["is_about_artist", "profile_facts", "cv_entries", "artworks", "images"],
     additionalProperties: false,
   },
 };
 
-async function firecrawlScrape(url: string): Promise<string | null> {
+interface Page {
+  url: string;
+  markdown: string;
+  links: string[];
+  images: string[];
+}
+
+async function scrape(url: string): Promise<Page | null> {
   if (!FIRECRAWL_API_KEY) return null;
   try {
     const res = await fetch("https://api.firecrawl.dev/v2/scrape", {
       method: "POST",
       headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ url, formats: ["markdown", "links"], onlyMainContent: true }),
+      body: JSON.stringify({ url, formats: ["markdown", "links"], onlyMainContent: true, waitFor: 1200 }),
     });
     if (!res.ok) return null;
     const d = await res.json();
-    const md = d?.markdown ?? d?.data?.markdown;
-    return md ? String(md).slice(0, 12000) : null;
+    const doc = d?.data ?? d;
+    const markdown: string = String(doc?.markdown || "");
+    if (!markdown.trim()) return null;
+    const links: string[] = Array.isArray(doc?.links) ? doc.links.filter((l: unknown) => typeof l === "string") : [];
+    const images = Array.from(markdown.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/g)).map((m) => m[1]);
+    return { url, markdown: markdown.slice(0, PAGE_CHARS), links, images: Array.from(new Set(images)).slice(0, 120) };
   } catch (_e) {
     return null;
   }
 }
 
-async function firecrawlSearch(query: string): Promise<{ text: string; urls: string[] }> {
-  if (!FIRECRAWL_API_KEY) return { text: "", urls: [] };
+async function search(query: string): Promise<string[]> {
+  if (!FIRECRAWL_API_KEY) return [];
   try {
     const res = await fetch("https://api.firecrawl.dev/v2/search", {
       method: "POST",
       headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ query, limit: 6, scrapeOptions: { formats: ["markdown"] } }),
+      body: JSON.stringify({ query, limit: 8 }),
     });
-    if (!res.ok) return { text: "", urls: [] };
+    if (!res.ok) return [];
     const d = await res.json();
-    const rows = d?.data ?? [];
-    const urls = rows.map((r: { url?: string }) => r.url).filter(Boolean) as string[];
-    const text = rows
-      .map((r: { url?: string; title?: string; markdown?: string; description?: string }) =>
-        `URL: ${r.url}\nTITLE: ${r.title}\n${(r.markdown || r.description || "").slice(0, 4000)}`
-      )
-      .join("\n\n---\n\n");
-    return { text, urls };
+    const rows = d?.data ?? d?.web ?? [];
+    return (Array.isArray(rows) ? rows : []).map((r: { url?: string }) => r?.url).filter(Boolean) as string[];
   } catch (_e) {
-    return { text: "", urls: [] };
+    return [];
   }
 }
+
+const RELEVANT = /(work|artwork|exhibition|show|press|publication|book|catalog|catalogue|news|bio|about|cv|text|essay|project|selected)/i;
+const SKIP = /(\.(jpg|jpeg|png|gif|webp|svg|css|js|zip)$|mailto:|tel:|\/cart|\/checkout|instagram\.com|facebook\.com|twitter\.com|x\.com|linkedin\.com|youtube\.com|\/privacy|\/terms|\/shop)/i;
+
+function sameHost(a: string, b: string): boolean {
+  try {
+    return new URL(a).host === new URL(b).host;
+  } catch {
+    return false;
+  }
+}
+
+function nameSlugs(name: string): string[] {
+  const parts = name.toLowerCase().split(/\s+/).filter(Boolean);
+  return [parts.join("-"), parts.join("_"), parts.join(""), parts[parts.length - 1] || ""].filter(Boolean);
+}
+
+async function extractPage(page: Page, artistName: string): Promise<Record<string, unknown> | null> {
+  const prompt = `Artist being researched: "${artistName}".
+Page URL: ${page.url}
+
+Image URLs present on this page (use these exact strings when referencing images):
+${page.images.slice(0, 60).join("\n") || "none detected"}
+
+PAGE CONTENT (markdown):
+${page.markdown}
+
+Extraction rules, follow them strictly:
+1. Extract ONLY what is written in the page content above. If a fact is not on this page, leave it out. Never fill a gap from general knowledge, and never guess a year, dimension, medium, city or title.
+2. Do not merge different facts. Birth place and current place of residence are separate: "Born 1979 in Moss, lives in Drøbak" gives birth_city = Moss and city = Drøbak.
+3. List every single work you can see, including works inside exhibition checklists, image captions and index listings. Do not summarise or select "the important ones".
+4. Dimensions: keep the printed text in dimensions_text and convert to centimetres for the numeric fields (1 inch = 2.54 cm). Leave numbers null when not printed.
+5. Put publications and books in cv_entries with section "publications", press and reviews under "bibliography".
+6. Attach the image shown next to a work as that work's image_url, using an exact URL from the list above.
+7. Every profile fact needs the quote from the page that states it. No quote means no fact.
+8. If this page is not about the named artist, set is_about_artist to false and return empty lists.`;
+
+  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "google/gemini-3.7-flash",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an archivist transcribing a single web page into structured records. You transcribe, you never infer, never complete and never embellish. Missing data stays missing.",
+        },
+        { role: "user", content: prompt },
+      ],
+      tools: [{ type: "function", function: pageSchema }],
+      tool_choice: { type: "function", function: { name: "page_extraction" } },
+    }),
+  });
+  if (!res.ok) {
+    console.error("page extraction failed", page.url, res.status, await res.text());
+    return null;
+  }
+  const data = await res.json();
+  const call = data?.choices?.[0]?.message?.tool_calls?.[0];
+  if (!call) return null;
+  try {
+    return JSON.parse(call.function.arguments);
+  } catch {
+    return null;
+  }
+}
+
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -136,21 +224,17 @@ Deno.serve(async (req) => {
     new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
   let runId: string | null = null;
-  const admin = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-  );
+  const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) return json({ error: "Unauthorized" }, 401);
     if (!LOVABLE_API_KEY) return json({ error: "AI is not configured" }, 500);
+    if (!FIRECRAWL_API_KEY) return json({ error: "Web reading is not configured" }, 500);
 
-    const userClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
-    );
+    const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader } },
+    });
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return json({ error: "Unauthorized" }, 401);
 
@@ -171,20 +255,21 @@ Deno.serve(async (req) => {
 
     const { data: profile } = await admin
       .from("profiles")
-      .select("full_name, id_verified, birth_year, city, country, website, biography")
+      .select("full_name, website")
       .eq("user_id", ownerId)
       .maybeSingle();
     if (!profile) return json({ error: "Profile not found" }, 404);
     if (!profile.full_name) {
       return json({ error: "Add the artist's full name first so the research targets the right person." }, 400);
     }
+    const artistName = profile.full_name;
 
     const { data: run, error: runErr } = await admin
       .from("research_runs")
       .insert({
         owner_id: ownerId,
         created_by: user.id,
-        artist_name: profile.full_name,
+        artist_name: artistName,
         seed_urls: seedUrls,
         hints: hints ?? null,
         status: "running",
@@ -194,175 +279,229 @@ Deno.serve(async (req) => {
     if (runErr || !run) return json({ error: runErr?.message || "Could not start research" }, 500);
     runId = run.id;
 
-    // Gather public web context
-    const consulted: string[] = [];
-    const chunks: string[] = [];
+    // ---- Stage 1: decide which pages to read -------------------------------
+    const queue: string[] = [];
+    const seen = new Set<string>();
+    const push = (u: string) => {
+      const clean = u.split("#")[0].replace(/\/$/, "");
+      if (!/^https?:\/\//i.test(clean) || SKIP.test(clean) || seen.has(clean)) return;
+      seen.add(clean);
+      queue.push(clean);
+    };
+    seedUrls.forEach(push);
+    if (profile.website) push(profile.website);
+    if (!queue.length) {
+      const found = await search(`"${artistName}" artist exhibitions works`);
+      found.slice(0, 4).forEach(push);
+    }
 
-    const startUrls = [...seedUrls];
-    if (profile.website && !startUrls.includes(profile.website)) startUrls.unshift(profile.website);
+    const slugs = nameSlugs(artistName);
+    const pages: Page[] = [];
+    const failed: string[] = [];
 
-    for (const url of startUrls.slice(0, 6)) {
-      const md = await firecrawlScrape(url);
-      if (md) {
-        consulted.push(url);
-        chunks.push(`SOURCE ${url}\n${md}`);
+    // read the seeds first, then follow their relevant subpages
+    const seedPages: Page[] = [];
+    for (const url of queue.slice(0, 6)) {
+      const p = await scrape(url);
+      if (p) {
+        seedPages.push(p);
+        pages.push(p);
+      } else {
+        failed.push(url);
       }
     }
 
-    const search = await firecrawlSearch(
-      `"${profile.full_name}" artist ${profile.country || ""} exhibitions gallery works`,
-    );
-    if (search.text) {
-      chunks.push(`WEB SEARCH RESULTS\n${search.text}`);
-      consulted.push(...search.urls);
+    const followUps: string[] = [];
+    for (const p of seedPages) {
+      for (const link of p.links) {
+        const clean = link.split("#")[0].replace(/\/$/, "");
+        if (!/^https?:\/\//i.test(clean) || SKIP.test(clean) || seen.has(clean)) continue;
+        if (!sameHost(clean, p.url)) continue;
+        const lower = clean.toLowerCase();
+        const nameMatch = slugs.some((s) => s.length > 3 && lower.includes(s));
+        if (!nameMatch && !RELEVANT.test(lower)) continue;
+        seen.add(clean);
+        followUps.push(clean);
+      }
     }
 
-    const context = chunks.join("\n\n=====\n\n").slice(0, 90000);
-
-    const prompt = `Collect everything publicly documented about the visual artist "${profile.full_name}".
-Known information (may be incomplete):
-${JSON.stringify({
-      birth_year: profile.birth_year,
-      city: profile.city,
-      country: profile.country,
-      website: profile.website,
-      extra_hints: hints || null,
-    }, null, 2)}
-
-${context ? `Material gathered from the artist's own website, gallery websites and public web search:\n${context}` : "No scraped material is available; use only what you reliably know."}
-
-Rules:
-- Only report facts that appear in the material or that you are confident are correct. Never invent titles, years, exhibitions, dimensions or contact details.
-- Convert dimensions to centimetres. Leave a value null when it is not stated.
-- Put each exhibition, award, collection, education or publication line into cv_entries with the year separated out.
-- List every individual artwork you find, one entry per work, with the page it came from as source_url.
-- Include absolute image URLs only.
-- If you cannot confidently identify this person, set confidence to "low" and leave the lists empty.`;
-
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "google/gemini-3.7-flash",
-        messages: [
-          { role: "system", content: "You are a meticulous art-world researcher and archivist. Return only verifiable facts, never fabricate." },
-          { role: "user", content: prompt },
-        ],
-        tools: [{ type: "function", function: researchSchema }],
-        tool_choice: { type: "function", function: { name: "artist_research_workspace" } },
-      }),
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("AI error", res.status, text);
-      await admin.from("research_runs").update({ status: "failed", error: `AI ${res.status}`, completed_at: new Date().toISOString() }).eq("id", runId);
-      if (res.status === 429) return json({ error: "Rate limit reached, please try again shortly." }, 429);
-      if (res.status === 402) return json({ error: "AI credits exhausted." }, 402);
-      return json({ error: "AI request failed" }, 502);
+    const room = Math.max(0, MAX_PAGES - pages.length);
+    for (let i = 0; i < followUps.slice(0, room).length; i += BATCH) {
+      const slice = followUps.slice(0, room).slice(i, i + BATCH);
+      const results = await Promise.all(slice.map((u) => scrape(u)));
+      results.forEach((p, idx) => (p ? pages.push(p) : failed.push(slice[idx])));
     }
 
-    const data = await res.json();
-    const call = data?.choices?.[0]?.message?.tool_calls?.[0];
-    if (!call) {
-      await admin.from("research_runs").update({ status: "failed", error: "No result", completed_at: new Date().toISOString() }).eq("id", runId);
-      return json({ error: "No research result returned" }, 502);
+    if (!pages.length) {
+      await admin.from("research_runs").update({
+        status: "failed",
+        error: "None of the given pages could be read",
+        completed_at: new Date().toISOString(),
+      }).eq("id", runId);
+      return json({ error: "None of the given pages could be read. Check the addresses and try again." }, 400);
     }
-    const result = JSON.parse(call.function.arguments);
-    const confidence: string = result.confidence || "medium";
 
+    // ---- Stage 2: extract each page on its own ----------------------------
+    const extractions: { page: Page; result: Record<string, unknown> }[] = [];
+    for (let i = 0; i < pages.length; i += BATCH) {
+      const slice = pages.slice(i, i + BATCH);
+      const results = await Promise.all(slice.map((p) => extractPage(p, artistName)));
+      results.forEach((r, idx) => {
+        if (r && r.is_about_artist !== false) extractions.push({ page: slice[idx], result: r });
+      });
+    }
+
+    // ---- Stage 3: merge, dedupe, stage as findings ------------------------
     type Finding = Record<string, unknown>;
     const findings: Finding[] = [];
-    const base = { run_id: runId, owner_id: ownerId, confidence };
+    const base = { run_id: runId, owner_id: ownerId };
 
-    const p = result.profile || {};
-    const profileFields: { field: string; label: string; value: string | null }[] = [
-      { field: "biography", label: "Biography", value: p.biography ?? null },
-      { field: "chronology", label: "Chronology", value: p.chronology ?? null },
-      { field: "city", label: "City", value: p.city ?? null },
-      { field: "country", label: "Country", value: p.country ?? null },
-      { field: "birth_year", label: "Year of birth", value: p.birth_year ? String(p.birth_year) : null },
-      { field: "website", label: "Website", value: p.website ?? null },
-      {
-        field: "galleries",
-        label: "Galleries",
-        value: Array.isArray(p.galleries) && p.galleries.length ? p.galleries.join(", ") : null,
-      },
-      {
-        field: "social_links",
-        label: "Social media links",
-        value: p.social_links && Object.keys(p.social_links).length
-          ? Object.entries(p.social_links as Record<string, string>).map(([k, v]) => `${k}: ${v}`).join("\n")
-          : null,
-      },
-    ];
-    for (const f of profileFields) {
-      if (!f.value) continue;
+    const FIELD_LABELS: Record<string, string> = {
+      biography: "Biography",
+      chronology: "Chronology",
+      birth_year: "Year of birth",
+      birth_city: "Place of birth",
+      birth_country: "Country of birth",
+      city: "Lives and works in (city)",
+      country: "Lives and works in (country)",
+      nationality: "Nationality",
+      website: "Website",
+      gallery: "Gallery",
+      social_link: "Social media link",
+    };
+
+    // group profile facts by field + value so repeated statements raise confidence
+    const factGroups = new Map<string, { field: string; value: string; quote: string; urls: string[] }>();
+    for (const { page, result } of extractions) {
+      for (const f of (result.profile_facts as Record<string, string>[] | undefined) || []) {
+        if (!f?.field || !f?.value || !f?.quote) continue;
+        if (!(f.field in FIELD_LABELS)) continue;
+        const key = `${f.field}::${norm(f.value)}`;
+        const existing = factGroups.get(key);
+        if (existing) {
+          if (!existing.urls.includes(page.url)) existing.urls.push(page.url);
+        } else {
+          factGroups.set(key, { field: f.field, value: f.value, quote: f.quote, urls: [page.url] });
+        }
+      }
+    }
+    // note where sources disagree instead of silently choosing one
+    const perField = new Map<string, number>();
+    for (const g of factGroups.values()) perField.set(g.field, (perField.get(g.field) || 0) + 1);
+
+    for (const g of factGroups.values()) {
+      const contested = (perField.get(g.field) || 0) > 1;
       findings.push({
         ...base,
         kind: "profile_field",
-        field: f.field,
-        label: f.label,
-        value: f.value,
-        payload: f.field === "galleries"
-          ? { galleries: p.galleries }
-          : f.field === "social_links"
-            ? { social_links: p.social_links }
-            : { value: p[f.field] },
+        field: g.field === "gallery" ? "galleries" : g.field === "social_link" ? "social_links" : g.field,
+        label: contested
+          ? `${FIELD_LABELS[g.field]} (one of several values found)`
+          : FIELD_LABELS[g.field],
+        value: g.value,
+        source_url: g.urls[0],
+        confidence: g.urls.length > 1 ? "high" : contested ? "low" : "medium",
+        payload: {
+          value: g.field === "birth_year" ? parseInt(g.value, 10) || null : g.value,
+          galleries: g.field === "gallery" ? [g.value] : undefined,
+          social_links: g.field === "social_link" ? { link: g.value } : undefined,
+          quote: g.quote,
+          sources: g.urls,
+        },
       });
     }
 
-    for (const e of (result.cv_entries || []).slice(0, 400)) {
-      if (!e?.text) continue;
-      findings.push({
-        ...base,
-        kind: "cv_entry",
-        field: e.section || "group_exhibitions",
-        label: e.year ? `${e.year} · ${e.text}` : e.text,
-        value: e.text,
-        source_url: e.source_url || null,
-        payload: { section: e.section, year: e.year ?? null, text: e.text },
-      });
+    const cvSeen = new Set<string>();
+    for (const { page, result } of extractions) {
+      for (const e of (result.cv_entries as Record<string, string>[] | undefined) || []) {
+        if (!e?.text) continue;
+        const key = `${e.year || ""}::${norm(e.text)}`;
+        if (cvSeen.has(key)) continue;
+        cvSeen.add(key);
+        findings.push({
+          ...base,
+          kind: "cv_entry",
+          field: e.section || "group_exhibitions",
+          label: e.year ? `${e.year} · ${e.text}` : e.text,
+          value: e.text,
+          source_url: page.url,
+          confidence: "medium",
+          payload: { section: e.section, year: e.year ?? null, text: e.text },
+        });
+      }
     }
 
-    for (const a of (result.artworks || []).slice(0, 400)) {
-      if (!a?.title) continue;
-      const parts = [a.year, a.medium, [a.height_cm, a.width_cm, a.depth_cm].filter(Boolean).join(" x ")].filter(Boolean);
-      findings.push({
-        ...base,
-        kind: "artwork",
-        label: a.title,
-        value: parts.join(" · ") || null,
-        source_url: a.source_url || null,
-        payload: a,
-      });
+    const artSeen = new Set<string>();
+    for (const { page, result } of extractions) {
+      for (const a of (result.artworks as Record<string, unknown>[] | undefined) || []) {
+        const title = typeof a?.title === "string" ? a.title : "";
+        if (!title.trim()) continue;
+        const key = `${norm(title)}::${a.year ?? ""}`;
+        if (artSeen.has(key)) continue;
+        artSeen.add(key);
+        const dims = [a.height_cm, a.width_cm, a.depth_cm].filter((v) => typeof v === "number").join(" x ");
+        const parts = [a.year, a.medium, a.dimensions_text || (dims ? `${dims} cm` : null), a.edition].filter(Boolean);
+        findings.push({
+          ...base,
+          kind: "artwork",
+          label: title,
+          value: parts.join(" · ") || null,
+          source_url: page.url,
+          confidence: "medium",
+          payload: { ...a, source_url: page.url },
+        });
+      }
     }
 
-    for (const img of (result.images || []).slice(0, 200)) {
-      if (!img?.url) continue;
-      findings.push({
-        ...base,
-        kind: "image",
-        label: img.caption || img.url.split("/").pop() || "Image",
-        value: img.url,
-        source_url: img.source_url || img.url,
-        payload: img,
-      });
+    const imgSeen = new Set<string>();
+    for (const { page, result } of extractions) {
+      const listed = (result.images as Record<string, unknown>[] | undefined) || [];
+      const fromModel = listed
+        .map((i) => ({ url: typeof i.url === "string" ? i.url : "", caption: (i.caption as string) || null, category: (i.category as string) || "other" }))
+        .filter((i) => /^https?:\/\//i.test(i.url));
+      // keep every image the page actually contained, even if the model skipped it
+      const extra = page.images
+        .filter((u) => !fromModel.some((m) => m.url === u))
+        .map((u) => ({ url: u, caption: null, category: "other" }));
+      for (const img of [...fromModel, ...extra]) {
+        if (imgSeen.has(img.url)) continue;
+        imgSeen.add(img.url);
+        findings.push({
+          ...base,
+          kind: "image",
+          field: img.category,
+          label: img.caption || img.url.split("/").pop() || "Image",
+          value: img.url,
+          source_url: page.url,
+          confidence: "medium",
+          payload: img,
+        });
+      }
     }
 
     if (findings.length) {
-      const { error: insErr } = await admin.from("research_findings").insert(findings);
-      if (insErr) console.error("findings insert error", insErr);
+      // insert in chunks so a large harvest does not hit statement limits
+      for (let i = 0; i < findings.length; i += 200) {
+        const { error: insErr } = await admin.from("research_findings").insert(findings.slice(i, i + 200));
+        if (insErr) console.error("findings insert error", insErr);
+      }
     }
 
-    const sources = Array.from(new Set([...(result.sources || []), ...consulted])).slice(0, 60);
+    const sources = pages.map((p) => p.url);
     await admin.from("research_runs").update({
       status: "completed",
       sources,
       completed_at: new Date().toISOString(),
     }).eq("id", runId);
 
-    return json({ run_id: runId, count: findings.length, confidence, sources });
+    return json({
+      run_id: runId,
+      count: findings.length,
+      pages_read: pages.length,
+      pages_failed: failed.length,
+      confidence: findings.length ? "medium" : "low",
+      sources,
+    });
   } catch (e) {
     console.error("research-artist error", e);
     if (runId) {
