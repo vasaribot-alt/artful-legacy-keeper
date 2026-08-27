@@ -215,6 +215,13 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
+    const callerId = await getCallerId(req);
+    if (!callerId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json().catch(() => ({}));
     const { donation_id, preview } = body as { donation_id?: string; preview?: Receipt };
 
@@ -236,6 +243,13 @@ Deno.serve(async (req) => {
       if (!data) return new Response(JSON.stringify({ error: "Donation not found" }), {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+      // Only the donor themselves or foundation staff may pull a receipt.
+      const isOwner = data.user_id && data.user_id === callerId;
+      if (!isOwner && !(await callerHasRole(callerId, "foundation"))) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       receipt = {
         receipt_number: `GARF-${new Date(data.created_at).getFullYear()}-${String(data.id).slice(0, 8).toUpperCase()}`,
         issued_at: data.created_at,
