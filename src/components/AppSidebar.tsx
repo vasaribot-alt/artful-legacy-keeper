@@ -1,4 +1,4 @@
-import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, FolderOpen, Camera, UserPlus, Building2, TrendingUp, Network, ShieldCheck, Mail, Sparkles } from "lucide-react";
+import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, FolderOpen, Camera, UserPlus, Building2, Landmark, TrendingUp, Network, ShieldCheck, Mail, Sparkles } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +18,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-type AppRole = "artist" | "collector" | "registrar" | "foundation";
+type AppRole = "artist" | "collector" | "registrar" | "foundation" | "gallery" | "institution";
 
 const getNavItems = (role: AppRole) => {
   if (role === "foundation") {
@@ -53,6 +53,25 @@ const getNavItems = (role: AppRole) => {
       { title: "Files", url: "/files", icon: FolderSearch },
     ];
   }
+  if (role === "gallery") {
+    return [
+      { title: "Gallery Dashboard", url: "/gallery", icon: Building2 },
+      { title: "Artist Roster", url: "/gallery/roster", icon: Users },
+      { title: "Inventory", url: "/gallery/inventory", icon: Archive },
+      { title: "Exhibitions", url: "/gallery/exhibitions", icon: Calendar },
+      { title: "Correspondence", url: "/correspondence", icon: Mail },
+      { title: "Files", url: "/files", icon: FolderSearch },
+    ];
+  }
+  if (role === "institution") {
+    return [
+      { title: "Institution Dashboard", url: "/institution", icon: Landmark },
+      { title: "Loan Requests", url: "/institution/loans", icon: Users },
+      { title: "Exhibitions", url: "/institution/exhibitions", icon: Calendar },
+      { title: "Correspondence", url: "/correspondence", icon: Mail },
+      { title: "Files", url: "/files", icon: FolderSearch },
+    ];
+  }
   return [
     { title: "Artist Profile", url: "/profile", icon: User },
     { title: "Artworks", url: "/dashboard", icon: Images },
@@ -77,6 +96,8 @@ const roleIcons: Record<AppRole, typeof User> = {
   collector: Archive,
   registrar: Users,
   foundation: Award,
+  gallery: Building2,
+  institution: Landmark,
 };
 
 const roleLabels: Record<AppRole, { nav: string; label: string }> = {
@@ -84,11 +105,15 @@ const roleLabels: Record<AppRole, { nav: string; label: string }> = {
   collector: { nav: "Collectors Register", label: "Collector" },
   registrar: { nav: "Registrar", label: "Registrar" },
   foundation: { nav: "Foundation", label: "Foundation" },
+  gallery: { nav: "Gallery Manager", label: "Gallery" },
+  institution: { nav: "Institution", label: "Institution" },
 };
 
 const getRoleForPath = (path: string): AppRole | null => {
   if (path.startsWith("/foundation")) return "foundation";
   if (path.startsWith("/registrar")) return "registrar";
+  if (path.startsWith("/gallery")) return "gallery";
+  if (path.startsWith("/institution")) return "institution";
   return null;
 };
 
@@ -140,6 +165,8 @@ export function AppSidebar() {
     window.dispatchEvent(new Event("role-changed"));
     if (role === "registrar") navigate("/registrar");
     else if (role === "foundation") navigate("/foundation/admin");
+    else if (role === "gallery") navigate("/gallery");
+    else if (role === "institution") navigate("/institution");
     else navigate("/dashboard");
   };
 
@@ -165,8 +192,12 @@ export function AppSidebar() {
   const navItems = getNavItems(activeRole);
   const hasCollector = roles.includes("collector");
   const hasArtist = roles.includes("artist");
+  const hasGallery = roles.includes("gallery");
+  const hasInstitution = roles.includes("institution");
   const canAddCollector = roles.includes("artist") && !hasCollector;
   const canAddArtist = !hasArtist && !hasCollector;
+  const canAddGallery = !hasGallery;
+  const canAddInstitution = !hasInstitution;
 
   const handleSignOut = async () => {
     localStorage.removeItem("activeRole");
@@ -254,6 +285,22 @@ export function AppSidebar() {
               <SidebarMenuButton onClick={() => addRole("collector", "Collector")}>
                 <Plus className="mr-2 h-4 w-4" />
                 {!collapsed && <span>Add Collector Account</span>}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+          {canAddGallery && (
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => addRole("gallery", "Gallery")}>
+                <Plus className="mr-2 h-4 w-4" />
+                {!collapsed && <span>Add Gallery Account</span>}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+          {canAddInstitution && (
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={() => addRole("institution", "Institution")}>
+                <Plus className="mr-2 h-4 w-4" />
+                {!collapsed && <span>Add Institution Account</span>}
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}

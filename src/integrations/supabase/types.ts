@@ -1845,6 +1845,7 @@ export type Database = {
           hide_from_cv: boolean
           id: string
           opening_date: string | null
+          organizer_type: string
           title: string
           updated_at: string
           user_id: string
@@ -1863,6 +1864,7 @@ export type Database = {
           hide_from_cv?: boolean
           id?: string
           opening_date?: string | null
+          organizer_type?: string
           title: string
           updated_at?: string
           user_id: string
@@ -1881,6 +1883,7 @@ export type Database = {
           hide_from_cv?: boolean
           id?: string
           opening_date?: string | null
+          organizer_type?: string
           title?: string
           updated_at?: string
           user_id?: string
@@ -2078,6 +2081,149 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      gallery_accounts: {
+        Row: {
+          address: string | null
+          business_id: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+          vat_number: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_id?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+          vat_number?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_id?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+          vat_number?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      gallery_artist_representations: {
+        Row: {
+          artist_id: string
+          created_at: string
+          ended_at: string | null
+          gallery_id: string
+          id: string
+          notes: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          ended_at?: string | null
+          gallery_id: string
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          ended_at?: string | null
+          gallery_id?: string
+          id?: string
+          notes?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_artist_representations_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_inventory: {
+        Row: {
+          acquisition_cost: number | null
+          artwork_id: string
+          commission_split: string | null
+          consignment_status: string
+          created_at: string
+          gallery_id: string
+          gallery_location: string | null
+          id: string
+          retail_price: number | null
+          sale_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          acquisition_cost?: number | null
+          artwork_id: string
+          commission_split?: string | null
+          consignment_status?: string
+          created_at?: string
+          gallery_id: string
+          gallery_location?: string | null
+          id?: string
+          retail_price?: number | null
+          sale_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          acquisition_cost?: number | null
+          artwork_id?: string
+          commission_split?: string | null
+          consignment_status?: string
+          created_at?: string
+          gallery_id?: string
+          gallery_location?: string | null
+          id?: string
+          retail_price?: number | null
+          sale_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_inventory_artwork_id_fkey"
+            columns: ["artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_inventory_gallery_id_fkey"
+            columns: ["gallery_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gallery_outreach: {
         Row: {
@@ -3343,6 +3489,10 @@ export type Database = {
         Args: { _env?: string; _user_id: string }
         Returns: boolean
       }
+      has_gallery_workspace_access: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       has_registrar_access: {
         Args: { _owner_id: string; _registrar_id: string }
         Returns: boolean
@@ -3410,7 +3560,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "artist" | "collector" | "registrar" | "foundation"
+      app_role:
+        | "artist"
+        | "collector"
+        | "registrar"
+        | "foundation"
+        | "gallery"
+        | "institution"
       donor_tier: "platinum" | "gold" | "silver" | "bronze"
       founding_artist_tier:
         | "internationally_established"
@@ -3555,7 +3711,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["artist", "collector", "registrar", "foundation"],
+      app_role: [
+        "artist",
+        "collector",
+        "registrar",
+        "foundation",
+        "gallery",
+        "institution",
+      ],
       donor_tier: ["platinum", "gold", "silver", "bronze"],
       founding_artist_tier: [
         "internationally_established",
