@@ -292,7 +292,7 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) return json({ error: "Unauthorized" }, 401);
     if (!LOVABLE_API_KEY) return json({ error: "AI is not configured" }, 500);
-    if (!FIRECRAWL_API_KEY) return json({ error: "Web reading is not configured" }, 500);
+    // Firecrawl is optional: without it the function reads pages with a plain fetch
 
     const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
       global: { headers: { Authorization: authHeader } },
