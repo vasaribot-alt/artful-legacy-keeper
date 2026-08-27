@@ -110,26 +110,88 @@ interface Page {
   images: string[];
 }
 
+/** Reads a page without Firecrawl: plain fetch, then HTML reduced to text, links and images. */
+async function plainScrape(url: string): Promise<Page | null> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; GARF-Research/1.0)",
+        "Accept": "text/html,application/xhtml+xml",
+      },
+      redirect: "follow",
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!res.ok) return null;
+    const type = res.headers.get("content-type") || "";
+    if (!/html|text/i.test(type)) return null;
+    const html = await res.text();
+
+    const abs = (u: string) => {
+      try {
+        return new URL(u, url).toString();
+      } catch {
+        return "";
+      }
+    };
+
+    const links = Array.from(html.matchAll(/<a[^>]+href=["']([^"']+)["']/gi))
+      .map((m) => abs(m[1]))
+      .filter(Boolean);
+
+    const images = Array.from(
+      html.matchAll(/<img[^>]+(?:data-src|data-lazy-src|src)=["']([^"']+)["']/gi),
+    )
+      .map((m) => abs(m[1]))
+      .filter((u) => /^https?:\/\//i.test(u) && !/\.svg($|\?)/i.test(u));
+
+    const text = html
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/(p|div|li|h[1-6]|tr|section)>/gi, "\n")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&#39;|&rsquo;/gi, "'")
+      .replace(/&quot;|&ldquo;|&rdquo;/gi, '"')
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+    if (text.length < 200) return null;
+    return {
+      url,
+      markdown: text.slice(0, PAGE_CHARS),
+      links: Array.from(new Set(links)),
+      images: Array.from(new Set(images)).slice(0, 120),
+    };
+  } catch (_e) {
+    return null;
+  }
+}
+
 async function scrape(url: string): Promise<Page | null> {
-  if (!FIRECRAWL_API_KEY) return null;
+  if (!FIRECRAWL_API_KEY) return await plainScrape(url);
   try {
     const res = await fetch("https://api.firecrawl.dev/v2/scrape", {
       method: "POST",
       headers: { Authorization: `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({ url, formats: ["markdown", "links"], onlyMainContent: true, waitFor: 1200 }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) return await plainScrape(url);
     const d = await res.json();
     const doc = d?.data ?? d;
     const markdown: string = String(doc?.markdown || "");
-    if (!markdown.trim()) return null;
+    if (!markdown.trim()) return await plainScrape(url);
     const links: string[] = Array.isArray(doc?.links) ? doc.links.filter((l: unknown) => typeof l === "string") : [];
     const images = Array.from(markdown.matchAll(/!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/g)).map((m) => m[1]);
     return { url, markdown: markdown.slice(0, PAGE_CHARS), links, images: Array.from(new Set(images)).slice(0, 120) };
   } catch (_e) {
-    return null;
+    return await plainScrape(url);
   }
 }
+
 
 async function search(query: string): Promise<string[]> {
   if (!FIRECRAWL_API_KEY) return [];
