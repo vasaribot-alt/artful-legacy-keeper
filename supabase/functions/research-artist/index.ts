@@ -541,31 +541,51 @@ Deno.serve(async (req) => {
       }
     }
 
+    // images: only what the page ties to the artist, never every asset on the page
     const imgSeen = new Set<string>();
+    const artworkImages = new Set<string>();
+    for (const { result } of extractions) {
+      for (const a of (result.artworks as Record<string, unknown>[] | undefined) || []) {
+        if (typeof a?.image_url === "string" && /^https?:\/\//i.test(a.image_url)) artworkImages.add(a.image_url);
+      }
+    }
+    let imagesSkipped = 0;
     for (const { page, result } of extractions) {
       const listed = (result.images as Record<string, unknown>[] | undefined) || [];
-      const fromModel = listed
-        .map((i) => ({ url: typeof i.url === "string" ? i.url : "", caption: (i.caption as string) || null, category: (i.category as string) || "other" }))
-        .filter((i) => /^https?:\/\//i.test(i.url));
-      // keep every image the page actually contained, even if the model skipped it
-      const extra = page.images
-        .filter((u) => !fromModel.some((m) => m.url === u))
-        .map((u) => ({ url: u, caption: null, category: "other" }));
-      for (const img of [...fromModel, ...extra]) {
+      const candidates = listed
+        .map((i) => ({
+          url: typeof i.url === "string" ? i.url : "",
+          caption: (i.caption as string) || null,
+          category: (i.category as string) || "other",
+        }))
+        .filter((i) => i.url);
+
+      // only fall back to raw page images when the page itself is clearly artist material
+      if (!candidates.length && pageIsArtistMaterial(page.url, slugs)) {
+        for (const u of page.images.slice(0, 12)) candidates.push({ url: u, caption: null, category: "other" });
+      }
+
+      for (const img of candidates) {
+        const linkedToWork = artworkImages.has(img.url);
+        if (!linkedToWork && !usableImage(img.url)) {
+          imagesSkipped++;
+          continue;
+        }
         if (imgSeen.has(img.url)) continue;
         imgSeen.add(img.url);
         findings.push({
           ...base,
           kind: "image",
           field: img.category,
-          label: img.caption || img.url.split("/").pop() || "Image",
+          label: img.caption || img.url.split("/").pop()?.split("?")[0] || "Image",
           value: img.url,
           source_url: page.url,
-          confidence: "medium",
-          payload: img,
+          confidence: linkedToWork ? "high" : img.caption ? "medium" : "low",
+          payload: { ...img, linked_artwork_image: linkedToWork },
         });
       }
     }
+
 
     if (findings.length) {
       // insert in chunks so a large harvest does not hit statement limits
