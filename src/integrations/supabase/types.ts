@@ -3353,6 +3353,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      find_artist_by_email: { Args: { _email: string }; Returns: string }
       find_registrar_by_email: { Args: { _email: string }; Returns: string }
       get_cr_submission_status: {
         Args: { _token: string }
