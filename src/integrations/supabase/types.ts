@@ -2126,33 +2126,39 @@ export type Database = {
       }
       gallery_artist_representations: {
         Row: {
-          artist_id: string
+          artist_id: string | null
           created_at: string
           ended_at: string | null
           gallery_id: string
           id: string
+          invited_email: string | null
+          invited_name: string | null
           notes: string | null
           started_at: string | null
           status: string
           updated_at: string
         }
         Insert: {
-          artist_id: string
+          artist_id?: string | null
           created_at?: string
           ended_at?: string | null
           gallery_id: string
           id?: string
+          invited_email?: string | null
+          invited_name?: string | null
           notes?: string | null
           started_at?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
-          artist_id?: string
+          artist_id?: string | null
           created_at?: string
           ended_at?: string | null
           gallery_id?: string
           id?: string
+          invited_email?: string | null
+          invited_name?: string | null
           notes?: string | null
           started_at?: string | null
           status?: string
