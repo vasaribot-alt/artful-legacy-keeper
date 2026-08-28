@@ -314,23 +314,31 @@ const GalleryWorkspace = () => {
             {gallery && (
               <Dialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm"><Send className="h-4 w-4 mr-2" /> Request artist</Button>
+                  <Button variant="outline" size="sm"><Send className="h-4 w-4 mr-2" /> Add artist</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Send representation request</DialogTitle>
+                    <DialogTitle>Add an artist to your roster</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
+                    <p className="text-sm text-muted-foreground">
+                      If the artist already uses GARF, they receive a representation request to approve. If not, they are added as invited and linked automatically once they join.
+                    </p>
+                    <div className="space-y-2">
+                      <Label htmlFor="artistName">Artist name</Label>
+                      <Input id="artistName" value={requestName} onChange={(e) => setRequestName(e.target.value)} placeholder="Full name" autoComplete="off" />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="artistEmail">Artist email</Label>
-                      <Input id="artistEmail" type="email" value={requestEmail} onChange={(e) => setRequestEmail(e.target.value)} placeholder="artist@example.com" />
+                      <Input id="artistEmail" type="email" value={requestEmail} onChange={(e) => setRequestEmail(e.target.value)} placeholder="artist@example.com" autoComplete="off" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="notes">Private note</Label>
                       <Textarea id="notes" value={requestNotes} onChange={(e) => setRequestNotes(e.target.value)} placeholder="How you know the artist, proposed terms, etc." />
                     </div>
-                    <Button onClick={handleSendRequest} disabled={sending || !requestEmail.trim()} className="w-full">{sending ? "Sending…" : "Send request"}</Button>
+                    <Button onClick={handleSendRequest} disabled={sending || !requestEmail.trim()} className="w-full">{sending ? "Saving…" : "Add artist"}</Button>
                   </div>
+
                 </DialogContent>
               </Dialog>
             )}
