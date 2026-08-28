@@ -27,8 +27,8 @@ type GalleryAccount = {
 type Representation = {
   id: string;
   gallery_id: string;
-  artist_id: string;
-  status: "pending" | "approved" | "declined" | "ended";
+  artist_id: string | null;
+  status: "invited" | "pending" | "approved" | "declined" | "ended";
   notes: string | null;
   artist_name: string | null;
   artist_email: string | null;
@@ -44,6 +44,7 @@ type InventoryItem = {
 };
 
 const statusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  invited: { label: "Invited (not on GARF)", variant: "outline" },
   pending: { label: "Pending", variant: "secondary" },
   approved: { label: "Approved", variant: "default" },
   declined: { label: "Declined", variant: "destructive" },
