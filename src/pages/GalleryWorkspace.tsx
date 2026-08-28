@@ -59,6 +59,7 @@ const GalleryWorkspace = () => {
   const [representations, setRepresentations] = useState<Representation[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [requestEmail, setRequestEmail] = useState("");
+  const [requestName, setRequestName] = useState("");
   const [requestNotes, setRequestNotes] = useState("");
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
   const [sending, setSending] = useState(false);
