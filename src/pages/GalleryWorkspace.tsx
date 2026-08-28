@@ -190,31 +190,40 @@ const GalleryWorkspace = () => {
     if (!requestEmail.trim() || !gallery) return;
     setSending(true);
 
-    const { data: artistId, error: lookupError } = await supabase.rpc("find_artist_by_email", {
+    const { data: artistId } = await supabase.rpc("find_artist_by_email", {
       _email: requestEmail.trim(),
     });
 
-    if (lookupError || !artistId) {
-      toast.error("No artist account found with that email");
+    const onGarf = !!artistId;
+
+    if (!onGarf && !requestName.trim()) {
+      toast.error("This artist has no GARF account yet. Add their name to place them on your roster.");
       setSending(false);
       return;
     }
 
     const { error } = await supabase.from("gallery_artist_representations").insert({
       gallery_id: gallery.id,
-      artist_id: artistId as string,
-      status: "pending",
+      artist_id: onGarf ? (artistId as string) : null,
+      status: onGarf ? "pending" : "invited",
       notes: requestNotes || null,
+      invited_name: requestName.trim() || null,
+      invited_email: requestEmail.trim(),
     });
 
-
     if (error) {
-      if (error.code === "23505") toast.info("A representation request already exists for this artist");
-      else toast.error("Failed to send request");
+      if (error.code === "23505" || error.code === "23514")
+        toast.info("This artist is already on your roster");
+      else toast.error("Failed to add artist");
     } else {
-      toast.success("Representation request sent");
+      toast.success(
+        onGarf
+          ? "Representation request sent"
+          : "Artist added to your roster. They will be linked automatically when they join GARF."
+      );
       setRequestDialogOpen(false);
       setRequestEmail("");
+      setRequestName("");
       setRequestNotes("");
       await loadRoster(gallery.id);
     }
