@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,6 @@ const roles: { value: Role; label: string; description: string }[] = [
 ];
 
 const Register = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -114,7 +113,7 @@ const Register = () => {
         )}
 {registered ? (
           <div className="border border-border rounded-sm p-6 text-center space-y-4">
-            <CheckCircle2 className="mx-auto h-10 w-10 text-green-600" />
+            <CheckCircle2 className="mx-auto h-10 w-10 text-foreground" />
             <div>
               <h2 className="text-xl font-medium">Welcome to GARF</h2>
               <p className="text-sm text-muted-foreground mt-1">
