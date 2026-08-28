@@ -88,8 +88,7 @@ const Register = () => {
     if (error) {
       toast.error(error.message);
     } else if (data.user) {
-      toast.success("Account created! Check your email to confirm.");
-      navigate("/login");
+      setRegistered(true);
     }
   };
 
