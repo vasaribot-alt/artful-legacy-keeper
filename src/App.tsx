@@ -5,6 +5,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index";
+import Unsubscribe from "./pages/Unsubscribe";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -88,6 +90,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
+
 
           <Route path="/login" element={<Login />} />
 

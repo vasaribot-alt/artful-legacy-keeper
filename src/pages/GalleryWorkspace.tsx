@@ -216,10 +216,26 @@ const GalleryWorkspace = () => {
         toast.info("This artist is already on your roster");
       else toast.error("Failed to add artist");
     } else {
+      if (!onGarf) {
+        const { error: mailError } = await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "gallery-artist-invitation",
+            recipientEmail: requestEmail.trim(),
+            idempotencyKey: `gallery-invite-${gallery.id}-${requestEmail.trim().toLowerCase()}`,
+            templateData: {
+              artistName: requestName.trim() || undefined,
+              galleryName: gallery.name,
+              signupUrl: `${window.location.origin}/register`,
+            },
+          },
+        });
+        if (mailError) console.error("Invitation email failed", mailError);
+      }
+
       toast.success(
         onGarf
           ? "Representation request sent"
-          : "Artist added to your roster. They will be linked automatically when they join GARF."
+          : "Artist added to your roster and invited by email. They will be linked automatically when they join GARF."
       );
       setRequestDialogOpen(false);
       setRequestEmail("");
@@ -227,6 +243,7 @@ const GalleryWorkspace = () => {
       setRequestNotes("");
       await loadRoster(gallery.id);
     }
+
     setSending(false);
   };
 
