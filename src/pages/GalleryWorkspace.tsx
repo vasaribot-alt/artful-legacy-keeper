@@ -102,26 +102,26 @@ const GalleryWorkspace = () => {
   };
 
   const loadRoster = async (galleryId: string) => {
-    const { data } = await supabase
-      .from("gallery_artist_representations")
-      .select("*, artist:profiles!gallery_artist_representations_artist_id_fkey(full_name, email)")
-      .eq("gallery_id", galleryId)
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.rpc("get_gallery_roster", { _gallery_id: galleryId });
 
-    if (data) {
-      setRepresentations(
-        data.map((r: any) => ({
-          id: r.id,
-          gallery_id: r.gallery_id,
-          artist_id: r.artist_id,
-          status: r.status,
-          notes: r.notes,
-          artist_name: r.artist?.full_name || null,
-          artist_email: r.artist?.email || null,
-        }))
-      );
+    if (error) {
+      toast.error("Could not load the artist roster");
+      return;
     }
+
+    setRepresentations(
+      (data || []).map((r: any) => ({
+        id: r.id,
+        gallery_id: r.gallery_id,
+        artist_id: r.artist_id,
+        status: r.status,
+        notes: r.notes,
+        artist_name: r.artist_name || null,
+        artist_email: r.artist_email || null,
+      }))
+    );
   };
+
 
   const loadInventory = async (galleryId: string) => {
     const { data } = await supabase

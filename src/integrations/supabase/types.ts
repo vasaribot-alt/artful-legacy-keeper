@@ -3377,6 +3377,19 @@ export type Database = {
           payload: Json
         }[]
       }
+      get_gallery_roster: {
+        Args: { _gallery_id: string }
+        Returns: {
+          artist_email: string
+          artist_id: string
+          artist_name: string
+          created_at: string
+          gallery_id: string
+          id: string
+          notes: string
+          status: string
+        }[]
+      }
       get_partner_org_breakdown: {
         Args: { _key: string; _slug: string }
         Returns: {
