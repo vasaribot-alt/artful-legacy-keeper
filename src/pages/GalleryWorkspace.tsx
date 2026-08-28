@@ -188,13 +188,11 @@ const GalleryWorkspace = () => {
     if (!requestEmail.trim() || !gallery) return;
     setSending(true);
 
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .eq("email", requestEmail.trim())
-      .maybeSingle();
+    const { data: artistId, error: lookupError } = await supabase.rpc("find_artist_by_email", {
+      _email: requestEmail.trim(),
+    });
 
-    if (!profileData) {
+    if (lookupError || !artistId) {
       toast.error("No artist account found with that email");
       setSending(false);
       return;
@@ -202,10 +200,11 @@ const GalleryWorkspace = () => {
 
     const { error } = await supabase.from("gallery_artist_representations").insert({
       gallery_id: gallery.id,
-      artist_id: profileData.user_id,
+      artist_id: artistId as string,
       status: "pending",
       notes: requestNotes || null,
     });
+
 
     if (error) {
       if (error.code === "23505") toast.info("A representation request already exists for this artist");
