@@ -27,8 +27,8 @@ type GalleryAccount = {
 type Representation = {
   id: string;
   gallery_id: string;
-  artist_id: string;
-  status: "pending" | "approved" | "declined" | "ended";
+  artist_id: string | null;
+  status: "invited" | "pending" | "approved" | "declined" | "ended";
   notes: string | null;
   artist_name: string | null;
   artist_email: string | null;
@@ -44,6 +44,7 @@ type InventoryItem = {
 };
 
 const statusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  invited: { label: "Invited (not on GARF)", variant: "outline" },
   pending: { label: "Pending", variant: "secondary" },
   approved: { label: "Approved", variant: "default" },
   declined: { label: "Declined", variant: "destructive" },
@@ -58,6 +59,7 @@ const GalleryWorkspace = () => {
   const [representations, setRepresentations] = useState<Representation[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [requestEmail, setRequestEmail] = useState("");
+  const [requestName, setRequestName] = useState("");
   const [requestNotes, setRequestNotes] = useState("");
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
   const [sending, setSending] = useState(false);
@@ -188,31 +190,40 @@ const GalleryWorkspace = () => {
     if (!requestEmail.trim() || !gallery) return;
     setSending(true);
 
-    const { data: artistId, error: lookupError } = await supabase.rpc("find_artist_by_email", {
+    const { data: artistId } = await supabase.rpc("find_artist_by_email", {
       _email: requestEmail.trim(),
     });
 
-    if (lookupError || !artistId) {
-      toast.error("No artist account found with that email");
+    const onGarf = !!artistId;
+
+    if (!onGarf && !requestName.trim()) {
+      toast.error("This artist has no GARF account yet. Add their name to place them on your roster.");
       setSending(false);
       return;
     }
 
     const { error } = await supabase.from("gallery_artist_representations").insert({
       gallery_id: gallery.id,
-      artist_id: artistId as string,
-      status: "pending",
+      artist_id: onGarf ? (artistId as string) : null,
+      status: onGarf ? "pending" : "invited",
       notes: requestNotes || null,
+      invited_name: requestName.trim() || null,
+      invited_email: requestEmail.trim(),
     });
 
-
     if (error) {
-      if (error.code === "23505") toast.info("A representation request already exists for this artist");
-      else toast.error("Failed to send request");
+      if (error.code === "23505" || error.code === "23514")
+        toast.info("This artist is already on your roster");
+      else toast.error("Failed to add artist");
     } else {
-      toast.success("Representation request sent");
+      toast.success(
+        onGarf
+          ? "Representation request sent"
+          : "Artist added to your roster. They will be linked automatically when they join GARF."
+      );
       setRequestDialogOpen(false);
       setRequestEmail("");
+      setRequestName("");
       setRequestNotes("");
       await loadRoster(gallery.id);
     }
@@ -303,23 +314,31 @@ const GalleryWorkspace = () => {
             {gallery && (
               <Dialog open={requestDialogOpen} onOpenChange={setRequestDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm"><Send className="h-4 w-4 mr-2" /> Request artist</Button>
+                  <Button variant="outline" size="sm"><Send className="h-4 w-4 mr-2" /> Add artist</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Send representation request</DialogTitle>
+                    <DialogTitle>Add an artist to your roster</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
+                    <p className="text-sm text-muted-foreground">
+                      If the artist already uses GARF, they receive a representation request to approve. If not, they are added as invited and linked automatically once they join.
+                    </p>
+                    <div className="space-y-2">
+                      <Label htmlFor="artistName">Artist name</Label>
+                      <Input id="artistName" value={requestName} onChange={(e) => setRequestName(e.target.value)} placeholder="Full name" autoComplete="off" />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="artistEmail">Artist email</Label>
-                      <Input id="artistEmail" type="email" value={requestEmail} onChange={(e) => setRequestEmail(e.target.value)} placeholder="artist@example.com" />
+                      <Input id="artistEmail" type="email" value={requestEmail} onChange={(e) => setRequestEmail(e.target.value)} placeholder="artist@example.com" autoComplete="off" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="notes">Private note</Label>
                       <Textarea id="notes" value={requestNotes} onChange={(e) => setRequestNotes(e.target.value)} placeholder="How you know the artist, proposed terms, etc." />
                     </div>
-                    <Button onClick={handleSendRequest} disabled={sending || !requestEmail.trim()} className="w-full">{sending ? "Sending…" : "Send request"}</Button>
+                    <Button onClick={handleSendRequest} disabled={sending || !requestEmail.trim()} className="w-full">{sending ? "Saving…" : "Add artist"}</Button>
                   </div>
+
                 </DialogContent>
               </Dialog>
             )}
