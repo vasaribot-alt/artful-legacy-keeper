@@ -24,6 +24,7 @@ const Register = () => {
   const [selectedRole, setSelectedRole] = useState<Role>("artist");
   const [inviteCode, setInviteCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
   const [partnerOrg, setPartnerOrg] = useState<{ slug: string; name: string } | null>(null);
 
   const orgSlug = searchParams.get("org") || "";
