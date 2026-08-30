@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index";
 import Unsubscribe from "./pages/Unsubscribe";
+import TrackedLinkRedirect from "./pages/TrackedLinkRedirect";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -90,6 +91,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/r/:code" element={<TrackedLinkRedirect />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
 
 

@@ -1,6 +1,8 @@
 project_id = "ofqaxojjqryylcugegke"
 
 [functions]
+  [functions.resolve-tracked-link]
+    verify_jwt = false
   [functions.auth-email-hook]
     verify_jwt = false
   [functions.brevo-events]

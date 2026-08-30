@@ -17,6 +17,7 @@ import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/O
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
 import { Checkbox } from "@/components/ui/checkbox";
+import TrackedLinkPanel from "@/components/TrackedLinkPanel";
 import { AlertTriangle, ChevronDown, ChevronUp, Copy, ExternalLink, FileText, Loader2, Mail, Paperclip, Plus, Search, Sparkles, Trash2, Upload, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
