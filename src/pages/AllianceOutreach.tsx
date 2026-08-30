@@ -1575,6 +1575,23 @@ With kind regards,
                     />
                   </div>
                 </div>
+
+                <div className="pt-3 border-t border-border space-y-3">
+                  <div>
+                    <p className="text-sm font-medium">Tracked links</p>
+                    <p className="text-xs text-muted-foreground">
+                      Use these instead of plain URLs in the email, and you will see if this contact
+                      actually opened the page.
+                    </p>
+                  </div>
+                  <TrackedLinkPanel
+                    sourceTable="alliance_outreach_targets"
+                    sourceId={t.id}
+                    recipientName={t.contact_person || t.name}
+                    recipientEmail={t.contact_email}
+                  />
+                </div>
+
                   </>
                 )}
               </div>
