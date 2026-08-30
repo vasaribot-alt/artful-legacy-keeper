@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Donor {
@@ -160,9 +161,12 @@ const Donors = () => {
       <section className="py-16 px-6 border-t border-border text-center">
         <h2 className="text-2xl font-semibold mb-3">Become a Supporter</h2>
         <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
-          Interested in supporting the preservation of art history? 
-          Contact the foundation to learn more about our donor program.
+          Interested in supporting the preservation of art history?
+          Donate to the foundation and join the community of people helping to safeguard artistic legacies for the next hundred years.
         </p>
+        <Button asChild size="lg">
+          <Link to="/donate">Support the foundation</Link>
+        </Button>
       </section>
 
       {/* Footer */}
