@@ -17,6 +17,7 @@ import { OutreachEmailTextsDialog, type OutreachEmailText } from "@/components/O
 import { markdownToHtml, markdownToPlainText } from "@/lib/emailMarkdown";
 import { formatCopyBlock, formatCopyBlocks } from "@/lib/outreachCopyFormat";
 import { Checkbox } from "@/components/ui/checkbox";
+import TrackedLinkPanel from "@/components/TrackedLinkPanel";
 import { AlertTriangle, ChevronDown, ChevronUp, Copy, ExternalLink, FileText, Loader2, Mail, Paperclip, Plus, Search, Sparkles, Trash2, Upload, UserSearch } from "lucide-react";
 
 /** Loose name key: lowercase, strip parentheses/punctuation and generic words */
@@ -1575,6 +1576,23 @@ With kind regards,
                     />
                   </div>
                 </div>
+
+                <div className="pt-3 border-t border-border space-y-3">
+                  <div>
+                    <p className="text-sm font-medium">Tracked links</p>
+                    <p className="text-xs text-muted-foreground">
+                      Use these instead of plain URLs in the email, and you will see if this contact
+                      actually opened the page.
+                    </p>
+                  </div>
+                  <TrackedLinkPanel
+                    sourceTable="alliance_outreach_targets"
+                    sourceId={t.id}
+                    recipientName={t.contact_person || t.name}
+                    recipientEmail={t.contact_email}
+                  />
+                </div>
+
                   </>
                 )}
               </div>

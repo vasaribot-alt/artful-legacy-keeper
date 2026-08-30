@@ -3203,6 +3203,86 @@ export type Database = {
           },
         ]
       }
+      tracked_link_clicks: {
+        Row: {
+          clicked_at: string
+          country: string | null
+          device: string | null
+          id: string
+          link_id: string
+          referrer: string | null
+          visitor_hash: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          country?: string | null
+          device?: string | null
+          id?: string
+          link_id: string
+          referrer?: string | null
+          visitor_hash?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          country?: string | null
+          device?: string | null
+          id?: string
+          link_id?: string
+          referrer?: string | null
+          visitor_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracked_link_clicks_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "tracked_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracked_links: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          destination: string
+          id: string
+          label: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          source_id: string | null
+          source_table: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          destination: string
+          id?: string
+          label?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          source_id?: string | null
+          source_table?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          destination?: string
+          id?: string
+          label?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          source_id?: string | null
+          source_table?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -3566,6 +3646,16 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      record_tracked_link_click: {
+        Args: {
+          _code: string
+          _country?: string
+          _device?: string
+          _referrer?: string
+          _visitor_hash?: string
+        }
+        Returns: string
       }
       revoke_peer_invite: { Args: { _invite_id: string }; Returns: undefined }
       validate_invite_code: {
