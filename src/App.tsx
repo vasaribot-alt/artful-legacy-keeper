@@ -140,6 +140,8 @@ const App = () => (
           <Route path="/alliance/curators" element={<AllianceCurators />} />
           <Route path="/alliance/curator" element={<AllianceCurators />} />
           <Route path="/foundation/founding-supporters" element={<FoundingSupporterAdmin />} />
+          <Route path="/apply-for-invitation" element={<ApplyForInvitation />} />
+          <Route path="/foundation/invitation-requests" element={<InvitationRequests />} />
           <Route path="/foundation/fundraising" element={<FundraisingDashboard />} />
           <Route path="/foundation/alliance" element={<AllianceAdmin />} />
           <Route path="/foundation/alliance-outreach" element={<AllianceOutreach />} />
