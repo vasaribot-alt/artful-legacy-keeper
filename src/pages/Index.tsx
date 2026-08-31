@@ -367,8 +367,8 @@ const Index = () => {
               records, catalogues, exhibition history, and personal archives, has often been
               fragile and easily lost. Today this documentation increasingly exists in digital form,
               dispersed across private databases, gallery systems, personal websites, and commercial
-              platforms. When galleries close, services disappear, or artists lose access to
-              platforms, the documentation surrounding artworks can vanish with them.
+              platforms. As galleries, platforms, and databases evolve or change hands over time,
+              the documentation surrounding artworks can become scattered or harder to trace.
             </p>
             <p>
               GARF was established to address this challenge. Independent in both governance and purpose,
