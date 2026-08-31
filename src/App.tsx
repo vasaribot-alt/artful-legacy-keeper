@@ -64,6 +64,8 @@ import InviteFriends from "./pages/InviteFriends";
 import FoundingSupporter from "./pages/FoundingSupporter";
 import AllianceCurators from "./pages/AllianceCurators";
 import FoundingSupporterAdmin from "./pages/FoundingSupporterAdmin";
+import ApplyForInvitation from "./pages/ApplyForInvitation";
+import InvitationRequests from "./pages/InvitationRequests";
 import FundraisingDashboard from "./pages/FundraisingDashboard";
 import AllianceAdmin from "./pages/AllianceAdmin";
 import AllianceOutreach from "./pages/AllianceOutreach";
