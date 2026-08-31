@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+import { sendRawEmail } from "../_shared/send-raw-email.ts";
 
 type Letter = {
   to: string;
