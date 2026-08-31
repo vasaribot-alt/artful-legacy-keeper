@@ -2362,6 +2362,83 @@ export type Database = {
         }
         Relationships: []
       }
+      invitation_requests: {
+        Row: {
+          applicant_role: string
+          birth_year: number | null
+          city: string | null
+          country: string | null
+          created_at: string
+          cv_url: string | null
+          email: string
+          foundation_notes: string | null
+          full_name: string
+          id: string
+          invite_code_id: string | null
+          message: string | null
+          practice_summary: string | null
+          referred_by: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source: string | null
+          status: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          applicant_role?: string
+          birth_year?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email: string
+          foundation_notes?: string | null
+          full_name: string
+          id?: string
+          invite_code_id?: string | null
+          message?: string | null
+          practice_summary?: string | null
+          referred_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          applicant_role?: string
+          birth_year?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email?: string
+          foundation_notes?: string | null
+          full_name?: string
+          id?: string
+          invite_code_id?: string | null
+          message?: string | null
+          practice_summary?: string | null
+          referred_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitation_requests_invite_code_id_fkey"
+            columns: ["invite_code_id"]
+            isOneToOne: false
+            referencedRelation: "invite_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invite_codes: {
         Row: {
           code: string
