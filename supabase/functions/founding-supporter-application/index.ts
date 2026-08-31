@@ -108,15 +108,13 @@ Deno.serve(async (req) => {
 <hr/>
 <p style="color:#666;font-size:12px">Application ID: ${data.id}</p>`.trim();
 
-      await supabase.rpc("enqueue_email", {
-        queue_name: "transactional_emails",
-        payload: {
-          to: FOUNDATION_INBOX,
-          subject: `Founding Supporter — ${contact_name} (${tierMeta.name})`,
-          html,
-          reply_to: email,
-          tag: "founding_supporter_application",
-        },
+      await sendRawEmail({
+        to: FOUNDATION_INBOX,
+        subject: `Founding Supporter — ${contact_name} (${tierMeta.name})`,
+        html,
+        replyTo: email,
+        label: "founding_supporter_application",
+        idempotencyKey: `founding-supporter-application-${data.id}`,
       });
     } catch (e) {
       console.error("foundation notification failed", e);
