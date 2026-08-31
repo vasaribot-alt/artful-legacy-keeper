@@ -15,6 +15,10 @@ project_id = "ofqaxojjqryylcugegke"
     verify_jwt = false
   [functions.founding-supporter-application]
     verify_jwt = false
+  [functions.invitation-request]
+    verify_jwt = false
+  [functions.decide-invitation-request]
+    verify_jwt = true
   [functions.generate-donation-receipt]
     verify_jwt = false
   [functions.major-gift-inquiry]

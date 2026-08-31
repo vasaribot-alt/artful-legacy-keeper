@@ -64,6 +64,8 @@ import InviteFriends from "./pages/InviteFriends";
 import FoundingSupporter from "./pages/FoundingSupporter";
 import AllianceCurators from "./pages/AllianceCurators";
 import FoundingSupporterAdmin from "./pages/FoundingSupporterAdmin";
+import ApplyForInvitation from "./pages/ApplyForInvitation";
+import InvitationRequests from "./pages/InvitationRequests";
 import FundraisingDashboard from "./pages/FundraisingDashboard";
 import AllianceAdmin from "./pages/AllianceAdmin";
 import AllianceOutreach from "./pages/AllianceOutreach";
@@ -138,6 +140,8 @@ const App = () => (
           <Route path="/alliance/curators" element={<AllianceCurators />} />
           <Route path="/alliance/curator" element={<AllianceCurators />} />
           <Route path="/foundation/founding-supporters" element={<FoundingSupporterAdmin />} />
+          <Route path="/apply-for-invitation" element={<ApplyForInvitation />} />
+          <Route path="/foundation/invitation-requests" element={<InvitationRequests />} />
           <Route path="/foundation/fundraising" element={<FundraisingDashboard />} />
           <Route path="/foundation/alliance" element={<AllianceAdmin />} />
           <Route path="/foundation/alliance-outreach" element={<AllianceOutreach />} />

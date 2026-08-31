@@ -2362,6 +2362,83 @@ export type Database = {
         }
         Relationships: []
       }
+      invitation_requests: {
+        Row: {
+          applicant_role: string
+          birth_year: number | null
+          city: string | null
+          country: string | null
+          created_at: string
+          cv_url: string | null
+          email: string
+          foundation_notes: string | null
+          full_name: string
+          id: string
+          invite_code_id: string | null
+          message: string | null
+          practice_summary: string | null
+          referred_by: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source: string | null
+          status: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          applicant_role?: string
+          birth_year?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email: string
+          foundation_notes?: string | null
+          full_name: string
+          id?: string
+          invite_code_id?: string | null
+          message?: string | null
+          practice_summary?: string | null
+          referred_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          applicant_role?: string
+          birth_year?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email?: string
+          foundation_notes?: string | null
+          full_name?: string
+          id?: string
+          invite_code_id?: string | null
+          message?: string | null
+          practice_summary?: string | null
+          referred_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitation_requests_invite_code_id_fkey"
+            columns: ["invite_code_id"]
+            isOneToOne: false
+            referencedRelation: "invite_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invite_codes: {
         Row: {
           code: string
@@ -3430,15 +3507,6 @@ export type Database = {
           invite_id: string
         }[]
       }
-      delete_email: {
-        Args: { message_id: number; queue_name: string }
-        Returns: boolean
-      }
-      email_queue_dispatch: { Args: never; Returns: undefined }
-      enqueue_email: {
-        Args: { payload: Json; queue_name: string }
-        Returns: number
-      }
       find_artist_by_email: { Args: { _email: string }; Returns: string }
       find_registrar_by_email: { Args: { _email: string }; Returns: string }
       get_cr_submission_status: {
@@ -3628,23 +3696,6 @@ export type Database = {
           full_name: string
           global_artist_id: number
           user_id: string
-        }[]
-      }
-      move_to_dlq: {
-        Args: {
-          dlq_name: string
-          message_id: number
-          payload: Json
-          source_queue: string
-        }
-        Returns: number
-      }
-      read_email_batch: {
-        Args: { batch_size: number; queue_name: string; vt: number }
-        Returns: {
-          message: Json
-          msg_id: number
-          read_ct: number
         }[]
       }
       record_tracked_link_click: {
