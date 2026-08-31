@@ -299,14 +299,21 @@ const FoundingArtists = () => {
       <section className="py-16 px-6 border-t border-border text-center">
         <h2 className="text-2xl font-semibold mb-3">Join the Legacy Artists</h2>
         <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
-          The program is invitation-only. If you've received an invite code, 
-          register now to secure your place in art history.
+          The program is invitation only. If you have received an invite code, register now. If not, you are welcome
+          to apply and we will review your application.
         </p>
-        <Link to="/register">
-          <Button size="lg" className="gap-2">
-            Register with Invite Code <ArrowRight className="w-4 h-4" />
-          </Button>
-        </Link>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link to="/register">
+            <Button size="lg" className="gap-2">
+              Register with Invite Code <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
+          <Link to="/apply-for-invitation">
+            <Button size="lg" variant="outline" className="gap-2">
+              Apply for an Invitation
+            </Button>
+          </Link>
+        </div>
       </section>
 
       {/* Footer */}
