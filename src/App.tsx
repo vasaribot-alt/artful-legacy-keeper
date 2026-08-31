@@ -74,6 +74,7 @@ import RegistrarApply from "./pages/RegistrarApply";
 import FoundationRegistrars from "./pages/FoundationRegistrars";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
 
 import NotFound from "./pages/NotFound";
 
@@ -91,6 +92,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/r/:code" element={<TrackedLinkRedirect />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
 
