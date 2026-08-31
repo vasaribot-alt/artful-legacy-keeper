@@ -110,10 +110,10 @@ const About = () => {
           <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
               The documentation surrounding art has always been fragile, and today it lives mostly in digital form:
-              scattered across gallery systems, private databases, personal websites, and commercial platforms. When
-              galleries close, services shut down, or artists lose access, the record disappears with them, leaving
-              artists without continuity, collectors without provenance, and researchers with gaps in the cultural
-              record. No widely adopted, independent global infrastructure exists to prevent this.
+              scattered across gallery systems, private databases, personal websites, and commercial platforms.
+              As the art world evolves, galleries change, platforms shift, technology moves on, records can become
+              fragmented across systems that were never built to last a century. No widely adopted, independent
+              global infrastructure exists to safeguard this continuity for artists, collectors, and researchers alike.
             </p>
           </div>
         </div>

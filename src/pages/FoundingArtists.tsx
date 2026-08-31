@@ -136,7 +136,7 @@ const FoundingArtists = () => {
             <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Legacy Artist Program</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6 text-balance">
-            The artists building art's permanent record
+            Building a Permanent Record for Art
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
             For the first time, artists can create their own authenticated, archival-grade catalogue raisonné, 
@@ -165,7 +165,7 @@ const FoundingArtists = () => {
             {[
               {
                 title: "Your legacy, your terms",
-                text: "No gallery, estate, or institution should control the definitive record of your life's work. This is yours.",
+                text: "Your life's work deserves a record that stays with you, independent of any single gallery, estate, or institution, and shaped on your own terms.",
               },
               {
                 title: "Authenticated forever",

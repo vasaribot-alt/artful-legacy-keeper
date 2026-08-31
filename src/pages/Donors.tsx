@@ -102,11 +102,11 @@ const Donors = () => {
               },
               {
                 title: "Empower artists",
-                text: "Funding ensures artists, not markets or institutions, control the definitive record of their life's work.",
+                text: "Funding ensures artists have direct control over the definitive record of their life's work, alongside the galleries and institutions that support their careers.",
               },
               {
                 title: "Build something permanent",
-                text: "Unlike galleries that close or databases that disappear, this archive is designed to endure across generations.",
+                text: "As the art world changes over time, this archive is designed to endure independently, across generations, platforms, and institutions.",
               },
             ].map((item) => (
               <div key={item.title}>
