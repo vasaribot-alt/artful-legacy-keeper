@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InstagramLink } from "@/components/SocialLinks";
-import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Download, Handshake } from "lucide-react";
+import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Handshake } from "lucide-react";
 
 const principles = [
   {
@@ -157,22 +157,22 @@ const About = () => {
             </p>
           </div>
           <div className="flex flex-wrap gap-4 mt-10">
-            <a href="/GARF_Why_GARF_Matters.pdf" download>
+            <a href="/GARF_Why_GARF_Matters.pdf" target="_blank" rel="noopener noreferrer">
               <Button className="gap-2">
-                Why GARF matters (PDF) <Download className="w-4 h-4" />
+                Why GARF matters (PDF) <ExternalLink className="w-4 h-4" />
               </Button>
             </a>
-            <a href="/GARF_Background_and_Founding_Rationale.pdf" download>
-              <Button variant="outline" className="gap-2">
-                Background and Founding Rationale (PDF) <Download className="w-4 h-4" />
+            <a href="/GARF_Background_and_Founding_Rationale.pdf" target="_blank" rel="noopener noreferrer">
+              <Button className="gap-2">
+                Background and Founding Rationale (PDF) <ExternalLink className="w-4 h-4" />
+              </Button>
+            </a>
+            <a href="/GARF_Governance_Overview.pdf" target="_blank" rel="noopener noreferrer">
+              <Button className="gap-2">
+                Governance Overview (PDF) <ExternalLink className="w-4 h-4" />
               </Button>
             </a>
 
-            <a href="/GARF_Governance_Overview.pdf" download>
-              <Button variant="outline" className="gap-2">
-                Governance Overview (PDF) <Download className="w-4 h-4" />
-              </Button>
-            </a>
 
             <Link to="/donate">
               <Button variant="outline" className="gap-2">
