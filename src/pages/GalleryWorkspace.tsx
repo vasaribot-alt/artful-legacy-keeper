@@ -217,16 +217,12 @@ const GalleryWorkspace = () => {
       else toast.error("Failed to add artist");
     } else {
       if (!onGarf) {
-        const { error: mailError } = await supabase.functions.invoke("send-transactional-email", {
+        const { error: mailError } = await supabase.functions.invoke("send-gallery-artist-invitation", {
           body: {
-            templateName: "gallery-artist-invitation",
+            galleryId: gallery.id,
             recipientEmail: requestEmail.trim(),
-            idempotencyKey: `gallery-invite-${gallery.id}-${requestEmail.trim().toLowerCase()}`,
-            templateData: {
-              artistName: requestName.trim() || undefined,
-              galleryName: gallery.name,
-              signupUrl: `${window.location.origin}/register`,
-            },
+            artistName: requestName.trim() || undefined,
+            signupUrl: `${window.location.origin}/register`,
           },
         });
         if (mailError) console.error("Invitation email failed", mailError);

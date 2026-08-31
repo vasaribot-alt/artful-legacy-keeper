@@ -4,6 +4,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+import { sendRawEmail } from "../_shared/send-raw-email.ts";
 
 const FOUNDATION_INBOX = Deno.env.get("FOUNDATION_INBOX_EMAIL") || "support@globalartistregistry.org";
 
@@ -108,15 +109,13 @@ Deno.serve(async (req) => {
 <hr/>
 <p style="color:#666;font-size:12px">Application ID: ${data.id}</p>`.trim();
 
-      await supabase.rpc("enqueue_email", {
-        queue_name: "transactional_emails",
-        payload: {
-          to: FOUNDATION_INBOX,
-          subject: `Founding Supporter — ${contact_name} (${tierMeta.name})`,
-          html,
-          reply_to: email,
-          tag: "founding_supporter_application",
-        },
+      await sendRawEmail({
+        to: FOUNDATION_INBOX,
+        subject: `Founding Supporter — ${contact_name} (${tierMeta.name})`,
+        html,
+        replyTo: email,
+        label: "founding_supporter_application",
+        idempotencyKey: `founding-supporter-application-${data.id}`,
       });
     } catch (e) {
       console.error("foundation notification failed", e);
@@ -150,15 +149,13 @@ Deno.serve(async (req) => {
   </p>
 </div>`.trim();
 
-      await supabase.rpc("enqueue_email", {
-        queue_name: "transactional_emails",
-        payload: {
-          to: email,
-          subject: "Thank you — Founding Supporter application received",
-          html: confirmHtml,
-          reply_to: FOUNDATION_INBOX,
-          tag: "founding_supporter_confirmation",
-        },
+      await sendRawEmail({
+        to: email,
+        subject: "Thank you — Founding Supporter application received",
+        html: confirmHtml,
+        replyTo: FOUNDATION_INBOX,
+        label: "founding_supporter_confirmation",
+        idempotencyKey: `founding-supporter-confirmation-${data.id}`,
       });
     } catch (e) {
       console.error("applicant confirmation failed", e);
