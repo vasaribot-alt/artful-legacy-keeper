@@ -165,7 +165,7 @@ const FoundingArtists = () => {
             {[
               {
                 title: "Your legacy, your terms",
-                text: "No gallery, estate, or institution should control the definitive record of your life's work. This is yours.",
+                text: "Your life's work deserves a record that stays with you, independent of any single gallery, estate, or institution, and shaped on your own terms.",
               },
               {
                 title: "Authenticated forever",
