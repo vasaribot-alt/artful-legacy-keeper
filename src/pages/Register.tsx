@@ -198,6 +198,12 @@ const Register = () => {
                 placeholder="e.g. FOUNDING-EST-A1B2"
                 className="mt-1.5 uppercase tracking-wider"
               />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                No code yet?{" "}
+                <Link to="/apply-for-invitation" className="text-foreground underline">
+                  Apply for an invitation
+                </Link>
+              </p>
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
