@@ -53,45 +53,44 @@ Deno.serve(async (req) => {
     const queued: string[] = [];
     const failures: { to: string; error: string }[] = [];
 
+    const logSend = async (
+      to: string,
+      status: "sent" | "suppressed" | "failed",
+      errorMessage?: string,
+    ) => {
+      const { error } = await adminClient.from("email_send_log").insert({
+        template_name: "gallery_outreach",
+        recipient_email: to,
+        status,
+        error_message: errorMessage ?? null,
+      });
+      if (error) console.error("Failed to write email_send_log", error.code, error.message);
+    };
+
     for (const letter of letters) {
       try {
-        const messageId = crypto.randomUUID();
-        await adminClient.from("email_send_log").insert({
-          message_id: messageId,
-          template_name: "gallery_outreach",
-          recipient_email: letter.to,
-          status: "pending",
+        const result = await sendRawEmail({
+          to: letter.to,
+          subject: letter.subject || "",
+          html: letter.bodyHtml,
+          text: letter.bodyText,
+          label: "gallery_outreach",
+          fromName,
+          fromLocalPart: "outreach",
         });
-        const { error: enqueueError } = await adminClient.rpc("enqueue_email", {
-          queue_name: "transactional_emails",
-          payload: {
-            message_id: messageId,
-            to: letter.to,
-            from: `${fromName} <outreach@${SENDER_DOMAIN}>`,
-            sender_domain: SENDER_DOMAIN,
-            subject: letter.subject || "",
-            html: letter.bodyHtml,
-            text: letter.bodyText,
-            purpose: "transactional",
-            label: "gallery_outreach",
-            idempotency_key: messageId,
-            queued_at: new Date().toISOString(),
-          },
-        });
-        if (enqueueError) {
-          await adminClient.from("email_send_log").insert({
-            message_id: messageId,
-            template_name: "gallery_outreach",
-            recipient_email: letter.to,
-            status: "failed",
-            error_message: enqueueError.message,
-          });
-          throw enqueueError;
+
+        if (!result.sent) {
+          await logSend(letter.to, "suppressed");
+          failures.push({ to: letter.to, error: "Recipient has unsubscribed or previously bounced" });
+          continue;
         }
+
+        await logSend(letter.to, "sent");
         queued.push(letter.to);
       } catch (e) {
-        const msg = e instanceof Error ? e.message : "Queue failed";
-        console.error("Email queue failed for", letter.to, msg);
+        const msg = e instanceof Error ? e.message : "Send failed";
+        console.error("Email send failed for", letter.to, msg);
+        await logSend(letter.to, "failed", msg);
         failures.push({ to: letter.to, error: msg });
       }
     }
