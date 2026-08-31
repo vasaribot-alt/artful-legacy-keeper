@@ -148,15 +148,13 @@ Deno.serve(async (req) => {
   </p>
 </div>`.trim();
 
-      await supabase.rpc("enqueue_email", {
-        queue_name: "transactional_emails",
-        payload: {
-          to: email,
-          subject: "Thank you — Founding Supporter application received",
-          html: confirmHtml,
-          reply_to: FOUNDATION_INBOX,
-          tag: "founding_supporter_confirmation",
-        },
+      await sendRawEmail({
+        to: email,
+        subject: "Thank you — Founding Supporter application received",
+        html: confirmHtml,
+        replyTo: FOUNDATION_INBOX,
+        label: "founding_supporter_confirmation",
+        idempotencyKey: `founding-supporter-confirmation-${data.id}`,
       });
     } catch (e) {
       console.error("applicant confirmation failed", e);
