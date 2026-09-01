@@ -331,6 +331,58 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Partner organisations */}
+      <section className="py-20 px-6 border-t border-border">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">
+            In cooperation with
+          </p>
+          <h2 className="text-3xl mb-8">Artist organisations</h2>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-10 sm:gap-16">
+            <a
+              href="/garf-logo.png"
+              download="GARF_Logo.png"
+              className="block rounded-md p-3 transition-opacity hover:opacity-70"
+              aria-label="Download the GARF logo"
+            >
+              <img
+                src="/garf-logo.png"
+                alt="Global Artist Registry Foundation logo"
+                className="h-20 w-auto object-contain mx-auto"
+              />
+            </a>
+            <div className="h-px w-12 bg-border sm:h-16 sm:w-px" aria-hidden="true" />
+            <a
+              href="https://www.iaa-usa.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-md p-3 transition-opacity hover:opacity-70"
+              aria-label="Visit IAA/USA"
+            >
+              <img
+                src="/iaa-usa-logo.webp"
+                alt="IAA/USA, International Association of Art, United States National Committee"
+                className="h-20 w-auto max-w-[220px] object-contain mx-auto"
+                loading="lazy"
+              />
+            </a>
+          </div>
+          <p className="text-sm text-muted-foreground max-w-xl mx-auto mt-8 leading-relaxed">
+            The Global Artist Registry Foundation and IAA/USA share a commitment to supporting artists
+            and preserving their records for future generations. The GARF logo is available for our partners.
+          </p>
+          <div className="mt-6">
+            <a href="/garf-logo.png" download="GARF_Logo.png">
+              <Button variant="outline" size="sm" className="gap-2">
+                Download GARF logo <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+
+
       {/* Trust indicators */}
       <section className="py-20 px-6 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
