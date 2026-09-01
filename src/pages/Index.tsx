@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { InstagramLink } from "@/components/SocialLinks";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
+import iaaUsaLogo from "@/assets/iaa-usa-logo.jpg.asset.json";
 
 const tutorials = [
   { src: "/tutorials/how-to-profile-mac-safe.mp4", title: "Build your profile." },
