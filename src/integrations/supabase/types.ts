@@ -3698,6 +3698,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      partner_org_tree_ids: { Args: { _root: string }; Returns: string[] }
       record_tracked_link_click: {
         Args: {
           _code: string
