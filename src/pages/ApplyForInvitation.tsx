@@ -39,7 +39,7 @@ const ApplyForInvitation = () => {
       body: {
         ...form,
         birth_year: form.birth_year ? Number(form.birth_year) : undefined,
-        applicant_role: applicantRole,
+        applicant_role: "artist",
         source: "apply_page",
       },
     });
