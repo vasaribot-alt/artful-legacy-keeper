@@ -63,7 +63,7 @@ const PortfolioDetail = () => {
       .from("portfolios")
       .select("name, share_token, role_context")
       .eq("id", id!)
-      .single();
+      .maybeSingle();
     if (pData) {
       setPortfolioName((pData as any).name);
       setShareToken((pData as any).share_token);
