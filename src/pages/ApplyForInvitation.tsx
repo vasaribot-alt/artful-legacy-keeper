@@ -22,7 +22,6 @@ const ApplyForInvitation = () => {
     referred_by: "",
     message: "",
   });
-  const [applicantRole, setApplicantRole] = useState("artist");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
