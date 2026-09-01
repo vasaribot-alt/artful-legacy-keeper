@@ -9,14 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 
-const ROLES = [
-  { id: "artist", label: "Artist" },
-  { id: "collector", label: "Collector or estate" },
-  { id: "gallery", label: "Gallery" },
-  { id: "institution", label: "Museum or institution" },
-  { id: "registrar", label: "Registrar" },
-];
-
 const ApplyForInvitation = () => {
   const [form, setForm] = useState({
     full_name: "",
