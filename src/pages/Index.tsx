@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { InstagramLink } from "@/components/SocialLinks";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
-import iaaUsaLogo from "@/assets/iaa-usa-logo.jpg.asset.json";
-import garfLogo from "@/assets/garf-logo.png.asset.json";
 
 const tutorials = [
   { src: "/tutorials/how-to-profile-mac-safe.mp4", title: "Build your profile." },
@@ -342,13 +340,13 @@ const Index = () => {
           <h2 className="text-3xl mb-8">Artist organisations</h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-10 sm:gap-16">
             <a
-              href={garfLogo.url}
+              href={/garf-logo.png}
               download="GARF_Logo.png"
               className="block rounded-md p-3 transition-opacity hover:opacity-70"
               aria-label="Download the GARF logo"
             >
               <img
-                src={garfLogo.url}
+                src={/garf-logo.png}
                 alt="Global Artist Registry Foundation logo"
                 className="h-20 w-auto object-contain mx-auto"
               />
@@ -362,7 +360,7 @@ const Index = () => {
               aria-label="Visit IAA/USA"
             >
               <img
-                src={iaaUsaLogo.url}
+                src={/iaa-usa-logo.webp}
                 alt="IAA/USA, International Association of Art, United States National Committee"
                 className="h-20 w-auto max-w-[220px] object-contain mx-auto"
                 loading="lazy"
@@ -374,7 +372,7 @@ const Index = () => {
             and preserving their records for future generations. The GARF logo is available for our partners.
           </p>
           <div className="mt-6">
-            <a href={garfLogo.url} download="GARF_Logo.png">
+            <a href={/garf-logo.png} download="GARF_Logo.png">
               <Button variant="outline" size="sm" className="gap-2">
                 Download GARF logo <ArrowRight className="w-3.5 h-3.5" />
               </Button>
