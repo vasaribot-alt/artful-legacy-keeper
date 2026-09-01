@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { InstagramLink } from "@/components/SocialLinks";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
 import iaaUsaLogo from "@/assets/iaa-usa-logo.jpg.asset.json";
+import garfLogo from "@/assets/garf-logo.png.asset.json";
 
 const tutorials = [
   { src: "/tutorials/how-to-profile-mac-safe.mp4", title: "Build your profile." },
@@ -339,26 +340,46 @@ const Index = () => {
             In cooperation with
           </p>
           <h2 className="text-3xl mb-8">Artist organisations</h2>
-          <div className="flex flex-wrap items-center justify-center gap-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-10 sm:gap-16">
+            <a
+              href={garfLogo.url}
+              download="GARF_Logo.png"
+              className="block rounded-md p-3 transition-opacity hover:opacity-70"
+              aria-label="Download the GARF logo"
+            >
+              <img
+                src={garfLogo.url}
+                alt="Global Artist Registry Foundation logo"
+                className="h-20 w-auto object-contain mx-auto"
+              />
+            </a>
+            <div className="h-px w-12 bg-border sm:h-16 sm:w-px" aria-hidden="true" />
             <a
               href="https://www.iaa-usa.org/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block transition-opacity hover:opacity-70"
+              className="block rounded-md p-3 transition-opacity hover:opacity-70"
+              aria-label="Visit IAA/USA"
             >
               <img
                 src={iaaUsaLogo.url}
                 alt="IAA/USA, International Association of Art, United States National Committee"
-                className="h-20 w-auto object-contain mx-auto"
+                className="h-20 w-auto max-w-[220px] object-contain mx-auto"
                 loading="lazy"
               />
             </a>
           </div>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto mt-8 leading-relaxed">
-            IAA/USA is the United States National Committee of the International Association of Art,
-            the UNESCO affiliated organisation representing professional artists worldwide. Members
-            can join the Registry through their organisation's own branded link.
+            The Global Artist Registry Foundation and IAA/USA share a commitment to supporting artists
+            and preserving their records for future generations. The GARF logo is available for our partners.
           </p>
+          <div className="mt-6">
+            <a href={garfLogo.url} download="GARF_Logo.png">
+              <Button variant="outline" size="sm" className="gap-2">
+                Download GARF logo <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </a>
+          </div>
         </div>
       </section>
 
