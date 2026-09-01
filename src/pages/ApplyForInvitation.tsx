@@ -85,16 +85,6 @@ const ApplyForInvitation = () => {
             </p>
 
             <form onSubmit={submit} className="space-y-6" autoComplete="off">
-              <div>
-                <Label>I am applying as</Label>
-                <Select value={applicantRole} onValueChange={setApplicantRole}>
-                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {ROLES.map((r) => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="full_name">Full name</Label>
