@@ -1,3 +1,8 @@
+## GARF and IAA/USA partner logos (2026-09-01)
+- [ ] Create a polished GARF logo asset and downloadable logo package
+- [ ] Place GARF and IAA/USA marks together on the public landing page
+- [ ] Use the GARF mark as the site favicon
+
 
 ## Portfolio picker data leak (2026-09-01)
 - [x] Add owner_id + role_context filters to portfolio artwork picker
