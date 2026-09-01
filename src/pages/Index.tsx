@@ -332,6 +332,38 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Partner organisations */}
+      <section className="py-20 px-6 border-t border-border">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">
+            In cooperation with
+          </p>
+          <h2 className="text-3xl mb-8">Artist organisations</h2>
+          <div className="flex flex-wrap items-center justify-center gap-12">
+            <a
+              href="https://www.iaa-usa.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block transition-opacity hover:opacity-70"
+            >
+              <img
+                src={iaaUsaLogo.url}
+                alt="IAA/USA, International Association of Art, United States National Committee"
+                className="h-20 w-auto object-contain mx-auto"
+                loading="lazy"
+              />
+            </a>
+          </div>
+          <p className="text-sm text-muted-foreground max-w-xl mx-auto mt-8 leading-relaxed">
+            IAA/USA is the United States National Committee of the International Association of Art,
+            the UNESCO affiliated organisation representing professional artists worldwide. Members
+            can join the Registry through their organisation's own branded link.
+          </p>
+        </div>
+      </section>
+
+
+
       {/* Trust indicators */}
       <section className="py-20 px-6 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
