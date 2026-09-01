@@ -340,13 +340,13 @@ const Index = () => {
           <h2 className="text-3xl mb-8">Artist organisations</h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-10 sm:gap-16">
             <a
-              href={/garf-logo.png}
+              href="/garf-logo.png"
               download="GARF_Logo.png"
               className="block rounded-md p-3 transition-opacity hover:opacity-70"
               aria-label="Download the GARF logo"
             >
               <img
-                src={/garf-logo.png}
+                src="/garf-logo.png"
                 alt="Global Artist Registry Foundation logo"
                 className="h-20 w-auto object-contain mx-auto"
               />
@@ -360,7 +360,7 @@ const Index = () => {
               aria-label="Visit IAA/USA"
             >
               <img
-                src={/iaa-usa-logo.webp}
+                src="/iaa-usa-logo.webp"
                 alt="IAA/USA, International Association of Art, United States National Committee"
                 className="h-20 w-auto max-w-[220px] object-contain mx-auto"
                 loading="lazy"
@@ -372,7 +372,7 @@ const Index = () => {
             and preserving their records for future generations. The GARF logo is available for our partners.
           </p>
           <div className="mt-6">
-            <a href={/garf-logo.png} download="GARF_Logo.png">
+            <a href="/garf-logo.png" download="GARF_Logo.png">
               <Button variant="outline" size="sm" className="gap-2">
                 Download GARF logo <ArrowRight className="w-3.5 h-3.5" />
               </Button>
