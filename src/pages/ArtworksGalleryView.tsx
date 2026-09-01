@@ -33,6 +33,7 @@ const ArtworksGalleryView = () => {
       const { data } = await supabase
         .from("artworks")
         .select("id, title, artwork_type, medium, year, height, width, depth")
+        .eq("owner_id", session.user.id)
         .order("created_at", { ascending: false });
 
       if (!data) { setLoading(false); return; }

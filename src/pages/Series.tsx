@@ -65,9 +65,12 @@ const Series = () => {
   const fetchArtworksForSeries = async (seriesName: string) => {
     if (seriesArtworks[seriesName]) return;
     setLoadingArtworks(seriesName);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoadingArtworks(null); return; }
     const { data, error } = await supabase
       .from("artworks")
       .select("id, title, year, medium, height, width, depth")
+      .eq("owner_id", user.id)
       .eq("series", seriesName)
       .order("year", { ascending: false });
     if (error) {

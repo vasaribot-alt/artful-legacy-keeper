@@ -42,6 +42,7 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
         .from("artworks")
         .select("id, title, year, medium, image_url")
         .eq("owner_id", user.id)
+        .eq("role_context", "artist")
         .order("year", { ascending: false });
 
       if (!data) { setLoading(false); return; }

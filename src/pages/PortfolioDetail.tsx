@@ -63,7 +63,7 @@ const PortfolioDetail = () => {
       .from("portfolios")
       .select("name, share_token, role_context")
       .eq("id", id!)
-      .single();
+      .maybeSingle();
     if (pData) {
       setPortfolioName((pData as any).name);
       setShareToken((pData as any).share_token);
@@ -117,9 +117,12 @@ const PortfolioDetail = () => {
   };
 
   const openPicker = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
     const { data } = await supabase
       .from("artworks")
       .select("id, title, year, medium, series")
+      .eq("owner_id", user.id)
       .eq("role_context", portfolioRole)
       .order("title");
     const existingIds = new Set(artworks.map((a) => a.artwork_id));
