@@ -5,17 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
-
-const ROLES = [
-  { id: "artist", label: "Artist" },
-  { id: "collector", label: "Collector or estate" },
-  { id: "gallery", label: "Gallery" },
-  { id: "institution", label: "Museum or institution" },
-  { id: "registrar", label: "Registrar" },
-];
 
 const ApplyForInvitation = () => {
   const [form, setForm] = useState({
@@ -30,7 +21,6 @@ const ApplyForInvitation = () => {
     referred_by: "",
     message: "",
   });
-  const [applicantRole, setApplicantRole] = useState("artist");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -48,7 +38,7 @@ const ApplyForInvitation = () => {
       body: {
         ...form,
         birth_year: form.birth_year ? Number(form.birth_year) : undefined,
-        applicant_role: applicantRole,
+        applicant_role: "artist",
         source: "apply_page",
       },
     });
@@ -94,16 +84,6 @@ const ApplyForInvitation = () => {
             </p>
 
             <form onSubmit={submit} className="space-y-6" autoComplete="off">
-              <div>
-                <Label>I am applying as</Label>
-                <Select value={applicantRole} onValueChange={setApplicantRole}>
-                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {ROLES.map((r) => <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="full_name">Full name</Label>
