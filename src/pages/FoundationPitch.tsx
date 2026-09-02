@@ -1,3 +1,4 @@
+import GarfLogo from "@/components/GarfLogo";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -66,9 +67,7 @@ export default function FoundationPitch() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
-          <span className="text-xs uppercase tracking-widest text-muted-foreground">
-            Global Artist Registry Foundation
-          </span>
+          <GarfLogo className="h-9" />
         </div>
       </header>
 

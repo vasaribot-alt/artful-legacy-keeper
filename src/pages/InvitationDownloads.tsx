@@ -1,3 +1,4 @@
+import GarfLogo from "@/components/GarfLogo";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Copy, Download, ShieldCheck } from "lucide-react";
@@ -168,9 +169,7 @@ export default function InvitationDownloads() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
-          <span className="text-xs uppercase tracking-widest text-muted-foreground">
-            Global Artist Registry Foundation
-          </span>
+          <GarfLogo className="h-9" />
         </div>
       </header>
 

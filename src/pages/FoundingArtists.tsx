@@ -1,3 +1,4 @@
+import GarfLogo from "@/components/GarfLogo";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,8 +120,8 @@ const FoundingArtists = () => {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-          <Link to="/" className="text-lg font-semibold tracking-tight">
-            Global Artist Registry Foundation
+          <Link to="/">
+            <GarfLogo className="h-11" />
           </Link>
           <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Sign in

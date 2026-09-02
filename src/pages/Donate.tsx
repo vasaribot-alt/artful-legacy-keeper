@@ -1,3 +1,4 @@
+import GarfLogo from "@/components/GarfLogo";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,7 @@ export default function Donate() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
-          <span className="text-xs uppercase tracking-widest text-muted-foreground">Global Artist Registry Foundation</span>
+          <GarfLogo className="h-9" />
         </div>
       </header>
 
