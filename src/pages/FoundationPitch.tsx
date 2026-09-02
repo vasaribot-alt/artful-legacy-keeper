@@ -67,7 +67,7 @@ export default function FoundationPitch() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
-          <GarfLogo className="h-14" />
+          <GarfLogo className="h-16" />
         </div>
       </header>
 
