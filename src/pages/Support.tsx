@@ -90,7 +90,7 @@ export default function Support() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
-          <GarfLogo className="h-12" />
+          <GarfLogo className="h-14" />
         </div>
       </header>
 
