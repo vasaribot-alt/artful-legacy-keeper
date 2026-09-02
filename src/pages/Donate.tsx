@@ -55,7 +55,7 @@ export default function Donate() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
-          <span className="text-xs uppercase tracking-widest text-muted-foreground">Global Artist Registry Foundation</span>
+          <GarfLogo className="h-7" />
         </div>
       </header>
 
