@@ -121,7 +121,7 @@ const FoundingArtists = () => {
       <header className="border-b border-border">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
           <Link to="/">
-            <GarfLogo className="h-14" />
+            <GarfLogo className="h-16" />
           </Link>
           <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Sign in
