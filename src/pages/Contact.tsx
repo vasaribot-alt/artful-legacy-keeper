@@ -131,7 +131,7 @@ const Contact = () => {
       <header className="border-b border-border sticky top-0 z-30 bg-background/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4" /> <GarfLogo className="h-7" />
+            <ArrowLeft className="w-4 h-4" /> <GarfLogo className="h-9" />
           </Link>
           <div className="flex items-center gap-6 text-sm">
             <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">

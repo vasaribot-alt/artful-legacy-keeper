@@ -102,7 +102,7 @@ const Index = () => {
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <GarfLogo className="h-8" />
+          <GarfLogo className="h-11" />
           <div className="flex items-center gap-6">
             <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               About
