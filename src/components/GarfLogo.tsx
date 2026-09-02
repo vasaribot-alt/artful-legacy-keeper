@@ -9,7 +9,7 @@ const GarfLogo = ({ className }: GarfLogoProps) => (
   <img
     src="/garf-logo.png"
     alt="Global Artist Registry Foundation"
-    className={cn("h-9 w-auto dark:invert", className)}
+    className={cn("h-12 w-auto dark:invert", className)}
     loading="eager"
   />
 );
