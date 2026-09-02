@@ -1,3 +1,4 @@
+import GarfLogo from "@/components/GarfLogo";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -62,8 +63,8 @@ const Donors = () => {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-          <Link to="/" className="text-lg font-semibold tracking-tight">
-            Global Artist Registry Foundation
+          <Link to="/">
+            <GarfLogo className="h-20" />
           </Link>
           <div className="flex items-center gap-6 text-sm">
             <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">

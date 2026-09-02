@@ -1,3 +1,4 @@
+import GarfLogo from "@/components/GarfLogo";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -369,8 +370,8 @@ const PublicArtistProfile = () => {
     <div className="min-h-screen bg-background">
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="text-sm font-semibold tracking-tight">
-            Global Artist Registry Foundation
+          <Link to="/">
+            <GarfLogo className="h-16" />
           </Link>
           <div className="flex items-center gap-6">
             <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

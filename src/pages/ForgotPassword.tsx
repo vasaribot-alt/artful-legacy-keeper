@@ -1,3 +1,4 @@
+import GarfLogo from "@/components/GarfLogo";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -29,8 +30,8 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
-        <Link to="/" className="text-lg font-semibold tracking-tight block mb-10">
-          Global Artist Registry Foundation
+        <Link to="/" className="block mb-10">
+          <GarfLogo className="h-16" />
         </Link>
         <h1 className="text-3xl mb-2">Reset password</h1>
         <p className="text-sm text-muted-foreground mb-8">
