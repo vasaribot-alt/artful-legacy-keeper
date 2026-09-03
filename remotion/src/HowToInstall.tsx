@@ -716,7 +716,8 @@ const MenuRow: React.FC<{ label: string; highlight?: boolean }> = ({ label, high
 const SceneAndroid: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const menu = spring({ frame: frame - 55, fps, config: { damping: 26, stiffness: 110 } });
+  const menuIn = spring({ frame: frame - 55, fps, config: { damping: 26, stiffness: 110 } });
+  const menu = menuIn * interpolate(frame, [142, 156], [1, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
   const dialog = interpolate(frame, [150, 170], [0, 1], { extrapolateRight: "clamp" });
 
   return (
