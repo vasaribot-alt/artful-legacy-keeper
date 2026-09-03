@@ -996,6 +996,9 @@ export const HowToInstall: React.FC = () => (
       <Series.Sequence durationInFrames={150}>
         <SceneHomeScreen />
       </Series.Sequence>
+      <Series.Sequence durationInFrames={120}>
+        <SceneEnd />
+      </Series.Sequence>
     </Series>
     </ReelSafe>
   </AbsoluteFill>
