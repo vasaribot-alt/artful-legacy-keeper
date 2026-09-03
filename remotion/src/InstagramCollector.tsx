@@ -238,7 +238,7 @@ const SceneCta = () => {
   return (
     <AbsoluteFill
       style={{
-        padding: "220px 64px 0",
+        padding: "0 72px", justifyContent: "center",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
