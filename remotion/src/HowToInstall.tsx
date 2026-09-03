@@ -190,7 +190,7 @@ const CardLayout: React.FC<{
   lines: string[];
   italicIndex?: number;
   size?: number;
-}> = ({ lines, italicIndex, size = 74 }) => {
+}> = ({ lines, italicIndex, size = 76 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: frame - 20, fps, config: { damping: 16, stiffness: 140 } });
@@ -200,7 +200,7 @@ const CardLayout: React.FC<{
       <PaperGrain />
       <AbsoluteFill
         style={{
-          padding: "300px 64px 0",
+          padding: "220px 64px 0",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -550,7 +550,7 @@ const SceneIphone: React.FC = () => {
         {/* page */}
         <div style={{ flex: 1, padding: "100px 26px 0" }}>
           <GarfMark size={30} />
-          <div style={{ fontFamily: SERIF, fontSize: 36, color: theme.ink, marginTop: 30 }}>
+          <div style={{ fontFamily: SERIF, fontSize: 40, color: theme.ink, marginTop: 30 }}>
             Your Artworks
           </div>
           {[0, 1, 2, 3].map((i) => (
@@ -775,7 +775,7 @@ const SceneAndroid: React.FC = () => {
 
         <div style={{ flex: 1, padding: "26px" }}>
           <GarfMark size={28} />
-          <div style={{ fontFamily: SERIF, fontSize: 34, color: theme.ink, marginTop: 26 }}>
+          <div style={{ fontFamily: SERIF, fontSize: 40, color: theme.ink, marginTop: 26 }}>
             Your Artworks
           </div>
           {[0, 1, 2, 3].map((i) => (
