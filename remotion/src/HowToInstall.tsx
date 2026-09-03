@@ -550,7 +550,7 @@ const SceneIphone: React.FC = () => {
         {/* page */}
         <div style={{ flex: 1, padding: "100px 26px 0" }}>
           <GarfMark size={30} />
-          <div style={{ fontFamily: SERIF, fontSize: 36, color: theme.ink, marginTop: 30 }}>
+          <div style={{ fontFamily: SERIF, fontSize: 40, color: theme.ink, marginTop: 30 }}>
             Your Artworks
           </div>
           {[0, 1, 2, 3].map((i) => (
@@ -775,7 +775,7 @@ const SceneAndroid: React.FC = () => {
 
         <div style={{ flex: 1, padding: "26px" }}>
           <GarfMark size={28} />
-          <div style={{ fontFamily: SERIF, fontSize: 34, color: theme.ink, marginTop: 26 }}>
+          <div style={{ fontFamily: SERIF, fontSize: 40, color: theme.ink, marginTop: 26 }}>
             Your Artworks
           </div>
           {[0, 1, 2, 3].map((i) => (
