@@ -190,7 +190,7 @@ const CardLayout: React.FC<{
   lines: string[];
   italicIndex?: number;
   size?: number;
-}> = ({ lines, italicIndex, size = 74 }) => {
+}> = ({ lines, italicIndex, size = 76 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: frame - 20, fps, config: { damping: 16, stiffness: 140 } });
