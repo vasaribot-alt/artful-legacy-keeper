@@ -200,7 +200,7 @@ const CardLayout: React.FC<{
       <PaperGrain />
       <AbsoluteFill
         style={{
-          padding: "300px 64px 0",
+          padding: "220px 64px 0",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
