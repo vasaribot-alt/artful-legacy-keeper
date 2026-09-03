@@ -8,3 +8,7 @@
 - [x] Add owner_id + role_context filters to portfolio artwork picker
 - [x] Scope exhibition/series/gallery-view artwork queries to owner + role
 - [x] Tighten public artworks RLS to artist-context works only
+
+## Targets document: add "why this matters to artists" (2026-09-03)
+- [ ] Add a section to GARF_Targets_and_Long_Term_Goals explaining why GARF matters to artists and their heirs, collectors, institutions and art historians
+- [ ] Generate v3 PDF
