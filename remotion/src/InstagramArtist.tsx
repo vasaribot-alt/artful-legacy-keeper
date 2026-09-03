@@ -255,7 +255,7 @@ const SceneCta = () => {
   const { fps } = useVideoConfig();
   const ctaS = spring({ frame: frame - 20, fps, config: { damping: 16, stiffness: 140 } });
   return (
-    <AbsoluteFill style={{ padding: "0 72px", justifyContent: "center", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+    <AbsoluteFill style={{ padding: "220px 64px 0", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
       <Eyebrow text="Global Artist Registry Foundation" delay={2} />
       <div style={{ marginTop: 28 }}>
         <BigWords lines={["Register free.", "Preserve your", "legacy."]} delay={8} size={86} italicIndex={2} />
