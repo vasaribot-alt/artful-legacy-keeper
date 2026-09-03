@@ -7,7 +7,7 @@ import {
   Series,
 } from "remotion";
 import { theme } from "./theme";
-import { SANS, SERIF, PaperGrain } from "./InstagramShared";
+import { SANS, SERIF, PaperGrain, Eyebrow, BigWords, ReelSafe } from "./InstagramShared";
 
 /* ---------------------------------- shell --------------------------------- */
 
@@ -190,54 +190,52 @@ const SceneTitle: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: frame - 8, fps, config: { damping: 20, stiffness: 80 } });
-  const lineW = interpolate(frame, [40, 80], [0, 340], { extrapolateRight: "clamp" });
   const sub = interpolate(frame, [50, 80], [0, 1], { extrapolateRight: "clamp" });
   return (
     <AbsoluteFill>
       <PaperGrain />
-      <AbsoluteFill style={{ padding: "0 80px", justifyContent: "center" }}>
-        <div
-          style={{
-            fontFamily: SANS,
-            fontSize: 20,
-            letterSpacing: "0.34em",
-            textTransform: "uppercase",
-            color: theme.muted,
-            opacity: interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" }),
-          }}
-        >
-          Global Artist Registry Foundation
+      <AbsoluteFill
+        style={{
+          padding: "220px 64px 0",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <Eyebrow text="Global Artist Registry Foundation" delay={2} />
+        <div style={{ marginTop: 28 }}>
+          <BigWords lines={["Keep the Registry", "one tap away."]} delay={8} size={78} italicIndex={1} />
         </div>
         <div
           style={{
-            fontFamily: SERIF,
-            fontSize: 108,
-            lineHeight: 0.98,
-            color: theme.ink,
-            letterSpacing: "-0.03em",
-            marginTop: 34,
-            opacity: s,
-            transform: `translateY(${(1 - s) * 40}px)`,
-          }}
-        >
-          Keep the Registry
-          <br />
-          <span style={{ fontStyle: "italic" }}>one tap away.</span>
-        </div>
-        <div style={{ width: lineW, height: 4, background: theme.ink, marginTop: 46 }} />
-        <div
-          style={{
+            marginTop: 46,
             fontFamily: SANS,
-            fontSize: 30,
+            fontSize: 26,
             lineHeight: 1.45,
             color: theme.inkSoft,
-            marginTop: 40,
-            maxWidth: 820,
+            maxWidth: 760,
             opacity: sub,
           }}
         >
           Add GARF to your home screen on iPhone and Android. Sign in once, then open it
           like an app.
+        </div>
+        <div
+          style={{
+            marginTop: 44,
+            padding: "20px 40px",
+            background: theme.ink,
+            color: theme.bg,
+            borderRadius: 14,
+            fontFamily: SANS,
+            fontSize: 24,
+            fontWeight: 700,
+            opacity: s,
+            transform: `translateY(${(1 - s) * 26}px)`,
+          }}
+        >
+          globalartistregistry.org
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -965,6 +963,7 @@ const SceneHomeScreen: React.FC = () => {
 
 export const HowToInstall: React.FC = () => (
   <AbsoluteFill style={{ background: theme.bg }}>
+    <ReelSafe>
     <Series>
       <Series.Sequence durationInFrames={140}>
         <SceneTitle />
@@ -985,5 +984,6 @@ export const HowToInstall: React.FC = () => (
         <SceneHomeScreen />
       </Series.Sequence>
     </Series>
+    </ReelSafe>
   </AbsoluteFill>
 );
