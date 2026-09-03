@@ -12,9 +12,18 @@ import { InstagramCorrespondence } from "./InstagramCorrespondence";
 import { InstagramEstate } from "./InstagramEstate";
 import { InstagramGallery } from "./InstagramGallery";
 import { InstagramMission } from "./InstagramMission";
+import { HowToInstall } from "./HowToInstall";
 
 export const RemotionRoot = () => (
   <>
+    <Composition
+      id="how-to-install"
+      component={HowToInstall}
+      durationInFrames={1160}
+      fps={30}
+      width={1080}
+      height={1920}
+    />
     <Composition
       id="how-to-register"
       component={HowToRegister}

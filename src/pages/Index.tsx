@@ -284,6 +284,38 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Add to home screen */}
+      <section className="py-20 px-6 border-t border-border">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3 inline-flex items-center gap-2">
+              <PlayCircle className="w-4 h-4" /> Use it like an app
+            </p>
+            <h2 className="text-3xl mb-4">Add GARF to your home screen</h2>
+            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+              On a phone the top menu slides sideways, so every section stays within reach.
+              Sign in once, then add the Registry to your home screen and it opens full screen,
+              without the browser bars.
+            </p>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              iPhone: in Safari, tap the share icon and choose Add to Home Screen.
+              Android: in Chrome, open the three dot menu and choose Add to Home screen.
+            </p>
+          </div>
+          <div className="mx-auto w-full max-w-[280px]">
+            <div className="aspect-[9/16] bg-secondary rounded-md overflow-hidden ring-1 ring-border">
+              <video
+                src="/tutorials/how-to-install.mp4"
+                controls
+                preload="metadata"
+                playsInline
+                className="w-full h-full object-contain bg-background"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Tutorials */}
       <section className="py-20 px-6 border-t border-border">
         <div className="max-w-6xl mx-auto">
