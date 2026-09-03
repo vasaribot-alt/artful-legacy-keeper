@@ -200,46 +200,57 @@ const CardLayout: React.FC<{
       <PaperGrain />
       <AbsoluteFill
         style={{
-          padding: "220px 64px 0",
+          padding: "380px 64px 0",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           textAlign: "center",
         }}
       >
-        <Eyebrow text="Global Artist Registry Foundation" delay={2} />
-        <div style={{ marginTop: 28 }}>
-          <BigWords lines={lines} delay={8} size={size} italicIndex={italicIndex} />
-        </div>
         <div
           style={{
-            marginTop: 54,
-            padding: "22px 44px",
-            background: theme.ink,
-            color: theme.bg,
-            borderRadius: 14,
-            fontFamily: SANS,
-            fontSize: 24,
-            fontWeight: 700,
-            letterSpacing: "0.02em",
-            opacity: s,
-            transform: `translateY(${(1 - s) * 30}px) scale(${0.92 + s * 0.08})`,
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            transform: "scale(0.72)",
+            transformOrigin: "top center",
           }}
         >
-          globalartistregistry.org
-        </div>
-        <div
-          style={{
-            marginTop: 34,
-            fontFamily: SANS,
-            fontSize: 16,
-            color: theme.muted,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            opacity: foot,
-          }}
-        >
-          Non-profit · KvK 42024490
+          <Eyebrow text="Global Artist Registry Foundation" delay={2} />
+          <div style={{ marginTop: 28 }}>
+            <BigWords lines={lines} delay={8} size={size} italicIndex={italicIndex} />
+          </div>
+          <div
+            style={{
+              marginTop: 54,
+              padding: "22px 44px",
+              background: theme.ink,
+              color: theme.bg,
+              borderRadius: 14,
+              fontFamily: SANS,
+              fontSize: 24,
+              fontWeight: 700,
+              letterSpacing: "0.02em",
+              opacity: s,
+              transform: `translateY(${(1 - s) * 30}px) scale(${0.92 + s * 0.08})`,
+            }}
+          >
+            globalartistregistry.org
+          </div>
+          <div
+            style={{
+              marginTop: 34,
+              fontFamily: SANS,
+              fontSize: 16,
+              color: theme.muted,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              opacity: foot,
+            }}
+          >
+            Non-profit · KvK 42024490
+          </div>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
