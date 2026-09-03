@@ -19,7 +19,7 @@ export const RemotionRoot = () => (
     <Composition
       id="how-to-install"
       component={HowToInstall}
-      durationInFrames={1160}
+      durationInFrames={1280}
       fps={30}
       width={1080}
       height={1920}

@@ -186,17 +186,21 @@ const GarfMark: React.FC<{ size?: number }> = ({ size = 26 }) => (
 
 /* --------------------------------- scene 1 -------------------------------- */
 
-const SceneTitle: React.FC = () => {
+const CardLayout: React.FC<{
+  lines: string[];
+  italicIndex?: number;
+  size?: number;
+}> = ({ lines, italicIndex, size = 74 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const s = spring({ frame: frame - 8, fps, config: { damping: 20, stiffness: 80 } });
-  const sub = interpolate(frame, [50, 80], [0, 1], { extrapolateRight: "clamp" });
+  const s = spring({ frame: frame - 20, fps, config: { damping: 16, stiffness: 140 } });
+  const foot = interpolate(frame, [40, 66], [0, 1], { extrapolateRight: "clamp" });
   return (
     <AbsoluteFill>
       <PaperGrain />
       <AbsoluteFill
         style={{
-          padding: "220px 64px 0",
+          padding: "300px 64px 0",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -205,42 +209,51 @@ const SceneTitle: React.FC = () => {
       >
         <Eyebrow text="Global Artist Registry Foundation" delay={2} />
         <div style={{ marginTop: 28 }}>
-          <BigWords lines={["Keep the Registry", "one tap away."]} delay={8} size={78} italicIndex={1} />
+          <BigWords lines={lines} delay={8} size={size} italicIndex={italicIndex} />
         </div>
         <div
           style={{
-            marginTop: 46,
-            fontFamily: SANS,
-            fontSize: 26,
-            lineHeight: 1.45,
-            color: theme.inkSoft,
-            maxWidth: 760,
-            opacity: sub,
-          }}
-        >
-          Add GARF to your home screen on iPhone and Android. Sign in once, then open it
-          like an app.
-        </div>
-        <div
-          style={{
-            marginTop: 44,
-            padding: "20px 40px",
+            marginTop: 54,
+            padding: "22px 44px",
             background: theme.ink,
             color: theme.bg,
             borderRadius: 14,
             fontFamily: SANS,
             fontSize: 24,
             fontWeight: 700,
+            letterSpacing: "0.02em",
             opacity: s,
-            transform: `translateY(${(1 - s) * 26}px)`,
+            transform: `translateY(${(1 - s) * 30}px) scale(${0.92 + s * 0.08})`,
           }}
         >
           globalartistregistry.org
+        </div>
+        <div
+          style={{
+            marginTop: 34,
+            fontFamily: SANS,
+            fontSize: 16,
+            color: theme.muted,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            opacity: foot,
+          }}
+        >
+          Non-profit · KvK 42024490
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
   );
 };
+
+const SceneTitle: React.FC = () => (
+  <CardLayout lines={["Keep the Registry", "one tap", "away."]} italicIndex={2} />
+);
+
+const SceneEnd: React.FC = () => (
+  <CardLayout lines={["Your archive,", "always in", "your pocket."]} italicIndex={2} />
+);
+
 
 /* --------------------------------- scene 2 -------------------------------- */
 
@@ -982,6 +995,9 @@ export const HowToInstall: React.FC = () => (
       </Series.Sequence>
       <Series.Sequence durationInFrames={150}>
         <SceneHomeScreen />
+      </Series.Sequence>
+      <Series.Sequence durationInFrames={120}>
+        <SceneEnd />
       </Series.Sequence>
     </Series>
     </ReelSafe>
