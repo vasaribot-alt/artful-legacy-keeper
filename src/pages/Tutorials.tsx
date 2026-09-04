@@ -1,4 +1,5 @@
 import GarfLogo from "@/components/GarfLogo";
+import installVideo from "@/assets/how-to-install.mp4.asset.json";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { InstagramLink } from "@/components/SocialLinks";
@@ -100,7 +101,7 @@ const Tutorials = () => {
           <div className="mx-auto w-full max-w-[280px]">
             <div className="aspect-[9/16] bg-secondary rounded-md overflow-hidden ring-1 ring-border">
               <video
-                src="/tutorials/how-to-install.mp4"
+                src={installVideo.url}
                 controls
                 preload="metadata"
                 playsInline
