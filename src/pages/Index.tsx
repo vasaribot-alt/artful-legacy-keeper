@@ -7,13 +7,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { InstagramLink } from "@/components/SocialLinks";
 import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
 
-const tutorials = [
-  { src: "/tutorials/how-to-profile-mac-safe.mp4", title: "Build your profile." },
-  { src: "/tutorials/how-to-bulk-mac-safe.mp4", title: "Import your entire catalogue." },
-  { src: "/tutorials/how-to-capture-mac-safe.mp4", title: "Capture, from the studio." },
-  { src: "/tutorials/how-to-exhibition-mac-safe.mp4", title: "Document the exhibition." },
-  { src: "/tutorials/how-to-catalogues-mac-safe.mp4", title: "Build the publication record." },
-];
 
 const features = [
   {
@@ -124,6 +117,13 @@ const Index = () => {
             <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               FAQ
             </Link>
+            <Link to="/tutorials" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Tutorials
+            </Link>
+            <Link to="/news" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              News
+            </Link>
+
 
             <a
               href="https://catalogueraisonnefoundation.org"
@@ -284,23 +284,27 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Add to home screen */}
+      {/* Tutorials */}
       <section className="py-20 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3 inline-flex items-center gap-2">
-              <PlayCircle className="w-4 h-4" /> Use it like an app
+              <PlayCircle className="w-4 h-4" /> Video tutorials
             </p>
-            <h2 className="text-3xl mb-4">Add GARF to your home screen</h2>
+            <h2 className="text-3xl mb-4">See how it works</h2>
             <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-              On a phone the top menu slides sideways, so every section stays within reach.
-              Sign in once, then add the Registry to your home screen and it opens full screen,
-              without the browser bars.
+              Short walkthroughs covering registration, your profile, importing a whole
+              catalogue, capturing works in the studio, and documenting exhibitions.
             </p>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              iPhone: in Safari, tap the share icon and choose Add to Home Screen.
-              Android: in Chrome, open the three dot menu and choose Add to Home screen.
+            <p className="text-muted-foreground text-sm leading-relaxed mb-8">
+              There is also a short film showing how to add the Registry to your phone
+              home screen so it opens like an app.
             </p>
+            <Link to="/tutorials">
+              <Button variant="outline" size="lg" className="gap-2">
+                Watch the tutorials <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
           <div className="mx-auto w-full max-w-[280px]">
             <div className="aspect-[9/16] bg-secondary rounded-md overflow-hidden ring-1 ring-border">
@@ -316,36 +320,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Tutorials */}
-      <section className="py-20 px-6 border-t border-border">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3 inline-flex items-center gap-2">
-              <PlayCircle className="w-4 h-4" /> Tutorials
-            </p>
-            <h2 className="text-3xl mb-3">See how it works</h2>
-            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
-              Short walkthroughs covering the core workflows in the Registry.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tutorials.map((t) => (
-              <div key={t.src} className="group">
-                <div className="aspect-video bg-secondary rounded-md overflow-hidden mb-4 ring-1 ring-border">
-                  <video
-                    src={t.src}
-                    controls
-                    preload="metadata"
-                    playsInline
-                    className="w-full h-full object-contain bg-background"
-                  />
-                </div>
-                <h4 className="text-base font-medium">{t.title}</h4>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Registrar Directory Callout */}
       <section className="py-20 px-6 border-t border-border">
