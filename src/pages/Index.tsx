@@ -1,4 +1,5 @@
 import GarfLogo from "@/components/GarfLogo";
+import installVideo from "@/assets/how-to-install.mp4.asset.json";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
