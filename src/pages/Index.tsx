@@ -394,9 +394,9 @@ const Index = () => {
               aria-label="Visit IAA/USA"
             >
               <img
-                src="/iaa-usa-logo.webp"
+                src="/iaa-usa-logo.png"
                 alt="IAA/USA, International Association of Art, United States National Committee"
-                className="h-20 w-auto max-w-[220px] object-contain mx-auto"
+                className="h-14 w-auto max-w-[320px] object-contain mx-auto"
                 loading="lazy"
               />
             </a>
