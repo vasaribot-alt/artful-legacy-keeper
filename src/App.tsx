@@ -97,6 +97,8 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/tutorials" element={<Tutorials />} />
+          <Route path="/news" element={<News />} />
           <Route path="/r/:code" element={<TrackedLinkRedirect />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
 
