@@ -124,6 +124,13 @@ const Index = () => {
             <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               FAQ
             </Link>
+            <Link to="/tutorials" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Tutorials
+            </Link>
+            <Link to="/news" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              News
+            </Link>
+
 
             <a
               href="https://catalogueraisonnefoundation.org"
