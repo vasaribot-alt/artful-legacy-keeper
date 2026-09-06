@@ -3,3 +3,4 @@
 - [AI Research Workspace](mem://features/ai-research-workspace) — /research staging area where AI-found profile, CV, artwork and image data is reviewed before entering the archive
 - [Invitation Applications](mem://features/invitation-applications) — Public /apply-for-invitation form plus Foundation review that issues invite codes by email
 - [Creative Europe Consortium](mem://features/creative-europe-consortium) — Nordic-Baltic geography for the Creative Europe medium-scale application
+- [Creative Europe Institutions](mem://features/creative-europe-institutions) — Museum/university candidates per country for the EU consortium
