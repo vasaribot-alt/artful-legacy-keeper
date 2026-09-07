@@ -10,6 +10,8 @@ interface SharedArtwork {
   height: number | null;
   width: number | null;
   depth: number | null;
+  price: number | null;
+  currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
 }
@@ -17,6 +19,8 @@ interface SharedArtwork {
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import { formatPrice } from "@/lib/formatPrice";
+
 
 const PortfolioShared = () => {
   const { token } = useParams<{ token: string }>();
