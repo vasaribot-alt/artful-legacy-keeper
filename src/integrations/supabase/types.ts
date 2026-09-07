@@ -3609,6 +3609,7 @@ export type Database = {
           display_order: number
           height: number
           image_path: string
+          image_paths: string[]
           medium: string
           portfolio_id: string
           portfolio_name: string
