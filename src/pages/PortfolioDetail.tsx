@@ -96,25 +96,22 @@ const PortfolioDetail = () => {
             .from("artwork_images")
             .select("storage_path")
             .eq("artwork_id", pa.artwork_id)
-            .order("display_order")
-            .limit(1);
-          let imageUrl: string | null = null;
-          if (imgs && imgs.length > 0) {
-            const { data: urlData } = supabase.storage
-              .from("artwork-images")
-              .getPublicUrl(imgs[0].storage_path);
-            imageUrl = urlData.publicUrl;
-          }
+            .order("display_order");
+          const imageUrls = (imgs || []).map(
+            (im) => supabase.storage.from("artwork-images").getPublicUrl(im.storage_path).data.publicUrl
+          );
           return {
             id: pa.id,
             artwork_id: pa.artwork_id,
             title: art?.title || "Untitled",
             year: art?.year || null,
             medium: art?.medium || null,
-            imageUrl,
+            imageUrl: imageUrls[0] ?? null,
+            imageUrls,
           };
         })
       );
+
       setArtworks(enriched);
     } else {
       setArtworks([]);
