@@ -11,7 +11,9 @@ interface SharedArtwork {
   width: number | null;
   depth: number | null;
   imageUrl: string | null;
+  imageUrls: string[];
 }
+
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { ImageLightbox } from "@/components/ImageLightbox";
