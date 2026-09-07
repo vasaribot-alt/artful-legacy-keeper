@@ -14,10 +14,12 @@ interface SharedArtwork {
 }
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 const PortfolioShared = () => {
   const { token } = useParams<{ token: string }>();
   const { formatDims } = useUnitPreference();
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [portfolioName, setPortfolioName] = useState("");
   const [artworks, setArtworks] = useState<SharedArtwork[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,7 +116,16 @@ const PortfolioShared = () => {
               <div key={art.id}>
                 <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
                   {art.imageUrl ? (
-                    <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" loading="lazy" />
+                    <img
+                      src={art.imageUrl}
+                      alt={art.title}
+                      className="w-full h-full object-cover cursor-zoom-in"
+                      loading="lazy"
+                      onClick={() => {
+                        const list = artworks.filter((a) => a.imageUrl);
+                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
+                      }}
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
                   )}
@@ -135,6 +146,20 @@ const PortfolioShared = () => {
           </div>
         )}
       </div>
+
+      {lightboxIndex !== null && (() => {
+        const list = artworks.filter((a) => a.imageUrl);
+        const current = list[lightboxIndex];
+        return (
+          <ImageLightbox
+            images={list.map((a) => a.imageUrl!)}
+            index={lightboxIndex}
+            caption={current ? [current.title, current.year, current.medium].filter(Boolean).join(", ") : undefined}
+            onIndexChange={setLightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+          />
+        );
+      })()}
     </div>
   );
 };

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil, Download } from "lucide-react";
+import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil, Download, Expand } from "lucide-react";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
@@ -38,6 +39,7 @@ const PortfolioDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [portfolioName, setPortfolioName] = useState("");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [portfolioRole, setPortfolioRole] = useState<string>("artist");
   const [shareToken, setShareToken] = useState("");
   const [artworks, setArtworks] = useState<PortfolioArtwork[]>([]);
@@ -287,11 +289,25 @@ const PortfolioDetail = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {artworks.map((art) => (
               <div key={art.id} className="group relative">
-                <div className="aspect-square bg-secondary rounded-sm overflow-hidden">
+                <div className="aspect-square bg-secondary rounded-sm overflow-hidden relative">
                   {art.imageUrl ? (
-                    <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" loading="lazy" />
+                    <img
+                      src={art.imageUrl}
+                      alt={art.title}
+                      className="w-full h-full object-cover cursor-zoom-in"
+                      loading="lazy"
+                      onClick={() => {
+                        const list = artworks.filter((a) => a.imageUrl);
+                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
+                      }}
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
+                  )}
+                  {art.imageUrl && (
+                    <span className="absolute bottom-1 left-1 p-1 rounded-sm bg-background/85 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <Expand className="w-3 h-3" />
+                    </span>
                   )}
                 </div>
                 <h3 className="text-xs font-medium italic mt-1.5 truncate">{art.title}</h3>
@@ -461,6 +477,20 @@ const PortfolioDetail = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {lightboxIndex !== null && (() => {
+        const list = artworks.filter((a) => a.imageUrl);
+        const current = list[lightboxIndex];
+        return (
+          <ImageLightbox
+            images={list.map((a) => a.imageUrl!)}
+            index={lightboxIndex}
+            caption={current ? [current.title, current.year].filter(Boolean).join(", ") : undefined}
+            onIndexChange={setLightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+          />
+        );
+      })()}
     </AppLayout>
   );
 };

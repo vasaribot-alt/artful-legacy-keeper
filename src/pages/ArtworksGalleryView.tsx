@@ -17,6 +17,8 @@ interface ArtworkWithImage {
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
+import { ImageLightbox } from "@/components/ImageLightbox";
+import { Expand } from "lucide-react";
 
 const ArtworksGalleryView = () => {
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ const ArtworksGalleryView = () => {
   const [loading, setLoading] = useState(true);
   useScrollRestoration("artworks-gallery", !loading);
   const [artworks, setArtworks] = useState<ArtworkWithImage[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -90,7 +93,7 @@ const ArtworksGalleryView = () => {
                 className="group cursor-pointer"
                 onClick={() => navigate(`/artwork/${art.id}/view`)}
               >
-                <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
+                <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3 relative">
                   {art.imageUrl ? (
                     <img
                       src={art.imageUrl}
@@ -102,6 +105,21 @@ const ArtworksGalleryView = () => {
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                       No image
                     </div>
+                  )}
+                  {art.imageUrl && (
+                    <button
+                      type="button"
+                      aria-label="View full image"
+                      title="View full image"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const list = artworks.filter((a) => a.imageUrl);
+                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
+                      }}
+                      className="absolute top-2 right-2 p-1.5 rounded-sm bg-background/85 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Expand className="w-3.5 h-3.5" />
+                    </button>
                   )}
                 </div>
                 <h3 className="text-sm font-medium italic">{art.title}</h3>
@@ -120,6 +138,20 @@ const ArtworksGalleryView = () => {
           </div>
         )}
       </div>
+
+      {lightboxIndex !== null && (() => {
+        const list = artworks.filter((a) => a.imageUrl);
+        const current = list[lightboxIndex];
+        return (
+          <ImageLightbox
+            images={list.map((a) => a.imageUrl!)}
+            index={lightboxIndex}
+            caption={current ? [current.title, current.year, current.medium].filter(Boolean).join(", ") : undefined}
+            onIndexChange={setLightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+          />
+        );
+      })()}
     </ViewLayout>
   );
 };
