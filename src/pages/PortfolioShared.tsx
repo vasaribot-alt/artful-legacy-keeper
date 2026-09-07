@@ -168,6 +168,12 @@ const PortfolioShared = () => {
                     {formatDims(art.height, art.width, art.depth)}
                   </p>
                 )}
+                {formatPrice(art.price, art.currency) && (
+                  <p className="text-sm mt-1.5 tabular-nums">
+                    {formatPrice(art.price, art.currency)}
+                  </p>
+                )}
+
               </div>
             ))}
           </div>
