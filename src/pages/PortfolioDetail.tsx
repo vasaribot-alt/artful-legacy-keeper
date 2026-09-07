@@ -488,19 +488,16 @@ const PortfolioDetail = () => {
         </DialogContent>
       </Dialog>
 
-      {lightboxIndex !== null && (() => {
-        const list = artworks.filter((a) => a.imageUrl);
-        const current = list[lightboxIndex];
-        return (
-          <ImageLightbox
-            images={list.map((a) => a.imageUrl!)}
-            index={lightboxIndex}
-            caption={current ? [current.title, current.year].filter(Boolean).join(", ") : undefined}
-            onIndexChange={setLightboxIndex}
-            onClose={() => setLightboxIndex(null)}
-          />
-        );
-      })()}
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          index={lightbox.index}
+          caption={lightbox.caption}
+          onIndexChange={(i) => setLightbox((prev) => (prev ? { ...prev, index: i } : prev))}
+          onClose={() => setLightbox(null)}
+        />
+      )}
+
     </AppLayout>
   );
 };
