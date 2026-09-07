@@ -69,6 +69,8 @@ const PortfolioShared = () => {
       display_order: number;
       image_path: string | null;
       image_paths: string[] | null;
+      price: number | null;
+      currency: string | null;
     }>;
 
     setPortfolioName(rows[0].portfolio_name);
@@ -91,6 +93,8 @@ const PortfolioShared = () => {
         height: r.height,
         width: r.width,
         depth: r.depth,
+        price: r.price ?? null,
+        currency: r.currency ?? null,
         imageUrl: imageUrls[0] ?? null,
         imageUrls,
       };
@@ -98,6 +102,7 @@ const PortfolioShared = () => {
 
 
     setArtworks(enriched);
+
     setLoading(false);
   };
 
