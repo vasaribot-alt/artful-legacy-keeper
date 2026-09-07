@@ -11,7 +11,9 @@ interface SharedArtwork {
   width: number | null;
   depth: number | null;
   imageUrl: string | null;
+  imageUrls: string[];
 }
+
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { ImageLightbox } from "@/components/ImageLightbox";
@@ -19,8 +21,9 @@ import { ImageLightbox } from "@/components/ImageLightbox";
 const PortfolioShared = () => {
   const { token } = useParams<{ token: string }>();
   const { formatDims } = useUnitPreference();
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number; caption?: string } | null>(null);
   const [portfolioName, setPortfolioName] = useState("");
+
   const [artworks, setArtworks] = useState<SharedArtwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -61,18 +64,21 @@ const PortfolioShared = () => {
       depth: number | null;
       display_order: number;
       image_path: string | null;
+      image_paths: string[] | null;
     }>;
 
     setPortfolioName(rows[0].portfolio_name);
 
+    const toUrl = (path: string) =>
+      supabase.storage.from("artwork-images").getPublicUrl(path).data.publicUrl;
+
     const enriched: SharedArtwork[] = rows.map((r) => {
-      let imageUrl: string | null = null;
-      if (r.image_path) {
-        const { data: urlData } = supabase.storage
-          .from("artwork-images")
-          .getPublicUrl(r.image_path);
-        imageUrl = urlData.publicUrl;
-      }
+      const paths = r.image_paths && r.image_paths.length > 0
+        ? r.image_paths
+        : r.image_path
+          ? [r.image_path]
+          : [];
+      const imageUrls = paths.map(toUrl);
       return {
         id: r.artwork_id,
         title: r.title || "Untitled",
@@ -81,9 +87,11 @@ const PortfolioShared = () => {
         height: r.height,
         width: r.width,
         depth: r.depth,
-        imageUrl,
+        imageUrl: imageUrls[0] ?? null,
+        imageUrls,
       };
     });
+
 
     setArtworks(enriched);
     setLoading(false);
@@ -114,18 +122,28 @@ const PortfolioShared = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {artworks.map((art) => (
               <div key={art.id}>
-                <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
+                <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3 relative">
                   {art.imageUrl ? (
-                    <img
-                      src={art.imageUrl}
-                      alt={art.title}
-                      className="w-full h-full object-cover cursor-zoom-in"
-                      loading="lazy"
-                      onClick={() => {
-                        const list = artworks.filter((a) => a.imageUrl);
-                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
-                      }}
-                    />
+                    <>
+                      <img
+                        src={art.imageUrl}
+                        alt={art.title}
+                        className="w-full h-full object-cover cursor-zoom-in"
+                        loading="lazy"
+                        onClick={() =>
+                          setLightbox({
+                            images: art.imageUrls,
+                            index: 0,
+                            caption: [art.title, art.year, art.medium].filter(Boolean).join(", "),
+                          })
+                        }
+                      />
+                      {art.imageUrls.length > 1 && (
+                        <span className="absolute bottom-2 right-2 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85 text-foreground">
+                          {art.imageUrls.length} photos
+                        </span>
+                      )}
+                    </>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
                   )}
@@ -147,19 +165,16 @@ const PortfolioShared = () => {
         )}
       </div>
 
-      {lightboxIndex !== null && (() => {
-        const list = artworks.filter((a) => a.imageUrl);
-        const current = list[lightboxIndex];
-        return (
-          <ImageLightbox
-            images={list.map((a) => a.imageUrl!)}
-            index={lightboxIndex}
-            caption={current ? [current.title, current.year, current.medium].filter(Boolean).join(", ") : undefined}
-            onIndexChange={setLightboxIndex}
-            onClose={() => setLightboxIndex(null)}
-          />
-        );
-      })()}
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          index={lightbox.index}
+          caption={lightbox.caption}
+          onIndexChange={(i) => setLightbox((prev) => (prev ? { ...prev, index: i } : prev))}
+          onClose={() => setLightbox(null)}
+        />
+      )}
+
     </div>
   );
 };

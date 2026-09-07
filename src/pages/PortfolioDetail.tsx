@@ -24,7 +24,9 @@ interface PortfolioArtwork {
   year: number | null;
   medium: string | null;
   imageUrl: string | null;
+  imageUrls: string[];
 }
+
 
 interface AvailableArtwork {
   id: string;
@@ -39,8 +41,10 @@ const PortfolioDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [portfolioName, setPortfolioName] = useState("");
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number; caption?: string } | null>(null);
   const [portfolioRole, setPortfolioRole] = useState<string>("artist");
+
   const [shareToken, setShareToken] = useState("");
   const [artworks, setArtworks] = useState<PortfolioArtwork[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,25 +96,22 @@ const PortfolioDetail = () => {
             .from("artwork_images")
             .select("storage_path")
             .eq("artwork_id", pa.artwork_id)
-            .order("display_order")
-            .limit(1);
-          let imageUrl: string | null = null;
-          if (imgs && imgs.length > 0) {
-            const { data: urlData } = supabase.storage
-              .from("artwork-images")
-              .getPublicUrl(imgs[0].storage_path);
-            imageUrl = urlData.publicUrl;
-          }
+            .order("display_order");
+          const imageUrls = (imgs || []).map(
+            (im) => supabase.storage.from("artwork-images").getPublicUrl(im.storage_path).data.publicUrl
+          );
           return {
             id: pa.id,
             artwork_id: pa.artwork_id,
             title: art?.title || "Untitled",
             year: art?.year || null,
             medium: art?.medium || null,
-            imageUrl,
+            imageUrl: imageUrls[0] ?? null,
+            imageUrls,
           };
         })
       );
+
       setArtworks(enriched);
     } else {
       setArtworks([]);
@@ -296,10 +297,13 @@ const PortfolioDetail = () => {
                       alt={art.title}
                       className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
-                      onClick={() => {
-                        const list = artworks.filter((a) => a.imageUrl);
-                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
-                      }}
+                      onClick={() =>
+                        setLightbox({
+                          images: art.imageUrls,
+                          index: 0,
+                          caption: [art.title, art.year].filter(Boolean).join(", "),
+                        })
+                      }
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
@@ -309,6 +313,12 @@ const PortfolioDetail = () => {
                       <Expand className="w-3 h-3" />
                     </span>
                   )}
+                  {art.imageUrls.length > 1 && (
+                    <span className="absolute bottom-1 right-1 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85">
+                      {art.imageUrls.length} photos
+                    </span>
+                  )}
+
                 </div>
                 <h3 className="text-xs font-medium italic mt-1.5 truncate">{art.title}</h3>
                 {art.year && <p className="text-xs text-muted-foreground">{art.year}</p>}
@@ -478,19 +488,16 @@ const PortfolioDetail = () => {
         </DialogContent>
       </Dialog>
 
-      {lightboxIndex !== null && (() => {
-        const list = artworks.filter((a) => a.imageUrl);
-        const current = list[lightboxIndex];
-        return (
-          <ImageLightbox
-            images={list.map((a) => a.imageUrl!)}
-            index={lightboxIndex}
-            caption={current ? [current.title, current.year].filter(Boolean).join(", ") : undefined}
-            onIndexChange={setLightboxIndex}
-            onClose={() => setLightboxIndex(null)}
-          />
-        );
-      })()}
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          index={lightbox.index}
+          caption={lightbox.caption}
+          onIndexChange={(i) => setLightbox((prev) => (prev ? { ...prev, index: i } : prev))}
+          onClose={() => setLightbox(null)}
+        />
+      )}
+
     </AppLayout>
   );
 };
