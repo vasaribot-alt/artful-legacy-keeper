@@ -64,18 +64,21 @@ const PortfolioShared = () => {
       depth: number | null;
       display_order: number;
       image_path: string | null;
+      image_paths: string[] | null;
     }>;
 
     setPortfolioName(rows[0].portfolio_name);
 
+    const toUrl = (path: string) =>
+      supabase.storage.from("artwork-images").getPublicUrl(path).data.publicUrl;
+
     const enriched: SharedArtwork[] = rows.map((r) => {
-      let imageUrl: string | null = null;
-      if (r.image_path) {
-        const { data: urlData } = supabase.storage
-          .from("artwork-images")
-          .getPublicUrl(r.image_path);
-        imageUrl = urlData.publicUrl;
-      }
+      const paths = r.image_paths && r.image_paths.length > 0
+        ? r.image_paths
+        : r.image_path
+          ? [r.image_path]
+          : [];
+      const imageUrls = paths.map(toUrl);
       return {
         id: r.artwork_id,
         title: r.title || "Untitled",
@@ -84,9 +87,11 @@ const PortfolioShared = () => {
         height: r.height,
         width: r.width,
         depth: r.depth,
-        imageUrl,
+        imageUrl: imageUrls[0] ?? null,
+        imageUrls,
       };
     });
+
 
     setArtworks(enriched);
     setLoading(false);
