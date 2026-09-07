@@ -21,8 +21,9 @@ import { ImageLightbox } from "@/components/ImageLightbox";
 const PortfolioShared = () => {
   const { token } = useParams<{ token: string }>();
   const { formatDims } = useUnitPreference();
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number; caption?: string } | null>(null);
   const [portfolioName, setPortfolioName] = useState("");
+
   const [artworks, setArtworks] = useState<SharedArtwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
