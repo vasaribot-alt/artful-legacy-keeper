@@ -127,6 +127,14 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
           </span>
         )}
       </div>
+      {lightboxOpen && displayUrl && (
+        <ImageLightbox
+          images={[displayUrl]}
+          index={0}
+          caption={[artwork.title, artwork.year].filter(Boolean).join(", ")}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 };
