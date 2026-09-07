@@ -1227,7 +1227,14 @@ With kind regards,
             </SelectContent>
           </Select>
           {tags.length > 0 && (
-            <Select value={tagFilter} onValueChange={setTagFilter}>
+            <Select
+              value={tagFilter}
+              onValueChange={(v) => {
+                setTagFilter(v);
+                // Picking a list should never be hidden by a leftover category filter
+                if (v !== "all") setCategoryFilter("all");
+              }}
+            >
               <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All lists (tags)</SelectItem>
@@ -1237,6 +1244,7 @@ With kind regards,
               </SelectContent>
             </Select>
           )}
+
         </div>
 
         {/* Batch mailing bar */}
