@@ -24,7 +24,9 @@ interface PortfolioArtwork {
   year: number | null;
   medium: string | null;
   imageUrl: string | null;
+  imageUrls: string[];
 }
+
 
 interface AvailableArtwork {
   id: string;
