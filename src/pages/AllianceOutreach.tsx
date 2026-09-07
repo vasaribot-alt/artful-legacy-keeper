@@ -1406,7 +1406,17 @@ With kind regards,
         {loading ? (
           <p className="text-muted-foreground text-sm">Loading…</p>
         ) : filtered.length === 0 ? (
-          <p className="text-muted-foreground text-sm">No outreach targets match the current filters.</p>
+          <div className="text-muted-foreground text-sm space-y-2">
+            <p>No outreach targets match the current filters.</p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => { setCategoryFilter("all"); setStatusFilter("all"); setTagFilter("all"); setQ(""); }}
+            >
+              Clear all filters
+            </Button>
+          </div>
+
         ) : (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
