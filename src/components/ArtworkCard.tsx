@@ -4,6 +4,7 @@ import { Copy, Expand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 import { VerificationBadge } from "@/components/VerificationBadge";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 interface Artwork {
   id: string;
@@ -38,7 +39,9 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
   const { formatDims } = useUnitPreference();
   const dims = formatDims(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [allImageUrls, setAllImageUrls] = useState<string[]>([]);
   const [imageCount, setImageCount] = useState(0);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchFirstImage = async () => {
@@ -51,10 +54,11 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
 
       if (data && data.length > 0) {
         setImageCount(data.length);
-        const { data: urlData } = supabase.storage
-          .from("artwork-images")
-          .getPublicUrl(data[0].storage_path);
-        if (urlData) setThumbnailUrl(urlData.publicUrl);
+        const urls = data.map(
+          (row) => supabase.storage.from("artwork-images").getPublicUrl(row.storage_path).data.publicUrl
+        );
+        setAllImageUrls(urls);
+        if (urls[0]) setThumbnailUrl(urls[0]);
       }
     };
     fetchFirstImage();
@@ -98,6 +102,20 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
             No image
           </div>
+        )}
+        {displayUrl && (
+          <button
+            type="button"
+            aria-label="View full image"
+            title="View full image"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex(0);
+            }}
+            className="absolute top-2 left-2 z-20 p-1.5 rounded-sm bg-background/85 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Expand className="w-3.5 h-3.5" />
+          </button>
         )}
         {imageCount > 1 && (
           <span className="absolute bottom-2 right-2 bg-background/80 text-foreground text-[10px] px-1.5 py-0.5 rounded-sm font-mono">
@@ -149,5 +167,14 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
         </span>
       )}
     </div>
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          images={allImageUrls.length > 0 ? allImageUrls : displayUrl ? [displayUrl] : []}
+          index={lightboxIndex}
+          caption={[artwork.title, artwork.year].filter(Boolean).join(", ")}
+          onIndexChange={setLightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
   );
 };
