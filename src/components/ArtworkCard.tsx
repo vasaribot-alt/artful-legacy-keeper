@@ -166,7 +166,6 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
           Sold — {artwork.buyer_name || "Unknown buyer"}
         </span>
       )}
-    </div>
       {lightboxIndex !== null && (
         <ImageLightbox
           images={allImageUrls.length > 0 ? allImageUrls : displayUrl ? [displayUrl] : []}
@@ -176,5 +175,6 @@ export const ArtworkCard = ({ artwork, onDuplicate }: { artwork: Artwork; onDupl
           onClose={() => setLightboxIndex(null)}
         />
       )}
+    </div>
   );
 };
