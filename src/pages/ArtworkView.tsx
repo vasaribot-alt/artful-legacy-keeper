@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Pencil, ArrowLeft, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 interface ArtworkImage {
   id: string;
@@ -24,6 +25,7 @@ const ArtworkView = () => {
   const [artwork, setArtwork] = useState<any>(null);
   const [images, setImages] = useState<ArtworkImage[]>([]);
   const [activeImage, setActiveImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [exhibitions, setExhibitions] = useState<any[]>([]);
   const [catalogues, setCatalogues] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
@@ -214,7 +216,8 @@ const ArtworkView = () => {
                   <img
                     src={images[activeImage]?.publicUrl}
                     alt={artwork.title}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain cursor-zoom-in"
+                    onClick={() => setLightboxOpen(true)}
                   />
                   {hasMultipleImages && (
                     <>
@@ -432,6 +435,16 @@ const ArtworkView = () => {
           </div>
         </div>
       </div>
+
+      {lightboxOpen && images.length > 0 && (
+        <ImageLightbox
+          images={images.map((img) => img.publicUrl)}
+          index={activeImage}
+          caption={[artwork.title, artwork.year].filter(Boolean).join(", ")}
+          onIndexChange={setActiveImage}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
     </AppLayout>
   );
 };
