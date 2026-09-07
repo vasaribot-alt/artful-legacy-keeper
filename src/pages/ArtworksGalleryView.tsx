@@ -13,6 +13,7 @@ interface ArtworkWithImage {
   width: number | null;
   depth: number | null;
   imageUrl: string | null;
+  imageUrls: string[];
 }
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
@@ -26,7 +27,7 @@ const ArtworksGalleryView = () => {
   const [loading, setLoading] = useState(true);
   useScrollRestoration("artworks-gallery", !loading);
   const [artworks, setArtworks] = useState<ArtworkWithImage[]>([]);
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [lightbox, setLightbox] = useState<{ artworkId: string; index: number } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -41,24 +42,19 @@ const ArtworksGalleryView = () => {
 
       if (!data) { setLoading(false); return; }
 
-      // Fetch first image for each artwork
+      // Fetch all images for each artwork so a series can be viewed in full
       const withImages: ArtworkWithImage[] = await Promise.all(
         data.map(async (art) => {
           const { data: imgs } = await supabase
             .from("artwork_images")
             .select("storage_path")
             .eq("artwork_id", art.id)
-            .order("display_order")
-            .limit(1);
+            .order("display_order");
 
-          let imageUrl: string | null = null;
-          if (imgs && imgs.length > 0) {
-            const { data: urlData } = supabase.storage
-              .from("artwork-images")
-              .getPublicUrl(imgs[0].storage_path);
-            imageUrl = urlData.publicUrl;
-          }
-          return { ...art, imageUrl };
+          const imageUrls = (imgs || []).map(
+            (img) => supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl
+          );
+          return { ...art, imageUrl: imageUrls[0] ?? null, imageUrls };
         })
       );
 
@@ -110,16 +106,20 @@ const ArtworksGalleryView = () => {
                     <button
                       type="button"
                       aria-label="View full image"
-                      title="View full image"
+                      title={art.imageUrls.length > 1 ? "View all photos" : "View full image"}
                       onClick={(e) => {
                         e.stopPropagation();
-                        const list = artworks.filter((a) => a.imageUrl);
-                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
+                        setLightbox({ artworkId: art.id, index: 0 });
                       }}
                       className="absolute top-2 right-2 p-1.5 rounded-sm bg-background/85 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <Expand className="w-3.5 h-3.5" />
                     </button>
+                  )}
+                  {art.imageUrls.length > 1 && (
+                    <span className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded-sm bg-background/85 text-[10px] text-muted-foreground">
+                      {art.imageUrls.length} photos
+                    </span>
                   )}
                 </div>
                 <h3 className="text-sm font-medium italic">{art.title}</h3>
@@ -139,16 +139,16 @@ const ArtworksGalleryView = () => {
         )}
       </div>
 
-      {lightboxIndex !== null && (() => {
-        const list = artworks.filter((a) => a.imageUrl);
-        const current = list[lightboxIndex];
+      {lightbox && (() => {
+        const current = artworks.find((a) => a.id === lightbox.artworkId);
+        if (!current || current.imageUrls.length === 0) return null;
         return (
           <ImageLightbox
-            images={list.map((a) => a.imageUrl!)}
-            index={lightboxIndex}
-            caption={current ? [current.title, current.year, current.medium].filter(Boolean).join(", ") : undefined}
-            onIndexChange={setLightboxIndex}
-            onClose={() => setLightboxIndex(null)}
+            images={current.imageUrls}
+            index={Math.min(lightbox.index, current.imageUrls.length - 1)}
+            caption={[current.title, current.year, current.medium].filter(Boolean).join(", ")}
+            onIndexChange={(i) => setLightbox({ artworkId: current.id, index: i })}
+            onClose={() => setLightbox(null)}
           />
         );
       })()}
