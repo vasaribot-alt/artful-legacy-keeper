@@ -14,10 +14,12 @@ interface SharedArtwork {
 }
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 const PortfolioShared = () => {
   const { token } = useParams<{ token: string }>();
   const { formatDims } = useUnitPreference();
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [portfolioName, setPortfolioName] = useState("");
   const [artworks, setArtworks] = useState<SharedArtwork[]>([]);
   const [loading, setLoading] = useState(true);
