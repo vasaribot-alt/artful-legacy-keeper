@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Copy } from "lucide-react";
+import { Copy, Expand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ArtworkDuplicateData } from "@/components/AddArtworkDialog";
 import { VerificationBadge } from "@/components/VerificationBadge";
