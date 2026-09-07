@@ -116,7 +116,16 @@ const PortfolioShared = () => {
               <div key={art.id}>
                 <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-3">
                   {art.imageUrl ? (
-                    <img src={art.imageUrl} alt={art.title} className="w-full h-full object-cover" loading="lazy" />
+                    <img
+                      src={art.imageUrl}
+                      alt={art.title}
+                      className="w-full h-full object-cover cursor-zoom-in"
+                      loading="lazy"
+                      onClick={() => {
+                        const list = artworks.filter((a) => a.imageUrl);
+                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
+                      }}
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
                   )}
