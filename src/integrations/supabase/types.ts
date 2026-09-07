@@ -3605,6 +3605,7 @@ export type Database = {
         Args: { _token: string }
         Returns: {
           artwork_id: string
+          currency: string
           depth: number
           display_order: number
           height: number
@@ -3613,6 +3614,7 @@ export type Database = {
           medium: string
           portfolio_id: string
           portfolio_name: string
+          price: number
           title: string
           width: number
           year: number

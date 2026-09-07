@@ -10,6 +10,8 @@ interface SharedArtwork {
   height: number | null;
   width: number | null;
   depth: number | null;
+  price: number | null;
+  currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
 }
@@ -17,6 +19,8 @@ interface SharedArtwork {
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import { formatPrice } from "@/lib/formatPrice";
+
 
 const PortfolioShared = () => {
   const { token } = useParams<{ token: string }>();
@@ -65,6 +69,8 @@ const PortfolioShared = () => {
       display_order: number;
       image_path: string | null;
       image_paths: string[] | null;
+      price: number | null;
+      currency: string | null;
     }>;
 
     setPortfolioName(rows[0].portfolio_name);
@@ -87,6 +93,8 @@ const PortfolioShared = () => {
         height: r.height,
         width: r.width,
         depth: r.depth,
+        price: r.price ?? null,
+        currency: r.currency ?? null,
         imageUrl: imageUrls[0] ?? null,
         imageUrls,
       };
@@ -94,6 +102,7 @@ const PortfolioShared = () => {
 
 
     setArtworks(enriched);
+
     setLoading(false);
   };
 
@@ -159,6 +168,12 @@ const PortfolioShared = () => {
                     {formatDims(art.height, art.width, art.depth)}
                   </p>
                 )}
+                {formatPrice(art.price, art.currency) && (
+                  <p className="text-sm mt-1.5 tabular-nums">
+                    {formatPrice(art.price, art.currency)}
+                  </p>
+                )}
+
               </div>
             ))}
           </div>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { formatPrice } from "@/lib/formatPrice";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PortfolioArtwork {
@@ -23,6 +24,8 @@ interface PortfolioArtwork {
   title: string;
   year: number | null;
   medium: string | null;
+  price: number | null;
+  currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
 }
@@ -86,7 +89,7 @@ const PortfolioDetail = () => {
       const artworkIds = paData.map((pa) => pa.artwork_id);
       const { data: artData } = await supabase
         .from("artworks")
-        .select("id, title, year, medium")
+        .select("id, title, year, medium, price, currency")
         .in("id", artworkIds);
 
       const enriched: PortfolioArtwork[] = await Promise.all(
@@ -106,6 +109,8 @@ const PortfolioDetail = () => {
             title: art?.title || "Untitled",
             year: art?.year || null,
             medium: art?.medium || null,
+            price: art?.price ?? null,
+            currency: art?.currency ?? null,
             imageUrl: imageUrls[0] ?? null,
             imageUrls,
           };
@@ -322,6 +327,9 @@ const PortfolioDetail = () => {
                 </div>
                 <h3 className="text-xs font-medium italic mt-1.5 truncate">{art.title}</h3>
                 {art.year && <p className="text-xs text-muted-foreground">{art.year}</p>}
+                {formatPrice(art.price, art.currency) && (
+                  <p className="text-xs mt-0.5 tabular-nums">{formatPrice(art.price, art.currency)}</p>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"
