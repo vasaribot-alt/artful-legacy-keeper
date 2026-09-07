@@ -41,7 +41,7 @@ const PortfolioDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [portfolioName, setPortfolioName] = useState("");
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number; caption?: string } | null>(null);
   const [portfolioRole, setPortfolioRole] = useState<string>("artist");
 
