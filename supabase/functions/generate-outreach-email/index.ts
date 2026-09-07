@@ -32,7 +32,14 @@ After those bullets, include this paragraph essentially verbatim, then the list 
   foundations:
     "The recipient is an art foundation or artist estate foundation. Emphasise stewardship of legacy, catalogue raisonné support, and permanent archival preservation.",
   corporate_collections:
-    "The recipient is a corporate collection or association of corporate collections. Emphasise valuation reporting, insurance-grade documentation, location tracking, and provenance for collected works.",
+    `The recipient is a corporate collection or an association of corporate collections, in most cases a member of IACCCA (the International Association of Corporate Collections of Contemporary Art). Emphasise insurance-grade documentation, valuation reporting, location and loan tracking, condition history and provenance for the works they hold, and the fact that GARF is a non-commercial Dutch foundation with a 100-year preservation plan.
+Make two asks, in this order: (1) awareness, that they know GARF exists and that the artists in their collection can register free of charge for life, and (2) support, an invitation to back the work as a Supporting Collection, whether through a donation, an institutional endorsement, or a joint pilot documenting part of their collection to archival standard.
+If the recipient is a member of IACCCA, note in one short sentence that we are writing to the association's member collections because their curatorial standards match the archival standards GARF is building.
+Include a short, clearly marked section headed "What we are asking - and what we are not asking" with these points, kept close to this wording:
+- Your records stay where they are. Your collection management system and your files remain untouched and fully under your control.
+- We are not asking for your collection data, and nothing is published without your decision.
+- Registration is free for life for ID-verified artists, and each artist owns their own archive and can export it at any time.
+- GARF is not a marketplace, dealer, agent or sales platform. It takes no commission and does not broker works. It is an archive.`,
   registrars:
     "The recipient is a registrars' association. Emphasise professional workflow features — location tracking, inventory, insurance valuation exports, condition & provenance records — and GARF's neutral, non-commercial standing.",
   organisations:
@@ -206,7 +213,7 @@ ${templateInstruction}
 Instructions:
 - ${salutation}
 - ${langInstruction}
-- Length: ${category === "galleries" || category === "artist_organisations" ? "280–400 words in the body, so the clarity section fits in full" : "180–260 words in the body"}.
+- Length: ${category === "galleries" || category === "artist_organisations" || category === "corporate_collections" ? "280-400 words in the body, so the clarity section fits in full" : "180-260 words in the body"}.
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
 - Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) ${category === "artist_organisations" ? "a clear, low-commitment ask: forward the attached invitation to your members (a short reply is welcome but not required)" : "a clear, low-commitment ask (a short introductory call or written reply)"}, (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
