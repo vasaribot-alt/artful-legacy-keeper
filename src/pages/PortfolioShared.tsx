@@ -146,6 +146,20 @@ const PortfolioShared = () => {
           </div>
         )}
       </div>
+
+      {lightboxIndex !== null && (() => {
+        const list = artworks.filter((a) => a.imageUrl);
+        const current = list[lightboxIndex];
+        return (
+          <ImageLightbox
+            images={list.map((a) => a.imageUrl!)}
+            index={lightboxIndex}
+            caption={current ? [current.title, current.year, current.medium].filter(Boolean).join(", ") : undefined}
+            onIndexChange={setLightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+          />
+        );
+      })()}
     </div>
   );
 };
