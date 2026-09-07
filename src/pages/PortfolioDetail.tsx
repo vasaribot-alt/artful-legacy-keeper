@@ -297,10 +297,13 @@ const PortfolioDetail = () => {
                       alt={art.title}
                       className="w-full h-full object-cover cursor-zoom-in"
                       loading="lazy"
-                      onClick={() => {
-                        const list = artworks.filter((a) => a.imageUrl);
-                        setLightboxIndex(list.findIndex((a) => a.id === art.id));
-                      }}
+                      onClick={() =>
+                        setLightbox({
+                          images: art.imageUrls,
+                          index: 0,
+                          caption: [art.title, art.year].filter(Boolean).join(", "),
+                        })
+                      }
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
@@ -310,6 +313,12 @@ const PortfolioDetail = () => {
                       <Expand className="w-3 h-3" />
                     </span>
                   )}
+                  {art.imageUrls.length > 1 && (
+                    <span className="absolute bottom-1 right-1 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85">
+                      {art.imageUrls.length} photos
+                    </span>
+                  )}
+
                 </div>
                 <h3 className="text-xs font-medium italic mt-1.5 truncate">{art.title}</h3>
                 {art.year && <p className="text-xs text-muted-foreground">{art.year}</p>}
