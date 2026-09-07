@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { VerificationBadge } from "@/components/VerificationBadge";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 interface Artwork {
   id: string;
@@ -61,6 +62,7 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
   }, [artwork.id]);
 
   const displayUrl = thumbnailUrl || artwork.image_url;
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   return (
     <div
@@ -83,7 +85,14 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
       )}
       <HoverCard openDelay={200} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <div className="w-14 h-14 bg-secondary rounded-sm overflow-hidden shrink-0">
+          <div
+            className={`w-14 h-14 bg-secondary rounded-sm overflow-hidden shrink-0 ${displayUrl ? "cursor-zoom-in" : ""}`}
+            onClick={(e) => {
+              if (!displayUrl) return;
+              e.stopPropagation();
+              setLightboxOpen(true);
+            }}
+          >
             {displayUrl ? (
               <img src={displayUrl} alt={artwork.title} className="w-full h-full object-cover" loading="lazy" />
             ) : (
