@@ -40,29 +40,31 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
   const navigate = useNavigate();
   const { formatDims } = useUnitPreference();
   const dims = formatDims(artwork.height, artwork.width, artwork.depth) || artwork.dimensions;
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchFirstImage = async () => {
+    const fetchImages = async () => {
       const { data } = await supabase
         .from("artwork_images")
         .select("storage_path")
         .eq("artwork_id", artwork.id)
-        .order("display_order")
-        .limit(1);
+        .order("display_order");
 
       if (data && data.length > 0) {
-        const { data: urlData } = supabase.storage
-          .from("artwork-images")
-          .getPublicUrl(data[0].storage_path);
-        if (urlData) setThumbnailUrl(urlData.publicUrl);
+        setImageUrls(
+          data.map(
+            (img) => supabase.storage.from("artwork-images").getPublicUrl(img.storage_path).data.publicUrl
+          )
+        );
       }
     };
-    fetchFirstImage();
+    fetchImages();
   }, [artwork.id]);
 
-  const displayUrl = thumbnailUrl || artwork.image_url;
+  const displayUrl = imageUrls[0] || artwork.image_url;
+  const allImageUrls = imageUrls.length > 0 ? imageUrls : displayUrl ? [displayUrl] : [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   return (
     <div
@@ -90,6 +92,7 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
             onClick={(e) => {
               if (!displayUrl) return;
               e.stopPropagation();
+              setLightboxIndex(0);
               setLightboxOpen(true);
             }}
           >
@@ -115,6 +118,7 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
           {artwork.artwork_type && <span>{artwork.artwork_type}</span>}
           {artwork.year && <><span>·</span><span>{artwork.year}</span></>}
           {artwork.medium && <><span>·</span><span className="truncate max-w-[200px]">{artwork.medium}</span></>}
+          {allImageUrls.length > 1 && <><span>·</span><span>{allImageUrls.length} photos</span></>}
           {!artwork.is_unique && <><span>·</span><span className="uppercase tracking-wider text-[10px]">Edition</span></>}
         </div>
       </div>
@@ -129,9 +133,10 @@ export const ArtworkListItem = ({ artwork, selectable, selected, onSelectChange 
       </div>
       {lightboxOpen && displayUrl && (
         <ImageLightbox
-          images={[displayUrl]}
-          index={0}
+          images={allImageUrls}
+          index={Math.min(lightboxIndex, allImageUrls.length - 1)}
           caption={[artwork.title, artwork.year].filter(Boolean).join(", ")}
+          onIndexChange={setLightboxIndex}
           onClose={() => setLightboxOpen(false)}
         />
       )}
