@@ -1305,11 +1305,12 @@ With kind regards,
                     </Badge>
                   )}
                 </div>
-                {hiddenSelectedCount > 0 && (
+                {hiddenSelectedCount > 0 && shownSelectedCount > 0 && (
                   <Button size="sm" variant="outline" onClick={keepOnlyShownSelected}>
                     Keep only the {shownSelectedCount} shown
                   </Button>
                 )}
+
                 <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
                 <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
                   {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
