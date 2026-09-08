@@ -77,6 +77,7 @@ import FoundationRegistrars from "./pages/FoundationRegistrars";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import WhyGarfMatters from "./pages/WhyGarfMatters";
 import Tutorials from "./pages/Tutorials";
 import News from "./pages/News";
 
@@ -97,6 +98,7 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/why-garf-matters" element={<WhyGarfMatters />} />
           <Route path="/tutorials" element={<Tutorials />} />
           <Route path="/news" element={<News />} />
           <Route path="/r/:code" element={<TrackedLinkRedirect />} />
