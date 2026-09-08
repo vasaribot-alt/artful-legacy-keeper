@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ShieldCheck, Clock, CheckCircle, XCircle, Loader2, Plus, Trash2, Award } from "lucide-react";
+import { ShieldCheck, Clock, CheckCircle, XCircle, Loader2, Plus, Trash2, Award, Upload, FileText } from "lucide-react";
 
 interface Application {
   id: string;
