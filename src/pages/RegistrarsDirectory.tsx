@@ -108,11 +108,14 @@ const RegistrarsDirectory = () => {
       r.full_name?.toLowerCase().includes(q) ||
       r.specializations.some((s) => s.toLowerCase().includes(q)) ||
       r.languages.some((l) => l.toLowerCase().includes(q)) ||
+      (r.work_areas || []).some((w) => w.toLowerCase().includes(q)) ||
+      (r.cms_systems || []).some((c) => c.toLowerCase().includes(q)) ||
       r.geographic_coverage?.toLowerCase().includes(q) ||
       r.city?.toLowerCase().includes(q) ||
       r.country?.toLowerCase().includes(q)
     );
   });
+
 
   return (
     <div className="min-h-screen bg-background">
