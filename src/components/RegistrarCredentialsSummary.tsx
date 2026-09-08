@@ -16,7 +16,12 @@ interface RegProfile {
   is_verified: boolean;
   arcs_member: boolean;
   arcs_member_id: string | null;
+  nationality: string | null;
+  education: string | null;
+  work_areas: string[] | null;
+  cms_experience: any;
 }
+
 
 export function RegistrarCredentialsSummary() {
   const [profile, setProfile] = useState<RegProfile | null>(null);
