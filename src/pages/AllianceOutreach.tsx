@@ -1107,6 +1107,21 @@ With kind regards,
     return true;
   }), [targets, q, categoryFilter, statusFilter, tagFilter]);
 
+  // Ticks survive filter changes and page reloads, so the total selection can be
+  // larger than what is visible. Split it so the two numbers are never confused.
+  const shownSelectedCount = useMemo(
+    () => filtered.reduce((n, t) => n + (selectedIds.includes(t.id) ? 1 : 0), 0),
+    [filtered, selectedIds]
+  );
+  const hiddenSelectedCount = selectedIds.length - shownSelectedCount;
+
+  const keepOnlyShownSelected = () => {
+    const visible = new Set(filtered.map(t => t.id));
+    setSelectedIds(prev => prev.filter(id => visible.has(id)));
+    toast.success(`Selection narrowed to the ${shownSelectedCount} contact${shownSelectedCount === 1 ? "" : "s"} shown here.`);
+  };
+
+
   const tags = useMemo(
     () => Array.from(new Set(targets.map(t => t.tag).filter(Boolean) as string[])).sort(),
     [targets]
@@ -1282,7 +1297,20 @@ With kind regards,
             </Button>
             {selectedIds.length > 0 && (
               <>
-                <Badge variant="secondary" className="ml-auto">{selectedIds.length} selected</Badge>
+                <div className="ml-auto flex items-center gap-2">
+                  <Badge variant="secondary">{selectedIds.length} selected in total</Badge>
+                  {hiddenSelectedCount > 0 && (
+                    <Badge variant="outline" className="font-normal">
+                      {shownSelectedCount} ticked here · {hiddenSelectedCount} hidden by filters
+                    </Badge>
+                  )}
+                </div>
+                {hiddenSelectedCount > 0 && shownSelectedCount > 0 && (
+                  <Button size="sm" variant="outline" onClick={keepOnlyShownSelected}>
+                    Keep only the {shownSelectedCount} shown
+                  </Button>
+                )}
+
                 <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
                 <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
                   {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
@@ -1292,11 +1320,22 @@ With kind regards,
             )}
           </div>
 
+          {hiddenSelectedCount > 0 && (
+            <p className="text-[11px] text-muted-foreground">
+              Ticks are remembered even when a filter hides them, so “Generate {selectedIds.length} letters” would also write to the {hiddenSelectedCount} contact{hiddenSelectedCount === 1 ? "" : "s"} you ticked under other filters.{" "}
+              {shownSelectedCount > 0
+                ? `Use “Keep only the ${shownSelectedCount} shown” to narrow it to what you can see.`
+                : "None of your ticked contacts are visible under this filter. Press “Clear” to start a fresh selection here."}
+            </p>
+
+          )}
+
           {/* Row 2 — letter choice */}
           <div className="flex items-center gap-2 flex-wrap">
             <div className="text-sm border border-border rounded-md px-3 h-9 flex items-center">
               {selectedIds.length} contact{selectedIds.length === 1 ? "" : "s"} chosen
             </div>
+
             {emailTexts.length > 0 && (
               <Select value={pickedTextId} onValueChange={pickEmailText}>
                 <SelectTrigger className="w-[280px] h-9 text-sm">
@@ -1350,7 +1389,7 @@ With kind regards,
             )}
             {batchResults.length > 0 && (
               <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
-                <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
+                <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} written letters
               </Button>
             )}
             {selectedIds.length > 0 && (
