@@ -190,6 +190,55 @@ const RegistrarApply = () => {
     setReferences(references.map((r, i) => (i === index ? { ...r, [field]: value } : r)));
   };
 
+  const addCms = () => setCmsExperience([...cmsExperience, { system: "", level: "Proficient" }]);
+  const removeCms = (index: number) =>
+    setCmsExperience(cmsExperience.filter((_, i) => i !== index));
+  const updateCms = (index: number, field: keyof CmsEntry, value: string) =>
+    setCmsExperience(cmsExperience.map((c, i) => (i === index ? { ...c, [field]: value } : c)));
+
+  const handleCvUpload = async (file: File) => {
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload your CV as a PDF");
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("The CV must be smaller than 20 MB");
+      return;
+    }
+    setCvUploading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Session expired");
+      setCvUploading(false);
+      return;
+    }
+    const path = `${user.id}/cv-${Date.now()}.pdf`;
+    const { error } = await supabase.storage
+      .from("registrar-cvs")
+      .upload(path, file, { contentType: "application/pdf", upsert: true });
+    if (error) {
+      toast.error("Could not upload the CV");
+      console.error(error);
+    } else {
+      setCvFilePath(path);
+      toast.success("CV uploaded");
+    }
+    setCvUploading(false);
+  };
+
+  const openCv = async () => {
+    if (!cvFilePath) return;
+    const { data, error } = await supabase.storage
+      .from("registrar-cvs")
+      .createSignedUrl(cvFilePath, 300);
+    if (error || !data) {
+      toast.error("Could not open the CV");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  };
+
+
   const handleSubmit = async () => {
     if (!credentials.trim()) {
       toast.error("Please describe your credentials");
