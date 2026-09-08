@@ -258,6 +258,7 @@ const RegistrarApply = () => {
     }
 
     const cleanReferences = references.filter((r) => r.name.trim());
+    const cleanCms = cmsExperience.filter((c) => c.system.trim());
 
     const payload = {
       user_id: user.id,
@@ -271,8 +272,14 @@ const RegistrarApply = () => {
       references_json: cleanReferences as any,
       arcs_member: arcsMember,
       arcs_member_id: arcsMember ? arcsMemberId.trim() || null : null,
+      nationality: nationality.trim() || null,
+      education: education.trim() || null,
+      cv_file_path: cvFilePath,
+      cms_experience: cleanCms as any,
+      work_areas: workAreas,
       status: "pending",
     };
+
 
     let error;
     if (existingApp) {
