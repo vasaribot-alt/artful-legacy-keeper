@@ -100,6 +100,15 @@ const RegistrarApply = () => {
   ]);
   const [arcsMember, setArcsMember] = useState(false);
   const [arcsMemberId, setArcsMemberId] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [education, setEducation] = useState("");
+  const [cvFilePath, setCvFilePath] = useState<string | null>(null);
+  const [cvUploading, setCvUploading] = useState(false);
+  const [cmsExperience, setCmsExperience] = useState<CmsEntry[]>([
+    { system: "", level: "Proficient" },
+  ]);
+  const [workAreas, setWorkAreas] = useState<string[]>([]);
+
 
   useEffect(() => {
     checkAccess();
