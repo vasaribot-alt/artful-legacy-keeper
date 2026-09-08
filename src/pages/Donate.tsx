@@ -213,12 +213,20 @@ export default function Donate() {
                     <span className="font-medium text-foreground">Global Artist Registry Foundation</span>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">BIC</span>
-                    <span className="font-mono font-medium text-foreground">ABNANL2AXXX</span>
+                    <span className="text-muted-foreground">IBAN</span>
+                    <span className="font-mono font-medium tracking-tight text-foreground">NL93 ABNA 0156 3793 76</span>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">IBAN</span>
-                    <span className="font-mono font-medium text-foreground">NL93ABNA0156379376</span>
+                    <span className="text-muted-foreground">BIC</span>
+                    <span className="font-mono font-medium tracking-tight text-foreground">ABNANL2A</span>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground">Bank</span>
+                    <span className="font-medium text-foreground">ABN AMRO, Amsterdam</span>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground">KvK</span>
+                    <span className="font-mono font-medium tracking-tight text-foreground">42024490</span>
                   </div>
                 </div>
               </div>
