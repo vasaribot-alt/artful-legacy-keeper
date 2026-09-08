@@ -40,7 +40,13 @@ interface Application {
   applicant_avatar: string | null;
   applicant_city: string | null;
   applicant_country: string | null;
+  nationality: string | null;
+  education: string | null;
+  cv_file_path: string | null;
+  cms_experience: any;
+  work_areas: string[] | null;
 }
+
 
 interface VerifiedRegistrar {
   user_id: string;
