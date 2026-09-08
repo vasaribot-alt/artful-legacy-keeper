@@ -160,6 +160,15 @@ const RegistrarApply = () => {
       );
       setArcsMember(existing.arcs_member || false);
       setArcsMemberId(existing.arcs_member_id || "");
+      setNationality((existing as any).nationality || "");
+      setEducation((existing as any).education || "");
+      setCvFilePath((existing as any).cv_file_path || null);
+      setWorkAreas((existing as any).work_areas || []);
+      const cms = ((existing as any).cms_experience as unknown) as CmsEntry[];
+      setCmsExperience(
+        cms?.length ? cms : [{ system: "", level: "Proficient" }]
+      );
+
     }
 
     setLoading(false);
