@@ -1322,8 +1322,12 @@ With kind regards,
 
           {hiddenSelectedCount > 0 && (
             <p className="text-[11px] text-muted-foreground">
-              Ticks are remembered even when a filter hides them, so “Generate {selectedIds.length} letters” would also write to the {hiddenSelectedCount} contact{hiddenSelectedCount === 1 ? "" : "s"} you ticked under other filters. Use “Keep only the {shownSelectedCount} shown” to narrow it to what you can see.
+              Ticks are remembered even when a filter hides them, so “Generate {selectedIds.length} letters” would also write to the {hiddenSelectedCount} contact{hiddenSelectedCount === 1 ? "" : "s"} you ticked under other filters.{" "}
+              {shownSelectedCount > 0
+                ? `Use “Keep only the ${shownSelectedCount} shown” to narrow it to what you can see.`
+                : "None of your ticked contacts are visible under this filter. Press “Clear” to start a fresh selection here."}
             </p>
+
           )}
 
           {/* Row 2 — letter choice */}
