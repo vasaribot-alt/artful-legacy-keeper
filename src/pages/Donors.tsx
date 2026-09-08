@@ -38,11 +38,7 @@ const Donors = () => {
 
   useEffect(() => {
     const fetchDonors = async () => {
-      const { data } = await supabase
-        .from("donors")
-        .select("id, full_name, tier, message")
-        .eq("is_public", true)
-        .order("created_at", { ascending: true });
+      const { data } = await supabase.rpc("get_public_donors");
 
       if (data) setDonors(data);
       setLoading(false);

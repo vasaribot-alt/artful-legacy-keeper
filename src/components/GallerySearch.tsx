@@ -52,12 +52,7 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
 
     const timeout = setTimeout(async () => {
       setSearching(true);
-      const { data, error } = await supabase
-        .from("galleries")
-        .select("id, name, country, city, established_year, website")
-
-        .ilike("name", `%${query}%`)
-        .limit(20);
+      const { data, error } = await supabase.rpc("search_galleries", { _query: query });
 
       if (!error && data) {
         setResults(data);

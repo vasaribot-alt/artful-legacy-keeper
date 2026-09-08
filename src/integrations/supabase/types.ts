@@ -3582,6 +3582,16 @@ export type Database = {
           name: string
         }[]
       }
+      get_public_donors: {
+        Args: never
+        Returns: {
+          created_at: string
+          full_name: string
+          id: string
+          message: string
+          tier: Database["public"]["Enums"]["donor_tier"]
+        }[]
+      }
       get_registrar_access_details: {
         Args: { _owner_id: string }
         Returns: {
@@ -3712,7 +3722,25 @@ export type Database = {
         }
         Returns: string
       }
+      redeem_invite_code: {
+        Args: { _code: string }
+        Returns: {
+          invite_code_id: string
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
+        }[]
+      }
       revoke_peer_invite: { Args: { _invite_id: string }; Returns: undefined }
+      search_galleries: {
+        Args: { _query: string }
+        Returns: {
+          city: string
+          country: string
+          established_year: number
+          id: string
+          name: string
+          website: string
+        }[]
+      }
       validate_invite_code: {
         Args: { _code: string }
         Returns: {
