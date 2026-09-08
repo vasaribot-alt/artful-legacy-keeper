@@ -600,7 +600,98 @@ const RegistrarApply = () => {
               </div>
             </div>
 
+            {/* Technical expertise */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <Label>Collection management systems</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Which systems you have worked with, and your level of expertise.
+                  </p>
+                </div>
+                {!isReadOnly && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addCms}
+                    className="gap-1 h-7 text-xs shrink-0"
+                  >
+                    <Plus className="w-3 h-3" /> Add system
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {cmsExperience.map((entry, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Input
+                      value={entry.system}
+                      onChange={(e) => updateCms(i, "system", e.target.value)}
+                      placeholder="System (e.g. TMS, MuseumPlus, Primus)"
+                      className="h-9 text-sm"
+                      list="cms-suggestions"
+                      readOnly={isReadOnly}
+                      autoComplete="off"
+                    />
+                    <select
+                      value={entry.level}
+                      onChange={(e) => updateCms(i, "level", e.target.value)}
+                      disabled={isReadOnly}
+                      className="h-9 w-32 shrink-0 rounded-sm border border-input bg-background px-2 text-sm"
+                    >
+                      {CMS_LEVELS.map((l) => (
+                        <option key={l} value={l}>{l}</option>
+                      ))}
+                    </select>
+                    {!isReadOnly && cmsExperience.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeCms(i)}
+                        className="text-destructive hover:opacity-70 shrink-0"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <datalist id="cms-suggestions">
+                  {CMS_SUGGESTIONS.map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+              </div>
+            </div>
+
+            {/* Areas of work */}
+            <div>
+              <Label>Areas of work</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Indicate your experience with the following tasks.
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {WORK_AREA_OPTIONS.map((area) => {
+                  const selected = workAreas.includes(area);
+                  return (
+                    <button
+                      key={area}
+                      type="button"
+                      disabled={isReadOnly}
+                      onClick={() => setWorkAreas(toggleArrayItem(workAreas, area))}
+                      className={`px-3 py-1.5 text-xs rounded-sm border transition-colors ${
+                        selected
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border hover:border-foreground/30"
+                      } ${isReadOnly ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {area}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Professional statement */}
+
             <div>
               <Label htmlFor="statement">Professional statement</Label>
               <Textarea
