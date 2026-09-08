@@ -324,7 +324,34 @@ const FoundationRegistrars = () => {
 
                   {expandedId === app.id && (
                     <div className="px-4 pb-4 space-y-4 border-t border-border pt-4">
+                      {(app.nationality || app.education || app.cv_file_path) && (
+                        <div className="space-y-2">
+                          {app.nationality && (
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">Nationality</p>
+                              <p className="text-sm">{app.nationality}</p>
+                            </div>
+                          )}
+                          {app.education && (
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">Education</p>
+                              <p className="text-sm">{app.education}</p>
+                            </div>
+                          )}
+                          {app.cv_file_path && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5"
+                              onClick={() => openCv(app.cv_file_path!)}
+                            >
+                              <FileText className="w-3.5 h-3.5" /> Open CV
+                            </Button>
+                          )}
+                        </div>
+                      )}
                       {app.credentials && (
+
                         <div>
                           <p className="text-xs font-medium text-muted-foreground mb-1">Credentials</p>
                           <p className="text-sm">{app.credentials}</p>
