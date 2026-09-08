@@ -7,6 +7,15 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
+const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function makeCode(length = 7) {
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes)
+    .map((b) => CODE_ALPHABET[b % CODE_ALPHABET.length])
+    .join("");
+}
+
 const CATEGORY_GUIDANCE: Record<string, string> = {
   curators:
     "The recipient is a curators' association. Frame GARF as offering their members archival access to verified artist records, provenance, exhibition histories, and installation views — useful for research, exhibition planning, and scholarship. Mention that curators can invite artists to join free of charge as an Allied Curator Partner benefit.",
@@ -32,8 +41,8 @@ After those bullets, include this paragraph essentially verbatim, then the list 
   foundations:
     "The recipient is an art foundation or artist estate foundation. Emphasise stewardship of legacy, catalogue raisonné support, and permanent archival preservation.",
   corporate_collections:
-    `The recipient is a corporate collection or an association of corporate collections, in most cases a member of IACCCA (the International Association of Corporate Collections of Contemporary Art). Emphasise insurance-grade documentation, valuation reporting, location and loan tracking, condition history and provenance for the works they hold, and the fact that GARF is a non-commercial Dutch foundation with a 100-year preservation plan.
-Make two asks, in this order: (1) awareness, that they know GARF exists and that the artists in their collection can register free of charge for life, and (2) support, an invitation to back the work as a Supporting Collection, whether through a donation, an institutional endorsement, or a joint pilot documenting part of their collection to archival standard.
+    `The recipient is a corporate collection or an association of corporate collections, in most cases a member of IACCCA (the International Association of Corporate Collections of Contemporary Art) or, for Dutch recipients, VBCN (Vereniging van Bedrijfscollecties Nederland). Emphasise that GARF is a non-commercial Dutch foundation (stichting) with a 100-year preservation plan, and the archival features relevant to a holding collection: insurance-grade documentation, valuation reporting, location and loan tracking, condition history and provenance.
+Make a single, concrete support ask: invite the collection to back the Foundation with a modest, transparent contribution of between 1 and 5 euros per work in their collection, which directly funds permanent archival preservation for artists. Frame this as a small, proportional way for a holding collection to secure the long-term record of the very artists whose work it holds. Offer, as a low-pressure alternative, an institutional endorsement or a small joint pilot documenting part of their collection to archival standard. State plainly that registration is free for life for ID-verified artists and that the artist, not GARF, owns the archive.
 If the recipient is a member of IACCCA, note in one short sentence that we are writing to the association's member collections because their curatorial standards match the archival standards GARF is building.
 Include a short, clearly marked section headed "What we are asking - and what we are not asking" with these points, kept close to this wording:
 - Your records stay where they are. Your collection management system and your files remain untouched and fully under your control.
@@ -110,6 +119,7 @@ Deno.serve(async (req) => {
     let notes: string | null = null;
     let personName: string | null = contact_person || null;
     let invitedArtists: string | null = null;
+    let contactEmail: string | null = null;
 
     if (gallery_id) {
       const { data: g, error: gErr } = await supabase
@@ -148,6 +158,31 @@ Deno.serve(async (req) => {
       website = row.website;
       notes = row.notes;
       personName = personName || row.contact_person;
+      contactEmail = row.contact_email || null;
+    }
+
+    // For corporate collections, create a per-recipient tracked link to the
+    // "Why GARF Matters" page so we can measure who opens it. The link is
+    // embedded in the generated email.
+    let whyGarfLink = "";
+    if (category === "corporate_collections" && target_id) {
+      try {
+        const code = makeCode();
+        const { error: tlErr } = await supabase.from("tracked_links").insert({
+          code,
+          destination: "https://globalartistregistry.org/why-garf-matters",
+          label: "Why GARF Matters",
+          source_table: "alliance_outreach_targets",
+          source_id: target_id,
+          recipient_name: personName,
+          recipient_email: contactEmail,
+          created_by: user.id,
+        });
+        if (!tlErr) whyGarfLink = `https://globalartistregistry.org/r/${code}`;
+        else console.error("tracked link insert failed", tlErr.message);
+      } catch (e) {
+        console.error("tracked link insert failed", e);
+      }
     }
 
     // Merge fields for the gallery letter: artist count (spelled out) and gallery name.
@@ -213,11 +248,12 @@ ${templateInstruction}
 Instructions:
 - ${salutation}
 - ${langInstruction}
+${whyGarfLink ? `- Include the following link exactly once, introduced naturally as the short one-page case for why this matters: ${whyGarfLink}. Use the link verbatim and do not alter or shorten it.` : ""}
 - Length: ${category === "galleries" || category === "artist_organisations" || category === "corporate_collections" ? "280-400 words in the body, so the clarity section fits in full" : "180-260 words in the body"}.
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
 - Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) ${category === "artist_organisations" ? "a clear, low-commitment ask: forward the attached invitation to your members (a short reply is welcome but not required)" : "a clear, low-commitment ask (a short introductory call or written reply)"}, (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
- - ${recipient_capacity ? `In the opening sentence, acknowledge only the recipient's professional role: "${recipient_capacity}". Write this naturally as "in your capacity as [role] at ${name}". The recipient's personal name must not appear in this sentence or anywhere after the salutation, even if it is included in the capacity text.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
+  - ${recipient_capacity ? `In the opening sentence, acknowledge only the recipient's professional role: "${recipient_capacity}". Write this naturally as "in your capacity as [role] at ${name}". The recipient's personal name must not appear in this sentence or anywhere after the salutation, even if it is included in the capacity text.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
 - ${signature ? `End the email with a short closing line (e.g. "With kind regards,") on its own line, then a blank line, then append the following signature block VERBATIM (do not modify, translate, or reformat any of its lines, including the website and phone numbers):\n---\n${signature}\n---` : `Sign the email on separate lines: first line "${sender_name || "The GARF Team"}", second line "Global Artist Registry Foundation". Include the website https://globalartistregistry.org near the sign-off.`}
 
