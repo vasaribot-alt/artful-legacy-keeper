@@ -255,6 +255,29 @@ const RegistrarsDirectory = () => {
                     </div>
                   )}
 
+                  {registrar.work_areas && registrar.work_areas.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground mb-1.5">
+                        Areas of work
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {registrar.work_areas.map((area) => (
+                          <Badge key={area} variant="outline" className="text-xs font-normal">
+                            {area}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {registrar.cms_systems && registrar.cms_systems.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-3 [hyphens:none] break-words">
+                      <span className="uppercase tracking-[0.14em]">Systems</span>{" "}
+                      {registrar.cms_systems.join(", ")}
+                    </p>
+                  )}
+
+
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
                     {registrar.languages.length > 0 && (
                       <span className="flex items-center gap-1">
