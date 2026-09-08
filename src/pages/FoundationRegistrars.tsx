@@ -14,7 +14,7 @@ import {
 import { toast } from "sonner";
 import {
   ShieldCheck, Clock, Loader2, CheckCircle, XCircle,
-  ChevronDown, ChevronRight, Trash2, Award,
+  ChevronDown, ChevronRight, Trash2, Award, FileText,
 } from "lucide-react";
 
 interface Application {
@@ -40,7 +40,13 @@ interface Application {
   applicant_avatar: string | null;
   applicant_city: string | null;
   applicant_country: string | null;
+  nationality: string | null;
+  education: string | null;
+  cv_file_path: string | null;
+  cms_experience: any;
+  work_areas: string[] | null;
 }
+
 
 interface VerifiedRegistrar {
   user_id: string;
@@ -67,11 +73,23 @@ const FoundationRegistrars = () => {
     fetchData();
   }, []);
 
+  const openCv = async (path: string) => {
+    const { data, error } = await supabase.storage
+      .from("registrar-cvs")
+      .createSignedUrl(path, 300);
+    if (error || !data) {
+      toast.error("Could not open the CV");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  };
+
   const fetchData = async () => {
     setLoading(true);
     await Promise.all([fetchApplications(), fetchVerified()]);
     setLoading(false);
   };
+
 
   const fetchApplications = async () => {
     const { data: apps, error } = await supabase
@@ -318,7 +336,34 @@ const FoundationRegistrars = () => {
 
                   {expandedId === app.id && (
                     <div className="px-4 pb-4 space-y-4 border-t border-border pt-4">
+                      {(app.nationality || app.education || app.cv_file_path) && (
+                        <div className="space-y-2">
+                          {app.nationality && (
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">Nationality</p>
+                              <p className="text-sm">{app.nationality}</p>
+                            </div>
+                          )}
+                          {app.education && (
+                            <div>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">Education</p>
+                              <p className="text-sm">{app.education}</p>
+                            </div>
+                          )}
+                          {app.cv_file_path && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5"
+                              onClick={() => openCv(app.cv_file_path!)}
+                            >
+                              <FileText className="w-3.5 h-3.5" /> Open CV
+                            </Button>
+                          )}
+                        </div>
+                      )}
                       {app.credentials && (
+
                         <div>
                           <p className="text-xs font-medium text-muted-foreground mb-1">Credentials</p>
                           <p className="text-sm">{app.credentials}</p>
@@ -346,7 +391,33 @@ const FoundationRegistrars = () => {
                           </div>
                         </div>
                       )}
+                      {Array.isArray(app.cms_experience) && app.cms_experience.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">
+                            Collection management systems
+                          </p>
+                          <div className="space-y-1">
+                            {app.cms_experience.map((c: any, i: number) => (
+                              <p key={i} className="text-sm">
+                                {c.system}
+                                {c.level ? ` · ${c.level}` : ""}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {app.work_areas && app.work_areas.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Areas of work</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {app.work_areas.map((w) => (
+                              <Badge key={w} variant="outline" className="text-xs font-normal">{w}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       {app.languages?.length > 0 && (
+
                         <div>
                           <p className="text-xs font-medium text-muted-foreground mb-1">Languages</p>
                           <p className="text-sm">{app.languages.join(", ")}</p>

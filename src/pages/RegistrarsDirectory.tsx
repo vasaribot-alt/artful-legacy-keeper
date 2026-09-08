@@ -28,7 +28,11 @@ interface VerifiedRegistrar {
   professional_statement: string | null;
   years_experience: number | null;
   arcs_member: boolean;
+  education?: string | null;
+  work_areas?: string[] | null;
+  cms_systems?: string[] | null;
 }
+
 
 const RegistrarsDirectory = () => {
   const navigate = useNavigate();
@@ -104,11 +108,14 @@ const RegistrarsDirectory = () => {
       r.full_name?.toLowerCase().includes(q) ||
       r.specializations.some((s) => s.toLowerCase().includes(q)) ||
       r.languages.some((l) => l.toLowerCase().includes(q)) ||
+      (r.work_areas || []).some((w) => w.toLowerCase().includes(q)) ||
+      (r.cms_systems || []).some((c) => c.toLowerCase().includes(q)) ||
       r.geographic_coverage?.toLowerCase().includes(q) ||
       r.city?.toLowerCase().includes(q) ||
       r.country?.toLowerCase().includes(q)
     );
   });
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -247,6 +254,29 @@ const RegistrarsDirectory = () => {
                       )}
                     </div>
                   )}
+
+                  {registrar.work_areas && registrar.work_areas.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground mb-1.5">
+                        Areas of work
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {registrar.work_areas.map((area) => (
+                          <Badge key={area} variant="outline" className="text-xs font-normal">
+                            {area}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {registrar.cms_systems && registrar.cms_systems.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-3 [hyphens:none] break-words">
+                      <span className="uppercase tracking-[0.14em]">Systems</span>{" "}
+                      {registrar.cms_systems.join(", ")}
+                    </p>
+                  )}
+
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
                     {registrar.languages.length > 0 && (

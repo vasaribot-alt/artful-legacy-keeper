@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ShieldCheck, Clock, CheckCircle, XCircle, Loader2, Plus, Trash2, Award } from "lucide-react";
+import { ShieldCheck, Clock, CheckCircle, XCircle, Loader2, Plus, Trash2, Award, Upload, FileText } from "lucide-react";
 
 interface Application {
   id: string;
@@ -27,6 +27,11 @@ interface Application {
   arcs_member_id: string | null;
   review_notes: string | null;
   created_at: string;
+  nationality: string | null;
+  education: string | null;
+  cv_file_path: string | null;
+  cms_experience: any;
+  work_areas: string[] | null;
 }
 
 interface Reference {
@@ -34,6 +39,11 @@ interface Reference {
   institution: string;
   email: string;
   relationship: string;
+}
+
+interface CmsEntry {
+  system: string;
+  level: string;
 }
 
 const SPECIALIZATION_OPTIONS = [
@@ -46,6 +56,29 @@ const LANGUAGE_OPTIONS = [
   "English", "Norwegian", "Danish", "Swedish", "German", "French",
   "Italian", "Spanish", "Dutch", "Japanese", "Chinese", "Portuguese",
 ];
+
+const WORK_AREA_OPTIONS = [
+  "Cataloguing of objects",
+  "Insurance of exhibitions",
+  "Photographing and documenting objects",
+  "Preparation and follow-up of loan agreements",
+  "Provenance research",
+];
+
+const CMS_SUGGESTIONS = [
+  "TMS (The Museum System)",
+  "MuseumPlus",
+  "Adlib / Axiell Collections",
+  "EMu (Axiell)",
+  "PastPerfect",
+  "CollectiveAccess",
+  "Primus",
+  "Artlogic",
+  "FileMaker (custom)",
+];
+
+const CMS_LEVELS = ["Basic", "Proficient", "Expert"];
+
 
 const RegistrarApply = () => {
   const navigate = useNavigate();
@@ -67,6 +100,15 @@ const RegistrarApply = () => {
   ]);
   const [arcsMember, setArcsMember] = useState(false);
   const [arcsMemberId, setArcsMemberId] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [education, setEducation] = useState("");
+  const [cvFilePath, setCvFilePath] = useState<string | null>(null);
+  const [cvUploading, setCvUploading] = useState(false);
+  const [cmsExperience, setCmsExperience] = useState<CmsEntry[]>([
+    { system: "", level: "Proficient" },
+  ]);
+  const [workAreas, setWorkAreas] = useState<string[]>([]);
+
 
   useEffect(() => {
     checkAccess();
@@ -118,6 +160,15 @@ const RegistrarApply = () => {
       );
       setArcsMember(existing.arcs_member || false);
       setArcsMemberId(existing.arcs_member_id || "");
+      setNationality((existing as any).nationality || "");
+      setEducation((existing as any).education || "");
+      setCvFilePath((existing as any).cv_file_path || null);
+      setWorkAreas((existing as any).work_areas || []);
+      const cms = ((existing as any).cms_experience as unknown) as CmsEntry[];
+      setCmsExperience(
+        cms?.length ? cms : [{ system: "", level: "Proficient" }]
+      );
+
     }
 
     setLoading(false);
@@ -139,6 +190,55 @@ const RegistrarApply = () => {
     setReferences(references.map((r, i) => (i === index ? { ...r, [field]: value } : r)));
   };
 
+  const addCms = () => setCmsExperience([...cmsExperience, { system: "", level: "Proficient" }]);
+  const removeCms = (index: number) =>
+    setCmsExperience(cmsExperience.filter((_, i) => i !== index));
+  const updateCms = (index: number, field: keyof CmsEntry, value: string) =>
+    setCmsExperience(cmsExperience.map((c, i) => (i === index ? { ...c, [field]: value } : c)));
+
+  const handleCvUpload = async (file: File) => {
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload your CV as a PDF");
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("The CV must be smaller than 20 MB");
+      return;
+    }
+    setCvUploading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Session expired");
+      setCvUploading(false);
+      return;
+    }
+    const path = `${user.id}/cv-${Date.now()}.pdf`;
+    const { error } = await supabase.storage
+      .from("registrar-cvs")
+      .upload(path, file, { contentType: "application/pdf", upsert: true });
+    if (error) {
+      toast.error("Could not upload the CV");
+      console.error(error);
+    } else {
+      setCvFilePath(path);
+      toast.success("CV uploaded");
+    }
+    setCvUploading(false);
+  };
+
+  const openCv = async () => {
+    if (!cvFilePath) return;
+    const { data, error } = await supabase.storage
+      .from("registrar-cvs")
+      .createSignedUrl(cvFilePath, 300);
+    if (error || !data) {
+      toast.error("Could not open the CV");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  };
+
+
   const handleSubmit = async () => {
     if (!credentials.trim()) {
       toast.error("Please describe your credentials");
@@ -158,6 +258,7 @@ const RegistrarApply = () => {
     }
 
     const cleanReferences = references.filter((r) => r.name.trim());
+    const cleanCms = cmsExperience.filter((c) => c.system.trim());
 
     const payload = {
       user_id: user.id,
@@ -171,8 +272,14 @@ const RegistrarApply = () => {
       references_json: cleanReferences as any,
       arcs_member: arcsMember,
       arcs_member_id: arcsMember ? arcsMemberId.trim() || null : null,
+      nationality: nationality.trim() || null,
+      education: education.trim() || null,
+      cv_file_path: cvFilePath,
+      cms_experience: cleanCms as any,
+      work_areas: workAreas,
       status: "pending",
     };
+
 
     let error;
     if (existingApp) {
@@ -291,7 +398,103 @@ const RegistrarApply = () => {
           </div>
         ) : (
           <div className="space-y-6">
+            {/* Personal information */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                Personal information
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="nationality">Nationality</Label>
+                  <Input
+                    id="nationality"
+                    value={nationality}
+                    onChange={(e) => setNationality(e.target.value)}
+                    placeholder="Norwegian"
+                    className="mt-1.5"
+                    readOnly={isReadOnly}
+                    autoComplete="off"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="education">Education (degree / field)</Label>
+                  <Input
+                    id="education"
+                    value={education}
+                    onChange={(e) => setEducation(e.target.value)}
+                    placeholder="MA Art History, University of Oslo"
+                    className="mt-1.5"
+                    readOnly={isReadOnly}
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Curriculum vitae (PDF)</Label>
+                <div className="mt-1.5 flex flex-wrap items-center gap-3">
+                  {cvFilePath ? (
+                    <>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={openCv}
+                        className="gap-1.5"
+                      >
+                        <FileText className="w-3.5 h-3.5" /> View uploaded CV
+                      </Button>
+                      {!isReadOnly && (
+                        <label className="text-xs underline cursor-pointer text-muted-foreground">
+                          Replace
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) handleCvUpload(f);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      )}
+                    </>
+                  ) : (
+                    !isReadOnly && (
+                      <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-sm border border-border hover:border-foreground/30 cursor-pointer transition-colors">
+                        {cvUploading ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3.5 h-3.5" /> Upload CV
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          className="hidden"
+                          disabled={cvUploading}
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) handleCvUpload(f);
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    )
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Your CV is private. Only you and the Foundation review team can open it.
+                </p>
+              </div>
+            </div>
+
             {/* Credentials */}
+
             <div>
               <Label htmlFor="credentials">
                 Professional credentials <span className="text-destructive">*</span>
@@ -397,7 +600,98 @@ const RegistrarApply = () => {
               </div>
             </div>
 
+            {/* Technical expertise */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <Label>Collection management systems</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Which systems you have worked with, and your level of expertise.
+                  </p>
+                </div>
+                {!isReadOnly && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addCms}
+                    className="gap-1 h-7 text-xs shrink-0"
+                  >
+                    <Plus className="w-3 h-3" /> Add system
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {cmsExperience.map((entry, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Input
+                      value={entry.system}
+                      onChange={(e) => updateCms(i, "system", e.target.value)}
+                      placeholder="System (e.g. TMS, MuseumPlus, Primus)"
+                      className="h-9 text-sm"
+                      list="cms-suggestions"
+                      readOnly={isReadOnly}
+                      autoComplete="off"
+                    />
+                    <select
+                      value={entry.level}
+                      onChange={(e) => updateCms(i, "level", e.target.value)}
+                      disabled={isReadOnly}
+                      className="h-9 w-32 shrink-0 rounded-sm border border-input bg-background px-2 text-sm"
+                    >
+                      {CMS_LEVELS.map((l) => (
+                        <option key={l} value={l}>{l}</option>
+                      ))}
+                    </select>
+                    {!isReadOnly && cmsExperience.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeCms(i)}
+                        className="text-destructive hover:opacity-70 shrink-0"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <datalist id="cms-suggestions">
+                  {CMS_SUGGESTIONS.map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+              </div>
+            </div>
+
+            {/* Areas of work */}
+            <div>
+              <Label>Areas of work</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Indicate your experience with the following tasks.
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {WORK_AREA_OPTIONS.map((area) => {
+                  const selected = workAreas.includes(area);
+                  return (
+                    <button
+                      key={area}
+                      type="button"
+                      disabled={isReadOnly}
+                      onClick={() => setWorkAreas(toggleArrayItem(workAreas, area))}
+                      className={`px-3 py-1.5 text-xs rounded-sm border transition-colors ${
+                        selected
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border hover:border-foreground/30"
+                      } ${isReadOnly ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                      {area}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Professional statement */}
+
             <div>
               <Label htmlFor="statement">Professional statement</Label>
               <Textarea
