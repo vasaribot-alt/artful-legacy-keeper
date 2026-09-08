@@ -2932,12 +2932,16 @@ export type Database = {
         Row: {
           arcs_member: boolean
           arcs_member_id: string | null
+          cms_experience: Json
           created_at: string
           credentials: string | null
+          cv_file_path: string | null
+          education: string | null
           experience_summary: string | null
           geographic_coverage: string | null
           id: string
           languages: string[]
+          nationality: string | null
           professional_statement: string | null
           references_json: Json
           review_notes: string | null
@@ -2947,17 +2951,22 @@ export type Database = {
           status: string
           updated_at: string
           user_id: string
+          work_areas: string[]
           years_experience: number | null
         }
         Insert: {
           arcs_member?: boolean
           arcs_member_id?: string | null
+          cms_experience?: Json
           created_at?: string
           credentials?: string | null
+          cv_file_path?: string | null
+          education?: string | null
           experience_summary?: string | null
           geographic_coverage?: string | null
           id?: string
           languages?: string[]
+          nationality?: string | null
           professional_statement?: string | null
           references_json?: Json
           review_notes?: string | null
@@ -2967,17 +2976,22 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id: string
+          work_areas?: string[]
           years_experience?: number | null
         }
         Update: {
           arcs_member?: boolean
           arcs_member_id?: string | null
+          cms_experience?: Json
           created_at?: string
           credentials?: string | null
+          cv_file_path?: string | null
+          education?: string | null
           experience_summary?: string | null
           geographic_coverage?: string | null
           id?: string
           languages?: string[]
+          nationality?: string | null
           professional_statement?: string | null
           references_json?: Json
           review_notes?: string | null
@@ -2987,6 +3001,7 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+          work_areas?: string[]
           years_experience?: number | null
         }
         Relationships: []
@@ -2995,52 +3010,67 @@ export type Database = {
         Row: {
           arcs_member: boolean
           arcs_member_id: string | null
+          cms_experience: Json
           created_at: string
           credentials: string | null
+          cv_file_path: string | null
+          education: string | null
           geographic_coverage: string | null
           is_listed: boolean
           is_verified: boolean
           languages: string[]
+          nationality: string | null
           professional_statement: string | null
           specializations: string[]
           updated_at: string
           user_id: string
           verified_at: string | null
           verified_by: string | null
+          work_areas: string[]
           years_experience: number | null
         }
         Insert: {
           arcs_member?: boolean
           arcs_member_id?: string | null
+          cms_experience?: Json
           created_at?: string
           credentials?: string | null
+          cv_file_path?: string | null
+          education?: string | null
           geographic_coverage?: string | null
           is_listed?: boolean
           is_verified?: boolean
           languages?: string[]
+          nationality?: string | null
           professional_statement?: string | null
           specializations?: string[]
           updated_at?: string
           user_id: string
           verified_at?: string | null
           verified_by?: string | null
+          work_areas?: string[]
           years_experience?: number | null
         }
         Update: {
           arcs_member?: boolean
           arcs_member_id?: string | null
+          cms_experience?: Json
           created_at?: string
           credentials?: string | null
+          cv_file_path?: string | null
+          education?: string | null
           geographic_coverage?: string | null
           is_listed?: boolean
           is_verified?: boolean
           languages?: string[]
+          nationality?: string | null
           professional_statement?: string | null
           specializations?: string[]
           updated_at?: string
           user_id?: string
           verified_at?: string | null
           verified_by?: string | null
+          work_areas?: string[]
           years_experience?: number | null
         }
         Relationships: []
@@ -3655,14 +3685,17 @@ export type Database = {
           arcs_member_id: string
           avatar_url: string
           city: string
+          cms_systems: string[]
           country: string
           credentials: string
+          education: string
           full_name: string
           geographic_coverage: string
           languages: string[]
           professional_statement: string
           specializations: string[]
           user_id: string
+          work_areas: string[]
           years_experience: number
         }[]
       }
