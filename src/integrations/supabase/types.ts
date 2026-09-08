@@ -3582,6 +3582,16 @@ export type Database = {
           name: string
         }[]
       }
+      get_public_donors: {
+        Args: never
+        Returns: {
+          created_at: string
+          full_name: string
+          id: string
+          message: string
+          tier: Database["public"]["Enums"]["donor_tier"]
+        }[]
+      }
       get_registrar_access_details: {
         Args: { _owner_id: string }
         Returns: {
