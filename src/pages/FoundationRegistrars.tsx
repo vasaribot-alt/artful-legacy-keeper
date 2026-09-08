@@ -14,7 +14,7 @@ import {
 import { toast } from "sonner";
 import {
   ShieldCheck, Clock, Loader2, CheckCircle, XCircle,
-  ChevronDown, ChevronRight, Trash2, Award,
+  ChevronDown, ChevronRight, Trash2, Award, FileText,
 } from "lucide-react";
 
 interface Application {
