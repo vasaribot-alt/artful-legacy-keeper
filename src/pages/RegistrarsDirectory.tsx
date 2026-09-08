@@ -28,7 +28,11 @@ interface VerifiedRegistrar {
   professional_statement: string | null;
   years_experience: number | null;
   arcs_member: boolean;
+  education?: string | null;
+  work_areas?: string[] | null;
+  cms_systems?: string[] | null;
 }
+
 
 const RegistrarsDirectory = () => {
   const navigate = useNavigate();
