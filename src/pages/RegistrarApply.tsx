@@ -27,6 +27,11 @@ interface Application {
   arcs_member_id: string | null;
   review_notes: string | null;
   created_at: string;
+  nationality: string | null;
+  education: string | null;
+  cv_file_path: string | null;
+  cms_experience: any;
+  work_areas: string[] | null;
 }
 
 interface Reference {
@@ -34,6 +39,11 @@ interface Reference {
   institution: string;
   email: string;
   relationship: string;
+}
+
+interface CmsEntry {
+  system: string;
+  level: string;
 }
 
 const SPECIALIZATION_OPTIONS = [
@@ -46,6 +56,29 @@ const LANGUAGE_OPTIONS = [
   "English", "Norwegian", "Danish", "Swedish", "German", "French",
   "Italian", "Spanish", "Dutch", "Japanese", "Chinese", "Portuguese",
 ];
+
+const WORK_AREA_OPTIONS = [
+  "Cataloguing of objects",
+  "Insurance of exhibitions",
+  "Photographing and documenting objects",
+  "Preparation and follow-up of loan agreements",
+  "Provenance research",
+];
+
+const CMS_SUGGESTIONS = [
+  "TMS (The Museum System)",
+  "MuseumPlus",
+  "Adlib / Axiell Collections",
+  "EMu (Axiell)",
+  "PastPerfect",
+  "CollectiveAccess",
+  "Primus",
+  "Artlogic",
+  "FileMaker (custom)",
+];
+
+const CMS_LEVELS = ["Basic", "Proficient", "Expert"];
+
 
 const RegistrarApply = () => {
   const navigate = useNavigate();
