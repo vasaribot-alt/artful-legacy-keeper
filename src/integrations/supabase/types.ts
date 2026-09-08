@@ -3722,7 +3722,25 @@ export type Database = {
         }
         Returns: string
       }
+      redeem_invite_code: {
+        Args: { _code: string }
+        Returns: {
+          invite_code_id: string
+          tier: Database["public"]["Enums"]["founding_artist_tier"]
+        }[]
+      }
       revoke_peer_invite: { Args: { _invite_id: string }; Returns: undefined }
+      search_galleries: {
+        Args: { _query: string }
+        Returns: {
+          city: string
+          country: string
+          established_year: number
+          id: string
+          name: string
+          website: string
+        }[]
+      }
       validate_invite_code: {
         Args: { _code: string }
         Returns: {
