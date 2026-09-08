@@ -197,9 +197,15 @@ export default function Donate() {
                 </Link>
               </div>
 
-              <div className="mt-8 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              <div className="mt-6 rounded-lg border border-amber-300/60 bg-amber-50 p-4 text-center">
+                <p className="text-sm text-amber-900">
+                  <strong>Card payments are coming soon.</strong> We are finalising our Stripe connection. In the meantime, please use the bank transfer option below, or check back shortly.
+                </p>
+              </div>
+
+              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-[#7ac143]" />
-                Secure payment processed by Stripe
+                Secure card payments processed by Stripe (available soon)
               </div>
 
               <div className="mt-6 rounded-lg border border-border bg-muted/30 p-5">
