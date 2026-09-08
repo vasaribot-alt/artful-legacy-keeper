@@ -1282,7 +1282,19 @@ With kind regards,
             </Button>
             {selectedIds.length > 0 && (
               <>
-                <Badge variant="secondary" className="ml-auto">{selectedIds.length} selected</Badge>
+                <div className="ml-auto flex items-center gap-2">
+                  <Badge variant="secondary">{selectedIds.length} selected in total</Badge>
+                  {hiddenSelectedCount > 0 && (
+                    <Badge variant="outline" className="font-normal">
+                      {shownSelectedCount} ticked here · {hiddenSelectedCount} hidden by filters
+                    </Badge>
+                  )}
+                </div>
+                {hiddenSelectedCount > 0 && (
+                  <Button size="sm" variant="outline" onClick={keepOnlyShownSelected}>
+                    Keep only the {shownSelectedCount} shown
+                  </Button>
+                )}
                 <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
                 <Button size="sm" onClick={generateBatchDrafts} disabled={batchRunning}>
                   {batchRunning ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1" />}
@@ -1292,11 +1304,18 @@ With kind regards,
             )}
           </div>
 
+          {hiddenSelectedCount > 0 && (
+            <p className="text-[11px] text-muted-foreground">
+              Ticks are remembered even when a filter hides them, so “Generate {selectedIds.length} letters” would also write to the {hiddenSelectedCount} contact{hiddenSelectedCount === 1 ? "" : "s"} you ticked under other filters. Use “Keep only the {shownSelectedCount} shown” to narrow it to what you can see.
+            </p>
+          )}
+
           {/* Row 2 — letter choice */}
           <div className="flex items-center gap-2 flex-wrap">
             <div className="text-sm border border-border rounded-md px-3 h-9 flex items-center">
               {selectedIds.length} contact{selectedIds.length === 1 ? "" : "s"} chosen
             </div>
+
             {emailTexts.length > 0 && (
               <Select value={pickedTextId} onValueChange={pickEmailText}>
                 <SelectTrigger className="w-[280px] h-9 text-sm">
