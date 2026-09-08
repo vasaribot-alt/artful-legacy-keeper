@@ -742,10 +742,24 @@ With kind regards,
 
 
   // ---------- Batch of 10: generate drafts + export to Outlook ----------
+  const SELECT_CAP = 200;
+
   const toggleSelectOne = (id: string) => {
-    setSelectedIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : prev.length >= 50 ? prev : [...prev, id]
-    );
+    setSelectedIds(prev => {
+      if (prev.includes(id)) return prev.filter(x => x !== id);
+      if (prev.length >= SELECT_CAP) {
+        toast.info(`You can select up to ${SELECT_CAP} contacts at a time.`);
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
+
+  const selectAllShown = () => {
+    const pool = filtered.filter(t => t.contact_email).slice(0, SELECT_CAP);
+    setSelectedIds(pool.map(t => t.id));
+    if (pool.length === 0) toast.info("No contacts with an email address in the current filter.");
+    else toast.success(`Selected ${pool.length} contacts.`);
   };
 
   const selectNextTen = () => {
@@ -755,6 +769,7 @@ With kind regards,
     if (next.length === 0) toast.info("No un-contacted targets with an email in the current filter.");
     else toast.success(`Selected ${next.length} organisations.`);
   };
+
 
   const generateBatchDrafts = async () => {
     const batchTargets = selectedIds
@@ -1252,6 +1267,10 @@ With kind regards,
           {/* Row 1 — batch handling */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground mr-1">Batch mailing</span>
+            <Button size="sm" variant="outline" onClick={selectAllShown}>
+              Select all shown with email
+            </Button>
+
             <Button size="sm" variant="outline" onClick={() => setSaveBatchOpen(true)} disabled={selectedIds.length === 0 && batchResults.length === 0}>
               Save batch
             </Button>
