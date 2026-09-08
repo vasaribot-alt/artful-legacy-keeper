@@ -1384,7 +1384,7 @@ With kind regards,
             )}
             {batchResults.length > 0 && (
               <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
-                <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} drafts
+                <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} written letters
               </Button>
             )}
             {selectedIds.length > 0 && (
