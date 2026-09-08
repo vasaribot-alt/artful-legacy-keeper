@@ -1252,6 +1252,10 @@ With kind regards,
           {/* Row 1 — batch handling */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground mr-1">Batch mailing</span>
+            <Button size="sm" variant="outline" onClick={selectAllShown}>
+              Select all shown with email
+            </Button>
+
             <Button size="sm" variant="outline" onClick={() => setSaveBatchOpen(true)} disabled={selectedIds.length === 0 && batchResults.length === 0}>
               Save batch
             </Button>
