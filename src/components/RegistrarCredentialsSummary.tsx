@@ -40,7 +40,7 @@ export function RegistrarCredentialsSummary() {
         supabase
           .from("registrar_profiles")
           .select(
-            "specializations, credentials, years_experience, languages, geographic_coverage, professional_statement, is_listed, is_verified, arcs_member, arcs_member_id"
+            "specializations, credentials, years_experience, languages, geographic_coverage, professional_statement, is_listed, is_verified, arcs_member, arcs_member_id, nationality, education, work_areas, cms_experience"
           )
           .eq("user_id", uid)
           .maybeSingle(),
@@ -127,6 +127,8 @@ export function RegistrarCredentialsSummary() {
         </div>
 
         <dl className="grid grid-cols-1 sm:grid-cols-[11rem_1fr] gap-y-3 gap-x-6 text-sm">
+          <Row label="Nationality" value={profile.nationality} />
+          <Row label="Education" value={profile.education} />
           <Row
             label="Experience"
             value={
@@ -142,7 +144,22 @@ export function RegistrarCredentialsSummary() {
           />
           <Row label="Languages" value={profile.languages?.join(", ") || null} />
           <Row label="Coverage" value={profile.geographic_coverage} />
+          <Row
+            label="Areas of work"
+            value={profile.work_areas?.join(", ") || null}
+          />
+          <Row
+            label="Systems"
+            value={
+              Array.isArray(profile.cms_experience) && profile.cms_experience.length
+                ? profile.cms_experience
+                    .map((c: any) => (c.level ? `${c.system} (${c.level})` : c.system))
+                    .join(", ")
+                : null
+            }
+          />
         </dl>
+
 
         {profile.professional_statement && (
           <div className="space-y-1.5">
