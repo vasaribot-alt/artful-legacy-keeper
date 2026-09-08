@@ -379,7 +379,33 @@ const FoundationRegistrars = () => {
                           </div>
                         </div>
                       )}
+                      {Array.isArray(app.cms_experience) && app.cms_experience.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">
+                            Collection management systems
+                          </p>
+                          <div className="space-y-1">
+                            {app.cms_experience.map((c: any, i: number) => (
+                              <p key={i} className="text-sm">
+                                {c.system}
+                                {c.level ? ` · ${c.level}` : ""}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {app.work_areas && app.work_areas.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Areas of work</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {app.work_areas.map((w) => (
+                              <Badge key={w} variant="outline" className="text-xs font-normal">{w}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       {app.languages?.length > 0 && (
+
                         <div>
                           <p className="text-xs font-medium text-muted-foreground mb-1">Languages</p>
                           <p className="text-sm">{app.languages.join(", ")}</p>
