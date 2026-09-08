@@ -398,7 +398,103 @@ const RegistrarApply = () => {
           </div>
         ) : (
           <div className="space-y-6">
+            {/* Personal information */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                Personal information
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="nationality">Nationality</Label>
+                  <Input
+                    id="nationality"
+                    value={nationality}
+                    onChange={(e) => setNationality(e.target.value)}
+                    placeholder="Norwegian"
+                    className="mt-1.5"
+                    readOnly={isReadOnly}
+                    autoComplete="off"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="education">Education (degree / field)</Label>
+                  <Input
+                    id="education"
+                    value={education}
+                    onChange={(e) => setEducation(e.target.value)}
+                    placeholder="MA Art History, University of Oslo"
+                    className="mt-1.5"
+                    readOnly={isReadOnly}
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Curriculum vitae (PDF)</Label>
+                <div className="mt-1.5 flex flex-wrap items-center gap-3">
+                  {cvFilePath ? (
+                    <>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={openCv}
+                        className="gap-1.5"
+                      >
+                        <FileText className="w-3.5 h-3.5" /> View uploaded CV
+                      </Button>
+                      {!isReadOnly && (
+                        <label className="text-xs underline cursor-pointer text-muted-foreground">
+                          Replace
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) handleCvUpload(f);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      )}
+                    </>
+                  ) : (
+                    !isReadOnly && (
+                      <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-sm border border-border hover:border-foreground/30 cursor-pointer transition-colors">
+                        {cvUploading ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-3.5 h-3.5" /> Upload CV
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          className="hidden"
+                          disabled={cvUploading}
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) handleCvUpload(f);
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    )
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Your CV is private. Only you and the Foundation review team can open it.
+                </p>
+              </div>
+            </div>
+
             {/* Credentials */}
+
             <div>
               <Label htmlFor="credentials">
                 Professional credentials <span className="text-destructive">*</span>
