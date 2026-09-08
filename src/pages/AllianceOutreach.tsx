@@ -889,11 +889,20 @@ With kind regards,
 
   // Send approved letters through Brevo's marketing email API.
   const sendBatchViaBrevo = async () => {
-    const ready = batchResults.filter(r => r.body && r.email);
+    const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+    const broken = batchResults.filter(r => r.body && r.email && !isEmail(r.email));
+    const ready = batchResults.filter(r => r.body && r.email && isEmail(r.email));
+    if (broken.length > 0) {
+      toast.warning(
+        `Skipping ${broken.length} contact${broken.length === 1 ? "" : "s"} with no valid email address: ${broken.map(b => b.name || b.email).join(", ")}`,
+        { duration: 12000 },
+      );
+    }
     if (ready.length === 0) {
-      toast.error("No letters with an email address to send.");
+      toast.error("No letters with a valid email address to send.");
       return;
     }
+
     if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?${attachedDocs.length ? `\n\nAttachments: ${attachedDocs.map(d => d.file_name).join(", ")}` : ""}`)) return;
     setBatchRunning(true);
     const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
