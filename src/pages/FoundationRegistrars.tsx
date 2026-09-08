@@ -73,11 +73,23 @@ const FoundationRegistrars = () => {
     fetchData();
   }, []);
 
+  const openCv = async (path: string) => {
+    const { data, error } = await supabase.storage
+      .from("registrar-cvs")
+      .createSignedUrl(path, 300);
+    if (error || !data) {
+      toast.error("Could not open the CV");
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+  };
+
   const fetchData = async () => {
     setLoading(true);
     await Promise.all([fetchApplications(), fetchVerified()]);
     setLoading(false);
   };
+
 
   const fetchApplications = async () => {
     const { data: apps, error } = await supabase
