@@ -17,4 +17,7 @@
 - [x] Build public /why-garf-matters page from the Why GARF Matters PDF
 - [x] Add route + tracked-link destination
 - [x] Update corporate_collections email guidance: per-work donation ask (EUR 1-5/work) + auto tracked link to the page
+- [x] Change ask to a single concrete EUR 5 per contemporary work
+- [x] Bank transfer details on /donate (interim until Stripe cards arrive): IBAN, BIC ABNANL2A, KvK
+- [ ] Activate Stripe once the bank cards arrive
 - [ ] User to select Dutch contacts on Alliance Outreach and generate/send
