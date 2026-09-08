@@ -1107,6 +1107,21 @@ With kind regards,
     return true;
   }), [targets, q, categoryFilter, statusFilter, tagFilter]);
 
+  // Ticks survive filter changes and page reloads, so the total selection can be
+  // larger than what is visible. Split it so the two numbers are never confused.
+  const shownSelectedCount = useMemo(
+    () => filtered.reduce((n, t) => n + (selectedIds.includes(t.id) ? 1 : 0), 0),
+    [filtered, selectedIds]
+  );
+  const hiddenSelectedCount = selectedIds.length - shownSelectedCount;
+
+  const keepOnlyShownSelected = () => {
+    const visible = new Set(filtered.map(t => t.id));
+    setSelectedIds(prev => prev.filter(id => visible.has(id)));
+    toast.success(`Selection narrowed to the ${shownSelectedCount} contact${shownSelectedCount === 1 ? "" : "s"} shown here.`);
+  };
+
+
   const tags = useMemo(
     () => Array.from(new Set(targets.map(t => t.tag).filter(Boolean) as string[])).sort(),
     [targets]
