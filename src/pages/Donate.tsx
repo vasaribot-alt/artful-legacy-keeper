@@ -236,7 +236,32 @@ export default function Donate() {
                   </div>
                 </div>
               </div>
+
+              <div className="mt-6 rounded-lg border border-border p-5">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">Supporter tiers</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  For collections, companies and institutions. Choose a recognition tier instead of counting every work.
+                </p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {[
+                    { label: "Bronze", amount: "1,000 euros" },
+                    { label: "Silver", amount: "2,500 euros" },
+                    { label: "Gold", amount: "5,000 euros" },
+                    { label: "Platinum", amount: "10,000 euros and above" },
+                  ].map((t) => (
+                    <div key={t.label} className="flex items-baseline justify-between gap-4 rounded-md border border-border/70 px-4 py-3">
+                      <span className="text-sm font-medium text-foreground">{t.label}</span>
+                      <span className="text-sm text-muted-foreground">{t.amount}</span>
+                    </div>
+                  ))}
+                </div>
+                <Link to="/donors" className="mt-4 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+                  See our supporters
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
             </div>
+
           </>
         ) : (
           <div>
