@@ -11,21 +11,25 @@ interface Donor {
   message: string | null;
 }
 
-const tierLabels: Record<string, { label: string; description: string }> = {
+const tierLabels: Record<string, { label: string; amount: string; description: string }> = {
   platinum: {
     label: "Platinum",
+    amount: "€10,000 and above",
     description: "Visionary supporters who make the foundation's core mission possible.",
   },
   gold: {
     label: "Gold",
+    amount: "€5,000",
     description: "Major contributors driving key initiatives and programs.",
   },
   silver: {
     label: "Silver",
+    amount: "€2,500",
     description: "Valued supporters advancing art preservation and documentation.",
   },
   bronze: {
     label: "Bronze",
+    amount: "€1,000",
     description: "Friends of the foundation who believe in the mission.",
   },
 };
@@ -127,7 +131,10 @@ const Donors = () => {
           <div className="space-y-16">
             {groupedByTier.map((group) => (
               <section key={group.tier}>
-                <h2 className="text-xl font-medium mb-1">{group.label}</h2>
+                <h2 className="text-xl font-medium mb-1">
+                  {group.label}
+                  <span className="ml-3 text-base font-normal text-muted-foreground">{group.amount}</span>
+                </h2>
                 <p className="text-sm text-muted-foreground mb-8">{group.description}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                   {group.donors.map((donor) => (
