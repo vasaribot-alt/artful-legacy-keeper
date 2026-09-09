@@ -11,21 +11,25 @@ interface Donor {
   message: string | null;
 }
 
-const tierLabels: Record<string, { label: string; description: string }> = {
+const tierLabels: Record<string, { label: string; amount: string; description: string }> = {
   platinum: {
     label: "Platinum",
+    amount: "€10,000 and above",
     description: "Visionary supporters who make the foundation's core mission possible.",
   },
   gold: {
     label: "Gold",
+    amount: "€5,000",
     description: "Major contributors driving key initiatives and programs.",
   },
   silver: {
     label: "Silver",
+    amount: "€2,500",
     description: "Valued supporters advancing art preservation and documentation.",
   },
   bronze: {
     label: "Bronze",
+    amount: "€1,000",
     description: "Friends of the foundation who believe in the mission.",
   },
 };
