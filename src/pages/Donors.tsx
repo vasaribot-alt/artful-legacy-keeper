@@ -131,7 +131,10 @@ const Donors = () => {
           <div className="space-y-16">
             {groupedByTier.map((group) => (
               <section key={group.tier}>
-                <h2 className="text-xl font-medium mb-1">{group.label}</h2>
+                <h2 className="text-xl font-medium mb-1">
+                  {group.label}
+                  <span className="ml-3 text-base font-normal text-muted-foreground">{group.amount}</span>
+                </h2>
                 <p className="text-sm text-muted-foreground mb-8">{group.description}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                   {group.donors.map((donor) => (
