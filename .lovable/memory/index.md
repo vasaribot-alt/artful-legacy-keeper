@@ -5,5 +5,6 @@
 - [Creative Europe Consortium](mem://features/creative-europe-consortium) — Nordic-Baltic geography for the Creative Europe medium-scale application
 - [Creative Europe Institutions](mem://features/creative-europe-institutions) — Museum/university candidates per country for the EU consortium
 - [IACCCA Outreach](mem://features/iaccca-outreach) — 58 corporate collection members tagged IACCCA, two-part awareness plus support ask
-- [Dutch Collections Outreach](mem://features/dutch-collections-outreach) — EUR 1-5/work donation ask, /why-garf-matters page as trackable link
+- [Dutch Collections Outreach](mem://features/dutch-collections-outreach) — EUR 5/work guideline ask, /why-garf-matters page as trackable link
+- [Donor Tiers](mem://features/donor-tiers) — Bronze €1k / Silver €2.5k / Gold €5k / Platinum €10k+ recognition levels; large collections give by tier, never IBAN in cold email
 - [Registrar Professional Profile](mem://features/registrar-professional-profile) — Nationality, education, private CV upload, CMS expertise levels, five areas of work
