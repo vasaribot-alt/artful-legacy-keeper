@@ -119,6 +119,28 @@ const Donors = () => {
         </div>
       </section>
 
+      {/* Supporter tiers */}
+      <section className="py-16 px-6 border-b border-border">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl font-semibold mb-3 text-center">Supporter tiers</h2>
+          <p className="text-sm text-muted-foreground text-center max-w-2xl mx-auto mb-10">
+            Larger collections are welcome to choose a recognition tier instead of counting every work.
+          </p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {tierOrder.map((tier) => (
+              <div key={tier} className="border border-border rounded-lg p-6">
+                <h3 className="font-medium mb-1">{tierLabels[tier].label}</h3>
+                <p className="text-lg mb-3">{tierLabels[tier].amount}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {tierLabels[tier].description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       {/* Donor directory */}
       <main className="max-w-5xl mx-auto px-6 py-16">
         {loading ? (
