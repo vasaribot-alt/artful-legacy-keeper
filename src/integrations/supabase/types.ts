@@ -3718,6 +3718,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_cr_committee_voter: {
+        Args: { _artist_owner_id: string; _user_id: string }
+        Returns: boolean
+      }
       list_galleries_admin: {
         Args: never
         Returns: {
