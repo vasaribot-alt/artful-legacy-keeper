@@ -455,6 +455,20 @@ With kind regards,
   );
   const [batchOpen, setBatchOpen] = useState(false);
 
+  const openBatchReview = () => {
+    setBatchResults(current => current.map(result => {
+      const saved = targets.find(target => target.id === result.id);
+      if (!saved) return result;
+      return {
+        ...result,
+        email: saved.contact_email || result.email,
+        subject: saved.email_subject || result.subject,
+        body: saved.email_body || result.body,
+      };
+    }));
+    setBatchOpen(true);
+  };
+
   // Persist the last batch + selection so nothing is lost on refresh or publish.
   useEffect(() => {
     try { localStorage.setItem(BATCH_KEY, JSON.stringify(batchResults)); } catch { /* quota */ }
@@ -1397,7 +1411,7 @@ With kind regards,
               </Select>
             )}
             {batchResults.length > 0 && (
-              <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
+              <Button size="sm" variant="outline" onClick={openBatchReview}>
                 <Mail className="w-3.5 h-3.5 mr-1" /> Review {batchResults.length} written letters
               </Button>
             )}
