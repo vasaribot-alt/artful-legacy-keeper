@@ -270,7 +270,7 @@ const Index = () => {
             </p>
           </div>
           <Link to="/statement-of-support" className="shrink-0">
-            <Button variant="outline" size="lg" className="gap-2 border-background text-background hover:bg-background hover:text-foreground">
+            <Button variant="outline" size="lg" className="gap-2 border-background bg-background text-foreground hover:opacity-90">
               Sign the Statement <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
