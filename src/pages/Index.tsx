@@ -254,7 +254,7 @@ const Index = () => {
 
 
       {/* Statement of Support */}
-      <section className="py-16 px-6 border-t border-border bg-foreground text-background">
+      <section className="py-16 px-6 border-t border-border bg-tone-2 text-background">
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
           <div className="space-y-3">
             <p className="text-[11px] uppercase tracking-[0.2em] text-background/60 font-medium">

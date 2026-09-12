@@ -49,6 +49,10 @@
     --highlight: 45 10% 50%;
     --highlight-foreground: 0 0% 100%;
 
+    /* Monochrome step scale (foreground = step 1) */
+    --tone-2: 0 0% 14%;
+    --tone-3: 0 0% 22%;
+
     font-family: 'DM Sans', system-ui, sans-serif;
   }
 
