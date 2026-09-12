@@ -9,3 +9,4 @@
 - [Donor Tiers](mem://features/donor-tiers) — Bronze €1k / Silver €2.5k / Gold €5k / Platinum €10k+ recognition levels; large collections give by tier, never IBAN in cold email
 - [Registrar Professional Profile](mem://features/registrar-professional-profile) — Nationality, education, private CV upload, CMS expertise levels, five areas of work
 - [Patron Sponsor Strategy](mem://features/patron-sponsor-strategy) — Tiered patron list (patron_tier1/2/3) and framing for winning 4 to 5 main sponsors
+- [Statement of Support](mem://features/statement-of-support) — Public endorsement page with optional public listing; never call it a petition

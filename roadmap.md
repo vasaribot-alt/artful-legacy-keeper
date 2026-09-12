@@ -21,3 +21,7 @@
 - [x] Bank transfer details on /donate (interim until Stripe cards arrive): IBAN, BIC ABNANL2A, KvK
 - [ ] Activate Stripe once the bank cards arrive
 - [ ] User to select Dutch contacts on Alliance Outreach and generate/send
+
+## Statement of Support (2026-09-12)
+- [x] Public /statement-of-support page with optional public listing
+- [ ] Foundation admin view of signatories (export/contact base)

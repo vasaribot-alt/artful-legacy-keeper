@@ -303,6 +303,9 @@ const WhyGarfMatters = () => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
+            <Link to="/statement-of-support">
+              <Button variant="outline">Sign the Statement of Support</Button>
+            </Link>
             <Link to="/contact">
               <Button variant="outline">Talk to us</Button>
             </Link>
