@@ -155,6 +155,7 @@ const App = () => (
           <Route path="/foundation/alliance" element={<AllianceAdmin />} />
           <Route path="/foundation/alliance-outreach" element={<AllianceOutreach />} />
           <Route path="/foundation/email-log" element={<EmailLog />} />
+          <Route path="/foundation/statement-signatories" element={<StatementSignatories />} />
           <Route path="/registrar" element={<RegistrarDashboard />} />
           <Route path="/registrar/client/:ownerId/*" element={<RegistrarClientView />} />
           <Route path="/donate" element={<Donate />} />
