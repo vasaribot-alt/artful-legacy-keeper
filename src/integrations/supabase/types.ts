@@ -3197,6 +3197,42 @@ export type Database = {
         }
         Relationships: []
       }
+      statement_signatories: {
+        Row: {
+          comment: string | null
+          country: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_public: boolean
+          organisation: string | null
+          signatory_type: string
+        }
+        Insert: {
+          comment?: string | null
+          country?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          is_public?: boolean
+          organisation?: string | null
+          signatory_type?: string
+        }
+        Update: {
+          comment?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_public?: boolean
+          organisation?: string | null
+          signatory_type?: string
+        }
+        Relationships: []
+      }
       storage_tiers: {
         Row: {
           created_at: string
@@ -3660,6 +3696,17 @@ export type Database = {
           year: number
         }[]
       }
+      get_statement_signatories: {
+        Args: never
+        Returns: {
+          country: string
+          created_at: string
+          display_name: string
+          organisation: string
+          signatory_type: string
+        }[]
+      }
+      get_statement_signatory_count: { Args: never; Returns: number }
       get_user_storage_status: {
         Args: { _user_id: string }
         Returns: {
