@@ -99,6 +99,9 @@ const Index = () => {
           <GarfLogo className="h-10 sm:h-14 lg:h-16 shrink-0" />
           <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto ml-auto [&>*]:shrink-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
+            <Link to="/why-garf-matters" className="text-sm font-medium text-foreground hover:opacity-70 transition-opacity">
+              Why GARF
+            </Link>
             <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               About
             </Link>
@@ -170,6 +173,11 @@ const Index = () => {
             <Link to="/founding-artists">
               <Button variant="outline" size="lg">
                 Search the Registry
+              </Button>
+            </Link>
+            <Link to="/why-garf-matters">
+              <Button variant="ghost" size="lg" className="gap-2">
+                Why GARF matters <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
@@ -474,6 +482,12 @@ const Index = () => {
             <div className="font-medium text-foreground mb-2">Registration</div>
             <div>KvK 42024490</div>
             <div>Stichting under Dutch law</div>
+            <div className="mt-2">
+              <Link to="/why-garf-matters" className="hover:text-foreground">Why GARF matters</Link>
+            </div>
+            <div>
+              <Link to="/statement-of-support" className="hover:text-foreground">Statement of Support</Link>
+            </div>
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
