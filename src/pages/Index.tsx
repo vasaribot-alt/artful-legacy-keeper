@@ -253,6 +253,31 @@ const Index = () => {
       </section>
 
 
+      {/* Statement of Support */}
+      <section className="py-16 px-6 border-t border-border bg-foreground text-background">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+          <div className="space-y-3">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-background/60 font-medium">
+              Now open for signatures
+            </p>
+            <h2 className="text-2xl md:text-3xl leading-tight">
+              Sign the Statement of Support for verified artist documentation
+            </h2>
+            <p className="text-sm text-background/70 leading-relaxed max-w-xl">
+              The record of this generation's work should not depend on a subscription.
+              Add your name, publicly or privately, to support independent, permanent
+              documentation of contemporary art.
+            </p>
+          </div>
+          <Link to="/statement-of-support" className="shrink-0">
+            <Button variant="outline" size="lg" className="gap-2 border-background text-background hover:bg-background hover:text-foreground">
+              Sign the Statement <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+
       {/* Features */}
       <section className="py-20 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto">
