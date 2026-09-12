@@ -32,6 +32,7 @@ const getNavItems = (role: AppRole) => {
       { title: "Global Alliance", url: "/foundation/alliance", icon: Network },
       { title: "Alliance Outreach", url: "/foundation/alliance-outreach", icon: Network },
       { title: "Email Log", url: "/foundation/email-log", icon: Mail },
+      { title: "Statement Signatories", url: "/foundation/statement-signatories", icon: ScrollText },
       { title: "Registrar Registry", url: "/foundation/registrars", icon: ShieldCheck },
       { title: "Documents", url: "/foundation/documents", icon: FolderOpen },
     ];

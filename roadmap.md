@@ -24,4 +24,4 @@
 
 ## Statement of Support (2026-09-12)
 - [x] Public /statement-of-support page with optional public listing
-- [ ] Foundation admin view of signatories (export/contact base)
+- [x] Foundation admin view of signatories (export/contact base)
