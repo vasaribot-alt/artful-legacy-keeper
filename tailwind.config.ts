@@ -65,6 +65,10 @@ export default {
           DEFAULT: "hsl(var(--highlight))",
           foreground: "hsl(var(--highlight-foreground))",
         },
+        tone: {
+          2: "hsl(var(--tone-2))",
+          3: "hsl(var(--tone-3))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
