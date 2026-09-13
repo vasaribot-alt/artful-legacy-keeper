@@ -1,0 +1,1 @@
+UPDATE public.alliance_outreach_targets SET notes = 'Museum patron; Latin American and global contemporary. Contact via website form at https://jmperezfamilyfoundation.org/contact/ — foundation form is preferred over contacting the museum directly.' WHERE id = '37317789-ac35-49be-9c82-111ec9f28c67';
