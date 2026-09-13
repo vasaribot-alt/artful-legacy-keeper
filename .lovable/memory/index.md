@@ -1,7 +1,8 @@
 - [Folder Tree Upload](mem://features/folder-tree-upload) — Recursive folder/drag-drop ingest of nested photo archives, "1 - Title" folder labels, resumable queue
 - [Partner Organisations](mem://features/partner-organisations) — /join/:slug member links and aggregate-only /partners/:slug board dashboards, umbrella + per country committee keys
 - [AI Research Workspace](mem://features/ai-research-workspace) — /research staging area where AI-found profile, CV, artwork and image data is reviewed before entering the archive
-- [Invitation Applications](mem://features/invitation-applications) — Public /apply-for-invitation form plus Foundation review that issues invite codes by email
+- [Invitation Language Downloads](mem://features/invitation-language-downloads) — Public /invitation page with the artist invitation PDF in EN/DE/FR/ES/IT/PL
+- [Museum Research Bridge](mem://features/museum-research-bridge) — Framing: today's artists are tomorrow's history; GARF preserves documentation museums need for future research
 - [Creative Europe Consortium](mem://features/creative-europe-consortium) — Nordic-Baltic geography for the Creative Europe medium-scale application
 - [Creative Europe Institutions](mem://features/creative-europe-institutions) — Museum/university candidates per country for the EU consortium
 - [IACCCA Outreach](mem://features/iaccca-outreach) — 58 corporate collection members tagged IACCCA, two-part awareness plus support ask
