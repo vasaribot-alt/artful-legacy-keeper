@@ -82,6 +82,10 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const [site, setSite] = useState<SiteData | null>(null);
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [lightbox, setLightbox] = useState<Artwork | null>(null);
+  const [cvEntries, setCvEntries] = useState<CvEntry[]>([]);
+  const [exhibitions, setExhibitions] = useState<SiteExhibition[]>([]);
+  const [catalogues, setCatalogues] = useState<SiteCatalogue[]>([]);
+  const [news, setNews] = useState<SiteNews[]>([]);
 
   useEffect(() => {
     (async () => {
