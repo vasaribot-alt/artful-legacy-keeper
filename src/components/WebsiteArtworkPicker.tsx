@@ -79,7 +79,10 @@ export const WebsiteArtworkPicker = ({
     });
   }, [artworks]);
 
-  const setOne = (id: string) => onSelectionChange(new Set(id ? [id] : []));
+  const setOne = (id: string) => {
+    onSelectionChange(new Set(id ? [id] : []));
+    if (id) setCollapsed(true);
+  };
   const toggle = (id: string, checked: boolean) => {
     const next = new Set(selectedIds);
     if (checked) next.add(id); else next.delete(id);
