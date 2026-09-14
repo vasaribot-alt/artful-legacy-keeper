@@ -34,5 +34,9 @@ export const CustomDomainSite = () => {
   }, []);
 
   if (!slug) return null;
-  return <ArtistSite slugOverride={slug} />;
+  return (
+    <div className="fixed inset-0 z-[60] overflow-y-auto bg-background">
+      <ArtistSite slugOverride={slug} />
+    </div>
+  );
 };

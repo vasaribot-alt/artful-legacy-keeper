@@ -88,6 +88,7 @@ const getNavItems = (role: AppRole) => {
     { title: "Files", url: "/files", icon: FolderSearch },
     { title: "Correspondence", url: "/correspondence", icon: Mail },
     { title: "Research", url: "/research", icon: Sparkles },
+    { title: "My Website", url: "/my-website", icon: Globe },
 
     { title: "Invite Friends", url: "/invite-friends", icon: UserPlus },
   ];

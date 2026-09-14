@@ -97,6 +97,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <CustomDomainSite />
       <Router>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -140,6 +141,9 @@ const App = () => (
           <Route path="/portfolio/shared/:token" element={<PortfolioShared />} />
           <Route path="/founding-artists" element={<FoundingArtists />} />
           <Route path="/artist/:id" element={<PublicArtistProfile />} />
+          <Route path="/my-website" element={<MyWebsite />} />
+          <Route path="/site/:slug" element={<ArtistSite />} />
+          <Route path="/site/:slug/:page" element={<ArtistSite />} />
           <Route path="/foundation" element={<FoundationPitch />} />
           <Route path="/foundation/admin" element={<FoundationDashboard />} />
           <Route path="/foundation/documents" element={<FoundationDocuments />} />
