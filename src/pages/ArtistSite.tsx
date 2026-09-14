@@ -68,7 +68,9 @@ interface Artwork {
   images: { storage_path: string; web_storage_path?: string | null; display_order: number }[];
 }
 
-type Page = "home" | "works" | "about" | "contact";
+type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news";
+
+const SUB_PAGES = ["works", "about", "contact", "cv", "exhibitions", "publications", "news"];
 
 const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const params = useParams<{ slug: string; page?: string }>();
