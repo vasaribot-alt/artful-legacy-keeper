@@ -456,6 +456,127 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
             </div>
           </div>
         )}
+        {page === "exhibitions" && showExhibitions && (
+          <div className="mx-auto max-w-3xl px-6 py-16 print:py-0">
+            <h1 className="font-serif text-2xl">Exhibitions</h1>
+            {exhibitions.length === 0 && (
+              <p className="mt-8 text-sm text-muted-foreground">Exhibitions will appear here shortly.</p>
+            )}
+            {[
+              { show: Boolean(sections.exh_upcoming), title: "Upcoming", list: upcoming },
+              { show: Boolean(sections.exh_solo), title: "Solo exhibitions", list: soloList },
+              { show: Boolean(sections.exh_group), title: "Group exhibitions", list: groupList },
+            ]
+              .filter((block) => block.show && block.list.length > 0)
+              .map((block) => (
+                <section key={block.title} className="mt-12">
+                  <h2 className="text-xs uppercase tracking-widest text-muted-foreground">{block.title}</h2>
+                  <ul className="mt-5 divide-y divide-border border-t border-border">
+                    {block.list.map((ex) => (
+                      <li key={ex.id} className="py-5">
+                        <p className="text-sm font-medium">
+                          {ex.title}
+                          {exhibitionYear(ex) ? <span className="text-muted-foreground">, {exhibitionYear(ex)}</span> : null}
+                        </p>
+                        {exhibitionLine(ex) && <p className="mt-1 text-sm text-muted-foreground">{exhibitionLine(ex)}</p>}
+                        {ex.curator && <p className="mt-1 text-xs text-muted-foreground">Curated by {ex.curator}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+          </div>
+        )}
+
+        {page === "publications" && sections.publications && (
+          <div className="mx-auto max-w-4xl px-6 py-16">
+            <h1 className="font-serif text-2xl">Publications</h1>
+            {catalogues.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">Publications will appear here shortly.</p>
+            ) : (
+              <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                {catalogues.map((cat) => {
+                  const cover = cat.cover_image_path
+                    ? supabase.storage.from("catalogue-covers").getPublicUrl(cat.cover_image_path).data.publicUrl
+                    : null;
+                  return (
+                    <article key={cat.id}>
+                      {cover && <img src={cover} alt={cat.title} loading="lazy" className="mb-4 w-full object-contain" />}
+                      <p className="text-sm font-medium">{cat.title}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {[cat.publisher, cat.publication_year].filter(Boolean).join(", ")}
+                      </p>
+                      {cat.authors && <p className="mt-1 text-xs text-muted-foreground">{cat.authors}</p>}
+                      {cat.isbn && <p className="mt-1 text-xs text-muted-foreground">ISBN {cat.isbn}</p>}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {page === "cv" && (sections.cv_web || sections.cv_pdf) && (
+          <div className="mx-auto max-w-3xl px-6 py-16">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h1 className="font-serif text-2xl">Curriculum Vitae</h1>
+              {sections.cv_pdf && cvEntries.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="text-sm underline underline-offset-4 print:hidden"
+                >
+                  Download as PDF
+                </button>
+              )}
+            </div>
+            {cvEntries.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">The CV will appear here shortly.</p>
+            ) : !sections.cv_web ? (
+              <p className="mt-8 text-sm text-muted-foreground print:hidden">
+                Use the download above to save this CV.
+              </p>
+            ) : null}
+            {cvEntries.length > 0 && (
+              <div className={sections.cv_web ? "" : "hidden print:block"}>
+                {cvSections.map((section) => (
+                  <section key={section} className="mt-12">
+                    <h2 className="text-xs uppercase tracking-widest text-muted-foreground">{section}</h2>
+                    <ul className="mt-5 space-y-3 border-t border-border pt-5">
+                      {cvEntries
+                        .filter((entry) => entry.section === section)
+                        .map((entry) => (
+                          <li key={entry.id} className="flex gap-4 text-sm">
+                            <span className="w-14 shrink-0 text-muted-foreground">{entry.year || ""}</span>
+                            <span>{entry.entry_text}</span>
+                          </li>
+                        ))}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {page === "news" && sections.news && (
+          <div className="mx-auto max-w-2xl px-6 py-16">
+            <h1 className="font-serif text-2xl">News</h1>
+            {news.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">News will appear here shortly.</p>
+            ) : (
+              <ul className="mt-10 divide-y divide-border border-t border-border">
+                {news.map((post) => (
+                  <li key={post.id} className="py-8">
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">{post.news_date}</p>
+                    <h2 className="mt-2 font-serif text-lg">{post.title}</h2>
+                    {post.body && <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{post.body}</p>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </main>
 
       <footer className="border-t border-border">
