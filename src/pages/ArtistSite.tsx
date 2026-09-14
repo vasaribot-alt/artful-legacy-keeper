@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
-import { ArrowRight, Globe, Mail, MapPin, Phone, X } from "lucide-react";
+import { ArrowRight, Clock, Globe, Mail, MapPin, Phone, X } from "lucide-react";
 
 interface SiteData {
   user_id: string;
@@ -24,7 +24,18 @@ interface SiteData {
   website: string | null;
   biography: string | null;
   social_media_links: { platform: string; url: string }[] | null;
-  galleries: { name: string; phone: string; website: string }[] | null;
+  galleries: {
+    name: string;
+    phone: string;
+    website: string;
+    email?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    hours?: string;
+    description?: string;
+    photo_url?: string;
+  }[] | null;
   contact_visibility: Record<string, boolean> | null;
   global_artist_id: number;
   home_layout: "portrait" | "featured" | "grid";
