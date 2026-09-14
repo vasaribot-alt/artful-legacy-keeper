@@ -3838,6 +3838,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      has_published_artist_site: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       has_registrar_access: {
         Args: { _owner_id: string; _registrar_id: string }
         Returns: boolean
