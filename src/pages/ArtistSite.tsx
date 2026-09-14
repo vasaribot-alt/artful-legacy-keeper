@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
-import { ArrowRight, Clock, Globe, Mail, MapPin, Phone, X } from "lucide-react";
+import { SocialPlatformIcon } from "@/components/SocialLinks";
+import { ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
 
 interface SiteData {
   user_id: string;
@@ -175,7 +176,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-14 sm:py-20">
+      <main className={`mx-auto max-w-5xl px-6 ${page === "contact" ? "py-20 sm:py-28" : "py-14 sm:py-20"}`}>
         {page === "home" && (
           <div className={site.home_layout === "grid" ? "space-y-10" : "grid items-center gap-10 sm:grid-cols-2"}>
             <div>
@@ -274,15 +275,15 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         {page === "contact" && (
           <div className="max-w-3xl">
             <h1 className="font-serif text-3xl">Contact</h1>
-            <div className="mt-8 space-y-4 text-sm">
+            <div className="mt-10 space-y-5 text-sm">
               {showEmail && (
-                <a href={`mailto:${site.email}`} className="flex items-center gap-3 hover:underline underline-offset-4">
-                  <Mail className="h-4 w-4 text-muted-foreground" /> {site.email}
+                <a href={`mailto:${site.email}`} className="flex items-center gap-5 hover:underline underline-offset-4">
+                  <Mail className="h-7 w-7 stroke-[1.5]" aria-hidden="true" /> {site.email}
                 </a>
               )}
               {showPhone && (
-                <p className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-muted-foreground" /> {site.phone_prefix} {site.phone}
+                <p className="flex items-center gap-5">
+                  <PhoneCall className="h-7 w-7 stroke-[1.5]" aria-hidden="true" /> {site.phone_prefix} {site.phone}
                 </p>
               )}
               {site.website && (
@@ -291,10 +292,18 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                 </a>
               )}
               {Array.isArray(site.social_media_links) && site.social_media_links.length > 0 && (
-                <div className="flex flex-wrap gap-3 pt-2">
+                <div className="flex flex-wrap items-center gap-7 pt-7">
                   {site.social_media_links.map((s, i) => (
-                    <a key={i} href={s.url} target="_blank" rel="noreferrer" className="rounded-md border border-border px-3 py-1.5 text-xs capitalize hover:bg-accent">
-                      {s.platform}
+                    <a
+                      key={i}
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-8 w-8 items-center justify-center text-foreground transition-opacity hover:opacity-55"
+                      aria-label={`${name} on ${s.platform}`}
+                      title={s.platform}
+                    >
+                      <SocialPlatformIcon platform={s.platform} className="h-7 w-7" />
                     </a>
                   ))}
                 </div>
@@ -338,7 +347,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                             )}
                             {g.phone && (
                               <p className="flex items-start gap-2 text-xs text-muted-foreground">
-                                <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                <PhoneCall className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                                 <span>{g.phone}</span>
                               </p>
                             )}
