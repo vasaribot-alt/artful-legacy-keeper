@@ -307,6 +307,8 @@ const FoundationDashboard = () => {
         {/* Registered Users */}
         <RegisteredUsersOverview />
 
+        <WebsiteSectionsOverview />
+
         {/* Donor Management */}
         <DonorManager />
       </div>
