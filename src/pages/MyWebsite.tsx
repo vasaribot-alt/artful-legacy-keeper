@@ -73,6 +73,7 @@ const MyWebsite = () => {
   const [homeLayout, setHomeLayout] = useState<"portrait" | "featured" | "grid">("portrait");
   const [featuredArtworkId, setFeaturedArtworkId] = useState<Set<string>>(new Set());
   const [homeArtworkIds, setHomeArtworkIds] = useState<Set<string>>(new Set());
+  const [sections, setSections] = useState<Record<string, boolean>>({});
 
   const siteUrl = useMemo(
     () => (slug ? `${window.location.origin}/site/${slug}` : null),
