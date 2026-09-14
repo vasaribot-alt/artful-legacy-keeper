@@ -579,7 +579,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         )}
       </main>
 
-      <footer className="border-t border-border">
+      <footer className="border-t border-border print:hidden">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-6 py-6 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} {name}</span>
           <Link to="/" className="hover:text-foreground">Hosted by the Global Artist Registry Foundation</Link>
