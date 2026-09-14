@@ -272,7 +272,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         )}
 
         {page === "contact" && (
-          <div className="max-w-2xl">
+          <div className="max-w-3xl">
             <h1 className="font-serif text-3xl">Contact</h1>
             <div className="mt-8 space-y-4 text-sm">
               {showEmail && (
@@ -300,19 +300,64 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                 </div>
               )}
               {galleryList.length > 0 && (
-                <div className="pt-6">
+                <div className="pt-8">
                   <h2 className="text-xs uppercase tracking-widest text-muted-foreground">Represented by</h2>
-                  <div className="mt-3 space-y-3">
-                    {galleryList.map((g, i) => (
-                      <div key={i}>
-                        {g.website ? (
-                          <a href={g.website} target="_blank" rel="noreferrer" className="font-medium hover:underline underline-offset-4">{g.name}</a>
-                        ) : (
-                          <span className="font-medium">{g.name}</span>
-                        )}
-                        {g.phone && <p className="text-muted-foreground">{g.phone}</p>}
-                      </div>
-                    ))}
+                  <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                    {galleryList.map((g, i) => {
+                      const place = [g.city, g.country].filter(Boolean).join(", ");
+                      return (
+                        <div key={i} className="overflow-hidden rounded-md border border-border">
+                          {g.photo_url && (
+                            <img
+                              src={g.photo_url}
+                              alt={`${g.name} gallery`}
+                              className="h-40 w-full object-cover"
+                              loading="lazy"
+                            />
+                          )}
+                          <div className="space-y-2 p-4">
+                            {g.website ? (
+                              <a href={g.website} target="_blank" rel="noreferrer" className="font-medium hover:underline underline-offset-4">{g.name}</a>
+                            ) : (
+                              <span className="font-medium">{g.name}</span>
+                            )}
+                            {g.description && (
+                              <p className="text-xs leading-relaxed text-muted-foreground">{g.description}</p>
+                            )}
+                            {(g.address || place) && (
+                              <p className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                <span>{[g.address, place].filter(Boolean).join(", ")}</span>
+                              </p>
+                            )}
+                            {g.hours && (
+                              <p className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                <span>{g.hours}</span>
+                              </p>
+                            )}
+                            {g.phone && (
+                              <p className="flex items-start gap-2 text-xs text-muted-foreground">
+                                <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                <span>{g.phone}</span>
+                              </p>
+                            )}
+                            {g.email && (
+                              <a href={`mailto:${g.email}`} className="flex items-start gap-2 text-xs text-muted-foreground hover:text-foreground">
+                                <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                <span>{g.email}</span>
+                              </a>
+                            )}
+                            {g.website && (
+                              <a href={g.website} target="_blank" rel="noreferrer" className="flex items-start gap-2 text-xs text-muted-foreground hover:text-foreground">
+                                <Globe className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                <span>{g.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
