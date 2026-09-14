@@ -42,7 +42,19 @@ interface SiteData {
   home_layout: "portrait" | "featured" | "grid";
   home_featured_artwork_id: string | null;
   home_artwork_ids: string[] | null;
+  sections: Record<string, boolean> | null;
 }
+
+interface CvEntry { id: string; section: string; entry_text: string; year: string | null; display_order: number | null }
+interface SiteExhibition {
+  id: string; title: string; exhibition_type: string; opening_date: string | null; closing_date: string | null;
+  venue: string | null; city: string | null; country: string | null; curator: string | null; description: string | null;
+}
+interface SiteCatalogue {
+  id: string; title: string; publication_year: number | null; publisher: string | null; authors: string | null;
+  isbn: string | null; cover_image_path: string | null;
+}
+interface SiteNews { id: string; title: string; body: string | null; news_date: string }
 
 interface Artwork {
   id: string;
