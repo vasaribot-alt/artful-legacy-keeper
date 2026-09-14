@@ -65,6 +65,7 @@ export const WebsiteArtworkPicker = ({
   emptyText = "No works registered yet.",
 }: WebsiteArtworkPickerProps) => {
   const [openSeries, setOpenSeries] = useState<Set<string>>(new Set());
+  const [collapsed, setCollapsed] = useState(selectedIds.size > 0);
   const groups = useMemo(() => {
     const grouped = new Map<string, WebsiteArtworkOption[]>();
     artworks.forEach((artwork) => {
