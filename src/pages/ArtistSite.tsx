@@ -95,7 +95,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
           .in("artwork_id", list.map((a) => a.id))
           .order("display_order", { ascending: true });
         const map = new Map<string, Artwork["images"]>();
-        (imgs || []).forEach((img: any) => {
+        (imgs || []).forEach((img) => {
           if (!map.has(img.artwork_id)) map.set(img.artwork_id, []);
           const artworkImages = map.get(img.artwork_id);
           if (artworkImages) artworkImages.push(img);
