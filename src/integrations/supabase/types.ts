@@ -184,6 +184,42 @@ export type Database = {
           },
         ]
       }
+      artist_news: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_published: boolean
+          news_date: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          news_date?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          news_date?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       artist_websites: {
         Row: {
           about_text: string | null
@@ -199,6 +235,7 @@ export type Database = {
           id: string
           is_enabled: boolean
           legacy_mode: boolean
+          sections: Json
           setup_fee_paid_at: string | null
           site_title: string | null
           slug: string
@@ -220,6 +257,7 @@ export type Database = {
           id?: string
           is_enabled?: boolean
           legacy_mode?: boolean
+          sections?: Json
           setup_fee_paid_at?: string | null
           site_title?: string | null
           slug: string
@@ -241,6 +279,7 @@ export type Database = {
           id?: string
           is_enabled?: boolean
           legacy_mode?: boolean
+          sections?: Json
           setup_fee_paid_at?: string | null
           site_title?: string | null
           slug?: string
@@ -3671,6 +3710,7 @@ export type Database = {
           legacy_mode: boolean
           phone: string
           phone_prefix: string
+          sections: Json
           site_title: string
           slug: string
           social_media_links: Json
