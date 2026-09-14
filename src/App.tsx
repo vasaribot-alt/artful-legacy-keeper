@@ -82,6 +82,9 @@ import StatementOfSupport from "./pages/StatementOfSupport";
 import StatementSignatories from "./pages/StatementSignatories";
 import Tutorials from "./pages/Tutorials";
 import News from "./pages/News";
+import MyWebsite from "./pages/MyWebsite";
+import ArtistSite from "./pages/ArtistSite";
+import { CustomDomainSite } from "./components/CustomDomainSite";
 
 import NotFound from "./pages/NotFound";
 

@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
-import { formatDimensions } from "@/lib/formatDimensions";
-import { ArrowLeft, ArrowRight, Globe, Mail, MapPin, Phone, X } from "lucide-react";
+import { ArrowRight, Globe, Mail, MapPin, Phone, X } from "lucide-react";
 
 interface SiteData {
   user_id: string;
@@ -48,7 +47,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const params = useParams<{ slug: string; page?: string }>();
   const slug = (slugOverride || params.slug || "").toLowerCase();
   const page: Page = (["works", "about", "contact"].includes(params.page || "") ? params.page : "home") as Page;
-  const { preferInches } = useUnitPreference();
+  const { formatDims } = useUnitPreference();
 
   const [loading, setLoading] = useState(true);
   const [site, setSite] = useState<SiteData | null>(null);
@@ -302,7 +301,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
             <div className="mt-4 text-center text-sm text-white">
               <p className="font-medium">{lightbox.title}{lightbox.year ? `, ${lightbox.year}` : ""}</p>
               <p className="text-white/70">
-                {[lightbox.medium, formatDimensions(lightbox.height, lightbox.width, lightbox.depth, preferInches)].filter(Boolean).join(" · ")}
+                {[lightbox.medium, formatDims(lightbox.height, lightbox.width, lightbox.depth)].filter(Boolean).join(" · ")}
               </p>
             </div>
           </div>
