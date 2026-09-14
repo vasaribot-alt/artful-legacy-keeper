@@ -193,6 +193,9 @@ export type Database = {
           created_at: string
           custom_domain: string | null
           custom_domain_status: string
+          home_artwork_ids: string[] | null
+          home_featured_artwork_id: string | null
+          home_layout: string
           id: string
           is_enabled: boolean
           legacy_mode: boolean
@@ -211,6 +214,9 @@ export type Database = {
           created_at?: string
           custom_domain?: string | null
           custom_domain_status?: string
+          home_artwork_ids?: string[] | null
+          home_featured_artwork_id?: string | null
+          home_layout?: string
           id?: string
           is_enabled?: boolean
           legacy_mode?: boolean
@@ -229,6 +235,9 @@ export type Database = {
           created_at?: string
           custom_domain?: string | null
           custom_domain_status?: string
+          home_artwork_ids?: string[] | null
+          home_featured_artwork_id?: string | null
+          home_layout?: string
           id?: string
           is_enabled?: boolean
           legacy_mode?: boolean
@@ -239,7 +248,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "artist_websites_home_featured_artwork_id_fkey"
+            columns: ["home_featured_artwork_id"]
+            isOneToOne: false
+            referencedRelation: "artworks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       artwork_catalogues: {
         Row: {
@@ -3648,6 +3665,9 @@ export type Database = {
           full_name: string
           galleries: Json
           global_artist_id: number
+          home_artwork_ids: string[]
+          home_featured_artwork_id: string
+          home_layout: string
           legacy_mode: boolean
           phone: string
           phone_prefix: string
