@@ -347,6 +347,42 @@ const MyWebsite = () => {
           </section>
 
           <section className="rounded-lg border border-border p-6">
+            <h2 className="font-medium">What your website contains</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Every website includes your about page with biography, your chosen works, and your
+              contact page with social media and gallery contacts. You can add any of the following.
+            </p>
+            <div className="mt-5 divide-y divide-border border-t border-border">
+              {SECTION_CHOICES.map((choice) => (
+                <label key={choice.key} className="flex cursor-pointer items-center justify-between gap-6 py-4">
+                  <span>
+                    <span className="block text-sm font-medium">{choice.label}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{choice.text}</span>
+                  </span>
+                  <Switch
+                    checked={Boolean(sections[choice.key])}
+                    onCheckedChange={(value) => setSections((prev) => ({ ...prev, [choice.key]: Boolean(value) }))}
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">
+              Your CV, exhibitions and publications come from the records you already keep here,
+              so nothing needs writing twice.
+            </p>
+          </section>
+
+          {sections.news && userId && (
+            <section className="rounded-lg border border-border p-6">
+              <h2 className="font-medium">News</h2>
+              <p className="mt-1 mb-5 text-sm text-muted-foreground">
+                Write short notes with a date. Only the ones marked visible appear on your website.
+              </p>
+              <WebsiteNewsManager userId={userId} />
+            </section>
+          )}
+
+          <section className="rounded-lg border border-border p-6">
             <h2 className="font-medium flex items-center gap-2"><Globe className="h-4 w-4" /> Your own domain</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               If you own a domain (for example yourname.com), enter it here. The Foundation will
