@@ -151,7 +151,47 @@ export const WebsiteArtworkPicker = ({
     </Tabs>
   );
 
-  return mode === "single" ? (
-    <RadioGroup value={Array.from(selectedIds)[0] || ""} onValueChange={setOne}>{content}</RadioGroup>
-  ) : content;
+  const chosen = artworks.filter((artwork) => selectedIds.has(artwork.id));
+  const summary =
+    mode === "single"
+      ? chosen[0]
+        ? `${chosen[0].title}${chosen[0].year ? ` · ${chosen[0].year}` : ""}`
+        : "No work chosen yet"
+      : `${chosen.length} of ${artworks.length} work${artworks.length === 1 ? "" : "s"} chosen`;
+
+  if (collapsed) {
+    return (
+      <div className="flex items-center justify-between gap-4 rounded-md border border-border p-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex shrink-0 gap-1">
+            {chosen.slice(0, 4).map((artwork) => (
+              <div key={artwork.id} className="h-12 w-10 overflow-hidden rounded-sm bg-muted">
+                {artwork.imageUrl ? (
+                  <img src={artwork.imageUrl} alt={artwork.title} className="h-full w-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-muted-foreground">
+                    <ImageOff className="h-3.5 w-3.5" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <span className="min-w-0 truncate text-sm">{summary}</span>
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={() => setCollapsed(false)}>Change</Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {mode === "single" ? (
+        <RadioGroup value={Array.from(selectedIds)[0] || ""} onValueChange={setOne}>{content}</RadioGroup>
+      ) : content}
+      <div className="flex items-center justify-between gap-4 border-t border-border pt-3">
+        <span className="text-xs text-muted-foreground">{summary}</span>
+        <Button type="button" variant="outline" size="sm" onClick={() => setCollapsed(true)}>Done</Button>
+      </div>
+    </div>
+  );
 };
