@@ -184,6 +184,63 @@ export type Database = {
           },
         ]
       }
+      artist_websites: {
+        Row: {
+          about_text: string | null
+          artwork_ids: string[] | null
+          billing_status: string
+          contact_options: Json
+          created_at: string
+          custom_domain: string | null
+          custom_domain_status: string
+          id: string
+          is_enabled: boolean
+          legacy_mode: boolean
+          setup_fee_paid_at: string | null
+          site_title: string | null
+          slug: string
+          tagline: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          about_text?: string | null
+          artwork_ids?: string[] | null
+          billing_status?: string
+          contact_options?: Json
+          created_at?: string
+          custom_domain?: string | null
+          custom_domain_status?: string
+          id?: string
+          is_enabled?: boolean
+          legacy_mode?: boolean
+          setup_fee_paid_at?: string | null
+          site_title?: string | null
+          slug: string
+          tagline?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          about_text?: string | null
+          artwork_ids?: string[] | null
+          billing_status?: string
+          contact_options?: Json
+          created_at?: string
+          custom_domain?: string | null
+          custom_domain_status?: string
+          id?: string
+          is_enabled?: boolean
+          legacy_mode?: boolean
+          setup_fee_paid_at?: string | null
+          site_title?: string | null
+          slug?: string
+          tagline?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       artwork_catalogues: {
         Row: {
           artwork_id: string
@@ -3575,6 +3632,33 @@ export type Database = {
       }
       find_artist_by_email: { Args: { _email: string }; Returns: string }
       find_registrar_by_email: { Args: { _email: string }; Returns: string }
+      get_artist_site: {
+        Args: { _key: string }
+        Returns: {
+          about_text: string
+          artwork_ids: string[]
+          avatar_url: string
+          biography: string
+          birth_year: number
+          city: string
+          contact_options: Json
+          contact_visibility: Json
+          country: string
+          email: string
+          full_name: string
+          galleries: Json
+          global_artist_id: number
+          legacy_mode: boolean
+          phone: string
+          phone_prefix: string
+          site_title: string
+          slug: string
+          social_media_links: Json
+          tagline: string
+          user_id: string
+          website: string
+        }[]
+      }
       get_cr_submission_status: {
         Args: { _token: string }
         Returns: {
@@ -3751,6 +3835,10 @@ export type Database = {
         Returns: boolean
       }
       has_gallery_workspace_access: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
+      has_published_artist_site: {
         Args: { _user_id: string }
         Returns: boolean
       }

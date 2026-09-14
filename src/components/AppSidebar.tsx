@@ -1,4 +1,4 @@
-import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, FolderOpen, Camera, UserPlus, Building2, Landmark, TrendingUp, Network, ShieldCheck, Mail, Sparkles } from "lucide-react";
+import { User, Users, Images, FileText, Calendar, ScrollText, LogOut, Layers, Briefcase, BookOpen, Plus, Award, Warehouse, Palette, Archive, FolderSearch, FolderOpen, Camera, UserPlus, Building2, Landmark, TrendingUp, Network, ShieldCheck, Mail, Sparkles, Globe } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -88,6 +88,7 @@ const getNavItems = (role: AppRole) => {
     { title: "Files", url: "/files", icon: FolderSearch },
     { title: "Correspondence", url: "/correspondence", icon: Mail },
     { title: "Research", url: "/research", icon: Sparkles },
+    { title: "My Website", url: "/my-website", icon: Globe },
 
     { title: "Invite Friends", url: "/invite-friends", icon: UserPlus },
   ];
