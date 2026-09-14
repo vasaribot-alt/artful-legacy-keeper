@@ -142,6 +142,7 @@ const MyWebsite = () => {
         setHomeLayout(s.home_layout || "portrait");
         setFeaturedArtworkId(s.home_featured_artwork_id ? new Set([s.home_featured_artwork_id]) : new Set());
         setHomeArtworkIds(new Set(s.home_artwork_ids || []));
+        setSections(s.sections || {});
       } else {
         setSlug(slugify(name));
         setSiteTitle(name);
