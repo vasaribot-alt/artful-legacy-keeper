@@ -120,6 +120,52 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         });
         setArtworks(list.map((a) => ({ ...a, images: map.get(a.id) || [] })));
       }
+      const sections = (row.sections || {}) as Record<string, boolean>;
+
+      if (sections.cv_web || sections.cv_pdf) {
+        const { data: profileRow } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("user_id", row.user_id)
+          .maybeSingle();
+        if (profileRow?.id) {
+          const { data: entries } = await supabase
+            .from("cv_entries")
+            .select("id, section, entry_text, year, display_order")
+            .eq("profile_id", profileRow.id)
+            .order("display_order", { ascending: true });
+          setCvEntries((entries as CvEntry[]) || []);
+        }
+      }
+
+      if (sections.exh_solo || sections.exh_group || sections.exh_upcoming) {
+        const { data: exs } = await supabase
+          .from("exhibitions")
+          .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, curator, description")
+          .eq("user_id", row.user_id)
+          .order("opening_date", { ascending: false, nullsFirst: false });
+        setExhibitions((exs as SiteExhibition[]) || []);
+      }
+
+      if (sections.publications) {
+        const { data: cats } = await supabase
+          .from("catalogues")
+          .select("id, title, publication_year, publisher, authors, isbn, cover_image_path")
+          .eq("user_id", row.user_id)
+          .order("publication_year", { ascending: false, nullsFirst: false });
+        setCatalogues((cats as SiteCatalogue[]) || []);
+      }
+
+      if (sections.news) {
+        const { data: posts } = await supabase
+          .from("artist_news")
+          .select("id, title, body, news_date")
+          .eq("user_id", row.user_id)
+          .eq("is_published", true)
+          .order("news_date", { ascending: false });
+        setNews((posts as SiteNews[]) || []);
+      }
+
       setLoading(false);
     })();
   }, [slug]);
