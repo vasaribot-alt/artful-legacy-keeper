@@ -171,6 +171,7 @@ const MyWebsite = () => {
       home_layout: homeLayout,
       home_featured_artwork_id: Array.from(featuredArtworkId)[0] || null,
       home_artwork_ids: homeArtworkIds.size > 0 ? Array.from(homeArtworkIds).slice(0, 6) : null,
+      sections,
       custom_domain: customDomain.trim() || null,
       custom_domain_status:
         customDomain.trim() && row?.custom_domain !== customDomain.trim()
