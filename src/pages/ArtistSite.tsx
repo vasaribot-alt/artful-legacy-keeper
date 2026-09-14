@@ -204,12 +204,28 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
   const name = site.site_title || site.full_name || "Artist";
   const base = `/site/${site.slug}`;
+  const sections = site.sections || {};
+  const showExhibitions = Boolean(sections.exh_solo || sections.exh_group || sections.exh_upcoming);
   const nav: { key: Page; label: string; to: string }[] = [
     { key: "home", label: name, to: base },
     { key: "works", label: "Works", to: `${base}/works` },
+    ...(showExhibitions ? [{ key: "exhibitions" as Page, label: "Exhibitions", to: `${base}/exhibitions` }] : []),
+    ...(sections.publications ? [{ key: "publications" as Page, label: "Publications", to: `${base}/publications` }] : []),
+    ...(sections.cv_web || sections.cv_pdf ? [{ key: "cv" as Page, label: "CV", to: `${base}/cv` }] : []),
+    ...(sections.news ? [{ key: "news" as Page, label: "News", to: `${base}/news` }] : []),
     { key: "about", label: "About", to: `${base}/about` },
     { key: "contact", label: "Contact", to: `${base}/contact` },
   ];
+
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = exhibitions.filter((ex) => (ex.opening_date || "") > today);
+  const past = exhibitions.filter((ex) => !((ex.opening_date || "") > today));
+  const soloList = past.filter((ex) => ex.exhibition_type === "solo");
+  const groupList = past.filter((ex) => ex.exhibition_type === "group");
+  const cvSections = Array.from(new Set(cvEntries.map((entry) => entry.section)));
+  const exhibitionLine = (ex: SiteExhibition) =>
+    [ex.venue, [ex.city, ex.country].filter(Boolean).join(", ")].filter(Boolean).join(", ");
+  const exhibitionYear = (ex: SiteExhibition) => (ex.opening_date ? ex.opening_date.slice(0, 4) : "");
 
   const showEmail = site.contact_options?.email && site.email;
   const showPhone = site.contact_options?.phone && site.phone;
