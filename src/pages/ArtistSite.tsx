@@ -75,7 +75,7 @@ const SUB_PAGES = ["works", "about", "contact", "cv", "exhibitions", "publicatio
 const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const params = useParams<{ slug: string; page?: string }>();
   const slug = (slugOverride || params.slug || "").toLowerCase();
-  const page: Page = (["works", "about", "contact"].includes(params.page || "") ? params.page : "home") as Page;
+  const page: Page = (SUB_PAGES.includes(params.page || "") ? params.page : "home") as Page;
   const { formatDims } = useUnitPreference();
 
   const [loading, setLoading] = useState(true);
