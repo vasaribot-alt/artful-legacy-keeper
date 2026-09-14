@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { WebsiteArtworkPicker, WebsiteArtworkOption } from "@/components/WebsiteArtworkPicker";
 import { useToast } from "@/hooks/use-toast";
-import { ExternalLink, Globe, Images, Loader2, Portrait, RectangleHorizontal } from "lucide-react";
+import { CircleUserRound, ExternalLink, Globe, Images, Loader2, RectangleHorizontal } from "lucide-react";
 
 interface WebsiteRow {
   id: string;
@@ -137,14 +137,6 @@ const MyWebsite = () => {
     })();
   }, []);
 
-  const toggleArtwork = (id: string, checked: boolean) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev ?? artworks.map((a) => a.id));
-      if (checked) next.add(id); else next.delete(id);
-      return next;
-    });
-  };
-
   const save = async () => {
     if (!userId) return;
     const cleanSlug = slugify(slug);
@@ -253,7 +245,7 @@ const MyWebsite = () => {
                 <label className="text-xs uppercase tracking-widest text-muted-foreground">Opening image</label>
                 <RadioGroup value={homeLayout} onValueChange={(value) => setHomeLayout(value as typeof homeLayout)} className="mt-3 grid gap-3 sm:grid-cols-3">
                   {[
-                    { value: "portrait", label: "Portrait", text: "Your profile photo", icon: Portrait },
+                    { value: "portrait", label: "Portrait", text: "Your profile photo", icon: CircleUserRound },
                     { value: "featured", label: "Featured work", text: "One prominent artwork", icon: RectangleHorizontal },
                     { value: "grid", label: "Works grid", text: "Up to six artworks", icon: Images },
                   ].map((choice) => (

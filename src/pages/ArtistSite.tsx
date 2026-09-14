@@ -63,7 +63,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
       const { data, error } = await supabase.rpc("get_artist_site", { _key: slug });
       const row = Array.isArray(data) ? data[0] : data;
       if (error || !row) { setLoading(false); return; }
-      setSite(row as SiteData);
+      setSite(row as unknown as SiteData);
 
       let query = supabase
         .from("artworks")
