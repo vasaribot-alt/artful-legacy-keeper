@@ -12,6 +12,7 @@ import { AppLayout } from "@/components/AppLayout";
 import DonorManager from "@/components/DonorManager";
 import ArtistInviteUpload from "@/components/ArtistInviteUpload";
 import RegisteredUsersOverview from "@/components/RegisteredUsersOverview";
+import WebsiteSectionsOverview from "@/components/WebsiteSectionsOverview";
 
 type Tier = "internationally_established" | "mid_career" | "emerging";
 
