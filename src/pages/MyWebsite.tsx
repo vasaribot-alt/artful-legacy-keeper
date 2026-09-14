@@ -30,7 +30,18 @@ interface WebsiteRow {
   home_layout: "portrait" | "featured" | "grid";
   home_featured_artwork_id: string | null;
   home_artwork_ids: string[] | null;
+  sections: Record<string, boolean> | null;
 }
+
+const SECTION_CHOICES: { key: string; label: string; text: string }[] = [
+  { key: "cv_web", label: "CV on the website", text: "Your CV shown as a page visitors can read" },
+  { key: "cv_pdf", label: "CV as a download", text: "A print-ready version visitors can save" },
+  { key: "exh_solo", label: "Solo exhibitions", text: "Your solo exhibitions, most recent first" },
+  { key: "exh_group", label: "Group exhibitions", text: "Your group exhibitions, most recent first" },
+  { key: "exh_upcoming", label: "Upcoming exhibitions", text: "Exhibitions that have not opened yet" },
+  { key: "publications", label: "Publications", text: "The catalogues you have recorded" },
+  { key: "news", label: "News", text: "Short dated notes you write yourself" },
+];
 
 const slugify = (value: string) =>
   value
