@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, X, Loader2, Sparkles } from "lucide-react";
+import { Search, Plus, X, Loader2, Sparkles, ImagePlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface GalleryRecord {
@@ -14,10 +16,17 @@ interface GalleryRecord {
   website: string | null;
 }
 
-interface SelectedGallery {
+export interface SelectedGallery {
   name: string;
   phone: string;
   website: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  hours?: string;
+  description?: string;
+  photo_url?: string;
 }
 
 interface GallerySearchProps {
@@ -25,12 +34,18 @@ interface GallerySearchProps {
   onGalleriesChange: (galleries: SelectedGallery[]) => void;
 }
 
+const emptyGallery = (): SelectedGallery => ({
+  name: "", phone: "", website: "", email: "",
+  address: "", city: "", country: "", hours: "", description: "", photo_url: "",
+});
+
 const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GalleryRecord[]>([]);
   const [searching, setSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [lookingUp, setLookingUp] = useState<number | null>(null);
+  const [uploading, setUploading] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -64,11 +79,24 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
     return () => clearTimeout(timeout);
   }, [query]);
 
-  const lookupGalleryInfo = async (galleryName: string, city: string | null, country: string | null, index: number) => {
+  const mergeLookup = (current: SelectedGallery, data: any): SelectedGallery => {
+    const next = { ...current };
+    const fields: (keyof SelectedGallery)[] = [
+      "website", "phone", "email", "address", "city", "country", "hours", "description",
+    ];
+    for (const f of fields) {
+      const value = (data?.[f] || "").trim?.() ?? "";
+      if (value && !next[f]) (next as any)[f] = value;
+    }
+    return next;
+  };
+
+  const lookupGalleryInfo = async (index: number) => {
+    const gallery = galleries[index];
     setLookingUp(index);
     try {
       const { data, error } = await supabase.functions.invoke("gallery-lookup", {
-        body: { gallery_name: galleryName, city, country },
+        body: { gallery_name: gallery.name, city: gallery.city || null, country: gallery.country || null },
       });
 
       if (error) {
@@ -76,18 +104,14 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
         return;
       }
 
-      if (data?.website || data?.phone) {
+      const merged = mergeLookup(gallery, data);
+      if (JSON.stringify(merged) !== JSON.stringify(gallery)) {
         const updated = [...galleries];
-        if (data.website && !updated[index].website) {
-          updated[index] = { ...updated[index], website: data.website };
-        }
-        if (data.phone && !updated[index].phone) {
-          updated[index] = { ...updated[index], phone: data.phone };
-        }
+        updated[index] = merged;
         onGalleriesChange(updated);
-        toast.success("Gallery info found!");
+        toast.success("Gallery info found");
       } else {
-        toast.info("No contact info found for this gallery");
+        toast.info("No new information found for this gallery");
       }
     } catch {
       toast.error("Failed to look up gallery info");
@@ -98,16 +122,17 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
 
   const addGalleryFromSearch = async (gallery: GalleryRecord) => {
     const newGallery: SelectedGallery = {
+      ...emptyGallery(),
       name: gallery.name,
-      phone: "",
       website: gallery.website || "",
+      city: gallery.city || "",
+      country: gallery.country || "",
     };
     const updated = [...galleries, newGallery];
     onGalleriesChange(updated);
     setQuery("");
     setShowDropdown(false);
 
-    // Auto-lookup contact info directly (avoid stale closure)
     const newIndex = updated.length - 1;
     setLookingUp(newIndex);
     try {
@@ -121,17 +146,11 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
         return;
       }
 
-      if (data?.website || data?.phone) {
-        const finalGallery = { ...newGallery };
-        if (data.website) finalGallery.website = data.website;
-        if (data.phone) finalGallery.phone = data.phone;
-        const finalList = [...updated];
-        finalList[newIndex] = finalGallery;
-        onGalleriesChange(finalList);
-        toast.success("Gallery info found!");
-      } else {
-        toast.info("No contact info found for this gallery");
-      }
+      const merged = mergeLookup(newGallery, data);
+      const finalList = [...updated];
+      finalList[newIndex] = merged;
+      onGalleriesChange(finalList);
+      toast.success("Gallery info found");
     } catch (e) {
       console.error("Gallery lookup exception:", e);
       toast.error("Failed to look up gallery info");
@@ -141,7 +160,7 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
   };
 
   const addCustomGallery = () => {
-    onGalleriesChange([...galleries, { name: "", phone: "", website: "" }]);
+    onGalleriesChange([...galleries, emptyGallery()]);
   };
 
   const removeGallery = (index: number) => {
@@ -152,6 +171,38 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
     const updated = [...galleries];
     updated[index] = { ...updated[index], [field]: value };
     onGalleriesChange(updated);
+  };
+
+  const uploadPhoto = async (index: number, file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Please choose an image under 10 MB");
+      return;
+    }
+    setUploading(index);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) {
+        toast.error("Please sign in again");
+        return;
+      }
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${uid}/galleries/${Date.now()}-${index}.${ext}`;
+      const { error } = await supabase.storage.from("profile-photos").upload(path, file, { upsert: true });
+      if (error) {
+        toast.error("Upload failed");
+        return;
+      }
+      const { data: pub } = supabase.storage.from("profile-photos").getPublicUrl(path);
+      updateGallery(index, "photo_url", pub.publicUrl);
+      toast.success("Photo added");
+    } finally {
+      setUploading(null);
+    }
   };
 
   return (
@@ -205,22 +256,22 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
 
       <div className="space-y-3">
         {galleries.map((gallery, i) => (
-          <div key={i} className="p-4 rounded-sm border border-border space-y-3">
+          <div key={i} className="p-4 rounded-sm border border-border space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">
                 Gallery {i + 1}
                 {lookingUp === i && (
                   <span className="ml-2 inline-flex items-center gap-1 text-xs text-primary">
-                    <Loader2 className="w-3 h-3 animate-spin" /> Finding contact info…
+                    <Loader2 className="w-3 h-3 animate-spin" /> Finding gallery details…
                   </span>
                 )}
               </span>
               <div className="flex items-center gap-1">
-                {gallery.name && (!gallery.phone || !gallery.website) && lookingUp !== i && (
+                {gallery.name && lookingUp !== i && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => lookupGalleryInfo(gallery.name, null, null, i)}
+                    onClick={() => lookupGalleryInfo(i)}
                     className="gap-1 text-xs h-7"
                   >
                     <Sparkles className="w-3 h-3" /> Find info
@@ -231,6 +282,7 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
                 </Button>
               </div>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Input
                 value={gallery.name}
@@ -247,6 +299,77 @@ const GallerySearch = ({ galleries, onGalleriesChange }: GallerySearchProps) => 
                 onChange={(e) => updateGallery(i, "website", e.target.value)}
                 placeholder="Website URL"
               />
+              <Input
+                value={gallery.email || ""}
+                onChange={(e) => updateGallery(i, "email", e.target.value)}
+                placeholder="Email"
+              />
+              <Input
+                value={gallery.city || ""}
+                onChange={(e) => updateGallery(i, "city", e.target.value)}
+                placeholder="City"
+              />
+              <Input
+                value={gallery.country || ""}
+                onChange={(e) => updateGallery(i, "country", e.target.value)}
+                placeholder="Country"
+              />
+              <Input
+                className="sm:col-span-2"
+                value={gallery.address || ""}
+                onChange={(e) => updateGallery(i, "address", e.target.value)}
+                placeholder="Street address"
+              />
+              <Input
+                value={gallery.hours || ""}
+                onChange={(e) => updateGallery(i, "hours", e.target.value)}
+                placeholder="Opening hours"
+              />
+            </div>
+
+            <Textarea
+              value={gallery.description || ""}
+              onChange={(e) => updateGallery(i, "description", e.target.value)}
+              placeholder="Short description of the gallery"
+              rows={2}
+            />
+
+            <div className="flex items-center gap-4">
+              {gallery.photo_url ? (
+                <img
+                  src={gallery.photo_url}
+                  alt={`${gallery.name || "Gallery"} photograph`}
+                  className="h-20 w-28 rounded-sm object-cover border border-border"
+                />
+              ) : (
+                <div className="h-20 w-28 rounded-sm border border-dashed border-border flex items-center justify-center text-muted-foreground">
+                  <ImagePlus className="w-5 h-5" />
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label htmlFor={`gallery-photo-${i}`} className="text-xs text-muted-foreground">
+                  Gallery photo (optional)
+                </Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id={`gallery-photo-${i}`}
+                    type="file"
+                    accept="image/*"
+                    className="h-9 text-xs"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) uploadPhoto(i, file);
+                      e.target.value = "";
+                    }}
+                  />
+                  {uploading === i && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+                  {gallery.photo_url && uploading !== i && (
+                    <Button variant="ghost" size="icon" onClick={() => updateGallery(i, "photo_url", "")}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         ))}
