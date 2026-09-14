@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { WebsiteArtworkPicker, WebsiteArtworkOption } from "@/components/WebsiteArtworkPicker";
+import { WebsiteNewsManager } from "@/components/WebsiteNewsManager";
 import { useToast } from "@/hooks/use-toast";
 import { CircleUserRound, ExternalLink, Globe, Images, Loader2, RectangleHorizontal } from "lucide-react";
 
@@ -29,7 +30,18 @@ interface WebsiteRow {
   home_layout: "portrait" | "featured" | "grid";
   home_featured_artwork_id: string | null;
   home_artwork_ids: string[] | null;
+  sections: Record<string, boolean> | null;
 }
+
+const SECTION_CHOICES: { key: string; label: string; text: string }[] = [
+  { key: "cv_web", label: "CV on the website", text: "Your CV shown as a page visitors can read" },
+  { key: "cv_pdf", label: "CV as a download", text: "A print-ready version visitors can save" },
+  { key: "exh_solo", label: "Solo exhibitions", text: "Your solo exhibitions, most recent first" },
+  { key: "exh_group", label: "Group exhibitions", text: "Your group exhibitions, most recent first" },
+  { key: "exh_upcoming", label: "Upcoming exhibitions", text: "Exhibitions that have not opened yet" },
+  { key: "publications", label: "Publications", text: "The catalogues you have recorded" },
+  { key: "news", label: "News", text: "Short dated notes you write yourself" },
+];
 
 const slugify = (value: string) =>
   value
@@ -61,6 +73,7 @@ const MyWebsite = () => {
   const [homeLayout, setHomeLayout] = useState<"portrait" | "featured" | "grid">("portrait");
   const [featuredArtworkId, setFeaturedArtworkId] = useState<Set<string>>(new Set());
   const [homeArtworkIds, setHomeArtworkIds] = useState<Set<string>>(new Set());
+  const [sections, setSections] = useState<Record<string, boolean>>({});
 
   const siteUrl = useMemo(
     () => (slug ? `${window.location.origin}/site/${slug}` : null),
@@ -129,6 +142,7 @@ const MyWebsite = () => {
         setHomeLayout(s.home_layout || "portrait");
         setFeaturedArtworkId(s.home_featured_artwork_id ? new Set([s.home_featured_artwork_id]) : new Set());
         setHomeArtworkIds(new Set(s.home_artwork_ids || []));
+        setSections(s.sections || {});
       } else {
         setSlug(slugify(name));
         setSiteTitle(name);
@@ -157,6 +171,7 @@ const MyWebsite = () => {
       home_layout: homeLayout,
       home_featured_artwork_id: Array.from(featuredArtworkId)[0] || null,
       home_artwork_ids: homeArtworkIds.size > 0 ? Array.from(homeArtworkIds).slice(0, 6) : null,
+      sections,
       custom_domain: customDomain.trim() || null,
       custom_domain_status:
         customDomain.trim() && row?.custom_domain !== customDomain.trim()
@@ -330,6 +345,42 @@ const MyWebsite = () => {
               )}
             </div>
           </section>
+
+          <section className="rounded-lg border border-border p-6">
+            <h2 className="font-medium">What your website contains</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Every website includes your about page with biography, your chosen works, and your
+              contact page with social media and gallery contacts. You can add any of the following.
+            </p>
+            <div className="mt-5 divide-y divide-border border-t border-border">
+              {SECTION_CHOICES.map((choice) => (
+                <label key={choice.key} className="flex cursor-pointer items-center justify-between gap-6 py-4">
+                  <span>
+                    <span className="block text-sm font-medium">{choice.label}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{choice.text}</span>
+                  </span>
+                  <Switch
+                    checked={Boolean(sections[choice.key])}
+                    onCheckedChange={(value) => setSections((prev) => ({ ...prev, [choice.key]: Boolean(value) }))}
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">
+              Your CV, exhibitions and publications come from the records you already keep here,
+              so nothing needs writing twice.
+            </p>
+          </section>
+
+          {sections.news && userId && (
+            <section className="rounded-lg border border-border p-6">
+              <h2 className="font-medium">News</h2>
+              <p className="mt-1 mb-5 text-sm text-muted-foreground">
+                Write short notes with a date. Only the ones marked visible appear on your website.
+              </p>
+              <WebsiteNewsManager userId={userId} />
+            </section>
+          )}
 
           <section className="rounded-lg border border-border p-6">
             <h2 className="font-medium flex items-center gap-2"><Globe className="h-4 w-4" /> Your own domain</h2>

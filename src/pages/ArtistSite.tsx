@@ -42,7 +42,19 @@ interface SiteData {
   home_layout: "portrait" | "featured" | "grid";
   home_featured_artwork_id: string | null;
   home_artwork_ids: string[] | null;
+  sections: Record<string, boolean> | null;
 }
+
+interface CvEntry { id: string; section: string; entry_text: string; year: string | null; display_order: number | null }
+interface SiteExhibition {
+  id: string; title: string; exhibition_type: string; opening_date: string | null; closing_date: string | null;
+  venue: string | null; city: string | null; country: string | null; curator: string | null; description: string | null;
+}
+interface SiteCatalogue {
+  id: string; title: string; publication_year: number | null; publisher: string | null; authors: string | null;
+  isbn: string | null; cover_image_path: string | null;
+}
+interface SiteNews { id: string; title: string; body: string | null; news_date: string }
 
 interface Artwork {
   id: string;
@@ -56,18 +68,24 @@ interface Artwork {
   images: { storage_path: string; web_storage_path?: string | null; display_order: number }[];
 }
 
-type Page = "home" | "works" | "about" | "contact";
+type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news";
+
+const SUB_PAGES = ["works", "about", "contact", "cv", "exhibitions", "publications", "news"];
 
 const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const params = useParams<{ slug: string; page?: string }>();
   const slug = (slugOverride || params.slug || "").toLowerCase();
-  const page: Page = (["works", "about", "contact"].includes(params.page || "") ? params.page : "home") as Page;
+  const page: Page = (SUB_PAGES.includes(params.page || "") ? params.page : "home") as Page;
   const { formatDims } = useUnitPreference();
 
   const [loading, setLoading] = useState(true);
   const [site, setSite] = useState<SiteData | null>(null);
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [lightbox, setLightbox] = useState<Artwork | null>(null);
+  const [cvEntries, setCvEntries] = useState<CvEntry[]>([]);
+  const [exhibitions, setExhibitions] = useState<SiteExhibition[]>([]);
+  const [catalogues, setCatalogues] = useState<SiteCatalogue[]>([]);
+  const [news, setNews] = useState<SiteNews[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -102,6 +120,52 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         });
         setArtworks(list.map((a) => ({ ...a, images: map.get(a.id) || [] })));
       }
+      const sections = (row.sections || {}) as Record<string, boolean>;
+
+      if (sections.cv_web || sections.cv_pdf) {
+        const { data: profileRow } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("user_id", row.user_id)
+          .maybeSingle();
+        if (profileRow?.id) {
+          const { data: entries } = await supabase
+            .from("cv_entries")
+            .select("id, section, entry_text, year, display_order")
+            .eq("profile_id", profileRow.id)
+            .order("display_order", { ascending: true });
+          setCvEntries((entries as CvEntry[]) || []);
+        }
+      }
+
+      if (sections.exh_solo || sections.exh_group || sections.exh_upcoming) {
+        const { data: exs } = await supabase
+          .from("exhibitions")
+          .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, curator, description")
+          .eq("user_id", row.user_id)
+          .order("opening_date", { ascending: false, nullsFirst: false });
+        setExhibitions((exs as SiteExhibition[]) || []);
+      }
+
+      if (sections.publications) {
+        const { data: cats } = await supabase
+          .from("catalogues")
+          .select("id, title, publication_year, publisher, authors, isbn, cover_image_path")
+          .eq("user_id", row.user_id)
+          .order("publication_year", { ascending: false, nullsFirst: false });
+        setCatalogues((cats as SiteCatalogue[]) || []);
+      }
+
+      if (sections.news) {
+        const { data: posts } = await supabase
+          .from("artist_news")
+          .select("id, title, body, news_date")
+          .eq("user_id", row.user_id)
+          .eq("is_published", true)
+          .order("news_date", { ascending: false });
+        setNews((posts as SiteNews[]) || []);
+      }
+
       setLoading(false);
     })();
   }, [slug]);
@@ -140,12 +204,28 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
   const name = site.site_title || site.full_name || "Artist";
   const base = `/site/${site.slug}`;
+  const sections = site.sections || {};
+  const showExhibitions = Boolean(sections.exh_solo || sections.exh_group || sections.exh_upcoming);
   const nav: { key: Page; label: string; to: string }[] = [
     { key: "home", label: name, to: base },
     { key: "works", label: "Works", to: `${base}/works` },
+    ...(showExhibitions ? [{ key: "exhibitions" as Page, label: "Exhibitions", to: `${base}/exhibitions` }] : []),
+    ...(sections.publications ? [{ key: "publications" as Page, label: "Publications", to: `${base}/publications` }] : []),
+    ...(sections.cv_web || sections.cv_pdf ? [{ key: "cv" as Page, label: "CV", to: `${base}/cv` }] : []),
+    ...(sections.news ? [{ key: "news" as Page, label: "News", to: `${base}/news` }] : []),
     { key: "about", label: "About", to: `${base}/about` },
     { key: "contact", label: "Contact", to: `${base}/contact` },
   ];
+
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = exhibitions.filter((ex) => (ex.opening_date || "") > today);
+  const past = exhibitions.filter((ex) => !((ex.opening_date || "") > today));
+  const soloList = past.filter((ex) => ex.exhibition_type === "solo");
+  const groupList = past.filter((ex) => ex.exhibition_type === "group");
+  const cvSections = Array.from(new Set(cvEntries.map((entry) => entry.section)));
+  const exhibitionLine = (ex: SiteExhibition) =>
+    [ex.venue, [ex.city, ex.country].filter(Boolean).join(", ")].filter(Boolean).join(", ");
+  const exhibitionYear = (ex: SiteExhibition) => (ex.opening_date ? ex.opening_date.slice(0, 4) : "");
 
   const showEmail = site.contact_options?.email && site.email;
   const showPhone = site.contact_options?.phone && site.phone;
@@ -159,7 +239,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
+      <header className="border-b border-border print:hidden">
         <div className="mx-auto flex max-w-5xl flex-wrap items-baseline justify-between gap-x-8 gap-y-2 px-6 py-6">
           <Link to={base} className="font-serif text-xl">{name}</Link>
           <nav className="flex gap-6 text-sm">
@@ -376,9 +456,130 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
             </div>
           </div>
         )}
+        {page === "exhibitions" && showExhibitions && (
+          <div className="mx-auto max-w-3xl px-6 py-16 print:py-0">
+            <h1 className="font-serif text-2xl">Exhibitions</h1>
+            {exhibitions.length === 0 && (
+              <p className="mt-8 text-sm text-muted-foreground">Exhibitions will appear here shortly.</p>
+            )}
+            {[
+              { show: Boolean(sections.exh_upcoming), title: "Upcoming", list: upcoming },
+              { show: Boolean(sections.exh_solo), title: "Solo exhibitions", list: soloList },
+              { show: Boolean(sections.exh_group), title: "Group exhibitions", list: groupList },
+            ]
+              .filter((block) => block.show && block.list.length > 0)
+              .map((block) => (
+                <section key={block.title} className="mt-12">
+                  <h2 className="text-xs uppercase tracking-widest text-muted-foreground">{block.title}</h2>
+                  <ul className="mt-5 divide-y divide-border border-t border-border">
+                    {block.list.map((ex) => (
+                      <li key={ex.id} className="py-5">
+                        <p className="text-sm font-medium">
+                          {ex.title}
+                          {exhibitionYear(ex) ? <span className="text-muted-foreground">, {exhibitionYear(ex)}</span> : null}
+                        </p>
+                        {exhibitionLine(ex) && <p className="mt-1 text-sm text-muted-foreground">{exhibitionLine(ex)}</p>}
+                        {ex.curator && <p className="mt-1 text-xs text-muted-foreground">Curated by {ex.curator}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+          </div>
+        )}
+
+        {page === "publications" && sections.publications && (
+          <div className="mx-auto max-w-4xl px-6 py-16">
+            <h1 className="font-serif text-2xl">Publications</h1>
+            {catalogues.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">Publications will appear here shortly.</p>
+            ) : (
+              <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                {catalogues.map((cat) => {
+                  const cover = cat.cover_image_path
+                    ? supabase.storage.from("catalogue-covers").getPublicUrl(cat.cover_image_path).data.publicUrl
+                    : null;
+                  return (
+                    <article key={cat.id}>
+                      {cover && <img src={cover} alt={cat.title} loading="lazy" className="mb-4 w-full object-contain" />}
+                      <p className="text-sm font-medium">{cat.title}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {[cat.publisher, cat.publication_year].filter(Boolean).join(", ")}
+                      </p>
+                      {cat.authors && <p className="mt-1 text-xs text-muted-foreground">{cat.authors}</p>}
+                      {cat.isbn && <p className="mt-1 text-xs text-muted-foreground">ISBN {cat.isbn}</p>}
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {page === "cv" && (sections.cv_web || sections.cv_pdf) && (
+          <div className="mx-auto max-w-3xl px-6 py-16">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <h1 className="font-serif text-2xl">Curriculum Vitae</h1>
+              {sections.cv_pdf && cvEntries.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="text-sm underline underline-offset-4 print:hidden"
+                >
+                  Download as PDF
+                </button>
+              )}
+            </div>
+            {cvEntries.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">The CV will appear here shortly.</p>
+            ) : !sections.cv_web ? (
+              <p className="mt-8 text-sm text-muted-foreground print:hidden">
+                Use the download above to save this CV.
+              </p>
+            ) : null}
+            {cvEntries.length > 0 && (
+              <div className={sections.cv_web ? "" : "hidden print:block"}>
+                {cvSections.map((section) => (
+                  <section key={section} className="mt-12">
+                    <h2 className="text-xs uppercase tracking-widest text-muted-foreground">{section}</h2>
+                    <ul className="mt-5 space-y-3 border-t border-border pt-5">
+                      {cvEntries
+                        .filter((entry) => entry.section === section)
+                        .map((entry) => (
+                          <li key={entry.id} className="flex gap-4 text-sm">
+                            <span className="w-14 shrink-0 text-muted-foreground">{entry.year || ""}</span>
+                            <span>{entry.entry_text}</span>
+                          </li>
+                        ))}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {page === "news" && sections.news && (
+          <div className="mx-auto max-w-2xl px-6 py-16">
+            <h1 className="font-serif text-2xl">News</h1>
+            {news.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">News will appear here shortly.</p>
+            ) : (
+              <ul className="mt-10 divide-y divide-border border-t border-border">
+                {news.map((post) => (
+                  <li key={post.id} className="py-8">
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">{post.news_date}</p>
+                    <h2 className="mt-2 font-serif text-lg">{post.title}</h2>
+                    {post.body && <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{post.body}</p>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </main>
 
-      <footer className="border-t border-border">
+      <footer className="border-t border-border print:hidden">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-6 py-6 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} {name}</span>
           <Link to="/" className="hover:text-foreground">Hosted by the Global Artist Registry Foundation</Link>
