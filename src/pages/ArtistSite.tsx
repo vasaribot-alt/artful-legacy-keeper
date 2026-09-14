@@ -239,7 +239,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
+      <header className="border-b border-border print:hidden">
         <div className="mx-auto flex max-w-5xl flex-wrap items-baseline justify-between gap-x-8 gap-y-2 px-6 py-6">
           <Link to={base} className="font-serif text-xl">{name}</Link>
           <nav className="flex gap-6 text-sm">
