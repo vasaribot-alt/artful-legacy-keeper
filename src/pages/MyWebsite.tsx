@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { WebsiteArtworkPicker, WebsiteArtworkOption } from "@/components/WebsiteArtworkPicker";
 import { useToast } from "@/hooks/use-toast";
-import { ExternalLink, Globe, Loader2 } from "lucide-react";
+import { CircleUserRound, ExternalLink, Globe, Images, Loader2, RectangleHorizontal } from "lucide-react";
 
 interface WebsiteRow {
   id: string;
@@ -24,13 +26,9 @@ interface WebsiteRow {
   custom_domain_status: string;
   billing_status: string;
   legacy_mode: boolean;
-}
-
-interface ArtworkOption {
-  id: string;
-  title: string;
-  year: number | null;
-  image_url: string | null;
+  home_layout: "portrait" | "featured" | "grid";
+  home_featured_artwork_id: string | null;
+  home_artwork_ids: string[] | null;
 }
 
 const slugify = (value: string) =>
@@ -58,8 +56,11 @@ const MyWebsite = () => {
   const [showPhone, setShowPhone] = useState(false);
   const [showGallery, setShowGallery] = useState(true);
   const [customDomain, setCustomDomain] = useState("");
-  const [artworks, setArtworks] = useState<ArtworkOption[]>([]);
+  const [artworks, setArtworks] = useState<WebsiteArtworkOption[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string> | null>(null);
+  const [homeLayout, setHomeLayout] = useState<"portrait" | "featured" | "grid">("portrait");
+  const [featuredArtworkId, setFeaturedArtworkId] = useState<Set<string>>(new Set());
+  const [homeArtworkIds, setHomeArtworkIds] = useState<Set<string>>(new Set());
 
   const siteUrl = useMemo(
     () => (slug ? `${window.location.origin}/site/${slug}` : null),
@@ -77,7 +78,7 @@ const MyWebsite = () => {
         supabase.from("artist_websites").select("*").eq("user_id", user.id).maybeSingle(),
         supabase
           .from("artworks")
-          .select("id, title, year, image_url")
+          .select("id, title, year, series, image_url")
           .eq("owner_id", user.id)
           .eq("role_context", "artist")
           .order("created_at", { ascending: false }),
@@ -85,7 +86,32 @@ const MyWebsite = () => {
 
       const name = profile?.full_name || "";
       setArtistName(name);
-      setArtworks((aws as ArtworkOption[]) || []);
+      const rawArtworks = aws || [];
+      const artworkIds = rawArtworks.map((artwork) => artwork.id);
+      const { data: images } = artworkIds.length > 0
+        ? await supabase
+            .from("artwork_images")
+            .select("artwork_id, storage_path, web_storage_path, display_order")
+            .in("artwork_id", artworkIds)
+            .order("display_order")
+        : { data: [] };
+      const firstImages = new Map<string, { storage_path: string; web_storage_path: string | null }>();
+      (images || []).forEach((image) => {
+        if (!firstImages.has(image.artwork_id)) firstImages.set(image.artwork_id, image);
+      });
+      const artworkOptions: WebsiteArtworkOption[] = rawArtworks.map((artwork) => {
+        const image = firstImages.get(artwork.id);
+        const path = image?.web_storage_path || image?.storage_path;
+        const bucket = image?.web_storage_path ? "artwork-images-web" : "artwork-images";
+        return {
+          id: artwork.id,
+          title: artwork.title,
+          year: artwork.year,
+          series: artwork.series,
+          imageUrl: path ? supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl : artwork.image_url,
+        };
+      });
+      setArtworks(artworkOptions);
 
       if (site) {
         const s = site as WebsiteRow;
@@ -100,6 +126,9 @@ const MyWebsite = () => {
         setShowGallery(s.contact_options?.gallery ?? true);
         setCustomDomain(s.custom_domain || "");
         setSelectedIds(s.artwork_ids ? new Set(s.artwork_ids) : null);
+        setHomeLayout(s.home_layout || "portrait");
+        setFeaturedArtworkId(s.home_featured_artwork_id ? new Set([s.home_featured_artwork_id]) : new Set());
+        setHomeArtworkIds(new Set(s.home_artwork_ids || []));
       } else {
         setSlug(slugify(name));
         setSiteTitle(name);
@@ -107,14 +136,6 @@ const MyWebsite = () => {
       setLoading(false);
     })();
   }, []);
-
-  const toggleArtwork = (id: string, checked: boolean) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev ?? artworks.map((a) => a.id));
-      if (checked) next.add(id); else next.delete(id);
-      return next;
-    });
-  };
 
   const save = async () => {
     if (!userId) return;
@@ -133,6 +154,9 @@ const MyWebsite = () => {
       about_text: aboutText.trim() || null,
       contact_options: { email: showEmail, phone: showPhone, gallery: showGallery },
       artwork_ids: selectedIds ? Array.from(selectedIds) : null,
+      home_layout: homeLayout,
+      home_featured_artwork_id: Array.from(featuredArtworkId)[0] || null,
+      home_artwork_ids: homeArtworkIds.size > 0 ? Array.from(homeArtworkIds).slice(0, 6) : null,
       custom_domain: customDomain.trim() || null,
       custom_domain_status:
         customDomain.trim() && row?.custom_domain !== customDomain.trim()
@@ -217,6 +241,37 @@ const MyWebsite = () => {
                 <label className="text-xs uppercase tracking-widest text-muted-foreground">Intro line</label>
                 <Input value={tagline} onChange={(e) => setTagline(e.target.value)} placeholder="Painter, based in Oslo" className="mt-2" autoComplete="off" />
               </div>
+              <div>
+                <label className="text-xs uppercase tracking-widest text-muted-foreground">Opening image</label>
+                <RadioGroup value={homeLayout} onValueChange={(value) => setHomeLayout(value as typeof homeLayout)} className="mt-3 grid gap-3 sm:grid-cols-3">
+                  {[
+                    { value: "portrait", label: "Portrait", text: "Your profile photo", icon: CircleUserRound },
+                    { value: "featured", label: "Featured work", text: "One prominent artwork", icon: RectangleHorizontal },
+                    { value: "grid", label: "Works grid", text: "Up to six artworks", icon: Images },
+                  ].map((choice) => (
+                    <label key={choice.value} className="cursor-pointer rounded-md border border-border p-4 transition-colors has-[[data-state=checked]]:border-foreground has-[[data-state=checked]]:bg-accent/50">
+                      <div className="flex items-start justify-between gap-2">
+                        <choice.icon className="h-5 w-5 text-muted-foreground" />
+                        <RadioGroupItem value={choice.value} aria-label={choice.label} />
+                      </div>
+                      <span className="mt-5 block text-sm font-medium">{choice.label}</span>
+                      <span className="mt-1 block text-xs text-muted-foreground">{choice.text}</span>
+                    </label>
+                  ))}
+                </RadioGroup>
+              </div>
+              {homeLayout === "featured" && (
+                <div>
+                  <p className="mb-3 text-sm text-muted-foreground">Choose the artwork visitors see first.</p>
+                  <WebsiteArtworkPicker artworks={artworks} mode="single" selectedIds={featuredArtworkId} onSelectionChange={setFeaturedArtworkId} />
+                </div>
+              )}
+              {homeLayout === "grid" && (
+                <div>
+                  <p className="mb-3 text-sm text-muted-foreground">Choose up to six works. If you choose more, the first six will appear.</p>
+                  <WebsiteArtworkPicker artworks={artworks} selectedIds={homeArtworkIds} onSelectionChange={setHomeArtworkIds} />
+                </div>
+              )}
             </div>
           </section>
 
@@ -260,24 +315,19 @@ const MyWebsite = () => {
             <p className="mt-1 text-sm text-muted-foreground">
               By default all your registered works appear. Untick any work you do not want on the website.
             </p>
-            <div className="mt-4 max-h-72 space-y-2 overflow-y-auto pr-2 text-sm">
+            <div className="mt-4">
               {artworks.length === 0 && (
                 <p className="text-muted-foreground">
                   No works registered yet. Add works from your <Link to="/dashboard" className="underline underline-offset-4">artworks page</Link> first.
                 </p>
               )}
-              {artworks.map((aw) => {
-                const checked = selectedIds ? selectedIds.has(aw.id) : true;
-                return (
-                  <label key={aw.id} className="flex items-center gap-3">
-                    <Checkbox checked={checked} onCheckedChange={(v) => toggleArtwork(aw.id, Boolean(v))} />
-                    <span className="truncate">
-                      {aw.title}
-                      {aw.year ? ` (${aw.year})` : ""}
-                    </span>
-                  </label>
-                );
-              })}
+              {artworks.length > 0 && (
+                <WebsiteArtworkPicker
+                  artworks={artworks}
+                  selectedIds={selectedIds ?? new Set(artworks.map((artwork) => artwork.id))}
+                  onSelectionChange={setSelectedIds}
+                />
+              )}
             </div>
           </section>
 

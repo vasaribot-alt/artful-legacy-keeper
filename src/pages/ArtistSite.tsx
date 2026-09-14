@@ -27,6 +27,9 @@ interface SiteData {
   galleries: { name: string; phone: string; website: string }[] | null;
   contact_visibility: Record<string, boolean> | null;
   global_artist_id: number;
+  home_layout: "portrait" | "featured" | "grid";
+  home_featured_artwork_id: string | null;
+  home_artwork_ids: string[] | null;
 }
 
 interface Artwork {
@@ -60,7 +63,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
       const { data, error } = await supabase.rpc("get_artist_site", { _key: slug });
       const row = Array.isArray(data) ? data[0] : data;
       if (error || !row) { setLoading(false); return; }
-      setSite(row as SiteData);
+      setSite(row as unknown as SiteData);
 
       let query = supabase
         .from("artworks")
@@ -82,7 +85,8 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         const map = new Map<string, Artwork["images"]>();
         (imgs || []).forEach((img: any) => {
           if (!map.has(img.artwork_id)) map.set(img.artwork_id, []);
-          map.get(img.artwork_id)!.push(img);
+          const artworkImages = map.get(img.artwork_id);
+          if (artworkImages) artworkImages.push(img);
         });
         setArtworks(list.map((a) => ({ ...a, images: map.get(a.id) || [] })));
       }
@@ -134,6 +138,12 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const showEmail = site.contact_options?.email && site.email;
   const showPhone = site.contact_options?.phone && site.phone;
   const galleryList = site.contact_options?.gallery && Array.isArray(site.galleries) ? site.galleries : [];
+  const featuredArtwork = artworks.find((artwork) => artwork.id === site.home_featured_artwork_id);
+  const requestedHomeArtworks = Array.isArray(site.home_artwork_ids) ? site.home_artwork_ids : [];
+  const homeArtworks = (requestedHomeArtworks.length > 0
+    ? requestedHomeArtworks.map((id) => artworks.find((artwork) => artwork.id === id)).filter((artwork): artwork is Artwork => Boolean(artwork))
+    : artworks
+  ).slice(0, 6);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -156,7 +166,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
       <main className="mx-auto max-w-5xl px-6 py-14 sm:py-20">
         {page === "home" && (
-          <div className="grid items-center gap-10 sm:grid-cols-2">
+          <div className={site.home_layout === "grid" ? "space-y-10" : "grid items-center gap-10 sm:grid-cols-2"}>
             <div>
               {site.legacy_mode && (
                 <p className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Preserved by the Global Artist Registry Foundation</p>
@@ -178,8 +188,29 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                 </Link>
               </div>
             </div>
-            {portraitUrl && (
+            {(site.home_layout === "portrait" || !site.home_layout) && portraitUrl && (
               <img src={portraitUrl} alt={`Portrait of ${name}`} className="aspect-[4/5] w-full rounded-md object-cover" loading="lazy" />
+            )}
+            {site.home_layout === "featured" && featuredArtwork && artworkImage(featuredArtwork) && (
+              <button type="button" onClick={() => setLightbox(featuredArtwork)} className="group text-left">
+                <img src={artworkImage(featuredArtwork) || ""} alt={featuredArtwork.title} className="max-h-[68vh] w-full rounded-md object-contain" loading="lazy" />
+                <p className="mt-3 text-sm font-medium">{featuredArtwork.title}{featuredArtwork.year ? `, ${featuredArtwork.year}` : ""}</p>
+              </button>
+            )}
+            {site.home_layout === "grid" && homeArtworks.length > 0 && (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                {homeArtworks.map((artwork) => {
+                  const src = artworkImage(artwork);
+                  return (
+                    <button type="button" key={artwork.id} onClick={() => setLightbox(artwork)} className="group text-left">
+                      <div className="aspect-square overflow-hidden rounded-md bg-muted">
+                        {src ? <img src={src} alt={artwork.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" loading="lazy" /> : <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>}
+                      </div>
+                      <p className="mt-2 truncate text-xs font-medium">{artwork.title}</p>
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
         )}
@@ -296,7 +327,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
           </button>
           <div className="max-h-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
             {artworkImage(lightbox) && (
-              <img src={artworkImage(lightbox)!} alt={lightbox.title} className="max-h-[70vh] w-full rounded-md object-contain" />
+              <img src={artworkImage(lightbox) || ""} alt={lightbox.title} className="max-h-[70vh] w-full rounded-md object-contain" />
             )}
             <div className="mt-4 text-center text-sm text-white">
               <p className="font-medium">{lightbox.title}{lightbox.year ? `, ${lightbox.year}` : ""}</p>
