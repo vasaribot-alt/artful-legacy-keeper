@@ -25,3 +25,11 @@
 ## Statement of Support (2026-09-12)
 - [x] Public /statement-of-support page with optional public listing
 - [x] Foundation admin view of signatories (export/contact base)
+
+## Artist Websites (2026-09-14)
+- [x] artist_websites table + public get_artist_site lookup (slug or approved custom domain)
+- [x] "My Website" dashboard page: on/off, slug, home/about/contact content, work selection
+- [x] Public site pages /site/:slug (Home, Works, About, Contact) + own-domain serving
+- [ ] Set setup + annual fee amounts before launch
+- [ ] Wire billing to Stripe once cards arrive (lifetime fee model, legacy mode on death)
+- [ ] Foundation custom-domain approval UI (currently manual)
