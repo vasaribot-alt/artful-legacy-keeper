@@ -66,6 +66,7 @@ export const WebsiteArtworkPicker = ({
 }: WebsiteArtworkPickerProps) => {
   const [openSeries, setOpenSeries] = useState<Set<string>>(new Set());
   const [collapsed, setCollapsed] = useState(selectedIds.size > 0);
+  const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const groups = useMemo(() => {
     const grouped = new Map<string, WebsiteArtworkOption[]>();
     artworks.forEach((artwork) => {
@@ -78,6 +79,18 @@ export const WebsiteArtworkPicker = ({
       return a.localeCompare(b);
     });
   }, [artworks]);
+
+  // Multiple mode: fold to the compact summary shortly after the artist settles
+  // on a selection, so the form stays airy without forcing a "Done" click.
+  useEffect(() => {
+    if (mode !== "multiple" || collapsed) return;
+    if (selectedIds.size === 0) return;
+    if (collapseTimer.current) clearTimeout(collapseTimer.current);
+    collapseTimer.current = setTimeout(() => setCollapsed(true), 1100);
+    return () => {
+      if (collapseTimer.current) clearTimeout(collapseTimer.current);
+    };
+  }, [mode, collapsed, selectedIds]);
 
   const setOne = (id: string) => {
     onSelectionChange(new Set(id ? [id] : []));
