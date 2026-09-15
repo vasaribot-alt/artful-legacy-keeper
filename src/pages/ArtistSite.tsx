@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { SocialPlatformIcon } from "@/components/SocialLinks";
+import ImageLightbox from "@/components/ImageLightbox";
 import { ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
 
 interface SiteData {
@@ -50,6 +51,7 @@ interface SiteExhibition {
   id: string; title: string; exhibition_type: string; opening_date: string | null; closing_date: string | null;
   venue: string | null; city: string | null; country: string | null; curator: string | null; description: string | null;
 }
+interface SiteExImage { id: string; exhibition_id: string; caption: string | null; publicUrl: string }
 interface SiteCatalogue {
   id: string; title: string; publication_year: number | null; publisher: string | null; authors: string | null;
   isbn: string | null; cover_image_path: string | null;
