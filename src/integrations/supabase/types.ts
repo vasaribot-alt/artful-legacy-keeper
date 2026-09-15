@@ -3754,6 +3754,27 @@ export type Database = {
           status: string
         }[]
       }
+      get_onboarding_progress: {
+        Args: never
+        Returns: {
+          artworks: number
+          artworks_with_image: number
+          city: string
+          country: string
+          created_at: string
+          cv_entries: number
+          email: string
+          exhibitions: number
+          full_name: string
+          has_avatar: boolean
+          has_biography: boolean
+          id_verified: boolean
+          last_activity: string
+          roles: string[]
+          user_id: string
+          website_enabled: boolean
+        }[]
+      }
       get_partner_org_breakdown: {
         Args: { _key: string; _slug: string }
         Returns: {
