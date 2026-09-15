@@ -41,3 +41,5 @@ project_id = "ofqaxojjqryylcugegke"
     verify_jwt = false
   [functions.send-gallery-artist-invitation]
     verify_jwt = true
+  [functions.handle-email-events]
+    verify_jwt = false

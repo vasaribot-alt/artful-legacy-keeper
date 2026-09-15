@@ -97,8 +97,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <CustomDomainSite />
       <Router>
+        <CustomDomainSite />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />

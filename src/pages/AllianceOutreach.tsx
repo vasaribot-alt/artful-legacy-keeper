@@ -461,9 +461,11 @@ With kind regards,
       if (!saved) return result;
       return {
         ...result,
-        email: saved.contact_email || result.email,
-        subject: saved.email_subject || result.subject,
-        body: saved.email_body || result.body,
+        email: result.email || saved.contact_email || "",
+        // Keep unsaved edits made in the review window; only fall back to the
+        // stored letter when this batch has nothing for that target.
+        subject: result.subject || saved.email_subject || "",
+        body: result.body || saved.email_body || "",
       };
     }));
     setBatchOpen(true);
