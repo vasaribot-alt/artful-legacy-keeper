@@ -47,7 +47,10 @@ export const ImageLightbox = ({ images, index, caption, onIndexChange, onClose }
   return (
     <div
       className="fixed inset-0 z-[100] bg-background/97 backdrop-blur-sm flex flex-col"
-      onClick={onClose}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
       role="dialog"
       aria-modal="true"
     >

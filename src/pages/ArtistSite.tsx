@@ -102,7 +102,13 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         .eq("role_context", "artist")
         .order("year", { ascending: false, nullsFirst: false });
       if (Array.isArray(row.artwork_ids) && row.artwork_ids.length > 0) {
-        query = query.in("id", row.artwork_ids);
+        // Always keep the home page picks loadable, even if they were later
+        // unticked on the Works page, so the front page never loses its image.
+        const homeIds = [
+          row.home_featured_artwork_id,
+          ...(Array.isArray(row.home_artwork_ids) ? row.home_artwork_ids : []),
+        ].filter((id): id is string => Boolean(id));
+        query = query.in("id", Array.from(new Set([...row.artwork_ids, ...homeIds])));
       }
       const { data: aws } = await query;
       const list = (aws as Omit<Artwork, "images">[]) || [];
