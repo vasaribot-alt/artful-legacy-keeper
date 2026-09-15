@@ -242,29 +242,41 @@ const FoundationDashboard = () => {
 
         {/* Unused codes */}
         <section>
-          <h2 className="text-lg font-medium mb-4">Available Codes ({unused.length})</h2>
-          {unused.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No unused codes. Generate some above.</p>
-          ) : (
-            <div className="border border-border rounded-sm divide-y divide-border">
-              {unused.map((code) => (
-                <div key={code.id} className="flex items-center justify-between p-3">
-                  <div className="flex items-center gap-3">
-                    <code className="text-sm font-mono tracking-wider">{code.code}</code>
-                    <Badge variant="outline" className="text-xs">{tierLabels[code.tier]}</Badge>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="sm" onClick={() => handleCopyCode(code.code)}>
-                      <Copy className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDeleteCode(code.id)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-2 mb-4 group"
+              >
+                <h2 className="text-lg font-medium">Available Codes ({unused.length})</h2>
+                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              {unused.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No unused codes. Generate some above.</p>
+              ) : (
+                <div className="border border-border rounded-sm divide-y divide-border">
+                  {unused.map((code) => (
+                    <div key={code.id} className="flex items-center justify-between p-3">
+                      <div className="flex items-center gap-3">
+                        <code className="text-sm font-mono tracking-wider">{code.code}</code>
+                        <Badge variant="outline" className="text-xs">{tierLabels[code.tier]}</Badge>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="sm" onClick={() => handleCopyCode(code.code)}>
+                          <Copy className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteCode(code.id)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </section>
 
         {/* Used codes / enrolled artists */}
