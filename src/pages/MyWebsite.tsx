@@ -242,6 +242,24 @@ const MyWebsite = () => {
                   </a>
                 </p>
               )}
+              {shareUrl && (
+                <div className="mt-4 rounded border border-border bg-muted/30 p-3">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Link for messages and social media</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Use this link when sharing on WhatsApp, Facebook or LinkedIn, so your own name and picture appear instead of the Foundation card.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(shareUrl);
+                      toast({ title: "Sharing link copied" });
+                    }}
+                    className="mt-2 text-sm underline underline-offset-4"
+                  >
+                    Copy sharing link
+                  </button>
+                </div>
+              )}
             </div>
           </section>
 
