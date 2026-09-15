@@ -640,6 +640,15 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         </div>
       </footer>
 
+      {exViewer && (exImages[exViewer.exId]?.length ?? 0) > 0 && (
+        <ImageLightbox
+          images={exImages[exViewer.exId].map((i) => i.publicUrl)}
+          index={Math.min(exViewer.index, exImages[exViewer.exId].length - 1)}
+          caption={exImages[exViewer.exId][Math.min(exViewer.index, exImages[exViewer.exId].length - 1)]?.caption || undefined}
+          onIndexChange={(i) => setExViewer({ exId: exViewer.exId, index: i })}
+          onClose={() => setExViewer(null)}
+        />
+      )}
       {lightbox && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6" onClick={() => setLightbox(null)}>
           <button className="absolute right-4 top-4 rounded-full bg-background p-2" onClick={() => setLightbox(null)} aria-label="Close">
