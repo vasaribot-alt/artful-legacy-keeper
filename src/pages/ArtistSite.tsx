@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { SocialPlatformIcon } from "@/components/SocialLinks";
+import ImageLightbox from "@/components/ImageLightbox";
 import { ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
 
 interface SiteData {
@@ -50,6 +51,7 @@ interface SiteExhibition {
   id: string; title: string; exhibition_type: string; opening_date: string | null; closing_date: string | null;
   venue: string | null; city: string | null; country: string | null; curator: string | null; description: string | null;
 }
+interface SiteExImage { id: string; exhibition_id: string; caption: string | null; publicUrl: string }
 interface SiteCatalogue {
   id: string; title: string; publication_year: number | null; publisher: string | null; authors: string | null;
   isbn: string | null; cover_image_path: string | null;
@@ -84,6 +86,8 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const [lightbox, setLightbox] = useState<Artwork | null>(null);
   const [cvEntries, setCvEntries] = useState<CvEntry[]>([]);
   const [exhibitions, setExhibitions] = useState<SiteExhibition[]>([]);
+  const [exImages, setExImages] = useState<Record<string, SiteExImage[]>>({});
+  const [exViewer, setExViewer] = useState<{ exId: string; index: number } | null>(null);
   const [catalogues, setCatalogues] = useState<SiteCatalogue[]>([]);
   const [news, setNews] = useState<SiteNews[]>([]);
 
@@ -150,7 +154,24 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
           .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, curator, description")
           .eq("user_id", row.user_id)
           .order("opening_date", { ascending: false, nullsFirst: false });
-        setExhibitions((exs as SiteExhibition[]) || []);
+        const exList = (exs as SiteExhibition[]) || [];
+        setExhibitions(exList);
+        if (exList.length > 0) {
+          const { data: imgs } = await supabase
+            .from("exhibition_images")
+            .select("id, exhibition_id, storage_path, web_storage_path, caption, display_order")
+            .in("exhibition_id", exList.map((e) => e.id))
+            .order("display_order", { ascending: true });
+          const grouped: Record<string, SiteExImage[]> = {};
+          (imgs || []).forEach((img) => {
+            const bucket = img.web_storage_path ? "exhibition-images-web" : "exhibition-images";
+            const path = img.web_storage_path || img.storage_path;
+            const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
+            if (!grouped[img.exhibition_id]) grouped[img.exhibition_id] = [];
+            grouped[img.exhibition_id].push({ id: img.id, exhibition_id: img.exhibition_id, caption: img.caption, publicUrl: urlData.publicUrl });
+          });
+          setExImages(grouped);
+        }
       }
 
       if (sections.publications) {
@@ -480,12 +501,39 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                   <ul className="mt-5 divide-y divide-border border-t border-border">
                     {block.list.map((ex) => (
                       <li key={ex.id} className="py-5">
-                        <p className="text-sm font-medium">
-                          {ex.title}
-                          {exhibitionYear(ex) ? <span className="text-muted-foreground">, {exhibitionYear(ex)}</span> : null}
-                        </p>
-                        {exhibitionLine(ex) && <p className="mt-1 text-sm text-muted-foreground">{exhibitionLine(ex)}</p>}
-                        {ex.curator && <p className="mt-1 text-xs text-muted-foreground">Curated by {ex.curator}</p>}
+                        <div className="flex items-start gap-4">
+                          {(exImages[ex.id]?.length ?? 0) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setExViewer({ exId: ex.id, index: 0 })}
+                              className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-sm bg-secondary"
+                              aria-label={`View ${exImages[ex.id].length} installation photo${exImages[ex.id].length > 1 ? "s" : ""} from ${ex.title}`}
+                            >
+                              <img
+                                src={exImages[ex.id][0].publicUrl}
+                                alt={exImages[ex.id][0].caption || `Installation view, ${ex.title}`}
+                                loading="lazy"
+                                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                              />
+                              {exImages[ex.id].length > 1 && (
+                                <span className="absolute bottom-1 right-1 rounded-sm bg-background/90 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                  +{exImages[ex.id].length - 1}
+                                </span>
+                              )}
+                            </button>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium">
+                              {ex.title}
+                              {exhibitionYear(ex) ? <span className="text-muted-foreground">, {exhibitionYear(ex)}</span> : null}
+                            </p>
+                            {exhibitionLine(ex) && <p className="mt-1 text-sm text-muted-foreground">{exhibitionLine(ex)}</p>}
+                            {ex.curator && <p className="mt-1 text-xs text-muted-foreground">Curated by {ex.curator}</p>}
+                            {(exImages[ex.id]?.length ?? 0) > 0 && exImages[ex.id][0].caption && (
+                              <p className="mt-1 text-[11px] text-muted-foreground/70">{exImages[ex.id][0].caption}</p>
+                            )}
+                          </div>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -592,6 +640,15 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         </div>
       </footer>
 
+      {exViewer && (exImages[exViewer.exId]?.length ?? 0) > 0 && (
+        <ImageLightbox
+          images={exImages[exViewer.exId].map((i) => i.publicUrl)}
+          index={Math.min(exViewer.index, exImages[exViewer.exId].length - 1)}
+          caption={exImages[exViewer.exId][Math.min(exViewer.index, exImages[exViewer.exId].length - 1)]?.caption || undefined}
+          onIndexChange={(i) => setExViewer({ exId: exViewer.exId, index: i })}
+          onClose={() => setExViewer(null)}
+        />
+      )}
       {lightbox && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6" onClick={() => setLightbox(null)}>
           <button className="absolute right-4 top-4 rounded-full bg-background p-2" onClick={() => setLightbox(null)} aria-label="Close">
