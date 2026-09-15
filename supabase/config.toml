@@ -43,3 +43,5 @@ project_id = "ofqaxojjqryylcugegke"
     verify_jwt = true
   [functions.handle-email-events]
     verify_jwt = false
+  [functions.site-preview]
+    verify_jwt = false
