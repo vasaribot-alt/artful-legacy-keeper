@@ -501,12 +501,39 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                   <ul className="mt-5 divide-y divide-border border-t border-border">
                     {block.list.map((ex) => (
                       <li key={ex.id} className="py-5">
-                        <p className="text-sm font-medium">
-                          {ex.title}
-                          {exhibitionYear(ex) ? <span className="text-muted-foreground">, {exhibitionYear(ex)}</span> : null}
-                        </p>
-                        {exhibitionLine(ex) && <p className="mt-1 text-sm text-muted-foreground">{exhibitionLine(ex)}</p>}
-                        {ex.curator && <p className="mt-1 text-xs text-muted-foreground">Curated by {ex.curator}</p>}
+                        <div className="flex items-start gap-4">
+                          {(exImages[ex.id]?.length ?? 0) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setExViewer({ exId: ex.id, index: 0 })}
+                              className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-sm bg-secondary"
+                              aria-label={`View ${exImages[ex.id].length} installation photo${exImages[ex.id].length > 1 ? "s" : ""} from ${ex.title}`}
+                            >
+                              <img
+                                src={exImages[ex.id][0].publicUrl}
+                                alt={exImages[ex.id][0].caption || `Installation view, ${ex.title}`}
+                                loading="lazy"
+                                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                              />
+                              {exImages[ex.id].length > 1 && (
+                                <span className="absolute bottom-1 right-1 rounded-sm bg-background/90 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                  +{exImages[ex.id].length - 1}
+                                </span>
+                              )}
+                            </button>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium">
+                              {ex.title}
+                              {exhibitionYear(ex) ? <span className="text-muted-foreground">, {exhibitionYear(ex)}</span> : null}
+                            </p>
+                            {exhibitionLine(ex) && <p className="mt-1 text-sm text-muted-foreground">{exhibitionLine(ex)}</p>}
+                            {ex.curator && <p className="mt-1 text-xs text-muted-foreground">Curated by {ex.curator}</p>}
+                            {(exImages[ex.id]?.length ?? 0) > 0 && exImages[ex.id][0].caption && (
+                              <p className="mt-1 text-[11px] text-muted-foreground/70">{exImages[ex.id][0].caption}</p>
+                            )}
+                          </div>
+                        </div>
                       </li>
                     ))}
                   </ul>
