@@ -305,8 +305,12 @@ const FoundationDashboard = () => {
           <ArtistInviteUpload />
         </section>
 
+        {/* Onboarding */}
+        <OnboardingTracker />
+
         {/* Registered Users */}
         <RegisteredUsersOverview />
+
 
         <WebsiteSectionsOverview />
 
