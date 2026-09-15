@@ -411,14 +411,35 @@ const Index = () => {
           </div>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto mt-8 leading-relaxed">
             The Global Artist Registry Foundation and IAA/USA share a commitment to supporting artists
-            and preserving their records for future generations. The GARF logo is available for our partners.
+            and preserving their records for future generations. Partner organisations can download a
+            ready-to-embed promotional button to invite their members to join the registry.
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
             <a href="/garf-logo.png" download="GARF_Logo.png">
               <Button variant="outline" size="sm" className="gap-2">
                 Download GARF logo <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </a>
+            <a href="/garf-org-button.png" download="GARF_Org_Button.png">
+              <Button variant="outline" size="sm" className="gap-2">
+                Download promo button <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </a>
+          </div>
+          <div className="mt-8 max-w-2xl mx-auto">
+            <a href="/register" target="_blank" rel="noopener noreferrer" className="block rounded-sm overflow-hidden border border-border transition-opacity hover:opacity-90">
+              <img
+                src="/garf-org-button.png"
+                alt="Sign up for the Permanent Artist Registry — Global Artist Registry Foundation"
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            </a>
+            <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
+              Embed this button on your organisation's website and link it to{" "}
+              <span className="font-medium text-foreground">globalartistregistry.org/register</span>{" "}
+              so your members can sign up directly.
+            </p>
           </div>
         </div>
       </section>
