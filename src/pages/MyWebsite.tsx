@@ -80,6 +80,14 @@ const MyWebsite = () => {
     [slug]
   );
 
+  const shareUrl = useMemo(
+    () =>
+      slug
+        ? `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/site-preview/${slug}`
+        : null,
+    [slug]
+  );
+
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
