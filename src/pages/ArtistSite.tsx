@@ -86,6 +86,8 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const [lightbox, setLightbox] = useState<Artwork | null>(null);
   const [cvEntries, setCvEntries] = useState<CvEntry[]>([]);
   const [exhibitions, setExhibitions] = useState<SiteExhibition[]>([]);
+  const [exImages, setExImages] = useState<Record<string, SiteExImage[]>>({});
+  const [exViewer, setExViewer] = useState<{ exId: string; index: number } | null>(null);
   const [catalogues, setCatalogues] = useState<SiteCatalogue[]>([]);
   const [news, setNews] = useState<SiteNews[]>([]);
 
@@ -152,7 +154,24 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
           .select("id, title, exhibition_type, opening_date, closing_date, venue, city, country, curator, description")
           .eq("user_id", row.user_id)
           .order("opening_date", { ascending: false, nullsFirst: false });
-        setExhibitions((exs as SiteExhibition[]) || []);
+        const exList = (exs as SiteExhibition[]) || [];
+        setExhibitions(exList);
+        if (exList.length > 0) {
+          const { data: imgs } = await supabase
+            .from("exhibition_images")
+            .select("id, exhibition_id, storage_path, web_storage_path, caption, display_order")
+            .in("exhibition_id", exList.map((e) => e.id))
+            .order("display_order", { ascending: true });
+          const grouped: Record<string, SiteExImage[]> = {};
+          (imgs || []).forEach((img) => {
+            const bucket = img.web_storage_path ? "exhibition-images-web" : "exhibition-images";
+            const path = img.web_storage_path || img.storage_path;
+            const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
+            if (!grouped[img.exhibition_id]) grouped[img.exhibition_id] = [];
+            grouped[img.exhibition_id].push({ id: img.id, exhibition_id: img.exhibition_id, caption: img.caption, publicUrl: urlData.publicUrl });
+          });
+          setExImages(grouped);
+        }
       }
 
       if (sections.publications) {
