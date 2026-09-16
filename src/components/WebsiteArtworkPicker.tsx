@@ -80,17 +80,10 @@ export const WebsiteArtworkPicker = ({
     });
   }, [artworks]);
 
-  // Multiple mode: fold to the compact summary shortly after the artist settles
-  // on a selection, so the form stays airy without forcing a "Done" click.
-  useEffect(() => {
-    if (mode !== "multiple" || collapsed) return;
-    if (selectedIds.size === 0) return;
+  // Clear any pending auto-collapse timer on unmount.
+  useEffect(() => () => {
     if (collapseTimer.current) clearTimeout(collapseTimer.current);
-    collapseTimer.current = setTimeout(() => setCollapsed(true), 1100);
-    return () => {
-      if (collapseTimer.current) clearTimeout(collapseTimer.current);
-    };
-  }, [mode, collapsed, selectedIds]);
+  }, []);
 
   const setOne = (id: string) => {
     onSelectionChange(new Set(id ? [id] : []));
@@ -100,7 +93,14 @@ export const WebsiteArtworkPicker = ({
     const next = new Set(selectedIds);
     if (checked) next.add(id); else next.delete(id);
     onSelectionChange(next);
+    // Multiple mode: fold to the compact summary shortly after the artist
+    // settles on a selection. Only a real toggle arms the timer, so reopening
+    // with "Change" keeps the list open until they pick again.
+    if (mode !== "multiple") return;
+    if (collapseTimer.current) clearTimeout(collapseTimer.current);
+    if (next.size > 0) collapseTimer.current = setTimeout(() => setCollapsed(true), 1600);
   };
+
 
   const list = (items: WebsiteArtworkOption[]) => (
     <div className="grid gap-2 sm:grid-cols-2">
