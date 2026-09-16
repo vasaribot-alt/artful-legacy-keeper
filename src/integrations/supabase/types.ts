@@ -1811,6 +1811,60 @@ export type Database = {
         }
         Relationships: []
       }
+      estate_successors: {
+        Row: {
+          activated_at: string | null
+          activated_by: string | null
+          artist_id: string
+          created_at: string
+          estate_display_name: string | null
+          id: string
+          named_at: string
+          notes: string | null
+          proof_document_path: string | null
+          relationship: string | null
+          status: string
+          successor_email: string
+          successor_name: string
+          successor_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          activated_at?: string | null
+          activated_by?: string | null
+          artist_id: string
+          created_at?: string
+          estate_display_name?: string | null
+          id?: string
+          named_at?: string
+          notes?: string | null
+          proof_document_path?: string | null
+          relationship?: string | null
+          status?: string
+          successor_email: string
+          successor_name: string
+          successor_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activated_at?: string | null
+          activated_by?: string | null
+          artist_id?: string
+          created_at?: string
+          estate_display_name?: string | null
+          id?: string
+          named_at?: string
+          notes?: string | null
+          proof_document_path?: string | null
+          relationship?: string | null
+          status?: string
+          successor_email?: string
+          successor_name?: string
+          successor_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       exhibition_artworks: {
         Row: {
           artwork_id: string
@@ -2871,6 +2925,8 @@ export type Database = {
           death_country: string | null
           death_year: number | null
           email: string | null
+          estate_activated_at: string | null
+          estate_managed_by: string | null
           full_name: string | null
           galleries: Json | null
           global_artist_id: number
@@ -2924,6 +2980,8 @@ export type Database = {
           death_country?: string | null
           death_year?: number | null
           email?: string | null
+          estate_activated_at?: string | null
+          estate_managed_by?: string | null
           full_name?: string | null
           galleries?: Json | null
           global_artist_id?: number
@@ -2977,6 +3035,8 @@ export type Database = {
           death_country?: string | null
           death_year?: number | null
           email?: string | null
+          estate_activated_at?: string | null
+          estate_managed_by?: string | null
           full_name?: string | null
           galleries?: Json | null
           global_artist_id?: number
@@ -3651,6 +3711,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_estate_succession: {
+        Args: { _death_year?: number; _successor_id: string }
+        Returns: undefined
+      }
       bulk_upsert_galleries: {
         Args: { _payload: Json }
         Returns: {
