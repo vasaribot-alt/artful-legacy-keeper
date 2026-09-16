@@ -33,6 +33,8 @@ interface ProfileData {
   full_name: string | null;
   avatar_url: string | null;
   birth_year: number | null;
+  death_year: number | null;
+  estate_managed_by: string | null;
   city: string | null;
   country: string | null;
   studio_address: string | null;
@@ -125,6 +127,8 @@ const PublicArtistProfile = () => {
         full_name: data.full_name,
         avatar_url: data.avatar_url,
         birth_year: data.birth_year,
+        death_year: (data as any).death_year ?? null,
+        estate_managed_by: (data as any).estate_managed_by ?? null,
         city: data.city,
         country: data.country,
         studio_address: data.studio_address,
