@@ -74,6 +74,7 @@ import RegistrarsDirectory from "./pages/RegistrarsDirectory";
 import RegistrarProfile from "./pages/RegistrarProfile";
 import RegistrarApply from "./pages/RegistrarApply";
 import FoundationRegistrars from "./pages/FoundationRegistrars";
+import FoundationEstates from "./pages/FoundationEstates";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
@@ -180,6 +181,7 @@ const App = () => (
           <Route path="/registrars/:userId" element={<RegistrarProfile />} />
           <Route path="/registrar/apply" element={<RegistrarApply />} />
           <Route path="/foundation/registrars" element={<FoundationRegistrars />} />
+          <Route path="/foundation/estates" element={<FoundationEstates />} />
           <Route path="/invite-friends" element={<InviteFriends />} />
           <Route path="/join/:slug" element={<PartnerJoin />} />
           <Route path="/partners/:slug" element={<PartnerDashboard />} />
