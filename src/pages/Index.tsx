@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { InstagramLink } from "@/components/SocialLinks";
-import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle } from "lucide-react";
+import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle, Heart } from "lucide-react";
 
 
 const features = [
@@ -315,6 +315,25 @@ const Index = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Estate succession */}
+      <section className="py-20 px-6 border-t border-border bg-muted/30">
+        <div className="max-w-3xl mx-auto text-center">
+          <Heart className="w-6 h-6 mx-auto text-muted-foreground mb-4" />
+          <h2 className="text-3xl mb-4">The archive outlives the artist</h2>
+          <p className="text-muted-foreground text-sm max-w-xl mx-auto mb-8 leading-relaxed">
+            Artists name their successors in advance. When the time comes, the foundation confirms
+            the handover, and the heir receives the full archive: works, exhibitions, CV, website,
+            all intact. The public record shows the archive is held by the estate. No other platform
+            does this.
+          </p>
+          <Link to="/why-garf-matters">
+            <Button variant="outline" size="lg" className="gap-2">
+              Learn more <ArrowRight className="w-4 h-4" />
+            </Button>
+          </Link>
         </div>
       </section>
 

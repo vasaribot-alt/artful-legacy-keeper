@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InstagramLink } from "@/components/SocialLinks";
-import { Download, ArrowRight, Shield, Users, Database, Clock, Handshake } from "lucide-react";
+import { Download, ArrowRight, Shield, Users, Database, Clock, Handshake, Heart } from "lucide-react";
 
 const principles = [
   { icon: Shield, title: "Owned by the artist", description: "The artist authenticates and controls their own record." },
@@ -236,6 +236,29 @@ const WhyGarfMatters = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Estate succession */}
+      <section className="py-16 px-6 border-t border-border">
+        <div className="max-w-3xl mx-auto text-center">
+          <Heart className="w-6 h-6 mx-auto text-muted-foreground mb-4" />
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">After the artist</p>
+          <h2 className="font-serif text-2xl md:text-3xl mb-6">
+            The archive outlives the artist. The artist decides who carries it.
+          </h2>
+          <p className="text-muted-foreground leading-relaxed mb-6 max-w-xl mx-auto">
+            Every artist can name their successors in advance: a spouse, a child, an estate lawyer, a
+            gallery they trust. Nothing changes while they are alive. When the time comes, the
+            foundation confirms the handover, and the heir receives full management of the archive:
+            works, exhibitions, catalogues, CV, and the artist's website. The public record then
+            shows the archive is held by the estate, with birth and death years, so the legacy is
+            clear to everyone.
+          </p>
+          <p className="text-muted-foreground leading-relaxed max-w-xl mx-auto">
+            No other platform offers this. The record does not scatter into boxes and passwords. It
+            stays where the artist built it, under the care of the people they chose.
+          </p>
         </div>
       </section>
 
