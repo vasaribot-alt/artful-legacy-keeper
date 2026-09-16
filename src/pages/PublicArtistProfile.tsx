@@ -413,13 +413,26 @@ const PublicArtistProfile = () => {
               <h1 className="text-4xl sm:text-5xl mb-3">{profile.full_name || "Untitled Artist"}</h1>
               {foundingTier && <FoundingArtistBadge tier={foundingTier} className="mb-3" />}
 
-              {(location || profile.birth_year) && (
+              {(location || profile.birth_year || profile.death_year) && (
                 <p className="text-muted-foreground text-lg">
-                  {profile.birth_year && <span>b. {profile.birth_year}</span>}
+                  {profile.birth_year && (
+                    <span>
+                      {profile.death_year
+                        ? `${profile.birth_year}–${profile.death_year}`
+                        : `b. ${profile.birth_year}`}
+                    </span>
+                  )}
                   {profile.birth_year && location && <span> · </span>}
                   {location && <span>{location}</span>}
                 </p>
               )}
+
+              {profile.estate_managed_by && (
+                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  Archive held by {profile.estate_managed_by}
+                </p>
+              )}
+
 
               <span className="mt-4 text-xs px-3 py-1 rounded-sm bg-foreground text-background font-mono tracking-widest">
                 GAR-{String(profile.global_artist_id).padStart(8, "0")}
