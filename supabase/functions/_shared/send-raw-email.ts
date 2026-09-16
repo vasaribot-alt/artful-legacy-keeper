@@ -67,7 +67,7 @@ export async function sendRawEmail(input: SendRawEmailInput): Promise<SendRawEma
         sender_domain: SENDER_DOMAIN,
         subject: input.subject,
         html: input.html,
-        text: input.text,
+        text,
         purpose: 'transactional',
         label: input.label,
         idempotency_key: input.idempotencyKey || crypto.randomUUID(),
