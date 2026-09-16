@@ -13,3 +13,4 @@
 - [Statement of Support](mem://features/statement-of-support) — Public endorsement page with optional public listing; never call it a petition
 - [IFAR Spirit Positioning](mem://features/ifar-spirit-positioning) — IFAR is closing; GARF may say it works "in the spirit of IFAR" for contemporary artist documentation
 - [Artist Site Exhibition Photos](mem://features/artist-site-exhibition-photos) — Public Exhibitions page thumbnails + lightbox; exhibition_images anon grant + published-site policy
+- [Estate Succession](mem://features/estate-succession) — Artists name heirs in advance; foundation activates handover to full management, shown publicly
