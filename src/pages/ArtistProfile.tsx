@@ -16,6 +16,7 @@ import { getPhonePrefixForCountry, COUNTRY_PHONE_CODES } from "@/lib/phoneCountr
 import { AppLayout } from "@/components/AppLayout";
 import { ProfilePresentationView, type ProfileViewData } from "@/components/ProfilePresentationView";
 import { ManageRegistrarAccess } from "@/components/ManageRegistrarAccess";
+import { EstateSuccessorManager } from "@/components/EstateSuccessorManager";
 import { UnitPreferenceSetting } from "@/components/UnitPreferenceSetting";
 import { RegistrarCredentialsSummary } from "@/components/RegistrarCredentialsSummary";
 import { AiProfileAssist, type ProfileDraft } from "@/components/AiProfileAssist";
@@ -585,6 +586,7 @@ const ArtistProfile = () => {
     { id: "chronology", label: "Chronology" },
     { id: "ai-assist", label: "AI profile assistance" },
     { id: "access-management", label: "Access Management" },
+    { id: "estate-succession", label: "Estate & Successors" },
   ];
 
   const scrollToSection = (id: string) => {
@@ -830,6 +832,17 @@ const ArtistProfile = () => {
             Grant registrars access to manage your catalogue raisonné on your behalf.
           </p>
           <ManageRegistrarAccess />
+        </section>
+
+        <Separator />
+
+        <section id="estate-succession" className="space-y-4 scroll-mt-6">
+          <h2 className="text-2xl">Estate & Successors</h2>
+          <p className="text-sm text-muted-foreground">
+            Name the people who should look after your archive after you. They take over only when
+            the foundation has seen proof, and until then they see nothing.
+          </p>
+          <EstateSuccessorManager />
         </section>
 
         <Separator />

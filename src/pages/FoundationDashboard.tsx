@@ -202,6 +202,9 @@ const FoundationDashboard = () => {
             <Button variant="outline" size="sm" onClick={() => navigate("/foundation/partners")}>
               Partner Organisations →
             </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate("/foundation/estates")}>
+              Estate Succession →
+            </Button>
 
           </div>
         </div>
