@@ -35,3 +35,6 @@
 - [ ] Set setup + annual fee amounts before launch
 - [ ] Wire billing to Stripe once cards arrive (lifetime fee model, legacy mode on death)
 - [ ] Foundation custom-domain approval UI (currently manual)
+
+## Scanning service (deferred, 2026-09-16)
+- [ ] Catalogue and document scanning offered as a GARF service. On hold until scanner costs are known; likely based in the Netherlands or Germany. Then decide: provider directory vs request form, who may provide, pricing display, whether scans upload straight into the artist archive.
