@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InstagramLink } from "@/components/SocialLinks";
-import { Download, ArrowRight, Shield, Users, Database, Clock, Handshake } from "lucide-react";
+import { Download, ArrowRight, Shield, Users, Database, Clock, Handshake, Heart } from "lucide-react";
 
 const principles = [
   { icon: Shield, title: "Owned by the artist", description: "The artist authenticates and controls their own record." },
