@@ -175,6 +175,11 @@ const About = () => {
             </a>
 
 
+            <Link to="/statement-of-support">
+              <Button variant="outline" className="gap-2">
+                Statement of Support <PenLine className="w-4 h-4" />
+              </Button>
+            </Link>
             <Link to="/donate">
               <Button variant="outline" className="gap-2">
                 Support the foundation <ArrowRight className="w-4 h-4" />
