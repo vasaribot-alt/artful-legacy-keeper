@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { RegistrarListingToggle } from "@/components/RegistrarListingToggle";
 import { toast } from "sonner";
 import {
@@ -57,6 +58,10 @@ interface ProfileForm {
   languages: string;
   work_areas: string;
   cms_systems: string;
+  available_for_freelance: boolean;
+  availability_note: string;
+  rate_indication: string;
+  available_for_travel: boolean;
 }
 
 const EMPTY_FORM: ProfileForm = {
@@ -70,6 +75,10 @@ const EMPTY_FORM: ProfileForm = {
   languages: "",
   work_areas: "",
   cms_systems: "",
+  available_for_freelance: false,
+  availability_note: "",
+  rate_indication: "",
+  available_for_travel: false,
 };
 
 const KIND_META: Record<Kind, { label: string; hint: string; icon: typeof Briefcase }> = {
@@ -122,7 +131,7 @@ const RegistrarPresentation = () => {
         supabase
           .from("registrar_profiles")
           .select(
-            "professional_statement, credentials, years_experience, nationality, education, geographic_coverage, specializations, languages, work_areas, cms_experience, is_verified"
+            "professional_statement, credentials, years_experience, nationality, education, geographic_coverage, specializations, languages, work_areas, cms_experience, is_verified, available_for_freelance, availability_note, rate_indication, available_for_travel"
           )
           .eq("user_id", user.id)
           .maybeSingle(),
@@ -150,6 +159,10 @@ const RegistrarPresentation = () => {
           cms_systems: Array.isArray(p.cms_experience)
             ? p.cms_experience.map((c: any) => c?.system).filter(Boolean).join(", ")
             : "",
+          available_for_freelance: !!p.available_for_freelance,
+          availability_note: p.availability_note || "",
+          rate_indication: p.rate_indication || "",
+          available_for_travel: !!p.available_for_travel,
         });
       }
 
@@ -183,6 +196,10 @@ const RegistrarPresentation = () => {
       languages: toList(form.languages),
       work_areas: toList(form.work_areas),
       cms_experience: toList(form.cms_systems).map((system) => ({ system })),
+      available_for_freelance: form.available_for_freelance,
+      availability_note: form.availability_note.trim() || null,
+      rate_indication: form.rate_indication.trim() || null,
+      available_for_travel: form.available_for_travel,
     };
     const { error } = await supabase
       .from("registrar_profiles")
