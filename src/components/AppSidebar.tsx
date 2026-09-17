@@ -42,6 +42,7 @@ const getNavItems = (role: AppRole) => {
       { title: "Profile", url: "/profile", icon: User },
       { title: "Clients", url: "/registrar", icon: Users },
       { title: "Capture", url: "/capture", icon: Camera },
+      { title: "My Presentation", url: "/registrar/presentation", icon: FileText },
       { title: "Get Verified", url: "/registrar/apply", icon: ShieldCheck },
     ];
   }
