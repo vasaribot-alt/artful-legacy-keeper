@@ -15,6 +15,13 @@
       "when": 1789637184204,
       "tag": "0001_registrar_availability",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789637409993,
+      "tag": "0002_registrar_client_file_access",
+      "breakpoints": true
     }
   ]
 }
