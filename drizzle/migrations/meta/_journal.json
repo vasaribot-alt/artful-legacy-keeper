@@ -22,6 +22,13 @@
       "when": 1789637409993,
       "tag": "0002_registrar_client_file_access",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789637430846,
+      "tag": "0003_registrar_client_file_access_safe_cast",
+      "breakpoints": true
     }
   ]
 }

@@ -4120,6 +4120,10 @@ export type Database = {
         Args: { _owner_id: string; _registrar_id: string }
         Returns: boolean
       }
+      has_registrar_access_path: {
+        Args: { _owner_text: string; _registrar_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
