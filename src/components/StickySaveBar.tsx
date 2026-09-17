@@ -104,5 +104,10 @@ export function useSaveTracker(values: unknown[], saving: boolean, ready = true)
 
   const state: SaveState = saving ? "saving" : dirty ? "dirty" : savedOnce ? "saved" : "clean";
 
-  return { state, dirty, markSaved };
+  const resetBaseline = useCallback(() => {
+    setBaseline(snapshotRef.current);
+    setSavedOnce(false);
+  }, []);
+
+  return { state, dirty, markSaved, resetBaseline };
 }
