@@ -156,6 +156,13 @@ const About = () => {
               join a vetted public directory. Institutions and funders can partner with the foundation or support its
               endowment for long-term preservation.
             </p>
+            <p>
+              Collectors, artists, curators and institutions can also add their name to the{" "}
+              <Link to="/statement-of-support" className="text-foreground underline underline-offset-4 hover:text-muted-foreground">
+                Statement of Support
+              </Link>{" "}
+              for verified, independent documentation of contemporary art.
+            </p>
           </div>
           <div className="flex flex-wrap gap-4 mt-10">
             <a href="/GARF_Why_GARF_Matters.pdf" target="_blank" rel="noopener noreferrer">
