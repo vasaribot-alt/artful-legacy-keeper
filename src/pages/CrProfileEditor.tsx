@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StickySaveBar, useSaveTracker } from "@/components/StickySaveBar";
+import { StickySaveBar, useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
@@ -72,7 +72,8 @@ export default function CrProfileEditor() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [gar, setGar] = useState<number | null>(null);
   const [f, setF] = useState<CrFields>(EMPTY);
-  const { state: saveState, markSaved, resetBaseline } = useSaveTracker([f], saving, !loading);
+  const { state: saveState, markSaved, resetBaseline, dirty } = useSaveTracker([f], saving, !loading);
+  useUnsavedChangesWarning(dirty);
   useEffect(() => {
     resetBaseline();
     // eslint-disable-next-line react-hooks/exhaustive-deps

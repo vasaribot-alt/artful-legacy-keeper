@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { StickySaveBar, useSaveTracker } from "@/components/StickySaveBar";
+import { StickySaveBar, useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -113,13 +113,15 @@ const ArtistProfile = () => {
     website: boolean;
   }>({ studio_address: true, phone: true, email: true, website: true });
 
-  const { state: saveState, markSaved } = useSaveTracker(
+  const { state: saveState, markSaved, dirty } = useSaveTracker(
     [fullName, birthYear, isDeceased, deathYear, committeeConnected, city, country,
      studioAddress, phonePrefix, phone, email, website, socialLinks, galleries,
      biography, cv, chronology, willingToLend, lendingNotes, contactVisibility],
     saving,
     !loading
   );
+
+  useUnsavedChangesWarning(dirty);
 
   const toggleVisibility = (field: "studio_address" | "phone" | "email" | "website") =>
     setContactVisibility((v) => ({ ...v, [field]: !v[field] }));

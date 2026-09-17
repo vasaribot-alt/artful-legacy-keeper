@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { RegistrarListingToggle } from "@/components/RegistrarListingToggle";
-import { StickySaveBar, type SaveState } from "@/components/StickySaveBar";
+import { StickySaveBar, useUnsavedChangesWarning, type SaveState } from "@/components/StickySaveBar";
 import { toast } from "sonner";
 import {
   ArrowUp,
@@ -219,6 +219,7 @@ const RegistrarPresentation = () => {
   };
 
   const dirty = JSON.stringify(form) !== baseline;
+  useUnsavedChangesWarning(dirty);
   const saveState: SaveState = saving
     ? "saving"
     : dirty
