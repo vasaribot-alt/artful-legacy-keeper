@@ -433,6 +433,30 @@ const RegistrarProfile = () => {
                     </div>
                   )}
                 </div>
+
+                {(registrar.work_areas?.length || 0) > 0 && (
+                  <div className="space-y-3">
+                    <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      Areas of work
+                    </h2>
+                    <p className="text-sm">{(registrar.work_areas || []).join(", ")}</p>
+                  </div>
+                )}
+
+                {Array.isArray(registrar.cms_experience) &&
+                  registrar.cms_experience.length > 0 && (
+                    <div className="space-y-3">
+                      <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                        Collection systems
+                      </h2>
+                      <p className="text-sm">
+                        {registrar.cms_experience
+                          .map((c: any) => c?.system)
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                    </div>
+                  )}
               </section>
 
               {/* Contact */}
@@ -440,6 +464,9 @@ const RegistrarProfile = () => {
                 <Button onClick={openContact} className="gap-1.5">
                   <Mail className="w-4 h-4" /> Contact this registrar
                 </Button>
+                <p className="text-xs text-muted-foreground">
+                  References available on request.
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Inquiries are routed through the Foundation. Contact details
                   remain private until the registrar accepts your request.
