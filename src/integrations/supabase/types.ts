@@ -3272,6 +3272,9 @@ export type Database = {
         Row: {
           arcs_member: boolean
           arcs_member_id: string | null
+          availability_note: string | null
+          available_for_freelance: boolean
+          available_for_travel: boolean
           cms_experience: Json
           created_at: string
           credentials: string | null
@@ -3283,6 +3286,7 @@ export type Database = {
           languages: string[]
           nationality: string | null
           professional_statement: string | null
+          rate_indication: string | null
           specializations: string[]
           updated_at: string
           user_id: string
@@ -3294,6 +3298,9 @@ export type Database = {
         Insert: {
           arcs_member?: boolean
           arcs_member_id?: string | null
+          availability_note?: string | null
+          available_for_freelance?: boolean
+          available_for_travel?: boolean
           cms_experience?: Json
           created_at?: string
           credentials?: string | null
@@ -3305,6 +3312,7 @@ export type Database = {
           languages?: string[]
           nationality?: string | null
           professional_statement?: string | null
+          rate_indication?: string | null
           specializations?: string[]
           updated_at?: string
           user_id: string
@@ -3316,6 +3324,9 @@ export type Database = {
         Update: {
           arcs_member?: boolean
           arcs_member_id?: string | null
+          availability_note?: string | null
+          available_for_freelance?: boolean
+          available_for_travel?: boolean
           cms_experience?: Json
           created_at?: string
           credentials?: string | null
@@ -3327,6 +3338,7 @@ export type Database = {
           languages?: string[]
           nationality?: string | null
           professional_statement?: string | null
+          rate_indication?: string | null
           specializations?: string[]
           updated_at?: string
           user_id?: string
@@ -3992,6 +4004,9 @@ export type Database = {
         Returns: {
           arcs_member: boolean
           arcs_member_id: string
+          availability_note: string
+          available_for_freelance: boolean
+          available_for_travel: boolean
           avatar_url: string
           city: string
           cms_experience: Json
@@ -4005,6 +4020,7 @@ export type Database = {
           languages: string[]
           nationality: string
           professional_statement: string
+          rate_indication: string
           specializations: string[]
           user_id: string
           work_areas: string[]
@@ -4102,6 +4118,10 @@ export type Database = {
       }
       has_registrar_access: {
         Args: { _owner_id: string; _registrar_id: string }
+        Returns: boolean
+      }
+      has_registrar_access_path: {
+        Args: { _owner_text: string; _registrar_id: string }
         Returns: boolean
       }
       has_role: {

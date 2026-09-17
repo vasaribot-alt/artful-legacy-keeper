@@ -399,16 +399,21 @@ const Files = () => {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     (unlinked || []).forEach((r: any) => {
+      const isImage = (r.mime_type || "").startsWith("image/");
       rows.push({
         id: `up-${r.id}`,
-        bucket: "artwork-images",
+        bucket: isImage ? "artwork-images" : "artwork-documents",
         storage_path: r.storage_path,
-        thumb_bucket: r.web_storage_path ? "artwork-images-web" : "artwork-images",
-        thumb_path: r.web_storage_path || r.storage_path,
+        thumb_bucket: isImage
+          ? r.web_storage_path
+            ? "artwork-images-web"
+            : "artwork-images"
+          : undefined,
+        thumb_path: isImage ? r.web_storage_path || r.storage_path : undefined,
         file_name: r.file_name,
         file_type: r.mime_type || null,
         file_size: r.original_size ?? r.file_size ?? null,
-        kind: "image",
+        kind: isImage ? "image" : "document",
         source: "unlinked-upload",
         linked_id: r.id,
         linked_title: r.folder_label
@@ -607,9 +612,9 @@ const Files = () => {
     }
   };
 
-  const handleDeleteUnlinked = async (fileId: string, storagePath: string) => {
+  const handleDeleteUnlinked = async (fileId: string, storagePath: string, bucket = "artwork-images") => {
     const id = fileId.replace(/^up-/, "");
-    await supabase.storage.from("artwork-images").remove([storagePath]);
+    await supabase.storage.from(bucket).remove([storagePath]);
     const { error } = await supabase.from("user_uploads").delete().eq("id", id);
     if (error) { toast.error("Failed to delete"); return; }
     toast.success("File deleted");
@@ -933,7 +938,7 @@ const Files = () => {
                   </Button>
                 )}
                 {f.source === "unlinked-upload" && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)} title="Delete unlinked file">
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path, f.bucket)} title="Delete unlinked file">
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 )}
@@ -967,7 +972,7 @@ const Files = () => {
                       </Button>
                     )}
                     {f.source === "unlinked-upload" && (
-                      <Button size="icon" variant="secondary" className="h-8 w-8 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)}>
+                      <Button size="icon" variant="secondary" className="h-8 w-8 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path, f.bucket)}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}

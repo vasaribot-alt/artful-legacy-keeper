@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { RegistrarListingToggle } from "@/components/RegistrarListingToggle";
 import { toast } from "sonner";
 import {
@@ -57,6 +58,10 @@ interface ProfileForm {
   languages: string;
   work_areas: string;
   cms_systems: string;
+  available_for_freelance: boolean;
+  availability_note: string;
+  rate_indication: string;
+  available_for_travel: boolean;
 }
 
 const EMPTY_FORM: ProfileForm = {
@@ -70,6 +75,10 @@ const EMPTY_FORM: ProfileForm = {
   languages: "",
   work_areas: "",
   cms_systems: "",
+  available_for_freelance: false,
+  availability_note: "",
+  rate_indication: "",
+  available_for_travel: false,
 };
 
 const KIND_META: Record<Kind, { label: string; hint: string; icon: typeof Briefcase }> = {
@@ -122,7 +131,7 @@ const RegistrarPresentation = () => {
         supabase
           .from("registrar_profiles")
           .select(
-            "professional_statement, credentials, years_experience, nationality, education, geographic_coverage, specializations, languages, work_areas, cms_experience, is_verified"
+            "professional_statement, credentials, years_experience, nationality, education, geographic_coverage, specializations, languages, work_areas, cms_experience, is_verified, available_for_freelance, availability_note, rate_indication, available_for_travel"
           )
           .eq("user_id", user.id)
           .maybeSingle(),
@@ -150,6 +159,10 @@ const RegistrarPresentation = () => {
           cms_systems: Array.isArray(p.cms_experience)
             ? p.cms_experience.map((c: any) => c?.system).filter(Boolean).join(", ")
             : "",
+          available_for_freelance: !!p.available_for_freelance,
+          availability_note: p.availability_note || "",
+          rate_indication: p.rate_indication || "",
+          available_for_travel: !!p.available_for_travel,
         });
       }
 
@@ -183,6 +196,10 @@ const RegistrarPresentation = () => {
       languages: toList(form.languages),
       work_areas: toList(form.work_areas),
       cms_experience: toList(form.cms_systems).map((system) => ({ system })),
+      available_for_freelance: form.available_for_freelance,
+      availability_note: form.availability_note.trim() || null,
+      rate_indication: form.rate_indication.trim() || null,
+      available_for_travel: form.available_for_travel,
     };
     const { error } = await supabase
       .from("registrar_profiles")
@@ -664,6 +681,51 @@ const RegistrarPresentation = () => {
                   />
                 </div>
               </div>
+
+              <div className="border border-border rounded-sm p-5 space-y-5">
+                <div>
+                  <h3 className="text-base">Availability for freelance work</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Artists, estates and collections use this to see whether they can hire you
+                    right now.
+                  </p>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <Label className="text-sm">Open to freelance assignments</Label>
+                  <Switch
+                    checked={form.available_for_freelance}
+                    onCheckedChange={(v) => setForm({ ...form, available_for_freelance: v })}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <Label className="text-sm">Available to travel</Label>
+                  <Switch
+                    checked={form.available_for_travel}
+                    onCheckedChange={(v) => setForm({ ...form, available_for_travel: v })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Availability note</Label>
+                  <Textarea
+                    autoComplete="off"
+                    rows={2}
+                    value={form.availability_note}
+                    onChange={(e) => setForm({ ...form, availability_note: e.target.value })}
+                    placeholder="Two to three days a week, from October. Short projects and inventories welcome."
+                    className="resize-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Rate indication</Label>
+                  <Input
+                    autoComplete="off"
+                    value={form.rate_indication}
+                    onChange={(e) => setForm({ ...form, rate_indication: e.target.value })}
+                    placeholder="Day rate on request, or from EUR 350 per day"
+                  />
+                </div>
+              </div>
+
               <Button onClick={saveProfile} disabled={saving}>
                 {saving ? "Saving..." : saved ? "Saved ✓" : "Save •"}
               </Button>
