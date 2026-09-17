@@ -214,9 +214,18 @@ const RegistrarPresentation = () => {
       return;
     }
     setHasProfile(true);
+    setBaseline(JSON.stringify(form));
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
   };
+
+  const dirty = JSON.stringify(form) !== baseline;
+  const saveState: SaveState = saving
+    ? "saving"
+    : dirty
+      ? "dirty"
+      : saved
+        ? "saved"
+        : "clean";
 
   const addEntry = async (kind: Kind) => {
     if (!uid) return;
