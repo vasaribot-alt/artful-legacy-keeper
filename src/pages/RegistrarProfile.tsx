@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,27 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+interface EntryImage {
+  id: string;
+  storage_path: string;
+  caption: string | null;
+  credit: string | null;
+}
+
+interface Entry {
+  id: string;
+  kind: string;
+  title: string | null;
+  organisation: string | null;
+  location: string | null;
+  start_year: number | null;
+  end_year: number | null;
+  is_current: boolean;
+  description: string | null;
+  display_order: number;
+  images: EntryImage[];
+}
+
 interface VerifiedRegistrar {
   user_id: string;
   full_name: string | null;
@@ -37,7 +59,18 @@ interface VerifiedRegistrar {
   years_experience: number | null;
   arcs_member: boolean;
   arcs_member_id: string | null;
+  nationality?: string | null;
+  education?: string | null;
+  work_areas?: string[] | null;
+  cms_experience?: any;
+  entries?: Entry[];
 }
+
+const yearRange = (e: Entry) => {
+  if (e.start_year && e.end_year) return `${e.start_year}-${e.end_year}`;
+  if (e.start_year && e.is_current) return `${e.start_year}-present`;
+  return e.start_year ? String(e.start_year) : e.end_year ? String(e.end_year) : "";
+};
 
 const RegistrarProfile = () => {
   const { userId } = useParams<{ userId: string }>();
