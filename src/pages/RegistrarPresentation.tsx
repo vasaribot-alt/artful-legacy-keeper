@@ -739,8 +739,8 @@ const RegistrarPresentation = () => {
                 </div>
               </div>
 
-              <Button onClick={saveProfile} disabled={saving}>
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save •"}
+              <Button onClick={saveProfile} disabled={saving || saveState === "saved"}>
+                {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
               </Button>
               {!hasProfile && (
                 <p className="text-xs text-muted-foreground">
