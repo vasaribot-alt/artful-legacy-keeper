@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -78,3 +78,31 @@ export const StickySaveBar = ({ state, onSave, className, label = "Save" }: Stic
 };
 
 export default StickySaveBar;
+
+/**
+ * Tracks whether the tracked values differ from the last saved snapshot.
+ * Returns the save state for StickySaveBar plus markSaved() to call after a
+ * successful save.
+ */
+export function useSaveTracker(values: unknown[], saving: boolean, ready = true) {
+  const snapshot = JSON.stringify(values);
+  const snapshotRef = useRef(snapshot);
+  snapshotRef.current = snapshot;
+  const [baseline, setBaseline] = useState<string | null>(null);
+  const [savedOnce, setSavedOnce] = useState(false);
+
+  useEffect(() => {
+    if (ready && baseline === null) setBaseline(snapshotRef.current);
+  }, [ready, baseline]);
+
+  const dirty = baseline !== null && snapshot !== baseline;
+
+  const markSaved = useCallback(() => {
+    setBaseline(snapshotRef.current);
+    setSavedOnce(true);
+  }, []);
+
+  const state: SaveState = saving ? "saving" : dirty ? "dirty" : savedOnce ? "saved" : "clean";
+
+  return { state, dirty, markSaved };
+}
