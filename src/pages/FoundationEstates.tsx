@@ -75,9 +75,26 @@ export default function FoundationEstates() {
       _successor_id: active.id,
       _death_year: deathYear.trim() ? parseInt(deathYear, 10) : null,
     });
+    if (error) {
+      setWorking(false);
+      toast.error(error.message);
+      return;
+    }
+    const { data: updated, error: statusError } = await supabase
+      .from("estate_successors")
+      .select("status")
+      .eq("id", active.id)
+      .single();
     setWorking(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Estate custodianship activated");
+    if (statusError) {
+      toast.error("The process was saved, but its current status could not be confirmed");
+      return;
+    }
+    if (updated.status === "pending_account") {
+      toast.success("Estate custodianship process activated. Waiting for the heir to register.");
+    } else {
+      toast.success("Estate custodianship activated and access granted");
+    }
     setActive(null);
     setDeathYear("");
     load();
@@ -111,7 +128,13 @@ export default function FoundationEstates() {
                       </span>
                     )}
                     <Badge variant={r.status === "activated" ? "default" : "outline"} className="text-xs">
-                      {r.status === "activated" ? "Active custodian" : r.status === "revoked" ? "Withdrawn" : "Named"}
+                      {r.status === "activated"
+                        ? "Active custodian"
+                        : r.status === "pending_account"
+                          ? "Waiting for account"
+                          : r.status === "revoked"
+                            ? "Withdrawn"
+                            : "Named"}
                     </Badge>
                   </div>
                   <p className="text-sm mt-1">
@@ -124,9 +147,9 @@ export default function FoundationEstates() {
                   )}
                   {r.notes && <p className="text-sm text-muted-foreground mt-1">{r.notes}</p>}
                 </div>
-                {r.status !== "activated" && (
+                {r.status !== "activated" && r.status !== "revoked" && (
                   <Button variant="outline" size="sm" onClick={() => setActive(r)}>
-                    Hand over
+                    {r.status === "pending_account" ? "Retry handover" : "Hand over"}
                   </Button>
                 )}
               </div>
@@ -143,7 +166,8 @@ export default function FoundationEstates() {
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
               {active?.successor_name} will be able to manage {active?.artist_name}'s archive in
-              full. The public pages will show that the archive is looked after by the estate.
+              full once an account exists under the exact email address. The public pages will only
+              show the estate as custodian after access has been granted.
             </p>
             <div className="space-y-2">
               <Label>Year of death (optional)</Label>
@@ -155,8 +179,8 @@ export default function FoundationEstates() {
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              The successor must already have an account with the same email address, otherwise ask
-              them to register first and then hand over.
+              If the successor has not registered yet, the process will remain waiting and you can
+              retry the handover after their account has been created.
             </p>
           </div>
           <DialogFooter>
