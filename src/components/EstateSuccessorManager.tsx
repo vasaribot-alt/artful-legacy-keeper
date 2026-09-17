@@ -92,7 +92,13 @@ export function EstateSuccessorManager() {
                     <span className="text-sm text-muted-foreground">{r.relationship}</span>
                   )}
                   <Badge variant={r.status === "activated" ? "default" : "outline"} className="text-xs">
-                    {r.status === "activated" ? "Active custodian" : r.status === "revoked" ? "Withdrawn" : "Named"}
+                    {r.status === "activated"
+                      ? "Active custodian"
+                      : r.status === "pending_account"
+                        ? "Waiting for account"
+                        : r.status === "revoked"
+                          ? "Withdrawn"
+                          : "Named"}
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground break-all">{r.successor_email}</p>
