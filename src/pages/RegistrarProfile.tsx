@@ -507,6 +507,16 @@ const RegistrarProfile = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          index={lightbox.index}
+          caption={lightbox.captions[lightbox.index] || undefined}
+          onIndexChange={(index) => setLightbox({ ...lightbox, index })}
+          onClose={() => setLightbox(null)}
+        />
+      )}
     </div>
   );
 };
