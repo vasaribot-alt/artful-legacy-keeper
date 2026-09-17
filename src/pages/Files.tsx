@@ -399,16 +399,21 @@ const Files = () => {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     (unlinked || []).forEach((r: any) => {
+      const isImage = (r.mime_type || "").startsWith("image/");
       rows.push({
         id: `up-${r.id}`,
-        bucket: "artwork-images",
+        bucket: isImage ? "artwork-images" : "artwork-documents",
         storage_path: r.storage_path,
-        thumb_bucket: r.web_storage_path ? "artwork-images-web" : "artwork-images",
-        thumb_path: r.web_storage_path || r.storage_path,
+        thumb_bucket: isImage
+          ? r.web_storage_path
+            ? "artwork-images-web"
+            : "artwork-images"
+          : undefined,
+        thumb_path: isImage ? r.web_storage_path || r.storage_path : undefined,
         file_name: r.file_name,
         file_type: r.mime_type || null,
         file_size: r.original_size ?? r.file_size ?? null,
-        kind: "image",
+        kind: isImage ? "image" : "document",
         source: "unlinked-upload",
         linked_id: r.id,
         linked_title: r.folder_label
