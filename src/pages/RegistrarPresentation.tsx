@@ -148,7 +148,7 @@ const RegistrarPresentation = () => {
         const p = rp as any;
         setHasProfile(true);
         setIsVerified(!!p.is_verified);
-        setForm({
+        const loaded: ProfileForm = {
           professional_statement: p.professional_statement || "",
           credentials: p.credentials || "",
           years_experience: p.years_experience != null ? String(p.years_experience) : "",
