@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { StickySaveBar, useSaveTracker } from "@/components/StickySaveBar";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
@@ -207,6 +208,7 @@ export default function CrProfileEditor() {
     if (error) {
       toast.error(error.message);
     } else {
+      markSaved();
       toast.success("Catalogue Raisonné profile saved");
     }
   };
@@ -242,6 +244,7 @@ export default function CrProfileEditor() {
 
   return (
     <AppLayout>
+      <StickySaveBar state={saveState} onSave={save} />
       <div className="max-w-3xl mx-auto px-6 py-10 space-y-10">
         <header>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">

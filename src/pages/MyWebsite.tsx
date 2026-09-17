@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { StickySaveBar, useSaveTracker } from "@/components/StickySaveBar";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
@@ -200,6 +201,7 @@ const MyWebsite = () => {
     }
     setRow(data as WebsiteRow);
     setSlug((data as WebsiteRow).slug);
+    markSaved();
     toast({ title: "Saved ✓" });
   };
 
