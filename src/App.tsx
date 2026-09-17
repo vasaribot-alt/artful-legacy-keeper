@@ -181,6 +181,7 @@ const App = () => (
           <Route path="/registrars" element={<RegistrarsDirectory />} />
           <Route path="/registrars/:userId" element={<RegistrarProfile />} />
           <Route path="/registrar/apply" element={<RegistrarApply />} />
+          <Route path="/registrar/presentation" element={<RegistrarPresentation />} />
           <Route path="/foundation/registrars" element={<FoundationRegistrars />} />
           <Route path="/foundation/estates" element={<FoundationEstates />} />
           <Route path="/invite-friends" element={<InviteFriends />} />
