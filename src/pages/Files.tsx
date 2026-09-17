@@ -612,9 +612,9 @@ const Files = () => {
     }
   };
 
-  const handleDeleteUnlinked = async (fileId: string, storagePath: string) => {
+  const handleDeleteUnlinked = async (fileId: string, storagePath: string, bucket = "artwork-images") => {
     const id = fileId.replace(/^up-/, "");
-    await supabase.storage.from("artwork-images").remove([storagePath]);
+    await supabase.storage.from(bucket).remove([storagePath]);
     const { error } = await supabase.from("user_uploads").delete().eq("id", id);
     if (error) { toast.error("Failed to delete"); return; }
     toast.success("File deleted");
@@ -938,7 +938,7 @@ const Files = () => {
                   </Button>
                 )}
                 {f.source === "unlinked-upload" && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)} title="Delete unlinked file">
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path, f.bucket)} title="Delete unlinked file">
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 )}
@@ -972,7 +972,7 @@ const Files = () => {
                       </Button>
                     )}
                     {f.source === "unlinked-upload" && (
-                      <Button size="icon" variant="secondary" className="h-8 w-8 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path)}>
+                      <Button size="icon" variant="secondary" className="h-8 w-8 text-destructive" onClick={() => handleDeleteUnlinked(f.id, f.storage_path, f.bucket)}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}
