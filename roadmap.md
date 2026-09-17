@@ -47,4 +47,4 @@
 - [x] Public presentation page: career, education, selected project work with photos, systems, areas of work
 - [x] Registrar-owned editor at /registrar/presentation (add/reorder/delete entries, photos with captions, visibility)
 - [x] Freelance availability: open to work, availability note, rate indication, travel
-- [ ] Registrar portal review (2026-09-17): confirm archive management, document upload and credentials page all reachable from one registrar home; fill gaps
+- [x] Registrar portal review (2026-09-17): client workspace covers archive management; Documents section added (uploads stored in the client's own archive, registrar storage policies added); credentials page at /registrars/{id} with editor at /registrar/presentation, linked from the registrar home
