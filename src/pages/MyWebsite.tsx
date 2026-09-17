@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { StickySaveBar, useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
@@ -74,6 +75,16 @@ const MyWebsite = () => {
   const [featuredArtworkId, setFeaturedArtworkId] = useState<Set<string>>(new Set());
   const [homeArtworkIds, setHomeArtworkIds] = useState<Set<string>>(new Set());
   const [sections, setSections] = useState<Record<string, boolean>>({});
+
+  const { state: saveState, markSaved, dirty } = useSaveTracker(
+    [slug, isEnabled, siteTitle, tagline, aboutText, showEmail, showPhone, showGallery,
+     customDomain, selectedIds ? Array.from(selectedIds).sort() : null, homeLayout,
+     Array.from(featuredArtworkId), Array.from(homeArtworkIds).sort(), sections],
+    saving,
+    !loading
+  );
+
+  useUnsavedChangesWarning(dirty);
 
   const siteUrl = useMemo(
     () => (slug ? `${window.location.origin}/site/${slug}` : null),
@@ -200,6 +211,7 @@ const MyWebsite = () => {
     }
     setRow(data as WebsiteRow);
     setSlug((data as WebsiteRow).slug);
+    markSaved();
     toast({ title: "Saved ✓" });
   };
 
@@ -213,6 +225,7 @@ const MyWebsite = () => {
 
   return (
     <AppLayout>
+      <StickySaveBar state={saveState} onSave={save} />
       <div className="mx-auto max-w-3xl px-6 py-10">
         <header className="mb-8">
           <h1 className="font-serif text-3xl">My Website</h1>
@@ -434,7 +447,7 @@ const MyWebsite = () => {
 
           <div className="flex items-center gap-4 pb-10">
             <Button onClick={save} disabled={saving} className="min-w-32">
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saveState === "saved" ? "Saved ✓" : "Save •"}
             </Button>
             {isEnabled && siteUrl && (
               <a href={siteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm underline underline-offset-4">

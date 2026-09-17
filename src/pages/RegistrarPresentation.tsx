@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { RegistrarListingToggle } from "@/components/RegistrarListingToggle";
+import { StickySaveBar, useUnsavedChangesWarning, type SaveState } from "@/components/StickySaveBar";
 import { toast } from "sonner";
 import {
   ArrowUp,
@@ -111,6 +112,7 @@ const RegistrarPresentation = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [baseline, setBaseline] = useState(() => JSON.stringify(EMPTY_FORM));
   const [hasProfile, setHasProfile] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [form, setForm] = useState<ProfileForm>(EMPTY_FORM);
@@ -146,7 +148,7 @@ const RegistrarPresentation = () => {
         const p = rp as any;
         setHasProfile(true);
         setIsVerified(!!p.is_verified);
-        setForm({
+        const loaded: ProfileForm = {
           professional_statement: p.professional_statement || "",
           credentials: p.credentials || "",
           years_experience: p.years_experience != null ? String(p.years_experience) : "",
@@ -163,7 +165,9 @@ const RegistrarPresentation = () => {
           availability_note: p.availability_note || "",
           rate_indication: p.rate_indication || "",
           available_for_travel: !!p.available_for_travel,
-        });
+        };
+        setForm(loaded);
+        setBaseline(JSON.stringify(loaded));
       }
 
       setEntries(
@@ -210,9 +214,19 @@ const RegistrarPresentation = () => {
       return;
     }
     setHasProfile(true);
+    setBaseline(JSON.stringify(form));
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
   };
+
+  const dirty = JSON.stringify(form) !== baseline;
+  useUnsavedChangesWarning(dirty);
+  const saveState: SaveState = saving
+    ? "saving"
+    : dirty
+      ? "dirty"
+      : saved
+        ? "saved"
+        : "clean";
 
   const addEntry = async (kind: Kind) => {
     if (!uid) return;
@@ -551,6 +565,7 @@ const RegistrarPresentation = () => {
 
   return (
     <AppLayout>
+      <StickySaveBar state={saveState} onSave={saveProfile} />
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-12">
         <header className="space-y-3">
           <h1 className="text-3xl">My presentation</h1>
@@ -726,8 +741,8 @@ const RegistrarPresentation = () => {
                 </div>
               </div>
 
-              <Button onClick={saveProfile} disabled={saving}>
-                {saving ? "Saving..." : saved ? "Saved ✓" : "Save •"}
+              <Button onClick={saveProfile} disabled={saving || saveState === "saved"}>
+                {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
               </Button>
               {!hasProfile && (
                 <p className="text-xs text-muted-foreground">

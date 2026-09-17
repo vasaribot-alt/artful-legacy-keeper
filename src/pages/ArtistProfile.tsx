@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { StickySaveBar, useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -112,6 +113,16 @@ const ArtistProfile = () => {
     website: boolean;
   }>({ studio_address: true, phone: true, email: true, website: true });
 
+  const { state: saveState, markSaved, dirty } = useSaveTracker(
+    [fullName, birthYear, isDeceased, deathYear, committeeConnected, city, country,
+     studioAddress, phonePrefix, phone, email, website, socialLinks, galleries,
+     biography, cv, chronology, willingToLend, lendingNotes, contactVisibility],
+    saving,
+    !loading
+  );
+
+  useUnsavedChangesWarning(dirty);
+
   const toggleVisibility = (field: "studio_address" | "phone" | "email" | "website") =>
     setContactVisibility((v) => ({ ...v, [field]: !v[field] }));
 
@@ -217,7 +228,7 @@ const ArtistProfile = () => {
       .eq("id", profileId);
     setSaving(false);
     if (error) { toast.error("Failed to save profile"); }
-    else { toast.success("Profile saved"); }
+    else { markSaved(); toast.success("Profile saved"); }
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -357,7 +368,7 @@ const ArtistProfile = () => {
     <>
       <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
         <Save className="w-4 h-4" />
-        {saving ? "Saving…" : "Save"}
+        {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
       </Button>
       <Button variant="outline" size="sm" onClick={() => setEditMode(false)} className="gap-1.5">
         <Eye className="w-4 h-4" /> Done
@@ -375,7 +386,7 @@ const ArtistProfile = () => {
       <AppLayout title={profileTitle} headerActions={
         <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
           <Save className="w-4 h-4" />
-          {saving ? "Saving…" : "Save"}
+          {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
         </Button>
       }>
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
@@ -470,7 +481,7 @@ const ArtistProfile = () => {
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
 
               <Save className="w-4 h-4" />
-              {saving ? "Saving…" : "Save Profile"}
+              {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Profile •"}
             </Button>
           </div>
         </div>
@@ -484,7 +495,7 @@ const ArtistProfile = () => {
       <AppLayout title={profileTitle} headerActions={
         <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
           <Save className="w-4 h-4" />
-          {saving ? "Saving…" : "Save"}
+          {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
         </Button>
       }>
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
@@ -558,7 +569,7 @@ const ArtistProfile = () => {
           <div className="pt-2">
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
               <Save className="w-4 h-4" />
-              {saving ? "Saving…" : "Save Profile"}
+              {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Profile •"}
             </Button>
           </div>
         </div>
@@ -596,6 +607,7 @@ const ArtistProfile = () => {
 
   return (
     <AppLayout title={profileTitle} headerActions={headerActions}>
+      {editMode && <StickySaveBar state={saveState} onSave={handleSave} />}
       <div className="max-w-6xl mx-auto px-6 py-10 flex gap-8">
         {/* Side navigation */}
         <aside className="hidden lg:block w-56 shrink-0 self-start sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
@@ -852,7 +864,7 @@ const ArtistProfile = () => {
         <div className="pt-6">
           <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
             <Save className="w-4 h-4" />
-            {saving ? "Saving…" : "Save Profile"}
+            {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Profile •"}
           </Button>
         </div>
         </div>

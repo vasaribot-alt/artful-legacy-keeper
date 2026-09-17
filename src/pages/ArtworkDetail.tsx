@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ExhibitionPicker } from "@/components/ExhibitionPicker";
@@ -541,7 +542,7 @@ const ArtworkDetail = () => {
     toast.success("Artwork saved");
     setSaving(false);
     setJustSaved(true);
-    setTimeout(() => setJustSaved(false), 3000);
+    markSaved();
     // Reload to refresh state
     setDeletedImageIds([]);
     setImagesReordered(false);
@@ -582,6 +583,17 @@ const ArtworkDetail = () => {
       </div>
     );
   }
+
+  const { state: saveState, dirty, markSaved, resetBaseline } = useSaveTracker(
+    [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
+     signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
+     artistProofs, exhibitionHistory, provenance, artistName, editionNumber, status,
+     buyerName, soldDate, selectedExhibitionIds, selectedCatalogueIds,
+     newImages.length, deletedImageIds, imagesReordered, newDocuments.length, deletedDocIds],
+    saving,
+    !loading
+  );
+  useUnsavedChangesWarning(dirty);
 
   const visibleExistingImages = existingImages.filter((i) => !deletedImageIds.includes(i.id));
   const visibleDocuments = documents.filter((d) => !deletedDocIds.includes(d.id));
@@ -658,10 +670,10 @@ const ArtworkDetail = () => {
             onClick={handleSave}
             disabled={saving}
             className={cn(
-              hasUnsavedChanges && !saving && !justSaved && "bg-highlight hover:bg-highlight/90 text-highlight-foreground"
+              dirty && !saving && "bg-highlight hover:bg-highlight/90 text-highlight-foreground"
             )}
           >
-            {saving ? "Saving..." : justSaved ? "Saved ✓" : hasUnsavedChanges ? "Save •" : "Save"}
+            {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
           </Button>
         </div>
       </header>
@@ -1075,10 +1087,10 @@ const ArtworkDetail = () => {
             onClick={handleSave}
             disabled={saving}
             className={cn(
-              hasUnsavedChanges && !saving && !justSaved && "bg-highlight hover:bg-highlight/90 text-highlight-foreground"
+              dirty && !saving && "bg-highlight hover:bg-highlight/90 text-highlight-foreground"
             )}
           >
-            {saving ? "Saving..." : justSaved ? "Saved ✓" : hasUnsavedChanges ? "Save Changes •" : "Save Changes"}
+            {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Changes •"}
           </Button>
         </div>
       </main>
