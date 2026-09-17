@@ -366,7 +366,7 @@ const RegistrarProfile = () => {
                   <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
                     Selected project work
                   </h2>
-                  <div className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-10">
                     {grouped.projects.map((e) => {
                       const images = e.images.map((i) => publicUrl(i.storage_path));
                       const captions = e.images.map((i) => i.caption || "");
@@ -394,7 +394,7 @@ const RegistrarProfile = () => {
                             </p>
                           )}
                           {images.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                            <div className="grid grid-cols-2 gap-3 pt-1">
                               {images.map((src, idx) => (
                                 <button
                                   key={e.images[idx].id}
