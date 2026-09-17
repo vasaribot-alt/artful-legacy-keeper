@@ -72,6 +72,7 @@ import AllianceOutreach from "./pages/AllianceOutreach";
 import EmailLog from "./pages/EmailLog";
 import RegistrarsDirectory from "./pages/RegistrarsDirectory";
 import RegistrarProfile from "./pages/RegistrarProfile";
+import RegistrarPresentation from "./pages/RegistrarPresentation";
 import RegistrarApply from "./pages/RegistrarApply";
 import FoundationRegistrars from "./pages/FoundationRegistrars";
 import FoundationEstates from "./pages/FoundationEstates";
