@@ -76,6 +76,14 @@ const MyWebsite = () => {
   const [homeArtworkIds, setHomeArtworkIds] = useState<Set<string>>(new Set());
   const [sections, setSections] = useState<Record<string, boolean>>({});
 
+  const { state: saveState, markSaved } = useSaveTracker(
+    [slug, isEnabled, siteTitle, tagline, aboutText, showEmail, showPhone, showGallery,
+     customDomain, selectedIds ? Array.from(selectedIds).sort() : null, homeLayout,
+     Array.from(featuredArtworkId), Array.from(homeArtworkIds).sort(), sections],
+    saving,
+    !loading
+  );
+
   const siteUrl = useMemo(
     () => (slug ? `${window.location.origin}/site/${slug}` : null),
     [slug]
@@ -215,6 +223,7 @@ const MyWebsite = () => {
 
   return (
     <AppLayout>
+      <StickySaveBar state={saveState} onSave={save} />
       <div className="mx-auto max-w-3xl px-6 py-10">
         <header className="mb-8">
           <h1 className="font-serif text-3xl">My Website</h1>

@@ -72,6 +72,11 @@ export default function CrProfileEditor() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [gar, setGar] = useState<number | null>(null);
   const [f, setF] = useState<CrFields>(EMPTY);
+  const { state: saveState, markSaved, resetBaseline } = useSaveTracker([f], saving, !loading);
+  useEffect(() => {
+    resetBaseline();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeId]);
 
   // Step 1: build the list of profiles the user can edit (author + committee)
   useEffect(() => {

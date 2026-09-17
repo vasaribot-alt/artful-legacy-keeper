@@ -113,6 +113,14 @@ const ArtistProfile = () => {
     website: boolean;
   }>({ studio_address: true, phone: true, email: true, website: true });
 
+  const { state: saveState, markSaved } = useSaveTracker(
+    [fullName, birthYear, isDeceased, deathYear, committeeConnected, city, country,
+     studioAddress, phonePrefix, phone, email, website, socialLinks, galleries,
+     biography, cv, chronology, willingToLend, lendingNotes, contactVisibility],
+    saving,
+    !loading
+  );
+
   const toggleVisibility = (field: "studio_address" | "phone" | "email" | "website") =>
     setContactVisibility((v) => ({ ...v, [field]: !v[field] }));
 
