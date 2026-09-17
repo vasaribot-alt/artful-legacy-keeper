@@ -63,6 +63,10 @@ interface VerifiedRegistrar {
   education?: string | null;
   work_areas?: string[] | null;
   cms_experience?: any;
+  available_for_freelance?: boolean;
+  availability_note?: string | null;
+  rate_indication?: string | null;
+  available_for_travel?: boolean;
   entries?: Entry[];
 }
 
@@ -250,6 +254,34 @@ const RegistrarProfile = () => {
                   </div>
                 </div>
               </header>
+
+              {/* Availability */}
+              {(registrar.available_for_freelance ||
+                registrar.availability_note ||
+                registrar.rate_indication) && (
+                <section className="border border-border rounded-sm p-5 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={registrar.available_for_freelance ? "default" : "secondary"}>
+                      {registrar.available_for_freelance
+                        ? "Available for freelance work"
+                        : "Not currently taking new work"}
+                    </Badge>
+                    {registrar.available_for_travel && (
+                      <Badge variant="secondary" className="font-normal">
+                        Available to travel
+                      </Badge>
+                    )}
+                  </div>
+                  {registrar.availability_note && (
+                    <p className="text-sm [hyphens:none] break-words">
+                      {registrar.availability_note}
+                    </p>
+                  )}
+                  {registrar.rate_indication && (
+                    <p className="text-sm text-muted-foreground">{registrar.rate_indication}</p>
+                  )}
+                </section>
+              )}
 
               {/* Statement */}
               {registrar.professional_statement && (
