@@ -165,7 +165,9 @@ const RegistrarPresentation = () => {
           availability_note: p.availability_note || "",
           rate_indication: p.rate_indication || "",
           available_for_travel: !!p.available_for_travel,
-        });
+        };
+        setForm(loaded);
+        setBaseline(JSON.stringify(loaded));
       }
 
       setEntries(
