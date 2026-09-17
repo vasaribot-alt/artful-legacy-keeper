@@ -112,6 +112,7 @@ const RegistrarPresentation = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [baseline, setBaseline] = useState(() => JSON.stringify(EMPTY_FORM));
   const [hasProfile, setHasProfile] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [form, setForm] = useState<ProfileForm>(EMPTY_FORM);
