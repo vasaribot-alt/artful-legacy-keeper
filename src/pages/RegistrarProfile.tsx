@@ -275,6 +275,123 @@ const RegistrarProfile = () => {
                 </section>
               )}
 
+              {/* Career */}
+              {grouped.positions.length > 0 && (
+                <section className="space-y-6 pt-8 border-t border-border">
+                  <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Career
+                  </h2>
+                  <div className="space-y-7">
+                    {grouped.positions.map((e) => (
+                      <div key={e.id} className="space-y-1.5">
+                        <div className="flex flex-wrap items-baseline gap-x-3">
+                          <span className="text-sm text-muted-foreground tabular-nums">
+                            {yearRange(e)}
+                          </span>
+                          <h3 className="text-lg leading-snug">
+                            {[e.organisation, e.location].filter(Boolean).join(", ")}
+                          </h3>
+                        </div>
+                        {e.title && <p className="text-sm">{e.title}</p>}
+                        {e.description && (
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap [hyphens:none] break-words">
+                            {e.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Education */}
+              {grouped.education.length > 0 && (
+                <section className="space-y-6 pt-8 border-t border-border">
+                  <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Education
+                  </h2>
+                  <div className="space-y-5">
+                    {grouped.education.map((e) => (
+                      <div key={e.id} className="space-y-1">
+                        <div className="flex flex-wrap items-baseline gap-x-3">
+                          <span className="text-sm text-muted-foreground tabular-nums">
+                            {yearRange(e)}
+                          </span>
+                          <h3 className="text-base leading-snug">
+                            {[e.organisation, e.location].filter(Boolean).join(", ")}
+                          </h3>
+                        </div>
+                        {e.title && <p className="text-sm text-muted-foreground">{e.title}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Projects */}
+              {grouped.projects.length > 0 && (
+                <section className="space-y-8 pt-8 border-t border-border">
+                  <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Selected project work
+                  </h2>
+                  <div className="space-y-8">
+                    {grouped.projects.map((e) => {
+                      const images = e.images.map((i) => publicUrl(i.storage_path));
+                      const captions = e.images.map((i) => i.caption || "");
+                      return (
+                        <div key={e.id} className="space-y-3">
+                          <div className="flex flex-wrap items-baseline gap-x-3">
+                            {yearRange(e) && (
+                              <span className="text-sm text-muted-foreground tabular-nums">
+                                {yearRange(e)}
+                              </span>
+                            )}
+                            <h3 className="text-lg leading-snug">
+                              {e.title ||
+                                [e.organisation, e.location].filter(Boolean).join(", ")}
+                            </h3>
+                          </div>
+                          {e.title && (e.organisation || e.location) && (
+                            <p className="text-sm text-muted-foreground">
+                              {[e.organisation, e.location].filter(Boolean).join(", ")}
+                            </p>
+                          )}
+                          {e.description && (
+                            <p className="text-sm text-muted-foreground whitespace-pre-wrap [hyphens:none] break-words">
+                              {e.description}
+                            </p>
+                          )}
+                          {images.length > 0 && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                              {images.map((src, idx) => (
+                                <button
+                                  key={e.images[idx].id}
+                                  type="button"
+                                  onClick={() => setLightbox({ images, captions, index: idx })}
+                                  className="group"
+                                >
+                                  <img
+                                    src={src}
+                                    alt={captions[idx] || e.title || "Project photograph"}
+                                    loading="lazy"
+                                    className="w-full aspect-square object-cover rounded-sm border border-border transition-opacity group-hover:opacity-80"
+                                  />
+                                  {captions[idx] && (
+                                    <span className="block text-xs text-muted-foreground mt-1.5 text-left">
+                                      {captions[idx]}
+                                    </span>
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
               {/* Details */}
               <section className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-2 border-t border-border">
                 {registrar.specializations.length > 0 && (
