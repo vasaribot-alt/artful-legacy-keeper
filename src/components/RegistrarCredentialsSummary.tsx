@@ -84,11 +84,23 @@ export function RegistrarCredentialsSummary() {
             Verified registrars appear in the public registrar directory, where
             artists and collectors can find you.
           </p>
-          {applicationStatus !== "pending" && (
-            <Button asChild size="sm" variant="outline">
-              <Link to="/registrar/apply">Get verified</Link>
+          <div className="flex flex-wrap items-center gap-2">
+            {applicationStatus !== "pending" && (
+              <Button asChild size="sm" variant="outline">
+                <Link to="/registrar/apply">Get verified</Link>
+              </Button>
+            )}
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link to="/registrar/presentation">
+                <Pencil className="w-3.5 h-3.5" /> My presentation
+              </Link>
             </Button>
-          )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            You can fill in your career, education, project photographs and
+            availability at any time. Your page becomes public once the
+            foundation has confirmed your credentials.
+          </p>
         </div>
       </section>
     );
