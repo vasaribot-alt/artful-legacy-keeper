@@ -366,7 +366,7 @@ const ArtistProfile = () => {
     <>
       <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
         <Save className="w-4 h-4" />
-        {saving ? "Saving…" : "Save"}
+        {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
       </Button>
       <Button variant="outline" size="sm" onClick={() => setEditMode(false)} className="gap-1.5">
         <Eye className="w-4 h-4" /> Done
@@ -384,7 +384,7 @@ const ArtistProfile = () => {
       <AppLayout title={profileTitle} headerActions={
         <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
           <Save className="w-4 h-4" />
-          {saving ? "Saving…" : "Save"}
+          {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
         </Button>
       }>
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
@@ -479,7 +479,7 @@ const ArtistProfile = () => {
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
 
               <Save className="w-4 h-4" />
-              {saving ? "Saving…" : "Save Profile"}
+              {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Profile •"}
             </Button>
           </div>
         </div>
@@ -493,7 +493,7 @@ const ArtistProfile = () => {
       <AppLayout title={profileTitle} headerActions={
         <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
           <Save className="w-4 h-4" />
-          {saving ? "Saving…" : "Save"}
+          {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
         </Button>
       }>
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
@@ -567,7 +567,7 @@ const ArtistProfile = () => {
           <div className="pt-2">
             <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
               <Save className="w-4 h-4" />
-              {saving ? "Saving…" : "Save Profile"}
+              {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Profile •"}
             </Button>
           </div>
         </div>
@@ -862,7 +862,7 @@ const ArtistProfile = () => {
         <div className="pt-6">
           <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
             <Save className="w-4 h-4" />
-            {saving ? "Saving…" : "Save Profile"}
+            {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Profile •"}
           </Button>
         </div>
         </div>

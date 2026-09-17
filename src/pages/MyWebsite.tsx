@@ -445,7 +445,7 @@ const MyWebsite = () => {
 
           <div className="flex items-center gap-4 pb-10">
             <Button onClick={save} disabled={saving} className="min-w-32">
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
+              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saveState === "saved" ? "Saved ✓" : "Save •"}
             </Button>
             {isEnabled && siteUrl && (
               <a href={siteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm underline underline-offset-4">
