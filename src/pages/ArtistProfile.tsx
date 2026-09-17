@@ -493,11 +493,12 @@ const ArtistProfile = () => {
   if (isRegistrar) {
     return (
       <AppLayout title={profileTitle} headerActions={
-        <Button onClick={handleSave} disabled={saving} size="sm" className="gap-2">
+        <Button onClick={handleSave} disabled={saving || saveState === "saved"} size="sm" className="gap-2">
           <Save className="w-4 h-4" />
           {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
         </Button>
       }>
+        <StickySaveBar state={saveState} onSave={handleSave} />
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
           <section className="space-y-6">
             <h2 className="text-2xl">Registrar Information</h2>
@@ -567,7 +568,7 @@ const ArtistProfile = () => {
 
 
           <div className="pt-2">
-            <Button onClick={handleSave} disabled={saving} className="gap-2 w-full sm:w-auto">
+            <Button onClick={handleSave} disabled={saving || saveState === "saved"} className="gap-2 w-full sm:w-auto">
               <Save className="w-4 h-4" />
               {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save Profile •"}
             </Button>
