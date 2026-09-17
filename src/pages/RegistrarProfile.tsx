@@ -81,21 +81,46 @@ const RegistrarProfile = () => {
   const [contactMessage, setContactMessage] = useState("");
   const [sending, setSending] = useState(false);
 
+  const [lightbox, setLightbox] = useState<{ images: string[]; captions: string[]; index: number } | null>(null);
+
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const { data, error } = await (supabase as any).rpc("get_verified_registrars");
+      const { data, error } = await (supabase as any).rpc("get_registrar_presentation", {
+        _user_id: userId,
+      });
       if (error) {
         console.error("Failed to load registrar:", error);
+        setRegistrar(null);
       } else {
-        const match = (data as VerifiedRegistrar[] | null)?.find(
-          (r) => r.user_id === userId
-        );
-        setRegistrar(match || null);
+        const row = (data as any[] | null)?.[0];
+        if (row) {
+          const entries: Entry[] = Array.isArray(row.entries) ? row.entries : [];
+          setRegistrar({
+            ...row,
+            specializations: row.specializations || [],
+            languages: row.languages || [],
+            entries: entries.map((e) => ({ ...e, images: e.images || [] })),
+          });
+        } else {
+          setRegistrar(null);
+        }
       }
       setLoading(false);
     })();
   }, [userId]);
+
+  const publicUrl = (path: string) =>
+    supabase.storage.from("profile-photos").getPublicUrl(path).data.publicUrl;
+
+  const grouped = useMemo(() => {
+    const all = registrar?.entries || [];
+    const by = (kind: string) =>
+      all
+        .filter((e) => e.kind === kind)
+        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+    return { positions: by("position"), education: by("education"), projects: by("project") };
+  }, [registrar]);
 
   const location = useMemo(() => {
     if (!registrar) return null;
