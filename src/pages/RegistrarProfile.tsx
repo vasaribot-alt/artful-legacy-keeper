@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,27 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+interface EntryImage {
+  id: string;
+  storage_path: string;
+  caption: string | null;
+  credit: string | null;
+}
+
+interface Entry {
+  id: string;
+  kind: string;
+  title: string | null;
+  organisation: string | null;
+  location: string | null;
+  start_year: number | null;
+  end_year: number | null;
+  is_current: boolean;
+  description: string | null;
+  display_order: number;
+  images: EntryImage[];
+}
+
 interface VerifiedRegistrar {
   user_id: string;
   full_name: string | null;
@@ -37,7 +59,18 @@ interface VerifiedRegistrar {
   years_experience: number | null;
   arcs_member: boolean;
   arcs_member_id: string | null;
+  nationality?: string | null;
+  education?: string | null;
+  work_areas?: string[] | null;
+  cms_experience?: any;
+  entries?: Entry[];
 }
+
+const yearRange = (e: Entry) => {
+  if (e.start_year && e.end_year) return `${e.start_year}-${e.end_year}`;
+  if (e.start_year && e.is_current) return `${e.start_year}-present`;
+  return e.start_year ? String(e.start_year) : e.end_year ? String(e.end_year) : "";
+};
 
 const RegistrarProfile = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -48,21 +81,46 @@ const RegistrarProfile = () => {
   const [contactMessage, setContactMessage] = useState("");
   const [sending, setSending] = useState(false);
 
+  const [lightbox, setLightbox] = useState<{ images: string[]; captions: string[]; index: number } | null>(null);
+
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const { data, error } = await (supabase as any).rpc("get_verified_registrars");
+      const { data, error } = await (supabase as any).rpc("get_registrar_presentation", {
+        _user_id: userId,
+      });
       if (error) {
         console.error("Failed to load registrar:", error);
+        setRegistrar(null);
       } else {
-        const match = (data as VerifiedRegistrar[] | null)?.find(
-          (r) => r.user_id === userId
-        );
-        setRegistrar(match || null);
+        const row = (data as any[] | null)?.[0];
+        if (row) {
+          const entries: Entry[] = Array.isArray(row.entries) ? row.entries : [];
+          setRegistrar({
+            ...row,
+            specializations: row.specializations || [],
+            languages: row.languages || [],
+            entries: entries.map((e) => ({ ...e, images: e.images || [] })),
+          });
+        } else {
+          setRegistrar(null);
+        }
       }
       setLoading(false);
     })();
   }, [userId]);
+
+  const publicUrl = (path: string) =>
+    supabase.storage.from("profile-photos").getPublicUrl(path).data.publicUrl;
+
+  const grouped = useMemo(() => {
+    const all = registrar?.entries || [];
+    const by = (kind: string) =>
+      all
+        .filter((e) => e.kind === kind)
+        .sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+    return { positions: by("position"), education: by("education"), projects: by("project") };
+  }, [registrar]);
 
   const location = useMemo(() => {
     if (!registrar) return null;
@@ -217,6 +275,123 @@ const RegistrarProfile = () => {
                 </section>
               )}
 
+              {/* Career */}
+              {grouped.positions.length > 0 && (
+                <section className="space-y-6 pt-8 border-t border-border">
+                  <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Career
+                  </h2>
+                  <div className="space-y-7">
+                    {grouped.positions.map((e) => (
+                      <div key={e.id} className="space-y-1.5">
+                        <div className="flex flex-wrap items-baseline gap-x-3">
+                          <span className="text-sm text-muted-foreground tabular-nums">
+                            {yearRange(e)}
+                          </span>
+                          <h3 className="text-lg leading-snug">
+                            {[e.organisation, e.location].filter(Boolean).join(", ")}
+                          </h3>
+                        </div>
+                        {e.title && <p className="text-sm">{e.title}</p>}
+                        {e.description && (
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap [hyphens:none] break-words">
+                            {e.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Education */}
+              {grouped.education.length > 0 && (
+                <section className="space-y-6 pt-8 border-t border-border">
+                  <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Education
+                  </h2>
+                  <div className="space-y-5">
+                    {grouped.education.map((e) => (
+                      <div key={e.id} className="space-y-1">
+                        <div className="flex flex-wrap items-baseline gap-x-3">
+                          <span className="text-sm text-muted-foreground tabular-nums">
+                            {yearRange(e)}
+                          </span>
+                          <h3 className="text-base leading-snug">
+                            {[e.organisation, e.location].filter(Boolean).join(", ")}
+                          </h3>
+                        </div>
+                        {e.title && <p className="text-sm text-muted-foreground">{e.title}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Projects */}
+              {grouped.projects.length > 0 && (
+                <section className="space-y-8 pt-8 border-t border-border">
+                  <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    Selected project work
+                  </h2>
+                  <div className="space-y-8">
+                    {grouped.projects.map((e) => {
+                      const images = e.images.map((i) => publicUrl(i.storage_path));
+                      const captions = e.images.map((i) => i.caption || "");
+                      return (
+                        <div key={e.id} className="space-y-3">
+                          <div className="flex flex-wrap items-baseline gap-x-3">
+                            {yearRange(e) && (
+                              <span className="text-sm text-muted-foreground tabular-nums">
+                                {yearRange(e)}
+                              </span>
+                            )}
+                            <h3 className="text-lg leading-snug">
+                              {e.title ||
+                                [e.organisation, e.location].filter(Boolean).join(", ")}
+                            </h3>
+                          </div>
+                          {e.title && (e.organisation || e.location) && (
+                            <p className="text-sm text-muted-foreground">
+                              {[e.organisation, e.location].filter(Boolean).join(", ")}
+                            </p>
+                          )}
+                          {e.description && (
+                            <p className="text-sm text-muted-foreground whitespace-pre-wrap [hyphens:none] break-words">
+                              {e.description}
+                            </p>
+                          )}
+                          {images.length > 0 && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                              {images.map((src, idx) => (
+                                <button
+                                  key={e.images[idx].id}
+                                  type="button"
+                                  onClick={() => setLightbox({ images, captions, index: idx })}
+                                  className="group"
+                                >
+                                  <img
+                                    src={src}
+                                    alt={captions[idx] || e.title || "Project photograph"}
+                                    loading="lazy"
+                                    className="w-full aspect-square object-cover rounded-sm border border-border transition-opacity group-hover:opacity-80"
+                                  />
+                                  {captions[idx] && (
+                                    <span className="block text-xs text-muted-foreground mt-1.5 text-left">
+                                      {captions[idx]}
+                                    </span>
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
               {/* Details */}
               <section className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-2 border-t border-border">
                 {registrar.specializations.length > 0 && (
@@ -258,6 +433,30 @@ const RegistrarProfile = () => {
                     </div>
                   )}
                 </div>
+
+                {(registrar.work_areas?.length || 0) > 0 && (
+                  <div className="space-y-3">
+                    <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                      Areas of work
+                    </h2>
+                    <p className="text-sm">{(registrar.work_areas || []).join(", ")}</p>
+                  </div>
+                )}
+
+                {Array.isArray(registrar.cms_experience) &&
+                  registrar.cms_experience.length > 0 && (
+                    <div className="space-y-3">
+                      <h2 className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                        Collection systems
+                      </h2>
+                      <p className="text-sm">
+                        {registrar.cms_experience
+                          .map((c: any) => c?.system)
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                    </div>
+                  )}
               </section>
 
               {/* Contact */}
@@ -265,6 +464,9 @@ const RegistrarProfile = () => {
                 <Button onClick={openContact} className="gap-1.5">
                   <Mail className="w-4 h-4" /> Contact this registrar
                 </Button>
+                <p className="text-xs text-muted-foreground">
+                  References available on request.
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Inquiries are routed through the Foundation. Contact details
                   remain private until the registrar accepts your request.
@@ -305,6 +507,16 @@ const RegistrarProfile = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          index={lightbox.index}
+          caption={lightbox.captions[lightbox.index] || undefined}
+          onIndexChange={(index) => setLightbox({ ...lightbox, index })}
+          onClose={() => setLightbox(null)}
+        />
+      )}
     </div>
   );
 };

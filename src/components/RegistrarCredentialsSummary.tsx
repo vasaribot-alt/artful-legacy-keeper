@@ -99,8 +99,8 @@ export function RegistrarCredentialsSummary() {
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl">Professional Credentials</h2>
         <Button asChild size="sm" variant="outline" className="gap-1.5">
-          <Link to="/registrar/apply">
-            <Pencil className="w-3.5 h-3.5" /> Edit
+          <Link to="/registrar/presentation">
+            <Pencil className="w-3.5 h-3.5" /> My presentation
           </Link>
         </Button>
       </div>

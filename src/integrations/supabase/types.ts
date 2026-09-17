@@ -3179,6 +3179,95 @@ export type Database = {
         }
         Relationships: []
       }
+      registrar_entries: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          end_year: number | null
+          id: string
+          is_current: boolean
+          kind: string
+          location: string | null
+          organisation: string | null
+          start_year: number | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          end_year?: number | null
+          id?: string
+          is_current?: boolean
+          kind?: string
+          location?: string | null
+          organisation?: string | null
+          start_year?: number | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          end_year?: number | null
+          id?: string
+          is_current?: boolean
+          kind?: string
+          location?: string | null
+          organisation?: string | null
+          start_year?: number | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      registrar_entry_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          credit: string | null
+          display_order: number
+          entry_id: string
+          id: string
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          credit?: string | null
+          display_order?: number
+          entry_id: string
+          id?: string
+          storage_path: string
+          user_id: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          credit?: string | null
+          display_order?: number
+          entry_id?: string
+          id?: string
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrar_entry_images_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: false
+            referencedRelation: "registrar_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       registrar_profiles: {
         Row: {
           arcs_member: boolean
@@ -3896,6 +3985,30 @@ export type Database = {
           registrar_id: string
           registrar_name: string
           status: string
+        }[]
+      }
+      get_registrar_presentation: {
+        Args: { _user_id: string }
+        Returns: {
+          arcs_member: boolean
+          arcs_member_id: string
+          avatar_url: string
+          city: string
+          cms_experience: Json
+          country: string
+          credentials: string
+          cv_file_path: string
+          education: string
+          entries: Json
+          full_name: string
+          geographic_coverage: string
+          languages: string[]
+          nationality: string
+          professional_statement: string
+          specializations: string[]
+          user_id: string
+          work_areas: string[]
+          years_experience: number
         }[]
       }
       get_registrar_profiles: {
