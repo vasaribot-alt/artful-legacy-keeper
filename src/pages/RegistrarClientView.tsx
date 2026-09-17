@@ -14,6 +14,7 @@ import Catalogues from "@/pages/Catalogues";
 import { CommitteeInbox, CommitteeSubmissionDetail } from "@/pages/CommitteeReview";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 import { ResearchWorkspace } from "@/components/ResearchWorkspace";
+import { ClientDocuments } from "@/components/registrar/ClientDocuments";
 
 
 interface ClientArtwork {
@@ -304,6 +305,7 @@ const RegistrarClientView = () => {
       <Route path="committee" element={<CommitteeInbox />} />
       <Route path="committee/:submissionId" element={<CommitteeSubmissionDetail />} />
 
+      <Route path="documents" element={<ClientDocuments ownerId={ownerId} clientRole={clientRole} />} />
       <Route path="inventory" element={<PlaceholderSection title="Inventory" message="Client-scoped inventory view is coming soon." />} />
       <Route path="cv" element={<PlaceholderSection title="CV" message="Client-scoped CV editing is coming soon." />} />
       <Route path="provenance" element={<PlaceholderSection title="Provenance" message="Client-scoped provenance is coming soon." />} />
