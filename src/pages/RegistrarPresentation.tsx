@@ -681,6 +681,51 @@ const RegistrarPresentation = () => {
                   />
                 </div>
               </div>
+
+              <div className="border border-border rounded-sm p-5 space-y-5">
+                <div>
+                  <h3 className="text-base">Availability for freelance work</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Artists, estates and collections use this to see whether they can hire you
+                    right now.
+                  </p>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <Label className="text-sm">Open to freelance assignments</Label>
+                  <Switch
+                    checked={form.available_for_freelance}
+                    onCheckedChange={(v) => setForm({ ...form, available_for_freelance: v })}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <Label className="text-sm">Available to travel</Label>
+                  <Switch
+                    checked={form.available_for_travel}
+                    onCheckedChange={(v) => setForm({ ...form, available_for_travel: v })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Availability note</Label>
+                  <Textarea
+                    autoComplete="off"
+                    rows={2}
+                    value={form.availability_note}
+                    onChange={(e) => setForm({ ...form, availability_note: e.target.value })}
+                    placeholder="Two to three days a week, from October. Short projects and inventories welcome."
+                    className="resize-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Rate indication</Label>
+                  <Input
+                    autoComplete="off"
+                    value={form.rate_indication}
+                    onChange={(e) => setForm({ ...form, rate_indication: e.target.value })}
+                    placeholder="Day rate on request, or from EUR 350 per day"
+                  />
+                </div>
+              </div>
+
               <Button onClick={saveProfile} disabled={saving}>
                 {saving ? "Saving..." : saved ? "Saved ✓" : "Save •"}
               </Button>
