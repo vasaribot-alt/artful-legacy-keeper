@@ -564,6 +564,7 @@ const RegistrarPresentation = () => {
 
   return (
     <AppLayout>
+      <StickySaveBar state={saveState} onSave={saveProfile} />
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-12">
         <header className="space-y-3">
           <h1 className="text-3xl">My presentation</h1>
