@@ -41,3 +41,10 @@
 
 ## Estate handover retry (2026-09-17)
 - [x] Keep handovers waiting and retryable until the heir has a matching account and archive access is granted
+
+## Registrar presentation pages (2026-09-17)
+- [x] registrar_entries + registrar_entry_images tables, get_registrar_presentation RPC
+- [x] Public presentation page: career, education, selected project work with photos, systems, areas of work
+- [x] Registrar-owned editor at /registrar/presentation (add/reorder/delete entries, photos with captions, visibility)
+- [x] Freelance availability: open to work, availability note, rate indication, travel
+- [ ] Registrar portal review (2026-09-17): confirm archive management, document upload and credentials page all reachable from one registrar home; fill gaps
