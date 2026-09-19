@@ -71,6 +71,7 @@ type PublicSignatory = {
 const StatementOfSupport = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot: bots fill it, humans never see it
   const [country, setCountry] = useState("");
   const [organisation, setOrganisation] = useState("");
   const [comment, setComment] = useState("");
