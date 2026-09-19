@@ -108,6 +108,11 @@ const StatementOfSupport = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Honeypot: a filled hidden field means a bot. Pretend success and discard.
+    if (website) {
+      setSigned(true);
+      return;
+    }
     const parsed = signatorySchema.safeParse({
       full_name: fullName,
       email,
@@ -242,6 +247,19 @@ const StatementOfSupport = () => {
                     required
                     maxLength={120}
                     className="mt-1.5"
+                  />
+                </div>
+                {/* Honeypot: hidden from humans, attractive to bots */}
+                <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, overflow: "hidden" }}>
+                  <label htmlFor="sos-website">Website</label>
+                  <input
+                    id="sos-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
                   />
                 </div>
                 <div>
