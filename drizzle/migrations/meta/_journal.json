@@ -29,6 +29,13 @@
       "when": 1789637430846,
       "tag": "0003_registrar_client_file_access_safe_cast",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789800800919,
+      "tag": "0004_statement_signatories_spam_guard",
+      "breakpoints": true
     }
   ]
 }
