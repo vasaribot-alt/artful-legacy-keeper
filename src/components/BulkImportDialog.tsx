@@ -74,7 +74,7 @@ interface ImportedArtwork {
 }
 
 /** Map of lowercase header → ParsedRow field for single-value columns */
-const COLUMN_MAP: Record<string, keyof Pick<ParsedRow, "title" | "artworkType" | "series" | "year" | "medium" | "support" | "height" | "width" | "depth" | "signed" | "location" | "provenance" | "exhibitionHistory" | "description" | "imageFilename" | "price">> = {
+const COLUMN_MAP: Record<string, keyof Pick<ParsedRow, "title" | "artworkType" | "series" | "year" | "medium" | "support" | "height" | "width" | "depth" | "signed" | "location" | "provenance" | "exhibitionHistory" | "description" | "imageFilename" | "price" | "currency">> = {
   "title": "title",
   "category": "artworkType",
   "type": "artworkType",
@@ -110,6 +110,8 @@ const COLUMN_MAP: Record<string, keyof Pick<ParsedRow, "title" | "artworkType" |
   "price": "price",
   "pris": "price",
   "pris u/ramme": "price",
+  "currency": "currency",
+  "valuta": "currency",
 };
 
 /** Headers that indicate a size-group column */
@@ -287,7 +289,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
         title: "", artistName: "", artworkType: "", series: "", year: null, medium: "", support: "",
         height: null, width: null, depth: null, signed: "", location: "", provenance: "",
         exhibitionHistory: "", description: "", imageFilename: "", selected: true,
-        sizes: [], price: null, currency: "EUR",
+        sizes: [], price: null, currency: "",
       };
 
       // Map simple columns
@@ -337,6 +339,13 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
         // For non-size-layout fields, use first size as fallback for dimensions
         if (sizes.length > 0 && !r.height) r.height = sizes[0].height;
         if (sizes.length > 0 && !r.width) r.width = sizes[0].width;
+      }
+
+      // Never import an amount without a stated currency: a bare number could be
+      // in any currency, and guessing one produces wildly wrong values.
+      if (!r.currency) {
+        r.price = null;
+        r.sizes = r.sizes.map((s) => ({ ...s, price: null }));
       }
 
       if (r.title) parsed.push(r);
