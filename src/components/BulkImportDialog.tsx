@@ -341,6 +341,13 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
         if (sizes.length > 0 && !r.width) r.width = sizes[0].width;
       }
 
+      // Never import an amount without a stated currency: a bare number could be
+      // in any currency, and guessing one produces wildly wrong values.
+      if (!r.currency) {
+        r.price = null;
+        r.sizes = r.sizes.map((s) => ({ ...s, price: null }));
+      }
+
       if (r.title) parsed.push(r);
     }
 
