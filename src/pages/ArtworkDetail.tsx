@@ -576,14 +576,6 @@ const ArtworkDetail = () => {
     URL.revokeObjectURL(url);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
-
   const { state: saveState, dirty, markSaved, resetBaseline } = useSaveTracker(
     [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
      signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
@@ -594,6 +586,15 @@ const ArtworkDetail = () => {
     !loading
   );
   useUnsavedChangesWarning(dirty);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
 
   const visibleExistingImages = existingImages.filter((i) => !deletedImageIds.includes(i.id));
   const visibleDocuments = documents.filter((d) => !deletedDocIds.includes(d.id));
