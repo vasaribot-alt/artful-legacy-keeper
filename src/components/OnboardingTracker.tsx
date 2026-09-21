@@ -188,6 +188,7 @@ export default function OnboardingTracker() {
 
   return (
     <section>
+      <div className="sticky top-0 z-20 bg-background pt-1">
       <div className="flex items-center gap-3 mb-1">
         <LifeBuoy className="h-5 w-5" />
         <h2 className="text-xl font-semibold">Getting started and welcome letters</h2>
@@ -197,7 +198,7 @@ export default function OnboardingTracker() {
       </p>
 
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        {(Object.keys(ROLE_LABELS) as AccountRole[]).map((value) => (
+        {(Object.keys(ROLE_LABELS) as AccountRole[]).map((value: AccountRole) => (
           <Button key={value} variant={role === value ? "default" : "outline"} size="sm" onClick={() => setRole(value)}>
             {ROLE_LABELS[value]} ({rows.filter((row) => row.roles?.includes(value)).length})
           </Button>
@@ -215,13 +216,14 @@ export default function OnboardingTracker() {
           </Button>
         ))}
       </div>
+      </div>
 
       {filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nobody in this group right now.</p>
       ) : (
-        <div className="border border-border rounded-sm overflow-auto">
+        <div className="border border-border rounded-sm overflow-auto max-h-[65vh]">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_0_hsl(var(--border))]">
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Joined</TableHead>
