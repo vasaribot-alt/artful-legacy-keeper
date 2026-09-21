@@ -192,23 +192,20 @@ const PublicArtistProfile = () => {
       }
 
       if (artworksRes.data && artworksRes.data.length > 0) {
-        const awIds = artworksRes.data.map(a => a.id);
-        const { data: awImages } = await supabase.from("artwork_images")
-          .select("artwork_id, storage_path, display_order")
-          .in("artwork_id", awIds)
-          .order("display_order", { ascending: true });
-
-        const imgMap = new Map<string, { storage_path: string; display_order: number }[]>();
-        for (const img of awImages || []) {
-          if (!imgMap.has(img.artwork_id)) imgMap.set(img.artwork_id, []);
-          imgMap.get(img.artwork_id)!.push({ storage_path: img.storage_path, display_order: img.display_order });
-        }
+        // Protected works only ever hand out the small watermarked version.
+        const rows = await fetchPublicArtworkImages(artworksRes.data.map(a => a.id));
+        const imgMap = groupPublicArtworkImages(rows);
 
         setArtworks(artworksRes.data.map(aw => ({
           ...aw,
-          images: imgMap.get(aw.id) || [],
+          images: (imgMap.get(aw.id) || []).map(img => ({
+            id: img.id,
+            url: publicArtworkImageUrl(img),
+            protected: img.protected,
+          })),
         })));
       }
+
 
       if (seriesRes.data) setSeriesGroups(seriesRes.data.map(s => s.name));
 
