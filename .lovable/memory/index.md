@@ -11,6 +11,7 @@
 - [Registrar Professional Profile](mem://features/registrar-professional-profile) — Nationality, education, private CV upload, CMS expertise levels, five areas of work
 - [Patron Sponsor Strategy](mem://features/patron-sponsor-strategy) — Tiered patron list (patron_tier1/2/3) and framing for winning 4 to 5 main sponsors
 - [Statement of Support](mem://features/statement-of-support) — Public endorsement page with optional public listing; never call it a petition
-- [IFAR Spirit Positioning](mem://features/ifar-spirit-positioning) — IFAR is closing; GARF may say it works "in the spirit of IFAR" for contemporary artist documentation
+- [IFAR Spirit Framing](mem://features/ifar-spirit-framing) — "In the spirit of IFAR" positioning, not a successor; noted for future outreach use
+- [Welcome Letters](mem://features/welcome-letters) — Auto-queued welcome email per new artist with website discovery, approved and sent by the foundation
 - [Artist Site Exhibition Photos](mem://features/artist-site-exhibition-photos) — Public Exhibitions page thumbnails + lightbox; exhibition_images anon grant + published-site policy
 - [Estate Succession](mem://features/estate-succession) — Artists name heirs in advance; foundation activates handover to full management, shown publicly
