@@ -37,7 +37,6 @@ interface CvEntry {
 interface Member {
   id: string;
   name: string;
-  email: string | null;
   role: string;
   affiliation: string | null;
   sort_order: number;
@@ -88,7 +87,7 @@ export default function CrArtistProfile() {
       setCv((cvData as CvEntry[]) || []);
       const { data: memberData } = await supabase
         .from("cr_committee_members")
-        .select("id, name, email, role, affiliation, sort_order")
+        .select("id, name, role, affiliation, sort_order")
         .eq("artist_user_id", (data as { user_id: string }).user_id)
         .order("sort_order", { ascending: true });
       setMembers((memberData as Member[]) || []);
@@ -243,14 +242,6 @@ export default function CrArtistProfile() {
                       </span>
                     )}
                   </span>
-                  {m.email && (
-                    <a
-                      href={`mailto:${m.email}`}
-                      className="underline text-muted-foreground hover:text-foreground sm:text-right"
-                    >
-                      {m.email}
-                    </a>
-                  )}
                 </li>
               ))}
             </ul>

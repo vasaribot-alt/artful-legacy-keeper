@@ -78,6 +78,13 @@
       "when": 1790000988342,
       "tag": "0010_create_linkedin_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1790030889784,
+      "tag": "0011_secure_committee_emails_and_function_search_path",
+      "breakpoints": true
     }
   ]
 }
