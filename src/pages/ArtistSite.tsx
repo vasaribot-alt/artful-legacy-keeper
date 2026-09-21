@@ -676,14 +676,24 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
           </button>
           <div className="max-h-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
             {artworkImage(lightbox) && (
-              <img src={artworkImage(lightbox) || ""} alt={lightbox.title} className="max-h-[70vh] w-full rounded-md object-contain" />
+              <img
+                src={artworkImage(lightbox) || ""}
+                alt={lightbox.title}
+                draggable={lightbox.protected_display ? false : undefined}
+                onContextMenu={lightbox.protected_display ? (e) => e.preventDefault() : undefined}
+                className="max-h-[70vh] w-full rounded-md object-contain"
+              />
             )}
             <div className="mt-4 text-center text-sm text-white">
               <p className="font-medium">{lightbox.title}{lightbox.year ? `, ${lightbox.year}` : ""}</p>
               <p className="text-white/70">
                 {[lightbox.medium, formatDims(lightbox.height, lightbox.width, lightbox.depth)].filter(Boolean).join(" · ")}
               </p>
+              {lightbox.protected_display && (
+                <p className="mt-2 text-[11px] text-white/60">{PROTECTED_WORK_NOTE}</p>
+              )}
             </div>
+
           </div>
         </div>
       )}
