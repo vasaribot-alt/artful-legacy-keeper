@@ -223,7 +223,7 @@ export default function OnboardingTracker() {
       ) : (
         <div className="border border-border rounded-sm overflow-auto max-h-[65vh]">
           <Table>
-            <TableHeader className="sticky top-0 z-10 bg-background shadow-[0_1px_0_0_hsl(var(--border))]">
+            <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-background [&_th]:shadow-[0_1px_0_0_hsl(var(--border))]">
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Joined</TableHead>
