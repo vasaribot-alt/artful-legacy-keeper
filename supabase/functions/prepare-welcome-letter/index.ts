@@ -25,14 +25,27 @@ const EMPTY_FINDINGS: Findings = {
   notes: "",
 };
 
-async function lookupWebsite(
+const FREE_MAIL = [
+  "gmail.com", "googlemail.com", "yahoo.com", "yahoo.co.uk", "hotmail.com", "outlook.com",
+  "live.com", "icloud.com", "me.com", "mac.com", "aol.com", "protonmail.com", "proton.me",
+  "gmx.com", "gmx.de", "online.no", "getmail.no", "mail.com", "yandex.com", "web.de", "qq.com",
+];
+
+const TLDS_BY_COUNTRY: Record<string, string[]> = {
+  norway: ["no"], sweden: ["se"], denmark: ["dk"], germany: ["de"], france: ["fr"],
+  netherlands: ["nl"], italy: ["it"], spain: ["es"], poland: ["pl"], austria: ["at"],
+  switzerland: ["ch"], belgium: ["be"], finland: ["fi"], "united kingdom": ["co.uk", "uk"],
+  ireland: ["ie"], portugal: ["pt"], greece: ["gr"], mexico: ["mx"], brazil: ["com.br"],
+};
+
+/** Suggest the AI's best guess at the artist's own site; verified by fetch afterwards. */
+async function aiSuggestion(
   name: string,
-  email: string,
   city: string,
   country: string,
   apiKey: string,
-): Promise<Findings> {
-  const prompt = `Find the personal artist website of the visual artist "${name}"${city ? ` based in ${city}` : ""}${country ? `, ${country}` : ""} (registered email address: ${email}). Return the artist's own website only, never a gallery, museum, marketplace or social media page. Say whether that website appears to contain a CV page, a works or portfolio page, and an exhibitions list. Use an empty string and false for anything you are not confident about.`;
+): Promise<string> {
+  const prompt = `What is the personal website address of the visual artist "${name}"${city ? ` based in ${city}` : ""}${country ? `, ${country}` : ""}? Return the artist's own website only, never a gallery, museum, marketplace or social media page. If you do not know, return an empty string.`;
 
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -43,7 +56,7 @@ async function lookupWebsite(
         {
           role: "system",
           content:
-            "You are a research assistant returning verified public information about visual artists. You must respond using the provided tool.",
+            "You return public information about visual artists. You must respond using the provided tool.",
         },
         { role: "user", content: prompt },
       ],
@@ -52,17 +65,13 @@ async function lookupWebsite(
           type: "function",
           function: {
             name: "artist_website",
-            description: "Return the artist's own website and what it contains",
+            description: "Return the artist's own website address",
             parameters: {
               type: "object",
               properties: {
                 website: { type: "string", description: "The artist's own website URL, empty if unknown" },
-                has_cv: { type: "boolean", description: "True when the site has a CV or biography page" },
-                has_works: { type: "boolean", description: "True when the site shows works or a portfolio" },
-                has_exhibitions: { type: "boolean", description: "True when the site lists exhibitions" },
-                notes: { type: "string", description: "One short factual sentence about the site, empty if unknown" },
               },
-              required: ["website", "has_cv", "has_works", "has_exhibitions", "notes"],
+              required: ["website"],
               additionalProperties: false,
             },
           },
@@ -73,24 +82,118 @@ async function lookupWebsite(
   });
 
   if (!res.ok) {
-    const body = await res.text();
-    console.error("AI gateway error:", res.status, body);
+    console.error("AI gateway error:", res.status, await res.text());
     if (res.status === 429) throw Object.assign(new Error("Rate limited, please try again shortly."), { status: 429 });
     if (res.status === 402) throw Object.assign(new Error("AI credits exhausted."), { status: 402 });
-    throw new Error("AI gateway error");
+    return "";
   }
 
   const data = await res.json();
   const args = data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-  if (!args) return { ...EMPTY_FINDINGS };
-  const parsed = JSON.parse(args);
-  return {
-    website: String(parsed.website ?? "").trim(),
-    has_cv: !!parsed.has_cv,
-    has_works: !!parsed.has_works,
-    has_exhibitions: !!parsed.has_exhibitions,
-    notes: String(parsed.notes ?? "").trim(),
-  };
+  if (!args) return "";
+  try {
+    return String(JSON.parse(args).website ?? "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function asciiName(name: string) {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ø/g, "o")
+    .replace(/æ/g, "ae")
+    .replace(/å/g, "a")
+    .replace(/ß/g, "ss");
+}
+
+function candidateDomains(name: string, email: string, country: string): string[] {
+  const words = asciiName(name).replace(/[^a-z\s-]/g, " ").split(/\s+/).filter(Boolean);
+  const out: string[] = [];
+
+  const emailDomain = (email.split("@")[1] || "").toLowerCase().trim();
+  if (emailDomain && !FREE_MAIL.includes(emailDomain)) out.push(emailDomain);
+
+  if (words.length >= 2) {
+    const first = words[0];
+    const last = words[words.length - 1];
+    const stems = [
+      `${first}${last}`,
+      `${first}-${last}`,
+      words.join(""),
+      `${first}${words[1]}${last}`.slice(0, 40),
+    ];
+    const tlds = ["com", ...(TLDS_BY_COUNTRY[country.toLowerCase().trim()] ?? []), "net", "art", "org"];
+    for (const stem of [...new Set(stems)]) {
+      for (const tld of [...new Set(tlds)]) out.push(`${stem}.${tld}`);
+    }
+  }
+
+  return [...new Set(out)].slice(0, 16);
+}
+
+/** Fetch a candidate and confirm it is really this artist's site. */
+async function verify(url: string, name: string): Promise<Findings | null> {
+  const target = url.startsWith("http") ? url : `https://${url}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 7000);
+  try {
+    const res = await fetch(target, {
+      redirect: "follow",
+      signal: controller.signal,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; GARF/1.0)" },
+    });
+    if (!res.ok) return null;
+    const html = (await res.text()).slice(0, 400_000);
+    const flat = asciiName(html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " "));
+    const words = asciiName(name).split(/\s+/).filter((w) => w.length > 2);
+    const last = words[words.length - 1];
+    const first = words[0];
+    if (!last || !flat.includes(last)) return null;
+    if (first && first !== last && !flat.includes(first)) return null;
+
+    const lower = html.toLowerCase();
+    return {
+      website: res.url.replace(/\/$/, ""),
+      has_cv: /\b(cv|curriculum|resume|biography|about)\b/.test(lower),
+      has_works: /\b(works?|portfolio|paintings?|sculptures?|gallery|projects?)\b/.test(lower),
+      has_exhibitions: /\bexhibition|utstilling|ausstellung|expositions?\b/.test(lower),
+      notes: "Confirmed by opening the site and matching the artist's name.",
+    };
+  } catch (_e) {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function lookupWebsite(
+  name: string,
+  email: string,
+  city: string,
+  country: string,
+  apiKey: string,
+): Promise<Findings> {
+  const candidates: string[] = [];
+
+  try {
+    const suggested = await aiSuggestion(name, city, country, apiKey);
+    if (suggested) candidates.push(suggested);
+  } catch (e) {
+    const status = (e as { status?: number })?.status;
+    if (status === 429 || status === 402) throw e;
+  }
+
+  candidates.push(...candidateDomains(name, email, country));
+
+  for (const candidate of [...new Set(candidates)]) {
+    const found = await verify(candidate, name);
+    if (found) return found;
+  }
+
+  return { ...EMPTY_FINDINGS, notes: "No website of the artist's own could be confirmed." };
 }
 
 function slugFor(name: string): string {
