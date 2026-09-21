@@ -650,6 +650,9 @@ Deno.serve(async (req) => {
     await admin.from("research_runs").update({
       status: "completed",
       sources,
+      error: unreadable.length
+        ? `Could not be read (the site blocks machine reading): ${unreadable.join(", ")}`
+        : null,
       completed_at: new Date().toISOString(),
     }).eq("id", runId);
 
@@ -658,11 +661,13 @@ Deno.serve(async (req) => {
       count: findings.length,
       pages_read: pages.length,
       pages_failed: failed.length,
+      unreadable,
       images_kept: imgSeen.size,
       images_skipped: imagesSkipped,
       confidence: findings.length ? "medium" : "low",
       sources,
     });
+
   } catch (e) {
     console.error("research-artist error", e);
     if (runId) {
