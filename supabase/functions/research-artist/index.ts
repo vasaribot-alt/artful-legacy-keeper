@@ -374,20 +374,37 @@ Deno.serve(async (req) => {
     if (runErr || !run) return json({ error: runErr?.message || "Could not start research" }, 500);
     runId = run.id;
 
+    const startedAt = Date.now();
+    const outOfTime = () => Date.now() - startedAt > RUN_BUDGET_MS;
+
     // ---- Stage 1: decide which pages to read -------------------------------
     const queue: string[] = [];
     const seen = new Set<string>();
-    const push = (u: string) => {
+    /** Addresses that cannot be read at all (social networks), reported back instead of dropped in silence. */
+    const unreadable: string[] = [];
+    const push = (u: string, isSeed = false) => {
       const clean = u.split("#")[0].replace(/\/$/, "");
-      if (!/^https?:\/\//i.test(clean) || SKIP.test(clean) || seen.has(clean)) return;
+      if (!/^https?:\/\//i.test(clean) || seen.has(clean)) return;
+      let host = "";
+      try {
+        host = new URL(clean).host;
+      } catch {
+        return;
+      }
+      if (UNREADABLE_HOST.test(host)) {
+        seen.add(clean);
+        if (isSeed) unreadable.push(clean);
+        return;
+      }
+      if (!isSeed && SKIP.test(clean)) return;
       seen.add(clean);
       queue.push(clean);
     };
-    seedUrls.forEach(push);
-    if (profile.website) push(profile.website);
-    if (!queue.length) {
+    seedUrls.forEach((u) => push(u, true));
+    if (profile.website) push(profile.website, true);
+    if (!queue.length && !unreadable.length) {
       const found = await search(`"${artistName}" artist exhibitions works`);
-      found.slice(0, 4).forEach(push);
+      found.slice(0, 4).forEach((u) => push(u));
     }
 
     const slugs = nameSlugs(artistName);
@@ -397,6 +414,7 @@ Deno.serve(async (req) => {
     // read the seeds first, then follow their relevant subpages
     const seedPages: Page[] = [];
     for (const url of queue.slice(0, 6)) {
+      if (outOfTime()) break;
       const p = await scrape(url);
       if (p) {
         seedPages.push(p);
@@ -421,30 +439,37 @@ Deno.serve(async (req) => {
     }
 
     const room = Math.max(0, MAX_PAGES - pages.length);
-    for (let i = 0; i < followUps.slice(0, room).length; i += BATCH) {
-      const slice = followUps.slice(0, room).slice(i, i + BATCH);
+    const toFollow = followUps.slice(0, room);
+    for (let i = 0; i < toFollow.length; i += BATCH) {
+      if (outOfTime()) break;
+      const slice = toFollow.slice(i, i + BATCH);
       const results = await Promise.all(slice.map((u) => scrape(u)));
       results.forEach((p, idx) => (p ? pages.push(p) : failed.push(slice[idx])));
     }
 
     if (!pages.length) {
+      const note = unreadable.length
+        ? `These addresses cannot be read by any tool because the site blocks it: ${unreadable.join(", ")}. Paste the text into the CV or profile by hand instead.`
+        : "None of the given pages could be read";
       await admin.from("research_runs").update({
         status: "failed",
-        error: "None of the given pages could be read",
+        error: note,
         completed_at: new Date().toISOString(),
       }).eq("id", runId);
-      return json({ error: "None of the given pages could be read. Check the addresses and try again." }, 400);
+      return json({ error: note, unreadable, failed_urls: failed }, 400);
     }
 
     // ---- Stage 2: extract each page on its own ----------------------------
     const extractions: { page: Page; result: Record<string, unknown> }[] = [];
     for (let i = 0; i < pages.length; i += BATCH) {
+      if (outOfTime()) break;
       const slice = pages.slice(i, i + BATCH);
       const results = await Promise.all(slice.map((p) => extractPage(p, artistName)));
       results.forEach((r, idx) => {
         if (r && r.is_about_artist !== false) extractions.push({ page: slice[idx], result: r });
       });
     }
+
 
     // ---- Stage 3: merge, dedupe, stage as findings ------------------------
     type Finding = Record<string, unknown>;
