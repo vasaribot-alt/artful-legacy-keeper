@@ -2,6 +2,12 @@ import GarfLogo from "@/components/GarfLogo";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  fetchPublicArtworkImages,
+  groupPublicArtworkImages,
+  publicArtworkImageUrl,
+} from "@/lib/publicArtworkImages";
+
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
