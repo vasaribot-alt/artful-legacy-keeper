@@ -103,7 +103,8 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
       let query = supabase
         .from("artworks")
-        .select("id, title, year, medium, height, width, depth, image_url")
+        .select("id, title, year, medium, height, width, depth, image_url, protected_display")
+
         .eq("owner_id", row.user_id)
         .eq("role_context", "artist")
         .order("year", { ascending: false, nullsFirst: false });
