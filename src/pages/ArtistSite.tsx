@@ -67,7 +67,9 @@ interface Artwork {
   width: number | null;
   depth: number | null;
   image_url: string | null;
-  images: { storage_path: string; web_storage_path?: string | null; display_order: number }[];
+  images: { id: string; url: string | null; protected: boolean }[];
+  protected_display?: boolean | null;
+
 }
 
 type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news";
