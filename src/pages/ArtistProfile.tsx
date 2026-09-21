@@ -444,6 +444,12 @@ const ArtistProfile = () => {
 
           <Separator />
 
+          {!isCollector && !isRegistrar && <ProtectNewWorksSetting />}
+
+          {!isCollector && !isRegistrar && <Separator />}
+
+
+
           <section className="space-y-4">
             <h2 className="text-2xl">Museum Lending</h2>
             <p className="text-sm text-muted-foreground">
