@@ -78,13 +78,23 @@ const PortfolioShared = () => {
     const toUrl = (path: string) =>
       supabase.storage.from("artwork-images").getPublicUrl(path).data.publicUrl;
 
+    // Protected works: only the small watermarked version may be shown.
+    const allowed = await fetchPublicArtworkImages(rows.map((r) => r.artwork_id));
+    const allowedByArtwork = groupPublicArtworkImages(allowed);
+
     const enriched: SharedArtwork[] = rows.map((r) => {
+      const allowedImages = allowedByArtwork.get(r.artwork_id) || [];
+      const isProtected = allowedImages.some((i) => i.protected);
       const paths = r.image_paths && r.image_paths.length > 0
         ? r.image_paths
         : r.image_path
           ? [r.image_path]
           : [];
-      const imageUrls = paths.map(toUrl);
+      const imageUrls = isProtected
+        ? allowedImages
+            .map((i) => publicArtworkImageUrl(i))
+            .filter((u): u is string => Boolean(u))
+        : paths.map(toUrl);
       return {
         id: r.artwork_id,
         title: r.title || "Untitled",
@@ -97,8 +107,10 @@ const PortfolioShared = () => {
         currency: r.currency ?? null,
         imageUrl: imageUrls[0] ?? null,
         imageUrls,
+        protected: isProtected,
       };
     });
+
 
 
     setArtworks(enriched);
