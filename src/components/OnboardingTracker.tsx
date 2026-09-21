@@ -22,6 +22,8 @@ interface Row {
   cv_entries: number;
   website_enabled: boolean;
   last_activity: string | null;
+  discovered_website: string | null;
+  letter_status: string | null;
 }
 
 type Filter = "recent" | "stuck" | "all";
@@ -140,8 +142,24 @@ export default function OnboardingTracker() {
                         )}
                       </TableCell>
                     ))}
-                    <TableCell className="text-sm text-muted-foreground">
-                      {r.website_enabled ? "On" : "Off"}
+                    <TableCell className="text-sm">
+                      {r.discovered_website ? (
+                        <a
+                          href={r.discovered_website}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline break-all"
+                        >
+                          {r.discovered_website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          {r.letter_status && r.letter_status !== "queued" ? "No website found" : "—"}
+                        </span>
+                      )}
+                      <span className="block text-xs text-muted-foreground">
+                        {r.website_enabled ? "GARF site on" : "GARF site off"}
+                      </span>
                     </TableCell>
                     <TableCell>
                       {r.email && (
