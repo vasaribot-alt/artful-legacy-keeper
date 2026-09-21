@@ -3983,6 +3983,18 @@ export type Database = {
           website: string
         }[]
       }
+      get_cr_committee: {
+        Args: { _artist_user_id: string }
+        Returns: {
+          affiliation: string
+          artist_user_id: string
+          email: string
+          id: string
+          name: string
+          role: string
+          sort_order: number
+        }[]
+      }
       get_cr_submission_status: {
         Args: { _token: string }
         Returns: {
