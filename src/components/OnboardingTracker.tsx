@@ -221,7 +221,7 @@ export default function OnboardingTracker() {
       {filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nobody in this group right now.</p>
       ) : (
-        <div className="border border-border rounded-sm overflow-auto max-h-[65vh]">
+        <div className="border border-border rounded-sm overflow-hidden [&>div]:max-h-[65vh] [&>div]:overflow-auto">
           <Table>
             <TableHeader className="[&_th]:sticky [&_th]:top-0 [&_th]:z-10 [&_th]:bg-background [&_th]:shadow-[0_1px_0_0_hsl(var(--border))]">
               <TableRow>
