@@ -64,6 +64,13 @@
       "when": 1789996755599,
       "tag": "0008_protected_artwork_display",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789997044281,
+      "tag": "0009_protected_artwork_storage_policies",
+      "breakpoints": true
     }
   ]
 }
