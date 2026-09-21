@@ -156,11 +156,14 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
             /* keep the default message */
           }
         }
-        toast.error(message);
+        toast.error(message, { duration: 12000 });
+        // earlier results stay on screen: nothing is switched away from
+        await load();
         return;
       }
       if (data?.error) {
-        toast.error(data.error);
+        toast.error(data.error, { duration: 12000 });
+        await load();
         return;
       }
       toast.success(
@@ -169,8 +172,15 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           (data.images_skipped ? `, ${data.images_skipped} unrelated images filtered out` : "") +
           (data.pages_failed ? ` (${data.pages_failed} could not be read)` : ""),
       );
-      setActiveRun(data.run_id);
+      if (Array.isArray(data.unreadable) && data.unreadable.length) {
+        toast.warning(
+          `These addresses block reading and were left out: ${data.unreadable.join(", ")}. Copy that text in by hand instead.`,
+          { duration: 14000 },
+        );
+      }
+      if ((data.count ?? 0) > 0) setActiveRun(data.run_id);
       await load();
+
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Research failed, please try again");
     } finally {
