@@ -36,6 +36,13 @@
       "when": 1789800800919,
       "tag": "0004_statement_signatories_spam_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789984672828,
+      "tag": "0005_welcome_letters",
+      "breakpoints": true
     }
   ]
 }
