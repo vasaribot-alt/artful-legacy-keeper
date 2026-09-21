@@ -196,8 +196,9 @@ Deno.serve(async (req) => {
           .eq("id", img.id);
         done++;
       } catch (err) {
-        console.error("protect image failed", img.id, err);
-        failures.push(img.id);
+        const reason = String(err instanceof Error ? err.message : err);
+        console.error("protect image failed", img.id, reason);
+        failures.push(`${img.id}: ${reason}`);
       }
     }
 
@@ -206,7 +207,8 @@ Deno.serve(async (req) => {
       .update({ protected_display: mode === "protect" })
       .eq("id", artworkId);
 
-    return json({ ok: true, mode, images: done, failed: failures.length });
+    return json({ ok: true, mode, images: done, failed: failures.length, failures });
+
   } catch (err) {
     console.error("protect-artwork-image error:", err);
     return json({ error: String(err instanceof Error ? err.message : err) }, 500);
