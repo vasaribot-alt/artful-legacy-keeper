@@ -590,8 +590,18 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           </div>
 
           {currentRun.status === "failed" && (
-            <p className="text-sm text-destructive">This session failed: {currentRun.error || "unknown error"}</p>
+            <p className="text-sm text-destructive">This session read nothing: {currentRun.error || "unknown error"}</p>
           )}
+          {currentRun.status !== "failed" && currentRun.error && (
+            <p className="text-sm text-muted-foreground">{currentRun.error}</p>
+          )}
+          {runs.length > 1 && !counts[currentRun.id] && (
+            <p className="text-sm text-muted-foreground">
+              Nothing was kept from this session. Your earlier sessions are still here — choose one of the other dates
+              above and everything you found before is unchanged.
+            </p>
+          )}
+
 
           <Tabs defaultValue="profile_field">
             <TabsList>
