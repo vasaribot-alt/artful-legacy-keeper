@@ -37,7 +37,6 @@ interface CvEntry {
 interface Member {
   id: string;
   name: string;
-  email: string | null;
   role: string;
   affiliation: string | null;
   sort_order: number;
@@ -243,14 +242,6 @@ export default function CrArtistProfile() {
                       </span>
                     )}
                   </span>
-                  {m.email && (
-                    <a
-                      href={`mailto:${m.email}`}
-                      className="underline text-muted-foreground hover:text-foreground sm:text-right"
-                    >
-                      {m.email}
-                    </a>
-                  )}
                 </li>
               ))}
             </ul>
