@@ -120,19 +120,21 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
       const { data: aws } = await query;
       const list = (aws as Omit<Artwork, "images">[]) || [];
       if (list.length > 0) {
-        const { data: imgs } = await supabase
-          .from("artwork_images")
-          .select("artwork_id, storage_path, web_storage_path, display_order")
-          .in("artwork_id", list.map((a) => a.id))
-          .order("display_order", { ascending: true });
-        const map = new Map<string, Artwork["images"]>();
-        (imgs || []).forEach((img) => {
-          if (!map.has(img.artwork_id)) map.set(img.artwork_id, []);
-          const artworkImages = map.get(img.artwork_id);
-          if (artworkImages) artworkImages.push(img);
-        });
-        setArtworks(list.map((a) => ({ ...a, images: map.get(a.id) || [] })));
+        // Protected works only ever hand out the small watermarked version.
+        const rows = await fetchPublicArtworkImages(list.map((a) => a.id));
+        const grouped = groupPublicArtworkImages(rows);
+        setArtworks(
+          list.map((a) => ({
+            ...a,
+            images: (grouped.get(a.id) || []).map((img) => ({
+              id: img.id,
+              url: publicArtworkImageUrl(img),
+              protected: img.protected,
+            })),
+          })),
+        );
       }
+
       const sections = (row.sections || {}) as Record<string, boolean>;
 
       if (sections.cv_web || sections.cv_pdf) {
