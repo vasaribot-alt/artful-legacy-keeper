@@ -52,6 +52,7 @@ import InvitationDownloads from "./pages/InvitationDownloads";
 import PartnerJoin from "./pages/PartnerJoin";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import FoundationPartners from "./pages/FoundationPartners";
+import FoundationLinkedIn from "./pages/FoundationLinkedIn";
 import DonateThanks from "./pages/DonateThanks";
 import CollectorAccess from "./pages/CollectorAccess";
 import Capture from "./pages/Capture";
@@ -149,6 +150,7 @@ const App = () => (
           <Route path="/foundation" element={<FoundationPitch />} />
           <Route path="/foundation/admin" element={<FoundationDashboard />} />
           <Route path="/foundation/documents" element={<FoundationDocuments />} />
+          <Route path="/foundation/linkedin" element={<FoundationLinkedIn />} />
           <Route path="/shared-document/:token" element={<SharedDocument />} />
           <Route path="/donors" element={<Donors />} />
           <Route path="/foundation/gallery-outreach" element={<GalleryOutreach />} />
