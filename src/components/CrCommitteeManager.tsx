@@ -36,11 +36,9 @@ export function CrCommitteeManager({ artistUserId }: { artistUserId: string }) {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("cr_committee_members")
-      .select("*")
-      .eq("artist_user_id", artistUserId)
-      .order("sort_order", { ascending: true });
+    const { data, error } = await supabase.rpc("get_cr_committee", {
+      _artist_user_id: artistUserId,
+    });
     if (error) toast.error(error.message);
     setMembers((data as Member[]) || []);
     setLoading(false);

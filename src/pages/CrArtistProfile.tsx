@@ -88,7 +88,7 @@ export default function CrArtistProfile() {
       setCv((cvData as CvEntry[]) || []);
       const { data: memberData } = await supabase
         .from("cr_committee_members")
-        .select("id, name, email, role, affiliation, sort_order")
+        .select("id, name, role, affiliation, sort_order")
         .eq("artist_user_id", (data as { user_id: string }).user_id)
         .order("sort_order", { ascending: true });
       setMembers((memberData as Member[]) || []);
