@@ -222,26 +222,21 @@ const PublicArtistProfile = () => {
 
   const location = profile ? [profile.city, profile.country].filter(Boolean).join(", ") : "";
 
-  const resolveArtworkImg = (img: any) => {
-    const bucket = img.web_storage_path ? "artwork-images-web" : "artwork-images";
-    const path = img.web_storage_path || img.storage_path;
-    return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-  };
-
   const getArtworkThumb = (aw: ArtworkPublic) => {
-    if (aw.images.length > 0) return resolveArtworkImg(aw.images[0]);
-    if (aw.image_url) return aw.image_url;
+    if (aw.images.length > 0) return aw.images[0].url;
+    // A protected work never falls back to an external full-size image.
+    if (aw.image_url && !aw.protected_display) return aw.image_url;
     return null;
   };
 
   const getArtworkImageUrls = (aw: ArtworkPublic): string[] => {
     const urls = aw.images
-      .slice()
-      .sort((a, b) => a.display_order - b.display_order)
-      .map((img) => resolveArtworkImg(img));
-    if (urls.length === 0 && aw.image_url) urls.push(aw.image_url);
+      .map((img) => img.url)
+      .filter((url): url is string => Boolean(url));
+    if (urls.length === 0 && aw.image_url && !aw.protected_display) urls.push(aw.image_url);
     return urls;
   };
+
 
   const openLightbox = (aw: ArtworkPublic) => {
     setLightboxArtwork(aw);
