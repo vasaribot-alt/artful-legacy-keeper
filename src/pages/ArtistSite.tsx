@@ -356,7 +356,14 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                     <button key={aw.id} onClick={() => setLightbox(aw)} className="group text-left">
                       <div className="aspect-square overflow-hidden rounded-md bg-muted">
                         {src ? (
-                          <img src={src} alt={aw.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                          <img
+                            src={src}
+                            alt={aw.title}
+                            loading="lazy"
+                            draggable={aw.protected_display ? false : undefined}
+                            onContextMenu={aw.protected_display ? (e) => e.preventDefault() : undefined}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
                         ) : (
                           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
                         )}
@@ -365,7 +372,11 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                       <p className="text-xs text-muted-foreground">
                         {[aw.year, aw.medium].filter(Boolean).join(", ")}
                       </p>
+                      {aw.protected_display && (
+                        <p className="mt-1 text-[11px] text-muted-foreground">{PROTECTED_WORK_NOTE}</p>
+                      )}
                     </button>
+
                   );
                 })}
               </div>
