@@ -740,7 +740,17 @@ const ArtworkDetail = () => {
           </div>
           <p className="text-[11px] text-muted-foreground mt-1.5">Drag photos to reorder. The first photo is the main image.</p>
           <input ref={imageInputRef} type="file" accept="image/*" multiple onChange={handleAddImages} className="hidden" />
+          {id && visibleExistingImages.length > 0 && (
+            <div className="mt-4">
+              <ProtectWorkToggle
+                artworkId={id}
+                value={protectedDisplay}
+                onChange={setProtectedDisplay}
+              />
+            </div>
+          )}
         </div>
+
 
         <Separator />
 
