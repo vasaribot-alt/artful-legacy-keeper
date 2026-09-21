@@ -11,6 +11,12 @@ const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 const MAX_PAGES = 16;
 const PAGE_CHARS = 30000;
 const BATCH = 4;
+/** Hard budget for one run, so the session always finishes and saves what it managed to read. */
+const RUN_BUDGET_MS = 110_000;
+/** Hosts that refuse machine reading; kept as seeds so the artist is told plainly instead of silently losing them. */
+const UNREADABLE_HOST =
+  /(^|\.)(linkedin\.com|instagram\.com|facebook\.com|x\.com|twitter\.com|tiktok\.com|youtube\.com|pinterest\.[a-z.]+)$/i;
+
 
 /** Schema used once per page, so nothing gets squeezed out by a single global answer. */
 const pageSchema = {
