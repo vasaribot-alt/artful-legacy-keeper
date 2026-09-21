@@ -154,7 +154,7 @@ const PublicArtistProfile = () => {
           .eq("user_id", userId).maybeSingle(),
         supabase.from("exhibitions").select("id, title, venue, city, country, opening_date, closing_date, exhibition_type, curator, description, exhibition_text")
           .eq("user_id", userId).eq("hide_from_cv", false).order("opening_date", { ascending: false }),
-        supabase.from("artworks").select("id, title, year, medium, dimensions, height, width, depth, series, image_url")
+        supabase.from("artworks").select("id, title, year, medium, dimensions, height, width, depth, series, image_url, protected_display")
           .eq("owner_id", userId).order("year", { ascending: false }),
         supabase.from("series_groups").select("name")
           .eq("user_id", userId).order("name"),
