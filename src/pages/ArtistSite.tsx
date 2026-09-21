@@ -4,6 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { SocialPlatformIcon } from "@/components/SocialLinks";
 import ImageLightbox from "@/components/ImageLightbox";
+import {
+  fetchPublicArtworkImages,
+  groupPublicArtworkImages,
+  publicArtworkImageUrl,
+} from "@/lib/publicArtworkImages";
+
 import { ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
 
 interface SiteData {
