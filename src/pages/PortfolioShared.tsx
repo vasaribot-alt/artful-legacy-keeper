@@ -14,12 +14,20 @@ interface SharedArtwork {
   currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
+  protected: boolean;
 }
 
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { formatPrice } from "@/lib/formatPrice";
+import {
+  fetchPublicArtworkImages,
+  groupPublicArtworkImages,
+  publicArtworkImageUrl,
+  PROTECTED_WORK_NOTE,
+} from "@/lib/publicArtworkImages";
+
 
 
 const PortfolioShared = () => {
