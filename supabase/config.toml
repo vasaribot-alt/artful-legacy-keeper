@@ -49,3 +49,7 @@ project_id = "ofqaxojjqryylcugegke"
     verify_jwt = true
   [functions.send-welcome-letter]
     verify_jwt = true
+  [functions.protected-artwork-image]
+    verify_jwt = false
+  [functions.protect-artwork-image]
+    verify_jwt = true
