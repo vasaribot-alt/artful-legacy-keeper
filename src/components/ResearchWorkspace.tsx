@@ -511,6 +511,13 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           your exhibitions, education, awards and collections, and it tells us where more information about your work
           can be found. Upload it under CV, where it is read and turned into structured entries you can review.
         </p>
+        <p className="text-sm text-muted-foreground max-w-2xl">
+          Best addresses to give: your own website, gallery and museum pages, online magazines and open archives.
+          LinkedIn, Instagram and Facebook block all automatic reading, so leave those out — paste that text in by hand
+          instead. Adding an address that cannot be read never removes anything: each session is kept separately, and
+          your earlier results stay exactly as they were.
+        </p>
+
 
 
         <div className="grid gap-3 md:grid-cols-2">
