@@ -560,9 +560,12 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
                   onClick={() => setActiveRun(r.id)}
                 >
                   {new Date(r.created_at).toLocaleDateString()} {new Date(r.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {" · "}
+                  {counts[r.id] ? `${counts[r.id]} found` : r.status === "failed" ? "nothing read" : "empty"}
                 </Button>
               ))}
             </div>
+
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="sm" onClick={load} className="gap-1.5">
                 <RefreshCw className="w-3.5 h-3.5" /> Refresh
