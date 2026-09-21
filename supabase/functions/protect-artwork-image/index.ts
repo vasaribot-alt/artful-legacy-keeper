@@ -150,9 +150,8 @@ Deno.serve(async (req) => {
               .from("artwork-images")
               .download(img.storage_path);
             if (dlErr || !blob) throw new Error(dlErr?.message || "original missing");
-            const bitmap = await createImageBitmap(blob);
-            const { canvas } = fit(bitmap, WEB_MAX);
-            const bytes = await encode(canvas);
+            const bytes = await render(new Uint8Array(await blob.arrayBuffer()), WEB_MAX, null);
+
             const webPath = `${artwork.owner_id}/${img.id}.jpg`;
             const { error: upErr } = await admin.storage
               .from("artwork-images-web")
