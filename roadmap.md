@@ -49,4 +49,4 @@
 - [x] Freelance availability: open to work, availability note, rate indication, travel
 - [x] Registrar portal review (2026-09-17): client workspace covers archive management; Documents section added (uploads stored in the client's own archive, registrar storage policies added); credentials page at /registrars/{id} with editor at /registrar/presentation, linked from the registrar home
 
-- [ ] Merge welcome letters into role-aware Getting started overview; add collector and registrar welcomes; mark old queue welcomed.
+- [x] Merge welcome letters into role-aware Getting started overview; add collector and registrar welcomes; mark old queue welcomed.
