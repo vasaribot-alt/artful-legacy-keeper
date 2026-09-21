@@ -65,9 +65,15 @@ const ProtectWorkToggle = ({ artworkId, value, onChange }: Props) => {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {busy && progress && progress.total > 0 && (
+            <span className="text-[11px] text-muted-foreground">
+              {progress.done}/{progress.total}
+            </span>
+          )}
           {busy && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
           <Switch checked={value} disabled={busy} onCheckedChange={toggle} />
         </div>
+
       </div>
     </div>
   );
