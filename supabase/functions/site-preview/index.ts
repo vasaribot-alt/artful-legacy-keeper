@@ -37,19 +37,26 @@ Deno.serve(async (req) => {
         const featuredId: string | null =
           row.home_featured_artwork_id || (row.home_artwork_ids || [])[0] || null;
         if (featuredId) {
-          const { data: imgs } = await supabase
-            .from("artwork_images")
-            .select("storage_path, web_storage_path, display_order")
-            .eq("artwork_id", featuredId)
-            .order("display_order", { ascending: true })
-            .limit(1);
-          const img = imgs?.[0];
+          // Uses the public-image view, so a protected work only ever yields
+          // its small watermarked version in the sharing preview.
+          const { data: imgs } = await supabase.rpc("get_public_artwork_images", {
+            _artwork_ids: [featuredId],
+          });
+          const img = (imgs as Array<{
+            id: string;
+            protected: boolean;
+            bucket: string;
+            path: string | null;
+          }> | null)?.[0];
           if (img) {
-            picked = img.web_storage_path
-              ? publicUrl("artwork-images-web", img.web_storage_path)
-              : publicUrl("artwork-images", img.storage_path);
+            picked = img.protected
+              ? `${SUPABASE_URL}/functions/v1/protected-artwork-image?image_id=${img.id}`
+              : img.path
+                ? publicUrl(img.bucket, img.path)
+                : "";
           }
         }
+
         if (!picked && row.avatar_url) {
           picked = String(row.avatar_url).startsWith("http")
             ? row.avatar_url

@@ -2,6 +2,14 @@ import GarfLogo from "@/components/GarfLogo";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  fetchPublicArtworkImages,
+  groupPublicArtworkImages,
+  publicArtworkImageUrl,
+  PROTECTED_WORK_NOTE,
+} from "@/lib/publicArtworkImages";
+
+
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
@@ -82,7 +90,9 @@ interface ArtworkPublic {
   depth: number | null;
   series: string | null;
   image_url: string | null;
-  images: { storage_path: string; display_order: number }[];
+  protected_display?: boolean | null;
+  images: { id: string; url: string | null; protected: boolean }[];
+
 }
 
 const PublicArtistProfile = () => {
@@ -152,7 +162,7 @@ const PublicArtistProfile = () => {
           .eq("user_id", userId).maybeSingle(),
         supabase.from("exhibitions").select("id, title, venue, city, country, opening_date, closing_date, exhibition_type, curator, description, exhibition_text")
           .eq("user_id", userId).eq("hide_from_cv", false).order("opening_date", { ascending: false }),
-        supabase.from("artworks").select("id, title, year, medium, dimensions, height, width, depth, series, image_url")
+        supabase.from("artworks").select("id, title, year, medium, dimensions, height, width, depth, series, image_url, protected_display")
           .eq("owner_id", userId).order("year", { ascending: false }),
         supabase.from("series_groups").select("name")
           .eq("user_id", userId).order("name"),
@@ -190,23 +200,20 @@ const PublicArtistProfile = () => {
       }
 
       if (artworksRes.data && artworksRes.data.length > 0) {
-        const awIds = artworksRes.data.map(a => a.id);
-        const { data: awImages } = await supabase.from("artwork_images")
-          .select("artwork_id, storage_path, display_order")
-          .in("artwork_id", awIds)
-          .order("display_order", { ascending: true });
-
-        const imgMap = new Map<string, { storage_path: string; display_order: number }[]>();
-        for (const img of awImages || []) {
-          if (!imgMap.has(img.artwork_id)) imgMap.set(img.artwork_id, []);
-          imgMap.get(img.artwork_id)!.push({ storage_path: img.storage_path, display_order: img.display_order });
-        }
+        // Protected works only ever hand out the small watermarked version.
+        const rows = await fetchPublicArtworkImages(artworksRes.data.map(a => a.id));
+        const imgMap = groupPublicArtworkImages(rows);
 
         setArtworks(artworksRes.data.map(aw => ({
           ...aw,
-          images: imgMap.get(aw.id) || [],
+          images: (imgMap.get(aw.id) || []).map(img => ({
+            id: img.id,
+            url: publicArtworkImageUrl(img),
+            protected: img.protected,
+          })),
         })));
       }
+
 
       if (seriesRes.data) setSeriesGroups(seriesRes.data.map(s => s.name));
 
@@ -223,26 +230,21 @@ const PublicArtistProfile = () => {
 
   const location = profile ? [profile.city, profile.country].filter(Boolean).join(", ") : "";
 
-  const resolveArtworkImg = (img: any) => {
-    const bucket = img.web_storage_path ? "artwork-images-web" : "artwork-images";
-    const path = img.web_storage_path || img.storage_path;
-    return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-  };
-
   const getArtworkThumb = (aw: ArtworkPublic) => {
-    if (aw.images.length > 0) return resolveArtworkImg(aw.images[0]);
-    if (aw.image_url) return aw.image_url;
+    if (aw.images.length > 0) return aw.images[0].url;
+    // A protected work never falls back to an external full-size image.
+    if (aw.image_url && !aw.protected_display) return aw.image_url;
     return null;
   };
 
   const getArtworkImageUrls = (aw: ArtworkPublic): string[] => {
     const urls = aw.images
-      .slice()
-      .sort((a, b) => a.display_order - b.display_order)
-      .map((img) => resolveArtworkImg(img));
-    if (urls.length === 0 && aw.image_url) urls.push(aw.image_url);
+      .map((img) => img.url)
+      .filter((url): url is string => Boolean(url));
+    if (urls.length === 0 && aw.image_url && !aw.protected_display) urls.push(aw.image_url);
     return urls;
   };
+
 
   const openLightbox = (aw: ArtworkPublic) => {
     setLightboxArtwork(aw);
@@ -628,7 +630,14 @@ const PublicArtistProfile = () => {
                                   <div key={aw.id} className="group cursor-pointer" onClick={() => openLightbox(aw)}>
                                     <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
                                       {awThumb ? (
-                                        <img src={awThumb} alt={aw.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                        <img
+                                          src={awThumb}
+                                          alt={aw.title}
+                                          draggable={aw.protected_display ? false : undefined}
+                                          onContextMenu={aw.protected_display ? (e) => e.preventDefault() : undefined}
+                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                          loading="lazy"
+                                        />
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center">
                                           <ImageIcon className="w-8 h-8 text-muted-foreground/40" />
@@ -639,6 +648,10 @@ const PublicArtistProfile = () => {
                                     {aw.year && <p className="text-xs text-muted-foreground">{aw.year}</p>}
                                     {aw.medium && <p className="text-xs text-muted-foreground truncate">{aw.medium}</p>}
                                     {dims && <p className="text-xs text-muted-foreground">{dims}</p>}
+                                    {aw.protected_display && (
+                                      <p className="text-[11px] text-muted-foreground mt-1">{PROTECTED_WORK_NOTE}</p>
+                                    )}
+
                                   </div>
                                 );
                               })}

@@ -4,6 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { SocialPlatformIcon } from "@/components/SocialLinks";
 import ImageLightbox from "@/components/ImageLightbox";
+import {
+  fetchPublicArtworkImages,
+  groupPublicArtworkImages,
+  publicArtworkImageUrl,
+  PROTECTED_WORK_NOTE,
+} from "@/lib/publicArtworkImages";
+
+
 import { ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
 
 interface SiteData {
@@ -67,7 +75,9 @@ interface Artwork {
   width: number | null;
   depth: number | null;
   image_url: string | null;
-  images: { storage_path: string; web_storage_path?: string | null; display_order: number }[];
+  images: { id: string; url: string | null; protected: boolean }[];
+  protected_display?: boolean | null;
+
 }
 
 type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news";
@@ -101,7 +111,8 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
       let query = supabase
         .from("artworks")
-        .select("id, title, year, medium, height, width, depth, image_url")
+        .select("id, title, year, medium, height, width, depth, image_url, protected_display")
+
         .eq("owner_id", row.user_id)
         .eq("role_context", "artist")
         .order("year", { ascending: false, nullsFirst: false });
@@ -117,19 +128,21 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
       const { data: aws } = await query;
       const list = (aws as Omit<Artwork, "images">[]) || [];
       if (list.length > 0) {
-        const { data: imgs } = await supabase
-          .from("artwork_images")
-          .select("artwork_id, storage_path, web_storage_path, display_order")
-          .in("artwork_id", list.map((a) => a.id))
-          .order("display_order", { ascending: true });
-        const map = new Map<string, Artwork["images"]>();
-        (imgs || []).forEach((img) => {
-          if (!map.has(img.artwork_id)) map.set(img.artwork_id, []);
-          const artworkImages = map.get(img.artwork_id);
-          if (artworkImages) artworkImages.push(img);
-        });
-        setArtworks(list.map((a) => ({ ...a, images: map.get(a.id) || [] })));
+        // Protected works only ever hand out the small watermarked version.
+        const rows = await fetchPublicArtworkImages(list.map((a) => a.id));
+        const grouped = groupPublicArtworkImages(rows);
+        setArtworks(
+          list.map((a) => ({
+            ...a,
+            images: (grouped.get(a.id) || []).map((img) => ({
+              id: img.id,
+              url: publicArtworkImageUrl(img),
+              protected: img.protected,
+            })),
+          })),
+        );
       }
+
       const sections = (row.sections || {}) as Record<string, boolean>;
 
       if (sections.cv_web || sections.cv_pdf) {
@@ -199,13 +212,11 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
   const artworkImage = (aw: Artwork): string | null => {
     const first = aw.images[0];
-    if (first) {
-      const bucket = first.web_storage_path ? "artwork-images-web" : "artwork-images";
-      const path = first.web_storage_path || first.storage_path;
-      return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-    }
-    return aw.image_url;
+    if (first) return first.url;
+    // A protected work never falls back to an external full-size image.
+    return aw.protected_display ? null : aw.image_url;
   };
+
 
   const portraitUrl = useMemo(() => {
     if (!site?.avatar_url) return null;
@@ -347,7 +358,14 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                     <button key={aw.id} onClick={() => setLightbox(aw)} className="group text-left">
                       <div className="aspect-square overflow-hidden rounded-md bg-muted">
                         {src ? (
-                          <img src={src} alt={aw.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                          <img
+                            src={src}
+                            alt={aw.title}
+                            loading="lazy"
+                            draggable={aw.protected_display ? false : undefined}
+                            onContextMenu={aw.protected_display ? (e) => e.preventDefault() : undefined}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
                         ) : (
                           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
                         )}
@@ -356,7 +374,11 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                       <p className="text-xs text-muted-foreground">
                         {[aw.year, aw.medium].filter(Boolean).join(", ")}
                       </p>
+                      {aw.protected_display && (
+                        <p className="mt-1 text-[11px] text-muted-foreground">{PROTECTED_WORK_NOTE}</p>
+                      )}
                     </button>
+
                   );
                 })}
               </div>
@@ -656,14 +678,24 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
           </button>
           <div className="max-h-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
             {artworkImage(lightbox) && (
-              <img src={artworkImage(lightbox) || ""} alt={lightbox.title} className="max-h-[70vh] w-full rounded-md object-contain" />
+              <img
+                src={artworkImage(lightbox) || ""}
+                alt={lightbox.title}
+                draggable={lightbox.protected_display ? false : undefined}
+                onContextMenu={lightbox.protected_display ? (e) => e.preventDefault() : undefined}
+                className="max-h-[70vh] w-full rounded-md object-contain"
+              />
             )}
             <div className="mt-4 text-center text-sm text-white">
               <p className="font-medium">{lightbox.title}{lightbox.year ? `, ${lightbox.year}` : ""}</p>
               <p className="text-white/70">
                 {[lightbox.medium, formatDims(lightbox.height, lightbox.width, lightbox.depth)].filter(Boolean).join(" · ")}
               </p>
+              {lightbox.protected_display && (
+                <p className="mt-2 text-[11px] text-white/60">{PROTECTED_WORK_NOTE}</p>
+              )}
             </div>
+
           </div>
         </div>
       )}
