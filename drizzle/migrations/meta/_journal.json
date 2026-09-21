@@ -43,6 +43,13 @@
       "when": 1789984672828,
       "tag": "0005_welcome_letters",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789989586677,
+      "tag": "0006_role_aware_welcome_onboarding",
+      "breakpoints": true
     }
   ]
 }
