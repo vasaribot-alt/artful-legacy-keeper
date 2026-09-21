@@ -210,13 +210,39 @@ function slugFor(name: string): string {
   );
 }
 
-function compose(name: string, findings: Findings) {
+type WelcomeRole = "artist" | "collector" | "registrar";
+
+function compose(name: string, role: WelcomeRole, findings: Findings) {
   const first = (name || "").trim().split(/\s+/)[0] || "friend";
   const site = findings.website.replace(/^https?:\/\//, "").replace(/\/$/, "");
   const slug = slugFor(name);
 
   const parts: string[] = [];
   parts.push(`Dear ${first},`);
+
+  if (role === "collector") {
+    parts.push(
+      "Welcome to the Global Artist Registry, and thank you for registering as a collector. Your account gives you a private place to document the works in your care and keep their records together over time.",
+      "You can begin by adding a work, then attach photographs, purchase details, provenance, documents and location history. These records remain private unless you choose to share them.",
+      "If you work with a registrar, you can invite them from your account and give them access to manage the collection with you. You remain in control and can remove that access whenever you wish.",
+      "The foundation is designed for long-term preservation. Keeping the record with the work now makes it easier for future owners, families, scholars and institutions to understand its history later.",
+      "If anything is unclear, simply reply to this message and I will help you personally.",
+      "Warm regards,\nJan S. Kindem\nGlobal Artist Registry Foundation\nglobalartistregistry.org",
+    );
+    return { subject: "Welcome to the Global Artist Registry", body: parts.join("\n\n") };
+  }
+
+  if (role === "registrar") {
+    parts.push(
+      "Welcome to the Global Artist Registry, and thank you for registering as a registrar. Registrars are central to the quality and continuity of the records the foundation preserves.",
+      "In My Presentation you can add your professional statement, career, education, specialisations, systems experience, languages and selected project work. You can also say whether you are available for freelance work and travel.",
+      "Once the foundation has confirmed your credentials, your presentation can appear in the verified registrar directory as a page you can share with museums, artists and collectors.",
+      "Artists and collectors can invite you into their archive. From your client workspace you can manage records, capture works and upload documents while each client remains in control of access.",
+      "If anything is unclear, simply reply to this message and I will help you personally.",
+      "Warm regards,\nJan S. Kindem\nGlobal Artist Registry Foundation\nglobalartistregistry.org",
+    );
+    return { subject: "Welcome to the Global Artist Registry", body: parts.join("\n\n") };
+  }
   parts.push(
     "Welcome to the Global Artist Registry, and thank you for registering. I wanted to write personally, and to point out a few things that may save you time.",
   );
@@ -280,44 +306,53 @@ serve(async (req) => {
       });
     }
 
-    const apiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured");
-
     const admin = adminClient();
-    const { data: profile } = await admin
-      .from("profiles")
-      .select("full_name, email, city, country, website")
-      .eq("user_id", user_id)
-      .maybeSingle();
+    const [{ data: profile }, { data: letter }, { data: roleRows }] = await Promise.all([
+      admin.from("profiles").select("full_name, email, city, country, website").eq("user_id", user_id).maybeSingle(),
+      admin.from("welcome_letters").select("account_role").eq("user_id", user_id).maybeSingle(),
+      admin.from("user_roles").select("role").eq("user_id", user_id),
+    ]);
 
     if (!profile) {
-      return new Response(JSON.stringify({ error: "Artist not found" }), {
+      return new Response(JSON.stringify({ error: "Account not found" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    let findings: Findings;
-    const known = (profile.website ?? "").trim();
-    if (known) {
-      findings = { ...EMPTY_FINDINGS, website: known, notes: "Website already on the artist's profile." };
-    } else {
-      findings = await lookupWebsite(
-        profile.full_name ?? "",
-        profile.email ?? "",
-        profile.city ?? "",
-        profile.country ?? "",
-        apiKey,
-      );
+    const allowedRoles: WelcomeRole[] = ["artist", "collector", "registrar"];
+    const storedRole = letter?.account_role as WelcomeRole | undefined;
+    const matchedRole = roleRows?.map((row) => row.role).find((value) => allowedRoles.includes(value as WelcomeRole));
+    const role = allowedRoles.includes(storedRole ?? "artist")
+      ? (storedRole ?? "artist")
+      : ((matchedRole as WelcomeRole | undefined) ?? "artist");
+
+    let findings: Findings = { ...EMPTY_FINDINGS };
+    if (role === "artist") {
+      const known = (profile.website ?? "").trim();
+      if (known) {
+        findings = { ...EMPTY_FINDINGS, website: known, notes: "Website already on the artist's profile." };
+      } else {
+        const apiKey = Deno.env.get("LOVABLE_API_KEY");
+        if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured");
+        findings = await lookupWebsite(
+          profile.full_name ?? "",
+          profile.email ?? "",
+          profile.city ?? "",
+          profile.country ?? "",
+          apiKey,
+        );
+      }
     }
 
-    const { subject, body } = compose(profile.full_name ?? "", findings);
+    const { subject, body } = compose(profile.full_name ?? "", role, findings);
 
     const { error } = await admin
       .from("welcome_letters")
       .upsert(
         {
           user_id,
+          account_role: role,
           status: "drafted",
           discovered_website: findings.website || null,
           website_findings: findings,
