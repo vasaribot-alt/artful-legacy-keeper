@@ -628,7 +628,14 @@ const PublicArtistProfile = () => {
                                   <div key={aw.id} className="group cursor-pointer" onClick={() => openLightbox(aw)}>
                                     <div className="aspect-[3/4] rounded-md overflow-hidden bg-muted mb-2">
                                       {awThumb ? (
-                                        <img src={awThumb} alt={aw.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                        <img
+                                          src={awThumb}
+                                          alt={aw.title}
+                                          draggable={aw.protected_display ? false : undefined}
+                                          onContextMenu={aw.protected_display ? (e) => e.preventDefault() : undefined}
+                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                          loading="lazy"
+                                        />
                                       ) : (
                                         <div className="w-full h-full flex items-center justify-center">
                                           <ImageIcon className="w-8 h-8 text-muted-foreground/40" />
@@ -639,6 +646,10 @@ const PublicArtistProfile = () => {
                                     {aw.year && <p className="text-xs text-muted-foreground">{aw.year}</p>}
                                     {aw.medium && <p className="text-xs text-muted-foreground truncate">{aw.medium}</p>}
                                     {dims && <p className="text-xs text-muted-foreground">{dims}</p>}
+                                    {aw.protected_display && (
+                                      <p className="text-[11px] text-muted-foreground mt-1">{PROTECTED_WORK_NOTE}</p>
+                                    )}
+
                                   </div>
                                 );
                               })}
