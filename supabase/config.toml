@@ -53,3 +53,5 @@ project_id = "ofqaxojjqryylcugegke"
     verify_jwt = false
   [functions.protect-artwork-image]
     verify_jwt = true
+  [functions.linkedin-publish]
+    verify_jwt = true
