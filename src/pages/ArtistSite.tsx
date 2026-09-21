@@ -8,7 +8,9 @@ import {
   fetchPublicArtworkImages,
   groupPublicArtworkImages,
   publicArtworkImageUrl,
+  PROTECTED_WORK_NOTE,
 } from "@/lib/publicArtworkImages";
+
 
 import { ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
 
