@@ -181,6 +181,10 @@ const PortfolioShared = () => {
                   )}
                 </div>
                 <h3 className="text-sm font-medium italic">{art.title}</h3>
+                {art.protected && (
+                  <p className="text-[11px] text-muted-foreground mt-1">{PROTECTED_WORK_NOTE}</p>
+                )}
+
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                   {art.year && <span>{art.year}</span>}
                   {art.year && art.medium && <span>·</span>}
