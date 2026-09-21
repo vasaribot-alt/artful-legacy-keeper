@@ -14,6 +14,7 @@ import DonorManager from "@/components/DonorManager";
 import ArtistInviteUpload from "@/components/ArtistInviteUpload";
 import RegisteredUsersOverview from "@/components/RegisteredUsersOverview";
 import OnboardingTracker from "@/components/OnboardingTracker";
+import WelcomeLetters from "@/components/WelcomeLetters";
 
 import WebsiteSectionsOverview from "@/components/WebsiteSectionsOverview";
 
@@ -322,6 +323,9 @@ const FoundationDashboard = () => {
           </p>
           <ArtistInviteUpload />
         </section>
+
+        {/* Welcome letters */}
+        <WelcomeLetters />
 
         {/* Onboarding */}
         <OnboardingTracker />
