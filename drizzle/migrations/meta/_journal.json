@@ -71,6 +71,13 @@
       "when": 1789997044281,
       "tag": "0009_protected_artwork_storage_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790000988342,
+      "tag": "0010_create_linkedin_posts",
+      "breakpoints": true
     }
   ]
 }
