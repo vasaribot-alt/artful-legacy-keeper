@@ -4,7 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { setArtworkProtection } from "@/lib/protectArtworkImages";
 import { toast } from "sonner";
+
 
 /**
  * Profile-level default: newly registered works start protected, so the full
