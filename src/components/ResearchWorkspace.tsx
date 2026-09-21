@@ -81,6 +81,8 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
   const [findings, setFindings] = useState<Finding[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
 
+  const [counts, setCounts] = useState<Record<string, number>>({});
+
   const load = useCallback(async () => {
     const { data: runRows } = await supabase
       .from("research_runs")
@@ -90,7 +92,26 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
       .limit(20);
     const list = (runRows || []) as Run[];
     setRuns(list);
-    const current = activeRun && list.some((r) => r.id === activeRun) ? activeRun : list[0]?.id ?? null;
+
+    // how much each session holds, so an empty or failed session never hides earlier results
+    const ids = list.map((r) => r.id);
+    const tally: Record<string, number> = {};
+    if (ids.length) {
+      const { data: all } = await supabase
+        .from("research_findings")
+        .select("run_id")
+        .in("run_id", ids);
+      for (const row of (all || []) as { run_id: string }[]) {
+        tally[row.run_id] = (tally[row.run_id] || 0) + 1;
+      }
+    }
+    setCounts(tally);
+
+    const newestWithResults = list.find((r) => (tally[r.id] || 0) > 0)?.id;
+    const current =
+      activeRun && list.some((r) => r.id === activeRun)
+        ? activeRun
+        : newestWithResults ?? list[0]?.id ?? null;
     setActiveRun(current);
     if (current) {
       const { data } = await supabase
@@ -109,6 +130,7 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ownerId, activeRun]);
+
 
   const run = async () => {
     setRunning(true);
