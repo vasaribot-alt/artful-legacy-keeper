@@ -420,6 +420,7 @@ export type Database = {
           id: string
           mime_type: string | null
           original_size: number | null
+          protected_storage_path: string | null
           storage_path: string
           web_storage_path: string | null
           width: number | null
@@ -433,6 +434,7 @@ export type Database = {
           id?: string
           mime_type?: string | null
           original_size?: number | null
+          protected_storage_path?: string | null
           storage_path: string
           web_storage_path?: string | null
           width?: number | null
@@ -446,6 +448,7 @@ export type Database = {
           id?: string
           mime_type?: string | null
           original_size?: number | null
+          protected_storage_path?: string | null
           storage_path?: string
           web_storage_path?: string | null
           width?: number | null
@@ -686,6 +689,7 @@ export type Database = {
           original_retail_price: number | null
           owner_id: string
           price: number | null
+          protected_display: boolean
           provenance: string | null
           purchase_price: number | null
           replacement_value: number | null
@@ -753,6 +757,7 @@ export type Database = {
           original_retail_price?: number | null
           owner_id: string
           price?: number | null
+          protected_display?: boolean
           provenance?: string | null
           purchase_price?: number | null
           replacement_value?: number | null
@@ -820,6 +825,7 @@ export type Database = {
           original_retail_price?: number | null
           owner_id?: string
           price?: number | null
+          protected_display?: boolean
           provenance?: string | null
           purchase_price?: number | null
           replacement_value?: number | null
@@ -2940,6 +2946,7 @@ export type Database = {
           period_activity_start: number | null
           phone: string | null
           phone_prefix: string | null
+          protect_new_artworks: boolean
           social_media_links: Json | null
           studio_address: string | null
           unit_preference: string
@@ -2995,6 +3002,7 @@ export type Database = {
           period_activity_start?: number | null
           phone?: string | null
           phone_prefix?: string | null
+          protect_new_artworks?: boolean
           social_media_links?: Json | null
           studio_address?: string | null
           unit_preference?: string
@@ -3050,6 +3058,7 @@ export type Database = {
           period_activity_start?: number | null
           phone?: string | null
           phone_prefix?: string | null
+          protect_new_artworks?: boolean
           social_media_links?: Json | null
           studio_address?: string | null
           unit_preference?: string
@@ -4038,6 +4047,19 @@ export type Database = {
           members_id_verified: number
           members_joined: number
           name: string
+        }[]
+      }
+      get_public_artwork_images: {
+        Args: { _artwork_ids: string[] }
+        Returns: {
+          artwork_id: string
+          bucket: string
+          display_order: number
+          height: number
+          id: string
+          path: string
+          protected: boolean
+          width: number
         }[]
       }
       get_public_donors: {
