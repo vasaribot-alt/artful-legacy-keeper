@@ -47,7 +47,7 @@ serve(async (req) => {
     const admin = adminClient();
     const { data: letter } = await admin
       .from("welcome_letters")
-      .select("id, status")
+      .select("id, status, account_role")
       .eq("user_id", user_id)
       .maybeSingle();
 
@@ -66,7 +66,7 @@ serve(async (req) => {
 
     const to = (profile?.email ?? "").trim();
     if (!to) {
-      return new Response(JSON.stringify({ error: "This artist has no email address on file." }), {
+      return new Response(JSON.stringify({ error: "This account has no email address on file." }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -77,7 +77,7 @@ serve(async (req) => {
       subject: subject.trim(),
       html: toHtml(body.trim()),
       text: body.trim(),
-      label: "welcome_letter",
+      label: `welcome_${letter?.account_role ?? "account"}`,
       idempotencyKey: `welcome-letter-${letter?.id ?? user_id}`,
       replyTo: "outreach@globalartistregistry.org",
       fromName: "Global Artist Registry Foundation",

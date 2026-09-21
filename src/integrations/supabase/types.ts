@@ -3809,6 +3809,7 @@ export type Database = {
       }
       welcome_letters: {
         Row: {
+          account_role: Database["public"]["Enums"]["app_role"]
           body: string | null
           created_at: string
           discovered_website: string | null
@@ -3823,6 +3824,7 @@ export type Database = {
           website_findings: Json
         }
         Insert: {
+          account_role?: Database["public"]["Enums"]["app_role"]
           body?: string | null
           created_at?: string
           discovered_website?: string | null
@@ -3837,6 +3839,7 @@ export type Database = {
           website_findings?: Json
         }
         Update: {
+          account_role?: Database["public"]["Enums"]["app_role"]
           body?: string | null
           created_at?: string
           discovered_website?: string | null
@@ -3967,9 +3970,12 @@ export type Database = {
       get_onboarding_progress: {
         Args: never
         Returns: {
-          artworks: number
-          artworks_with_image: number
+          artist_artworks: number
+          artist_artworks_with_image: number
           city: string
+          collector_artworks: number
+          collector_artworks_with_image: number
+          collector_has_registrar: boolean
           country: string
           created_at: string
           cv_entries: number
@@ -3981,7 +3987,16 @@ export type Database = {
           has_biography: boolean
           id_verified: boolean
           last_activity: string
+          letter_body: string
+          letter_role: string
+          letter_sent_at: string
           letter_status: string
+          letter_subject: string
+          registrar_available: boolean
+          registrar_clients: number
+          registrar_has_cv: boolean
+          registrar_profile_complete: boolean
+          registrar_verified: boolean
           roles: string[]
           user_id: string
           website_enabled: boolean
