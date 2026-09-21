@@ -27,62 +27,58 @@ function json(body: unknown, status = 200) {
   });
 }
 
-/** Scale a bitmap into a canvas no larger than max on its longest side. */
-function fit(bitmap: ImageBitmap, max: number) {
-  const ratio = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
-  const w = Math.max(1, Math.round(bitmap.width * ratio));
-  const h = Math.max(1, Math.round(bitmap.height * ratio));
-  const canvas = new OffscreenCanvas(w, h);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas 2D unavailable");
-  ctx.drawImage(bitmap, 0, 0, w, h);
-  return { canvas, ctx, w, h };
-}
-
-/** Repeating diagonal mark carrying the artist name and GAWID. */
-function watermark(ctx: OffscreenCanvasRenderingContext2D, w: number, h: number, label: string) {
-  const step = Math.max(90, Math.round(Math.min(w, h) / 4));
-  ctx.save();
-  ctx.globalAlpha = 0.16;
-  ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = Math.max(1, Math.round(step / 40));
-  for (let x = -h; x < w + h; x += step) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x + h, h);
-    ctx.stroke();
-  }
-  ctx.restore();
-
+/** Font used for the watermark label, fetched once per instance. */
+let fontCache: Uint8Array | null = null;
+async function label_font(): Promise<Uint8Array | null> {
+  if (fontCache) return fontCache;
   try {
-    ctx.save();
-    ctx.globalAlpha = 0.34;
-    const size = Math.max(11, Math.round(w / 26));
-    ctx.font = `${size}px sans-serif`;
-    ctx.fillStyle = "#ffffff";
-    ctx.strokeStyle = "rgba(0,0,0,0.35)";
-    ctx.lineWidth = Math.max(1, Math.round(size / 10));
-    ctx.translate(w / 2, h / 2);
-    ctx.rotate(-Math.atan2(h, w));
-    const rows = 3;
-    for (let i = 0; i < rows; i++) {
-      const y = (i - (rows - 1) / 2) * size * 3;
-      const metrics = ctx.measureText(label);
-      const textWidth = metrics?.width || label.length * size * 0.55;
-      ctx.strokeText(label, -textWidth / 2, y);
-      ctx.fillText(label, -textWidth / 2, y);
-    }
-    ctx.restore();
+    const res = await fetch(
+      "https://cdn.jsdelivr.net/gh/google/fonts@main/apache/roboto/static/Roboto-Medium.ttf",
+    );
+    if (!res.ok) throw new Error(`font ${res.status}`);
+    fontCache = new Uint8Array(await res.arrayBuffer());
+    return fontCache;
   } catch (err) {
-    // Text drawing is unavailable in this runtime — the diagonal mark still applies.
-    console.warn("watermark text unavailable", String(err));
+    console.warn("watermark font unavailable", String(err));
+    return null;
   }
 }
 
-async function encode(canvas: OffscreenCanvas): Promise<Uint8Array> {
-  const blob = await canvas.convertToBlob({ type: "image/jpeg", quality: QUALITY });
-  return new Uint8Array(await blob.arrayBuffer());
+/** Decode, scale and (optionally) watermark an image, returning JPEG bytes. */
+async function render(
+  input: Uint8Array,
+  max: number,
+  label: string | null,
+): Promise<Uint8Array> {
+  const decoded = await Image.decode(input);
+  const image = decoded instanceof Image ? decoded : (decoded as unknown as Image);
+  const ratio = Math.min(1, max / Math.max(image.width, image.height));
+  if (ratio < 1) {
+    image.resize(Math.max(1, Math.round(image.width * ratio)), Image.RESIZE_AUTO);
+  }
+
+  if (label) {
+    const font = await label_font();
+    if (font) {
+      try {
+        const size = Math.max(12, Math.round(image.width / 24));
+        const text = await Image.renderText(font, size, label, 0xffffffbb);
+        text.rotate(-24);
+        const rows = 3;
+        for (let i = 0; i < rows; i++) {
+          const x = Math.round((image.width - text.width) / 2);
+          const y = Math.round(image.height / 2 - text.height / 2 + (i - 1) * text.height * 2.2);
+          image.composite(text, x, y);
+        }
+      } catch (err) {
+        console.warn("watermark text failed", String(err));
+      }
+    }
+  }
+
+  return await image.encodeJPEG(Math.round(QUALITY * 100));
 }
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
