@@ -6,7 +6,9 @@ import {
   fetchPublicArtworkImages,
   groupPublicArtworkImages,
   publicArtworkImageUrl,
+  PROTECTED_WORK_NOTE,
 } from "@/lib/publicArtworkImages";
+
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
