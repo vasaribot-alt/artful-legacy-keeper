@@ -135,10 +135,20 @@ Deno.serve(async (req) => {
       .eq("artwork_id", artworkId);
     if (imgErr) throw new Error(imgErr.message);
 
+    // One image per call keeps the worker inside its memory budget; the caller
+    // repeats until `remaining` is 0.
+    const all = images || [];
+    const pending = all.filter((img) =>
+      mode === "protect"
+        ? !img.protected_storage_path
+        : Boolean(img.protected_storage_path) || !img.web_storage_path,
+    );
+
     let done = 0;
     const failures: string[] = [];
+    const batch = pending.slice(0, 1);
 
-    for (const img of images || []) {
+    for (const img of batch) {
       try {
         if (mode === "unprotect") {
           // restore the normal public derivative, drop the watermarked one
@@ -197,12 +207,16 @@ Deno.serve(async (req) => {
       }
     }
 
-    await admin
-      .from("artworks")
-      .update({ protected_display: mode === "protect" })
-      .eq("id", artworkId);
+    const remaining = Math.max(0, pending.length - done);
+    if (remaining === 0) {
+      await admin
+        .from("artworks")
+        .update({ protected_display: mode === "protect" })
+        .eq("id", artworkId);
+    }
 
-    return json({ ok: true, mode, images: done, failed: failures.length, failures });
+    return json({ ok: true, mode, images: done, remaining, failed: failures.length, failures });
+
 
   } catch (err) {
     console.error("protect-artwork-image error:", err);
