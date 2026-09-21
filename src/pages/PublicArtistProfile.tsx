@@ -82,7 +82,9 @@ interface ArtworkPublic {
   depth: number | null;
   series: string | null;
   image_url: string | null;
-  images: { storage_path: string; display_order: number }[];
+  protected_display?: boolean | null;
+  images: { id: string; url: string | null; protected: boolean }[];
+
 }
 
 const PublicArtistProfile = () => {
