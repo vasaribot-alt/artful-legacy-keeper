@@ -3996,6 +3996,7 @@ export type Database = {
           registrar_clients: number
           registrar_has_cv: boolean
           registrar_profile_complete: boolean
+          registrar_verified: boolean
           roles: string[]
           user_id: string
           website_enabled: boolean
