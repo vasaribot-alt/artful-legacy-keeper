@@ -159,6 +159,8 @@ const PortfolioShared = () => {
                         alt={art.title}
                         className="w-full h-full object-cover cursor-zoom-in"
                         loading="lazy"
+                        draggable={art.protected ? false : undefined}
+                        onContextMenu={art.protected ? (e) => e.preventDefault() : undefined}
                         onClick={() =>
                           setLightbox({
                             images: art.imageUrls,
@@ -167,6 +169,7 @@ const PortfolioShared = () => {
                           })
                         }
                       />
+
                       {art.imageUrls.length > 1 && (
                         <span className="absolute bottom-2 right-2 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85 text-foreground">
                           {art.imageUrls.length} photos
