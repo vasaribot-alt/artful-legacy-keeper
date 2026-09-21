@@ -173,10 +173,8 @@ Deno.serve(async (req) => {
           .from("artwork-images")
           .download(img.storage_path);
         if (dlErr || !blob) throw new Error(dlErr?.message || "original missing");
-        const bitmap = await createImageBitmap(blob);
-        const { canvas, ctx, w, h } = fit(bitmap, PROTECTED_MAX);
-        watermark(ctx, w, h, label);
-        const bytes = await encode(canvas);
+        const bytes = await render(new Uint8Array(await blob.arrayBuffer()), PROTECTED_MAX, label);
+
         const path = `${artwork.owner_id}/${img.id}.jpg`;
         const { error: upErr } = await admin.storage
           .from("artwork-images-protected")
