@@ -204,13 +204,11 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
   const artworkImage = (aw: Artwork): string | null => {
     const first = aw.images[0];
-    if (first) {
-      const bucket = first.web_storage_path ? "artwork-images-web" : "artwork-images";
-      const path = first.web_storage_path || first.storage_path;
-      return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-    }
-    return aw.image_url;
+    if (first) return first.url;
+    // A protected work never falls back to an external full-size image.
+    return aw.protected_display ? null : aw.image_url;
   };
+
 
   const portraitUrl = useMemo(() => {
     if (!site?.avatar_url) return null;
