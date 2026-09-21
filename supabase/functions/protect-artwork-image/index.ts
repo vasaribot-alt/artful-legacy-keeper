@@ -5,6 +5,8 @@
 // Body: { artwork_id: string, mode?: "protect" | "unprotect" }
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.0";
+import { Image } from "https://deno.land/x/imagescript@1.2.17/mod.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
