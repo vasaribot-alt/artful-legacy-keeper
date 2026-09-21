@@ -81,6 +81,8 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
   const [findings, setFindings] = useState<Finding[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
 
+  const [counts, setCounts] = useState<Record<string, number>>({});
+
   const load = useCallback(async () => {
     const { data: runRows } = await supabase
       .from("research_runs")
@@ -90,7 +92,26 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
       .limit(20);
     const list = (runRows || []) as Run[];
     setRuns(list);
-    const current = activeRun && list.some((r) => r.id === activeRun) ? activeRun : list[0]?.id ?? null;
+
+    // how much each session holds, so an empty or failed session never hides earlier results
+    const ids = list.map((r) => r.id);
+    const tally: Record<string, number> = {};
+    if (ids.length) {
+      const { data: all } = await supabase
+        .from("research_findings")
+        .select("run_id")
+        .in("run_id", ids);
+      for (const row of (all || []) as { run_id: string }[]) {
+        tally[row.run_id] = (tally[row.run_id] || 0) + 1;
+      }
+    }
+    setCounts(tally);
+
+    const newestWithResults = list.find((r) => (tally[r.id] || 0) > 0)?.id;
+    const current =
+      activeRun && list.some((r) => r.id === activeRun)
+        ? activeRun
+        : newestWithResults ?? list[0]?.id ?? null;
     setActiveRun(current);
     if (current) {
       const { data } = await supabase
@@ -109,6 +130,7 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ownerId, activeRun]);
+
 
   const run = async () => {
     setRunning(true);
@@ -134,11 +156,14 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
             /* keep the default message */
           }
         }
-        toast.error(message);
+        toast.error(message, { duration: 12000 });
+        // earlier results stay on screen: nothing is switched away from
+        await load();
         return;
       }
       if (data?.error) {
-        toast.error(data.error);
+        toast.error(data.error, { duration: 12000 });
+        await load();
         return;
       }
       toast.success(
@@ -147,8 +172,15 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           (data.images_skipped ? `, ${data.images_skipped} unrelated images filtered out` : "") +
           (data.pages_failed ? ` (${data.pages_failed} could not be read)` : ""),
       );
-      setActiveRun(data.run_id);
+      if (Array.isArray(data.unreadable) && data.unreadable.length) {
+        toast.warning(
+          `These addresses block reading and were left out: ${data.unreadable.join(", ")}. Copy that text in by hand instead.`,
+          { duration: 14000 },
+        );
+      }
+      if ((data.count ?? 0) > 0) setActiveRun(data.run_id);
       await load();
+
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Research failed, please try again");
     } finally {
@@ -479,6 +511,13 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           your exhibitions, education, awards and collections, and it tells us where more information about your work
           can be found. Upload it under CV, where it is read and turned into structured entries you can review.
         </p>
+        <p className="text-sm text-muted-foreground max-w-2xl">
+          Best addresses to give: your own website, gallery and museum pages, online magazines and open archives.
+          LinkedIn, Instagram and Facebook block all automatic reading, so leave those out — paste that text in by hand
+          instead. Adding an address that cannot be read never removes anything: each session is kept separately, and
+          your earlier results stay exactly as they were.
+        </p>
+
 
 
         <div className="grid gap-3 md:grid-cols-2">
@@ -528,9 +567,12 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
                   onClick={() => setActiveRun(r.id)}
                 >
                   {new Date(r.created_at).toLocaleDateString()} {new Date(r.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {" · "}
+                  {counts[r.id] ? `${counts[r.id]} found` : r.status === "failed" ? "nothing read" : "empty"}
                 </Button>
               ))}
             </div>
+
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="sm" onClick={load} className="gap-1.5">
                 <RefreshCw className="w-3.5 h-3.5" /> Refresh
@@ -555,8 +597,18 @@ export function ResearchWorkspace({ ownerId, asRegistrar = false }: Props) {
           </div>
 
           {currentRun.status === "failed" && (
-            <p className="text-sm text-destructive">This session failed: {currentRun.error || "unknown error"}</p>
+            <p className="text-sm text-destructive">This session read nothing: {currentRun.error || "unknown error"}</p>
           )}
+          {currentRun.status !== "failed" && currentRun.error && (
+            <p className="text-sm text-muted-foreground">{currentRun.error}</p>
+          )}
+          {runs.length > 1 && !counts[currentRun.id] && (
+            <p className="text-sm text-muted-foreground">
+              Nothing was kept from this session. Your earlier sessions are still here — choose one of the other dates
+              above and everything you found before is unchanged.
+            </p>
+          )}
+
 
           <Tabs defaultValue="profile_field">
             <TabsList>
