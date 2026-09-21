@@ -131,7 +131,9 @@ const ArtworkDetail = () => {
   const [declining, setDeclining] = useState(false);
 
   // Images
+  const [protectedDisplay, setProtectedDisplay] = useState(false);
   const [existingImages, setExistingImages] = useState<ArtworkImage[]>([]);
+
   const [newImages, setNewImages] = useState<{ file: File; preview: string }[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
   const [imagesReordered, setImagesReordered] = useState(false);
