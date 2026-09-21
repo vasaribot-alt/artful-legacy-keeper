@@ -14,12 +14,20 @@ interface SharedArtwork {
   currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
+  protected: boolean;
 }
 
 
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { formatPrice } from "@/lib/formatPrice";
+import {
+  fetchPublicArtworkImages,
+  groupPublicArtworkImages,
+  publicArtworkImageUrl,
+  PROTECTED_WORK_NOTE,
+} from "@/lib/publicArtworkImages";
+
 
 
 const PortfolioShared = () => {
@@ -78,13 +86,23 @@ const PortfolioShared = () => {
     const toUrl = (path: string) =>
       supabase.storage.from("artwork-images").getPublicUrl(path).data.publicUrl;
 
+    // Protected works: only the small watermarked version may be shown.
+    const allowed = await fetchPublicArtworkImages(rows.map((r) => r.artwork_id));
+    const allowedByArtwork = groupPublicArtworkImages(allowed);
+
     const enriched: SharedArtwork[] = rows.map((r) => {
+      const allowedImages = allowedByArtwork.get(r.artwork_id) || [];
+      const isProtected = allowedImages.some((i) => i.protected);
       const paths = r.image_paths && r.image_paths.length > 0
         ? r.image_paths
         : r.image_path
           ? [r.image_path]
           : [];
-      const imageUrls = paths.map(toUrl);
+      const imageUrls = isProtected
+        ? allowedImages
+            .map((i) => publicArtworkImageUrl(i))
+            .filter((u): u is string => Boolean(u))
+        : paths.map(toUrl);
       return {
         id: r.artwork_id,
         title: r.title || "Untitled",
@@ -97,8 +115,10 @@ const PortfolioShared = () => {
         currency: r.currency ?? null,
         imageUrl: imageUrls[0] ?? null,
         imageUrls,
+        protected: isProtected,
       };
     });
+
 
 
     setArtworks(enriched);
@@ -139,6 +159,8 @@ const PortfolioShared = () => {
                         alt={art.title}
                         className="w-full h-full object-cover cursor-zoom-in"
                         loading="lazy"
+                        draggable={art.protected ? false : undefined}
+                        onContextMenu={art.protected ? (e) => e.preventDefault() : undefined}
                         onClick={() =>
                           setLightbox({
                             images: art.imageUrls,
@@ -147,6 +169,7 @@ const PortfolioShared = () => {
                           })
                         }
                       />
+
                       {art.imageUrls.length > 1 && (
                         <span className="absolute bottom-2 right-2 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85 text-foreground">
                           {art.imageUrls.length} photos
@@ -158,6 +181,10 @@ const PortfolioShared = () => {
                   )}
                 </div>
                 <h3 className="text-sm font-medium italic">{art.title}</h3>
+                {art.protected && (
+                  <p className="text-[11px] text-muted-foreground mt-1">{PROTECTED_WORK_NOTE}</p>
+                )}
+
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                   {art.year && <span>{art.year}</span>}
                   {art.year && art.medium && <span>·</span>}
