@@ -232,7 +232,9 @@ const ArtworkDetail = () => {
     setOwnerId(data.owner_id);
     setVerificationStatus((data as any).verification_status || "pending");
     setDeclineReason((data as any).decline_reason || "");
+    setProtectedDisplay(Boolean((data as any).protected_display));
     setTitle(data.title);
+
     setGlobalArtworkId(data.global_artwork_id);
     setArtworkType(data.artwork_type || "");
     setMedium(data.medium || "");
