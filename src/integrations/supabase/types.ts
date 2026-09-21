@@ -3807,6 +3807,51 @@ export type Database = {
         }
         Relationships: []
       }
+      welcome_letters: {
+        Row: {
+          body: string | null
+          created_at: string
+          discovered_website: string | null
+          drafted_at: string | null
+          id: string
+          sent_at: string | null
+          sent_by: string | null
+          status: string
+          subject: string | null
+          updated_at: string
+          user_id: string
+          website_findings: Json
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          discovered_website?: string | null
+          drafted_at?: string | null
+          id?: string
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+          user_id: string
+          website_findings?: Json
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          discovered_website?: string | null
+          drafted_at?: string | null
+          id?: string
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+          user_id?: string
+          website_findings?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -3928,6 +3973,7 @@ export type Database = {
           country: string
           created_at: string
           cv_entries: number
+          discovered_website: string
           email: string
           exhibitions: number
           full_name: string
@@ -3935,6 +3981,7 @@ export type Database = {
           has_biography: boolean
           id_verified: boolean
           last_activity: string
+          letter_status: string
           roles: string[]
           user_id: string
           website_enabled: boolean
