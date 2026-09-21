@@ -4,7 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { setArtworkProtection } from "@/lib/protectArtworkImages";
 import { toast } from "sonner";
+
 
 /**
  * Profile-level default: newly registered works start protected, so the full
@@ -66,12 +68,15 @@ const ProtectNewWorksSetting = () => {
       setProgress({ done: 0, total: list.length });
       let failures = 0;
       for (let i = 0; i < list.length; i++) {
-        const { error } = await supabase.functions.invoke("protect-artwork-image", {
-          body: { artwork_id: list[i].id, mode: "protect" },
-        });
-        if (error) failures++;
+        try {
+          const { failed } = await setArtworkProtection(list[i].id, true);
+          if (failed > 0) failures++;
+        } catch {
+          failures++;
+        }
         setProgress({ done: i + 1, total: list.length });
       }
+
       setOfferBackfill(false);
       if (failures > 0) {
         toast.warning(`Protected ${list.length - failures} of ${list.length} works. Some could not be processed.`);

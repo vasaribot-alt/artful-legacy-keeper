@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ShieldCheck, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { setArtworkProtection } from "@/lib/protectArtworkImages";
 import { toast } from "sonner";
 
 interface Props {
@@ -17,27 +17,34 @@ interface Props {
  */
 const ProtectWorkToggle = ({ artworkId, value, onChange }: Props) => {
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
 
   const toggle = async (next: boolean) => {
     setBusy(true);
+    setProgress({ done: 0, total: 0 });
     try {
-      const { error } = await supabase.functions.invoke("protect-artwork-image", {
-        body: { artwork_id: artworkId, mode: next ? "protect" : "unprotect" },
-      });
-      if (error) throw error;
-      onChange(next);
-      toast.success(
-        next
-          ? "Protected. Only a small watermarked version is shown publicly."
-          : "Protection removed. The normal photo is shown publicly again.",
+      const { failed } = await setArtworkProtection(artworkId, next, (done, total) =>
+        setProgress({ done, total }),
       );
+      if (failed > 0) {
+        toast.error(`${failed} photo${failed === 1 ? "" : "s"} could not be prepared. Please try again.`);
+      } else {
+        onChange(next);
+        toast.success(
+          next
+            ? "Protected. Only a small watermarked version is shown publicly."
+            : "Protection removed. The normal photo is shown publicly again.",
+        );
+      }
     } catch (err) {
       console.error(err);
       toast.error("Could not change protection. Please try again.");
     } finally {
       setBusy(false);
+      setProgress(null);
     }
   };
+
 
   return (
     <div className="rounded-sm border border-border p-4">
@@ -58,9 +65,15 @@ const ProtectWorkToggle = ({ artworkId, value, onChange }: Props) => {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          {busy && progress && progress.total > 0 && (
+            <span className="text-[11px] text-muted-foreground">
+              {progress.done}/{progress.total}
+            </span>
+          )}
           {busy && <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />}
           <Switch checked={value} disabled={busy} onCheckedChange={toggle} />
         </div>
+
       </div>
     </div>
   );
