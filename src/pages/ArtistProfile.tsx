@@ -10,6 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Plus, Trash2, Save, Globe, Phone, Mail, Camera, Loader2, Eye, EyeOff, Pencil, Gavel } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import ProtectNewWorksSetting from "@/components/ProtectNewWorksSetting";
+
 import { toast } from "sonner";
 import CvManager from "../components/CvManager";
 import GallerySearch from "../components/GallerySearch";
