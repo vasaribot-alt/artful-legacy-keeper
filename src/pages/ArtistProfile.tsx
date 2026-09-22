@@ -506,7 +506,6 @@ const ArtistProfile = () => {
           {saving ? "Saving…" : saveState === "saved" ? "Saved ✓" : "Save •"}
         </Button>
       }>
-        <StickySaveBar state={saveState} onSave={handleSave} />
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
           <section className="space-y-6">
             <h2 className="text-2xl">Registrar Information</h2>
@@ -616,7 +615,6 @@ const ArtistProfile = () => {
 
   return (
     <AppLayout title={profileTitle} headerActions={headerActions}>
-      {editMode && <StickySaveBar state={saveState} onSave={handleSave} />}
       <div className="max-w-6xl mx-auto px-6 py-10 flex gap-8">
         {/* Side navigation */}
         <aside className="hidden lg:block w-56 shrink-0 self-start sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
