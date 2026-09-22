@@ -15,3 +15,4 @@
 - [Welcome Letters](mem://features/welcome-letters) — Auto-queued welcome email per new artist with website discovery, approved and sent by the foundation
 - [Artist Site Exhibition Photos](mem://features/artist-site-exhibition-photos) — Public Exhibitions page thumbnails + lightbox; exhibition_images anon grant + published-site policy
 - [Estate Succession](mem://features/estate-succession) — Artists name heirs in advance; foundation activates handover to full management, shown publicly
+- [DOEN Grant Application](mem://features/doen-grant-application) — "Every Artist a Legacy" framing: participation programme, not heritage/tech (DOEN exclusions)
