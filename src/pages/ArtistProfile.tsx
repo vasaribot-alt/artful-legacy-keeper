@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { StickySaveBar, useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
+import { useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
