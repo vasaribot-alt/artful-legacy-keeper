@@ -14,6 +14,7 @@ import DonorManager from "@/components/DonorManager";
 import ArtistInviteUpload from "@/components/ArtistInviteUpload";
 import RegisteredUsersOverview from "@/components/RegisteredUsersOverview";
 import OnboardingTracker from "@/components/OnboardingTracker";
+import CvReminderSection from "@/components/CvReminderSection";
 
 import WebsiteSectionsOverview from "@/components/WebsiteSectionsOverview";
 
@@ -325,6 +326,9 @@ const FoundationDashboard = () => {
 
         {/* Onboarding */}
         <OnboardingTracker />
+
+        {/* CV Reminders */}
+        <CvReminderSection />
 
         {/* Registered Users */}
         <RegisteredUsersOverview />
