@@ -8,7 +8,6 @@ import { Mail, Send, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface Artist {
-  id: string;
   user_id: string;
   full_name: string | null;
   email: string | null;
