@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil, Download, Expand } from "lucide-react";
+import { Plus, Trash2, Link as LinkIcon, ArrowLeft, Search, Pencil, Download, Expand, ShieldCheck } from "lucide-react";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { exportArtworksToArtlogic } from "@/lib/artlogicExport";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ interface PortfolioArtwork {
   currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
+  protectedDisplay: boolean;
 }
 
 
@@ -89,7 +90,7 @@ const PortfolioDetail = () => {
       const artworkIds = paData.map((pa) => pa.artwork_id);
       const { data: artData } = await supabase
         .from("artworks")
-        .select("id, title, year, medium, price, currency")
+        .select("id, title, year, medium, price, currency, protected_display")
         .in("id", artworkIds);
 
       const enriched: PortfolioArtwork[] = await Promise.all(
@@ -113,6 +114,7 @@ const PortfolioDetail = () => {
             currency: art?.currency ?? null,
             imageUrl: imageUrls[0] ?? null,
             imageUrls,
+            protectedDisplay: Boolean((art as any)?.protected_display),
           };
         })
       );
@@ -323,7 +325,11 @@ const PortfolioDetail = () => {
                       {art.imageUrls.length} photos
                     </span>
                   )}
-
+                  {art.protectedDisplay && (
+                    <span className="absolute top-1 left-1 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85">
+                      <ShieldCheck className="w-3 h-3" /> Protected
+                    </span>
+                  )}
                 </div>
                 <h3 className="text-xs font-medium italic mt-1.5 truncate">{art.title}</h3>
                 {art.year && <p className="text-xs text-muted-foreground">{art.year}</p>}

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Pencil, Eye, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Pencil, Eye, ChevronDown, ChevronRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
@@ -24,6 +24,7 @@ interface SeriesArtwork {
   width: number | null;
   depth: number | null;
   imageUrl: string | null;
+  protected_display?: boolean | null;
 }
 
 const Series = () => {
@@ -69,7 +70,7 @@ const Series = () => {
     if (!user) { setLoadingArtworks(null); return; }
     const { data, error } = await supabase
       .from("artworks")
-      .select("id, title, year, medium, height, width, depth")
+      .select("id, title, year, medium, height, width, depth, protected_display")
       .eq("owner_id", user.id)
       .eq("series", seriesName)
       .order("year", { ascending: false });
@@ -175,7 +176,7 @@ const Series = () => {
             className="group cursor-pointer"
             onClick={() => navigate(`/artwork/${art.id}/view`)}
           >
-            <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-2">
+            <div className="relative aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-2">
               {art.imageUrl ? (
                 <img
                   src={art.imageUrl}
@@ -187,6 +188,11 @@ const Series = () => {
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                   No image
                 </div>
+              )}
+              {art.protected_display && (
+                <span className="absolute top-1 left-1 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85">
+                  <ShieldCheck className="w-3 h-3" /> Protected
+                </span>
               )}
             </div>
             <h4 className="text-sm font-medium italic truncate">{art.title}</h4>
