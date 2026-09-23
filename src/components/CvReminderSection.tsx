@@ -82,22 +82,23 @@ export default function CvReminderSection() {
       return;
     }
 
-    // Get profiles
+    // Get profiles (include id — cv_entries.profile_id maps to profiles.id, not user_id)
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("user_id, full_name, email, created_at")
+      .select("id, user_id, full_name, email, created_at")
       .in("user_id", artistIds);
 
-    // Get artists that DO have CV entries
+    // Get artists that DO have CV entries (profile_id = profiles.id)
+    const profileIds = (profiles ?? []).map((p) => p.id);
     const { data: cvEntries } = await supabase
       .from("cv_entries")
       .select("profile_id")
-      .in("profile_id", artistIds);
+      .in("profile_id", profileIds);
     const withCv = new Set((cvEntries ?? []).map((e) => e.profile_id));
 
     // Filter to those without CV
     const withoutCv = (profiles ?? [])
-      .filter((p) => !withCv.has(p.user_id))
+      .filter((p) => !withCv.has(p.id))
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as Artist[];
 
     setArtists(withoutCv);
