@@ -258,7 +258,7 @@ function compose(name: string, role: WelcomeRole, findings: Findings) {
   }
 
   parts.push(
-    `You can also have your own public website through the registry, at ${SITE}/site/${slug}. You switch it on from your dashboard and you decide what it shows: the works you choose, your CV, your exhibitions, your publications and how people may contact you.`,
+    `You can also have your own public website through the registry, at ${SITE}/site/${slug}. You switch it on from your dashboard and decide what it shows: the works you choose, your CV, your exhibitions, your publications and how people may contact you. The website is administered entirely from within your GARF account — there is no separate system to maintain.`,
   );
 
   if (site) {
@@ -270,6 +270,10 @@ function compose(name: string, role: WelcomeRole, findings: Findings) {
       "If you do not have a domain of your own, the registry address above is yours at no cost. And if you later register your own domain, you can point it at your registry website and we will help you set it up.",
     );
   }
+
+  parts.push(
+    "You control which works are public and which stay private. For digital work in particular, you can keep an original private and show only a small, watermarked version publicly — your name and the artwork identifier are printed across the image, so the work is visible but cannot simply be downloaded at full resolution. You can set this per work, or protect all new uploads by default from your profile. The high-resolution files are never served to the public page.",
+  );
 
   parts.push(
     "One more thing that matters over a long life of work: you can name in advance who inherits your archive. Nothing changes while you are alive. When the time comes, the foundation confirms the handover, the person you named receives full management of the record, and your estate is shown publicly as its custodian. It is the reason the registry exists: the work should still be documented long after all of us.",
