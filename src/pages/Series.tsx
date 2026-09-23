@@ -24,6 +24,7 @@ interface SeriesArtwork {
   width: number | null;
   depth: number | null;
   imageUrl: string | null;
+  protected_display?: boolean | null;
 }
 
 const Series = () => {
@@ -69,7 +70,7 @@ const Series = () => {
     if (!user) { setLoadingArtworks(null); return; }
     const { data, error } = await supabase
       .from("artworks")
-      .select("id, title, year, medium, height, width, depth")
+      .select("id, title, year, medium, height, width, depth, protected_display")
       .eq("owner_id", user.id)
       .eq("series", seriesName)
       .order("year", { ascending: false });
@@ -175,7 +176,7 @@ const Series = () => {
             className="group cursor-pointer"
             onClick={() => navigate(`/artwork/${art.id}/view`)}
           >
-            <div className="aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-2">
+            <div className="relative aspect-[3/4] bg-secondary rounded-sm overflow-hidden mb-2">
               {art.imageUrl ? (
                 <img
                   src={art.imageUrl}
