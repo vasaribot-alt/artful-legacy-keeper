@@ -327,6 +327,9 @@ const FoundationDashboard = () => {
         {/* Onboarding */}
         <OnboardingTracker />
 
+        {/* CV Reminders */}
+        <CvReminderSection />
+
         {/* Registered Users */}
         <RegisteredUsersOverview />
 
