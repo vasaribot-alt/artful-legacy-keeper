@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUnitPreference } from "@/hooks/useUnitPreference";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Pencil, Eye, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, Trash2, Pencil, Eye, ChevronDown, ChevronRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
@@ -188,6 +188,11 @@ const Series = () => {
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
                   No image
                 </div>
+              )}
+              {art.protected_display && (
+                <span className="absolute top-1 left-1 flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-sm bg-background/85">
+                  <ShieldCheck className="w-3 h-3" /> Protected
+                </span>
               )}
             </div>
             <h4 className="text-sm font-medium italic truncate">{art.title}</h4>
