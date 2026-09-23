@@ -70,35 +70,27 @@ export default function CvReminderSection() {
   const load = async () => {
     setLoading(true);
 
-    // Get all artist user_ids
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("user_id")
-      .eq("role", "artist");
-    const artistIds = (roles ?? []).map((r) => r.user_id);
-    if (artistIds.length === 0) {
+    // Use the SECURITY DEFINER RPC which bypasses RLS and correctly counts
+    // cv_entries (cv_entries.profile_id maps to profiles.id, not user_id)
+    const { data: rows, error } = await supabase.rpc("get_onboarding_progress");
+
+    if (error) {
+      toast.error("Failed to load artist data");
       setArtists([]);
       setLoading(false);
       return;
     }
 
-    // Get profiles
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, full_name, email, created_at")
-      .in("user_id", artistIds);
-
-    // Get artists that DO have CV entries
-    const { data: cvEntries } = await supabase
-      .from("cv_entries")
-      .select("profile_id")
-      .in("profile_id", artistIds);
-    const withCv = new Set((cvEntries ?? []).map((e) => e.profile_id));
-
-    // Filter to those without CV
-    const withoutCv = (profiles ?? [])
-      .filter((p) => !withCv.has(p.user_id))
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as Artist[];
+    // Filter to artists without CV entries, sorted by join date descending
+    const withoutCv = (rows ?? [])
+      .filter((r: any) => Array.isArray(r.roles) && r.roles.includes("artist") && (r.cv_entries ?? 0) === 0)
+      .map((r: any) => ({
+        user_id: r.user_id,
+        full_name: r.full_name,
+        email: r.email,
+        created_at: r.created_at,
+      }))
+      .sort((a: Artist, b: Artist) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as Artist[];
 
     setArtists(withoutCv);
 
