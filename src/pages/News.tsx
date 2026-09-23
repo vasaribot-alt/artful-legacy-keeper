@@ -9,17 +9,25 @@ type NewsItem = {
   title: string;
   body: string[];
   image?: { src: string; alt: string };
+  source?: { href: string; label: string };
 };
 
 const news: NewsItem[] = [
   {
-    date: "4 September 2026",
-    title: "Cooperation with IAA/USA",
+    date: "23 September 2026",
+    title: "IAA-USA and GARF announce partnership",
     body: [
-      "The Global Artist Registry Foundation and the International Association of Art, United States, are working together to make free, lifetime registration available to artists across the association's membership.",
-      "A joint announcement follows shortly.",
+      "The International Association of Art, United States (IAA-USA), and the Global Artist Registry Foundation (GARF) are pleased to announce a partnership that will help artists preserve the record of their work for future generations.",
+      "Through this collaboration, IAA-USA members can create a free, secure, and comprehensive inventory of their work, including images, dimensions, provenance, exhibition history, publications, and other essential documentation. Artists remain in control of their records while creating a trusted foundation for authentication, scholarship, estate planning, and future sales.",
+      "GARF is an independent, non-commercial cultural foundation built around a 100-year preservation plan. Unlike a conventional subscription platform, its purpose is to keep artists' records accessible and intact across changes in technology, ownership, and generations.",
+      "That continuity is especially important after an artist's death. Artists can name who should take responsibility for their archive, helping heirs and estates retain a clear record of the work, its history, and its provenance.",
+      "Together, IAA-USA and GARF invite IAA-USA members to begin documenting their work now and create a lasting record for themselves, their families, collectors, scholars, and future generations.",
     ],
     image: { src: "/iaa-usa-logo.png", alt: "International Association of Art, United States" },
+    source: {
+      href: "https://www.iaa-usa.org/organization-members-and-sponsors",
+      label: "Read the announcement on IAA-USA",
+    },
   },
 ];
 
@@ -90,6 +98,16 @@ const News = () => {
                   </p>
                 ))}
               </div>
+              {item.source && (
+                <a
+                  href={item.source.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 inline-flex text-sm text-foreground underline underline-offset-4 hover:text-muted-foreground"
+                >
+                  {item.source.label}
+                </a>
+              )}
             </article>
           ))}
         </div>
