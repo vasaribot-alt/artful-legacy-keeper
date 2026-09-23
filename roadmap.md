@@ -50,3 +50,9 @@
 - [x] Registrar portal review (2026-09-17): client workspace covers archive management; Documents section added (uploads stored in the client's own archive, registrar storage policies added); credentials page at /registrars/{id} with editor at /registrar/presentation, linked from the registrar home
 
 - [x] Merge welcome letters into role-aware Getting started overview; add collector and registrar welcomes; mark old queue welcomed.
+
+## Partnership outreach — awaiting replies (2026-09-23)
+- [x] TAAT (The African Arts Trust) — emailed, awaiting reply. If yes, name in DOEN proposal + ask for 1–2 East African grantee sub-partners.
+- [x] DARIAH / DANS — emailed, awaiting reply. Goal: join working group as Cooperating Partner; strengthens DOEN "well embedded".
+- [x] Culture Helps Solidarity consortium — emailed all four (ECF, Insha Osvita, zusa, VETERANKA). Collaboration grants deadline 10 Nov 2026. Awaiting any reply to co-apply for displaced Ukrainian artists' archives project.
+- [ ] DOEN proposal: insert TAAT + sub-partners once confirmed; sanity-check €150k ask.
