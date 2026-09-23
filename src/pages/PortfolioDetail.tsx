@@ -90,7 +90,7 @@ const PortfolioDetail = () => {
       const artworkIds = paData.map((pa) => pa.artwork_id);
       const { data: artData } = await supabase
         .from("artworks")
-        .select("id, title, year, medium, price, currency")
+        .select("id, title, year, medium, price, currency, protected_display")
         .in("id", artworkIds);
 
       const enriched: PortfolioArtwork[] = await Promise.all(
@@ -114,6 +114,7 @@ const PortfolioDetail = () => {
             currency: art?.currency ?? null,
             imageUrl: imageUrls[0] ?? null,
             imageUrls,
+            protectedDisplay: Boolean((art as any)?.protected_display),
           };
         })
       );
