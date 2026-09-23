@@ -56,3 +56,7 @@
 - [x] DARIAH / DANS — emailed, awaiting reply. Goal: join working group as Cooperating Partner; strengthens DOEN "well embedded".
 - [x] Culture Helps Solidarity consortium — emailed all four (ECF, Insha Osvita, zusa, VETERANKA). Collaboration grants deadline 10 Nov 2026. Awaiting any reply to co-apply for displaced Ukrainian artists' archives project.
 - [ ] DOEN proposal: insert TAAT + sub-partners once confirmed; sanity-check €150k ask.
+
+## Monitor China traffic (2026-09-23)
+- [ ] Watch China in weekly analytics country breakdown (16 visitors this week, 3rd after NO/US, organic)
+- [ ] If sustained/growing over several weeks, consider China-focused outreach (artist association / curators' network)
