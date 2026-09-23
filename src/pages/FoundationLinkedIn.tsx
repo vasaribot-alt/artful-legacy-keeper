@@ -327,7 +327,9 @@ const FoundationLinkedIn = () => {
                   {published && post.post_urn && (
                     <Button size="sm" variant="outline" asChild>
                       <a
-                        href={`https://www.linkedin.com/feed/update/${post.post_urn}/`}
+                        href={post.post_urn.startsWith("http")
+                          ? post.post_urn
+                          : `https://www.linkedin.com/feed/update/${post.post_urn}/`}
                         target="_blank"
                         rel="noreferrer"
                       >
