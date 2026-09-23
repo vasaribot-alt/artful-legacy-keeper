@@ -28,6 +28,7 @@ interface PortfolioArtwork {
   currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
+  protectedDisplay: boolean;
 }
 
 
