@@ -64,6 +64,8 @@ interface ParsedRow {
   sizes: SizeGroup[];
   price: number | null;
   currency: string;
+  /** True when a price was present in the file but dropped because no currency was stated */
+  priceDropped?: boolean;
 }
 
 interface ImportedArtwork {
@@ -344,6 +346,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       // Never import an amount without a stated currency: a bare number could be
       // in any currency, and guessing one produces wildly wrong values.
       if (!r.currency) {
+        if (r.price != null || r.sizes.some((s) => s.price != null)) r.priceDropped = true;
         r.price = null;
         r.sizes = r.sizes.map((s) => ({ ...s, price: null }));
       }
