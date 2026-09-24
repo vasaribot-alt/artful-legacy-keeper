@@ -402,6 +402,13 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     }
     const parsed = parseRowsFromMappings(rawHeaders, rawRows, editableMappings, sizeGroupDefs);
     if (parsed.length === 0) { toast.error("No valid rows found"); return; }
+    const droppedPrices = parsed.filter((r) => r.priceDropped).length;
+    if (droppedPrices > 0) {
+      toast.warning(
+        `${droppedPrices} row${droppedPrices === 1 ? "" : "s"} had a price but no currency column, so the price was not imported. Add a "Currency" column (e.g. NOK, EUR) and import again to keep prices.`,
+        { duration: 10000 },
+      );
+    }
     setRows(parsed);
     setStep("preview");
   };
