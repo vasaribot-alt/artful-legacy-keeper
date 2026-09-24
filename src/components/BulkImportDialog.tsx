@@ -64,6 +64,8 @@ interface ParsedRow {
   sizes: SizeGroup[];
   price: number | null;
   currency: string;
+  /** True when a price was present in the file but dropped because no currency was stated */
+  priceDropped?: boolean;
 }
 
 interface ImportedArtwork {
@@ -344,6 +346,7 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
       // Never import an amount without a stated currency: a bare number could be
       // in any currency, and guessing one produces wildly wrong values.
       if (!r.currency) {
+        if (r.price != null || r.sizes.some((s) => s.price != null)) r.priceDropped = true;
         r.price = null;
         r.sizes = r.sizes.map((s) => ({ ...s, price: null }));
       }
@@ -399,6 +402,13 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
     }
     const parsed = parseRowsFromMappings(rawHeaders, rawRows, editableMappings, sizeGroupDefs);
     if (parsed.length === 0) { toast.error("No valid rows found"); return; }
+    const droppedPrices = parsed.filter((r) => r.priceDropped).length;
+    if (droppedPrices > 0) {
+      toast.warning(
+        `${droppedPrices} row${droppedPrices === 1 ? "" : "s"} had a price but no currency column, so the price was not imported. Add a "Currency" column (e.g. NOK, EUR) and import again to keep prices.`,
+        { duration: 10000 },
+      );
+    }
     setRows(parsed);
     setStep("preview");
   };

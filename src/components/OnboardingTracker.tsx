@@ -265,7 +265,9 @@ export default function OnboardingTracker() {
                     )}
                     <TableCell className="text-right whitespace-nowrap">
                       {!row.letter_status ? (
-                        <span className="text-xs text-muted-foreground">Not queued</span>
+                        <Button size="sm" variant="outline" disabled={busy === row.user_id} onClick={() => prepare(row)}>
+                          {busy === row.user_id ? "Preparing…" : "Prepare"}
+                        </Button>
                       ) : row.letter_status === "queued" ? (
                         <Button size="sm" disabled={busy === row.user_id} onClick={() => prepare(row)}>
                           {busy === row.user_id ? "Preparing…" : "Prepare"}
