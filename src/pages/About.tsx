@@ -1,5 +1,4 @@
 import PublicHeader from "@/components/PublicHeader";
-import GarfLogo from "@/components/GarfLogo";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
