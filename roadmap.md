@@ -60,3 +60,7 @@
 ## Monitor China traffic (2026-09-23)
 - [ ] Watch China in weekly analytics country breakdown (16 visitors this week, 3rd after NO/US, organic)
 - [ ] If sustained/growing over several weeks, consider China-focused outreach (artist association / curators' network)
+
+## Public navigation consistency (2026-09-26)
+- [x] Use the main page's logo, menu order and links across the nine agreed public pages
+- [x] Provide a compact menu at narrower widths; leave the signed-in workspace unchanged

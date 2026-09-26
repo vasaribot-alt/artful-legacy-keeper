@@ -1,4 +1,4 @@
-import GarfLogo from "@/components/GarfLogo";
+import PublicHeader from "@/components/PublicHeader";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, CalendarClock, Mail, MapPin, Phone, Video } from "lucide-react";
+import { CalendarClock, Mail, MapPin, Phone, Video } from "lucide-react";
 
 // 30 minute meeting, availability configured in Calendly to 08:00 to 18:00 CET.
 // Set this to the real Calendly event link once the event type exists.
@@ -128,23 +128,9 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border sticky top-0 z-30 bg-background/95 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4" /> <GarfLogo className="h-16" />
-          </Link>
-          <div className="flex items-center gap-6 text-sm">
-            <Link to="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-              About
-            </Link>
-            <a href="#schedule" className="text-muted-foreground hover:text-foreground transition-colors">
-              Book a meeting
-            </a>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
-      <main>
+      <main className="pt-16">
         <section className="px-6 pt-20 pb-12 border-b border-border">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-6">Contact</p>

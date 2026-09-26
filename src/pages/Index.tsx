@@ -1,4 +1,4 @@
-import GarfLogo from "@/components/GarfLogo";
+import PublicHeader from "@/components/PublicHeader";
 import installVideo from "@/assets/how-to-install.mp4.asset.json";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { InstagramLink } from "@/components/SocialLinks";
-import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, ExternalLink, PlayCircle, Heart } from "lucide-react";
+import { Shield, Database, Users, Clock, ArrowRight, CheckCircle2, PlayCircle, Heart } from "lucide-react";
 
 
 const features = [
@@ -94,57 +94,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-6xl mx-auto pl-3 pr-4 sm:px-6 h-16 flex items-center gap-4">
-          <GarfLogo className="h-10 sm:h-14 lg:h-16 shrink-0" />
-          <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto ml-auto [&>*]:shrink-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-
-            <Link to="/why-garf-matters" className="text-sm font-medium text-foreground hover:opacity-70 transition-opacity">
-              Why GARF
-            </Link>
-            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              About
-            </Link>
-            <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Artists
-            </Link>
-
-            <Link to="/registrars" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Registrars
-            </Link>
-            <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Supporters
-            </Link>
-            <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Contact
-            </Link>
-            <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              FAQ
-            </Link>
-            <Link to="/tutorials" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Tutorials
-            </Link>
-            <Link to="/news" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              News
-            </Link>
-
-
-            <a
-              href="https://catalogueraisonnefoundation.org"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
-            >
-              CR Foundation <ExternalLink className="w-3 h-3" />
-            </a>
-            <InstagramLink />
-            <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Sign In
-            </Link>
-            <Link to="/register">
-              <Button size="sm">Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <PublicHeader />
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-6 animate-in fade-in duration-700">

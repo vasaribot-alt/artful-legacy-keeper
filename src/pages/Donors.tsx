@@ -1,4 +1,4 @@
-import GarfLogo from "@/components/GarfLogo";
+import PublicHeader from "@/components/PublicHeader";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -61,21 +61,10 @@ const Donors = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-          <Link to="/">
-            <GarfLogo className="h-20" />
-          </Link>
-          <div className="flex items-center gap-6 text-sm">
-            <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
-              Sign in
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Hero */}
-      <section className="py-20 px-6 border-b border-border">
+      <section className="pt-36 pb-20 px-6 border-b border-border">
         <div className="max-w-3xl mx-auto text-center">
           <div className="flex items-center justify-center mb-6">
             <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Our Supporters</span>
