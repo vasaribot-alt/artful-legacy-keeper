@@ -1,3 +1,4 @@
+import PublicHeader from "@/components/PublicHeader";
 import GarfLogo from "@/components/GarfLogo";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -52,28 +53,7 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/">
-            <GarfLogo className="h-20" />
-          </Link>
-          <div className="flex items-center gap-6">
-            <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Artists
-            </Link>
-            <Link to="/registrars" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Registrars
-            </Link>
-            <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Supporters
-            </Link>
-            <InstagramLink />
-            <Link to="/register">
-              <Button size="sm">Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <PublicHeader />
 
       {/* Hero */}
       <header className="pt-32 pb-16 px-6">

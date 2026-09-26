@@ -1,0 +1,1 @@
+- Keep the nine principal public pages on the shared PublicHeader, with one ordered link list and a compact menu below wide desktop; this prevents public navigation drift without changing signed-in workspace navigation.

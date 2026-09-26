@@ -1,4 +1,4 @@
-import GarfLogo from "@/components/GarfLogo";
+import PublicHeader from "@/components/PublicHeader";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,25 +120,7 @@ const RegistrarsDirectory = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/">
-            <GarfLogo className="h-20" />
-          </Link>
-          <div className="flex items-center gap-6">
-            <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Artists
-            </Link>
-            <span className="text-sm font-medium">Registrars</span>
-            <Link to="/donors" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Supporters
-            </Link>
-            <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <PublicHeader />
 
       {/* Header */}
       <section className="pt-32 pb-12 px-6">

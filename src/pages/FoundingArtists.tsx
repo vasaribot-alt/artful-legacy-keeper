@@ -1,4 +1,4 @@
-import GarfLogo from "@/components/GarfLogo";
+import PublicHeader from "@/components/PublicHeader";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -118,19 +118,10 @@ const FoundingArtists = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-          <Link to="/">
-            <GarfLogo className="h-20" />
-          </Link>
-          <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Sign in
-          </Link>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Hero / Mission */}
-      <section className="py-20 px-6 border-b border-border">
+      <section className="pt-36 pb-20 px-6 border-b border-border">
         <div className="max-w-3xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
             <Award className="h-6 w-6 text-foreground" />

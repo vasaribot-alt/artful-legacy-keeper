@@ -1,7 +1,7 @@
+import PublicHeader from "@/components/PublicHeader";
 import GarfLogo from "@/components/GarfLogo";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { InstagramLink } from "@/components/SocialLinks";
 import { Newspaper } from "lucide-react";
 
 type NewsItem = {
@@ -45,25 +45,7 @@ const News = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-          <Link to="/" className="shrink-0">
-            <GarfLogo className="h-14" />
-          </Link>
-          <div className="flex items-center gap-6 overflow-x-auto">
-            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0">
-              About
-            </Link>
-            <Link to="/tutorials" className="text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0">
-              Tutorials
-            </Link>
-            <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0">
-              FAQ
-            </Link>
-            <InstagramLink />
-          </div>
-        </div>
-      </nav>
+      <PublicHeader />
 
       <header className="pt-36 pb-12 px-6 border-b border-border">
         <div className="max-w-3xl mx-auto text-center">
