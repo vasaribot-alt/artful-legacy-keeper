@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InstagramLink } from "@/components/SocialLinks";
-import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Handshake, PenLine } from "lucide-react";
+import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Handshake } from "lucide-react";
 
 const principles = [
   {
@@ -135,13 +135,6 @@ const About = () => {
               join a vetted public directory. Institutions and funders can partner with the foundation or support its
               endowment for long-term preservation.
             </p>
-            <p>
-              Collectors, artists, curators and institutions can also add their name to the{" "}
-              <Link to="/statement-of-support" className="text-foreground underline underline-offset-4 hover:text-muted-foreground">
-                Statement of Support
-              </Link>{" "}
-              for verified, independent documentation of contemporary art.
-            </p>
           </div>
           <div className="flex flex-wrap gap-4 mt-10">
             <a href="/GARF_Why_GARF_Matters.pdf" target="_blank" rel="noopener noreferrer">
@@ -160,12 +153,6 @@ const About = () => {
               </Button>
             </a>
 
-
-            <Link to="/statement-of-support">
-              <Button variant="outline" className="gap-2">
-                Statement of Support <PenLine className="w-4 h-4" />
-              </Button>
-            </Link>
             <Link to="/donate">
               <Button variant="outline" className="gap-2">
                 Support the foundation <ArrowRight className="w-4 h-4" />
