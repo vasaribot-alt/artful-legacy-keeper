@@ -1,5 +1,6 @@
 import PublicHeader from "@/components/PublicHeader";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InstagramLink } from "@/components/SocialLinks";
 import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Handshake } from "lucide-react";
@@ -153,6 +154,10 @@ const About = () => {
             </a>
 
             <Link to="/donate">
+              <Button variant="outline" className="gap-2">
+                Support the foundation <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
             <a href="mailto:contact@globalartistregistry.org">
               <Button variant="outline">Contact us</Button>
             </a>
