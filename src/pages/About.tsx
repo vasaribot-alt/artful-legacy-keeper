@@ -152,12 +152,7 @@ const About = () => {
               </Button>
             </a>
 
-
             <Link to="/donate">
-              <Button variant="outline" className="gap-2">
-                Support the foundation <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
             <a href="mailto:contact@globalartistregistry.org">
               <Button variant="outline">Contact us</Button>
             </a>
