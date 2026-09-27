@@ -100,13 +100,13 @@ const Index = () => {
       <section className="pt-32 pb-20 px-6 animate-in fade-in duration-700">
         <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-12">
           <div className="max-w-3xl space-y-6">
-            <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
               Archival-Grade Art Database
             </p>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl leading-[1.05] text-balance">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-balance">
               The permanent record for art
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
               A non-profit foundation dedicated to preserving the documentation of art.
               Catalogue raisonné for artists, collection management for collectors, verified
               identity throughout, built to last 100 years.
