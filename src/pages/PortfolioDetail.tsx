@@ -22,8 +22,10 @@ interface PortfolioArtwork {
   id: string;
   artwork_id: string;
   title: string;
+  artistName: string | null;
   year: number | null;
   medium: string | null;
+  support: string | null;
   price: number | null;
   currency: string | null;
   imageUrl: string | null;
