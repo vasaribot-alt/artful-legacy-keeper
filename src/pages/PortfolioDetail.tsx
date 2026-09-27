@@ -27,6 +27,8 @@ interface PortfolioArtwork {
   medium: string | null;
   support: string | null;
   price: number | null;
+  reservePrice: number | null;
+  currentMarketValue: number | null;
   currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
