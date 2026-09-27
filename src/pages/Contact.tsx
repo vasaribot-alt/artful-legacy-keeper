@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -130,24 +131,13 @@ const Contact = () => {
     <div className="min-h-screen bg-background">
       <PublicHeader />
 
-      <main className="pt-16">
-        <section className="px-6 pt-20 pb-12 border-b border-border">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-6">Contact</p>
-            <h1 className="text-4xl md:text-5xl leading-[1.1] font-serif mb-6 text-balance">
-              Talk to the foundation
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-              Write to us with a question, or book a 30 minute video meeting at a time that suits you.
-              Meetings are available Monday to Friday, 08:00 to 18:00 CET.
-            </p>
-          </div>
-        </section>
+      <main>
+        <PublicPageHero eyebrow="Contact" title="Talk to the foundation" borderBottom description="Write to us with a question, or book a 30 minute video meeting at a time that suits you. Meetings are available Monday to Friday, 08:00 to 18:00 CET." />
 
         <section className="px-6 py-16 border-b border-border">
           <div className="max-w-5xl mx-auto grid gap-12 md:grid-cols-[1.3fr_1fr]">
             <div>
-              <h2 className="text-2xl font-serif mb-6">Send us a message</h2>
+              <h2 className="text-2xl mb-6">Send us a message</h2>
               {sent ? (
                 <div className="border border-border rounded-sm p-8">
                   <h3 className="text-lg mb-2">Message received</h3>
@@ -255,7 +245,7 @@ const Contact = () => {
         <section id="schedule" className="px-6 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-serif mb-4">Book a 30 minute video meeting</h2>
+              <h2 className="text-2xl mb-4">Book a 30 minute video meeting</h2>
               <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
                 {CALENDLY_URL
                   ? "Pick a slot below. You will receive a confirmation with a video link, and you can reschedule at any time. Available 08:00 to 18:00 CET."

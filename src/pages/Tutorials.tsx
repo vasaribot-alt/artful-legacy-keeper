@@ -1,9 +1,9 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import GarfLogo from "@/components/GarfLogo";
 import installVideo from "@/assets/how-to-install.mp4.asset.json";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { PlayCircle } from "lucide-react";
 
 const walkthroughs = [
   { src: "/tutorials/how-to-register-mac-safe.mp4", title: "Register your account.", desc: "Create your account and complete identity verification." },
@@ -30,18 +30,7 @@ const Tutorials = () => {
     <div className="min-h-screen bg-background">
       <PublicHeader />
 
-      <header className="pt-36 pb-12 px-6 border-b border-border">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3 inline-flex items-center gap-2">
-            <PlayCircle className="w-4 h-4" /> Video tutorials
-          </p>
-          <h1 className="text-4xl mb-4">See how it works</h1>
-          <p className="text-muted-foreground text-sm max-w-xl mx-auto leading-relaxed">
-            Short walkthroughs covering the core workflows in the Registry, plus how to keep
-            it one tap away on your phone.
-          </p>
-        </div>
-      </header>
+      <PublicPageHero eyebrow="Video tutorials" title="See how it works" borderBottom description="Short walkthroughs covering the core workflows in the Registry, plus how to keep it one tap away on your phone." />
 
       <section className="py-16 px-6">
         <div className="max-w-6xl mx-auto">

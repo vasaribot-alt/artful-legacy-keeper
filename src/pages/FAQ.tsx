@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -248,20 +249,7 @@ export default function FAQ() {
       {/* Nav */}
       <PublicHeader />
 
-      {/* Hero */}
-      <header className="pt-32 pb-12 px-6 border-b border-border">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">
-            Help centre
-          </p>
-          <h1 className="text-4xl md:text-5xl leading-[1.05] mb-5 text-balance">
-            Frequently asked questions
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Quick answers for artists, collectors, registrars and organisations.
-          </p>
-        </div>
-      </header>
+      <PublicPageHero eyebrow="Help centre" title="Frequently asked questions" borderBottom description="Quick answers for artists, collectors, registrars and organisations." />
 
       {/* Search + download */}
       <section className="py-10 px-6 border-b border-border bg-muted/30">
