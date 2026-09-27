@@ -35,7 +35,7 @@ const CrFoundationLanding = () => {
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="text-lg font-semibold tracking-tight">Catalogue Raisonné Foundation</span>
+          <img src="/garf-cr-logo.png" alt="GARF-CR — Catalogue Raisonné by the Global Artist Registry Foundation" className="h-10 w-auto dark:invert" loading="eager" />
           <div className="flex items-center gap-6">
             <Link to="/cr" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Directory
