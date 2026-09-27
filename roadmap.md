@@ -64,3 +64,7 @@
 ## Public navigation consistency (2026-09-26)
 - [x] Use the main page's logo, menu order and links across the nine agreed public pages
 - [x] Provide a compact menu at narrower widths; leave the signed-in workspace unchanged
+
+## Collector portfolio presentation (2026-09-27)
+- [x] Combine medium and support as “Medium on Support” without a repeated support line
+- [x] Show Reserve price on owner and shared portfolio views, falling back to Current market value

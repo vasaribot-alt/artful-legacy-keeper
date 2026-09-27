@@ -343,12 +343,15 @@ const PortfolioDetail = () => {
                   <p className="text-xs font-medium mt-1.5 truncate">{art.artistName}</p>
                 )}
                 <h3 className={`text-xs font-medium italic truncate ${art.artistName ? "" : "mt-1.5"}`}>{art.title}</h3>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   {art.year && <span>{art.year}</span>}
                   {art.year && art.medium && <span>·</span>}
-                  {art.medium && <span className="truncate">{art.medium}</span>}
+                   {(art.medium || art.support) && (
+                     <span className="truncate">
+                       {[art.medium, art.support].filter(Boolean).join(" on ")}
+                     </span>
+                   )}
                 </div>
-                {art.support && <p className="text-xs text-muted-foreground truncate">{art.support}</p>}
                 {formatPrice(art.price, art.currency) && (
                   <p className="text-xs mt-0.5 tabular-nums">{formatPrice(art.price, art.currency)}</p>
                 )}
