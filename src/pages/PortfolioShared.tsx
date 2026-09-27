@@ -5,8 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 interface SharedArtwork {
   id: string;
   title: string;
+  artistName: string | null;
   year: number | null;
   medium: string | null;
+  support: string | null;
   height: number | null;
   width: number | null;
   depth: number | null;
