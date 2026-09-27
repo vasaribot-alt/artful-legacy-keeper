@@ -85,6 +85,13 @@
       "when": 1790030889784,
       "tag": "0011_secure_committee_emails_and_function_search_path",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790510884958,
+      "tag": "0012_shared_portfolio_artist_support",
+      "breakpoints": true
     }
   ]
 }

@@ -4176,6 +4176,7 @@ export type Database = {
       get_shared_portfolio: {
         Args: { _token: string }
         Returns: {
+          artist_name: string
           artwork_id: string
           currency: string
           depth: number
@@ -4187,6 +4188,7 @@ export type Database = {
           portfolio_id: string
           portfolio_name: string
           price: number
+          support: string
           title: string
           width: number
           year: number
