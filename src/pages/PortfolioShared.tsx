@@ -186,6 +186,9 @@ const PortfolioShared = () => {
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
                   )}
                 </div>
+                {art.artistName && (
+                  <p className="text-sm font-medium">{art.artistName}</p>
+                )}
                 <h3 className="text-sm font-medium italic">{art.title}</h3>
                 {art.protected && (
                   <p className="text-[11px] text-muted-foreground mt-1">{PROTECTED_WORK_NOTE}</p>
@@ -196,6 +199,9 @@ const PortfolioShared = () => {
                   {art.year && art.medium && <span>·</span>}
                   {art.medium && <span className="truncate">{art.medium}</span>}
                 </div>
+                {art.support && (
+                  <p className="text-xs text-muted-foreground mt-0.5">{art.support}</p>
+                )}
                 {formatDims(art.height, art.width, art.depth) && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {formatDims(art.height, art.width, art.depth)}
