@@ -194,14 +194,15 @@ const PortfolioShared = () => {
                   <p className="text-[11px] text-muted-foreground mt-1">{PROTECTED_WORK_NOTE}</p>
                 )}
 
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                   {art.year && <span>{art.year}</span>}
                   {art.year && art.medium && <span>·</span>}
-                  {art.medium && <span className="truncate">{art.medium}</span>}
+                   {(art.medium || art.support) && (
+                     <span className="truncate">
+                       {[art.medium, art.support].filter(Boolean).join(" on ")}
+                     </span>
+                   )}
                 </div>
-                {art.support && (
-                  <p className="text-xs text-muted-foreground mt-0.5">{art.support}</p>
-                )}
                 {formatDims(art.height, art.width, art.depth) && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {formatDims(art.height, art.width, art.depth)}
