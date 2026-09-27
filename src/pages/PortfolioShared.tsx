@@ -5,8 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 interface SharedArtwork {
   id: string;
   title: string;
+  artistName: string | null;
   year: number | null;
   medium: string | null;
+  support: string | null;
   height: number | null;
   width: number | null;
   depth: number | null;
@@ -69,8 +71,10 @@ const PortfolioShared = () => {
       portfolio_name: string;
       artwork_id: string;
       title: string;
+      artist_name: string | null;
       year: number | null;
       medium: string | null;
+      support: string | null;
       height: number | null;
       width: number | null;
       depth: number | null;
@@ -106,8 +110,10 @@ const PortfolioShared = () => {
       return {
         id: r.artwork_id,
         title: r.title || "Untitled",
+        artistName: r.artist_name ?? null,
         year: r.year,
         medium: r.medium,
+        support: r.support ?? null,
         height: r.height,
         width: r.width,
         depth: r.depth,
@@ -180,6 +186,9 @@ const PortfolioShared = () => {
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No image</div>
                   )}
                 </div>
+                {art.artistName && (
+                  <p className="text-sm font-medium">{art.artistName}</p>
+                )}
                 <h3 className="text-sm font-medium italic">{art.title}</h3>
                 {art.protected && (
                   <p className="text-[11px] text-muted-foreground mt-1">{PROTECTED_WORK_NOTE}</p>
@@ -190,6 +199,9 @@ const PortfolioShared = () => {
                   {art.year && art.medium && <span>·</span>}
                   {art.medium && <span className="truncate">{art.medium}</span>}
                 </div>
+                {art.support && (
+                  <p className="text-xs text-muted-foreground mt-0.5">{art.support}</p>
+                )}
                 {formatDims(art.height, art.width, art.depth) && (
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {formatDims(art.height, art.width, art.depth)}
