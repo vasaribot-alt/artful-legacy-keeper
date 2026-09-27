@@ -134,6 +134,7 @@ const About = () => {
               join a vetted public directory. Institutions and funders can partner with the foundation or support its
               endowment for long-term preservation.
             </p>
+          </div>
           <div className="flex flex-wrap gap-4 mt-10">
             <a href="/GARF_Why_GARF_Matters.pdf" target="_blank" rel="noopener noreferrer">
               <Button className="gap-2">
