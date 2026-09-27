@@ -27,6 +27,8 @@ interface PortfolioArtwork {
   medium: string | null;
   support: string | null;
   price: number | null;
+  reservePrice: number | null;
+  currentMarketValue: number | null;
   currency: string | null;
   imageUrl: string | null;
   imageUrls: string[];
@@ -92,7 +94,7 @@ const PortfolioDetail = () => {
       const artworkIds = paData.map((pa) => pa.artwork_id);
       const { data: artData } = await supabase
         .from("artworks")
-        .select("id, title, artist_name, year, medium, support, price, currency, protected_display")
+        .select("id, title, artist_name, year, medium, support, price, reserve_price, current_market_value, currency, protected_display")
         .in("id", artworkIds);
 
       const enriched: PortfolioArtwork[] = await Promise.all(
@@ -114,7 +116,9 @@ const PortfolioDetail = () => {
             year: art?.year || null,
             medium: art?.medium || null,
             support: (art as any)?.support || null,
-            price: art?.price ?? null,
+            price: art?.price ?? (art as any)?.reserve_price ?? (art as any)?.current_market_value ?? null,
+            reservePrice: (art as any)?.reserve_price ?? null,
+            currentMarketValue: (art as any)?.current_market_value ?? null,
             currency: art?.currency ?? null,
             imageUrl: imageUrls[0] ?? null,
             imageUrls,
