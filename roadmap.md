@@ -68,3 +68,7 @@
 ## Collector portfolio presentation (2026-09-27)
 - [x] Combine medium and support as “Medium on Support” without a repeated support line
 - [x] Show Reserve price on owner and shared portfolio views, falling back to Current market value
+
+## Public menu typography (2026-09-27)
+- [x] Match About's eyebrow, heading, description, alignment, and spacing across the nine public menu pages
+- [x] Bring secondary headings and readable text closer to About's type scale where inconsistent

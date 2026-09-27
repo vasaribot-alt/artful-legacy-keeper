@@ -1,1 +1,2 @@
 - Keep the nine principal public pages on the shared PublicHeader, with one ordered link list and a compact menu below wide desktop; this prevents public navigation drift without changing signed-in workspace navigation.
+- Use PublicPageHero for the nine public menu destinations; one shared About-based type scale and spacing keeps their page introductions aligned.

@@ -1,8 +1,8 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import GarfLogo from "@/components/GarfLogo";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Newspaper } from "lucide-react";
 
 type NewsItem = {
   date: string;
@@ -47,17 +47,7 @@ const News = () => {
     <div className="min-h-screen bg-background">
       <PublicHeader />
 
-      <header className="pt-36 pb-12 px-6 border-b border-border">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3 inline-flex items-center gap-2">
-            <Newspaper className="w-4 h-4" /> News
-          </p>
-          <h1 className="text-4xl mb-4">Announcements and updates</h1>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            News from the Foundation, its partner organisations, and the growing registry.
-          </p>
-        </div>
-      </header>
+      <PublicPageHero eyebrow="News" title="Announcements and updates" borderBottom description="News from the Foundation, its partner organisations, and the growing registry." />
 
       <section className="py-16 px-6">
         <div className="max-w-3xl mx-auto space-y-14">
@@ -75,7 +65,7 @@ const News = () => {
               )}
               <div className="space-y-4">
                 {item.body.map((p, i) => (
-                  <p key={i} className="text-sm text-muted-foreground leading-relaxed">
+                  <p key={i} className="text-base text-muted-foreground leading-relaxed">
                     {p}
                   </p>
                 ))}

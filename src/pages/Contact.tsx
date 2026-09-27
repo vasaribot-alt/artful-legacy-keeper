@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { z } from "zod";
@@ -130,19 +131,8 @@ const Contact = () => {
     <div className="min-h-screen bg-background">
       <PublicHeader />
 
-      <main className="pt-16">
-        <section className="px-6 pt-20 pb-12 border-b border-border">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-6">Contact</p>
-            <h1 className="text-4xl md:text-5xl leading-[1.1] font-serif mb-6 text-balance">
-              Talk to the foundation
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-              Write to us with a question, or book a 30 minute video meeting at a time that suits you.
-              Meetings are available Monday to Friday, 08:00 to 18:00 CET.
-            </p>
-          </div>
-        </section>
+      <main>
+        <PublicPageHero eyebrow="Contact" title="Talk to the foundation" borderBottom description="Write to us with a question, or book a 30 minute video meeting at a time that suits you. Meetings are available Monday to Friday, 08:00 to 18:00 CET." />
 
         <section className="px-6 py-16 border-b border-border">
           <div className="max-w-5xl mx-auto grid gap-12 md:grid-cols-[1.3fr_1fr]">
