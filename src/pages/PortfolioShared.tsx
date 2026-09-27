@@ -71,8 +71,10 @@ const PortfolioShared = () => {
       portfolio_name: string;
       artwork_id: string;
       title: string;
+      artist_name: string | null;
       year: number | null;
       medium: string | null;
+      support: string | null;
       height: number | null;
       width: number | null;
       depth: number | null;
