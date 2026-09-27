@@ -92,7 +92,7 @@ const PortfolioDetail = () => {
       const artworkIds = paData.map((pa) => pa.artwork_id);
       const { data: artData } = await supabase
         .from("artworks")
-        .select("id, title, year, medium, price, currency, protected_display")
+        .select("id, title, artist_name, year, medium, support, price, currency, protected_display")
         .in("id", artworkIds);
 
       const enriched: PortfolioArtwork[] = await Promise.all(
