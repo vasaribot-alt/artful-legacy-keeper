@@ -62,6 +62,12 @@ export default function CrDirectory() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b">
         <div className="max-w-5xl mx-auto px-6 py-10">
+          <img
+            src="/garf-cr-logo.png"
+            alt="GARF-CR — Catalogue Raisonné by the Global Artist Registry Foundation"
+            className="h-14 w-auto mb-8 dark:invert"
+            loading="eager"
+          />
           <div className="flex items-start justify-between gap-6">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
