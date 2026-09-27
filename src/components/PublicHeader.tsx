@@ -31,7 +31,7 @@ const PublicHeader = () => {
         <div className="ml-auto hidden min-[1400px]:flex items-center gap-5 whitespace-nowrap">
           {links.map(({ label, to }) => <Link key={to} to={to} aria-current={pathname === to ? "page" : undefined} className={linkClass(to)}>{label}</Link>)}
           <a href="https://catalogueraisonnefoundation.org" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
-            CR Foundation <ExternalLink className="h-3 w-3" />
+            GARF-CR <ExternalLink className="h-3 w-3" />
           </a>
           <InstagramLink />
           <Link to="/login" className={linkClass("/login")}>Sign In</Link>
@@ -51,7 +51,7 @@ const PublicHeader = () => {
                   </SheetClose>
                 ))}
                 <SheetClose asChild>
-                  <a href="https://catalogueraisonnefoundation.org" className="inline-flex items-center gap-1 px-2 py-2.5 text-sm text-muted-foreground hover:text-foreground">CR Foundation <ExternalLink className="h-3 w-3" /></a>
+                  <a href="https://catalogueraisonnefoundation.org" className="inline-flex items-center gap-1 px-2 py-2.5 text-sm text-muted-foreground hover:text-foreground">GARF-CR <ExternalLink className="h-3 w-3" /></a>
                 </SheetClose>
                 <div className="px-2 py-2"><InstagramLink /></div>
                 <SheetClose asChild><Link to="/login" className={`block px-2 py-2.5 ${linkClass("/login")}`}>Sign In</Link></SheetClose>

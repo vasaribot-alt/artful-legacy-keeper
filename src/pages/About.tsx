@@ -199,7 +199,7 @@ const About = () => {
                 href="https://catalogueraisonnefoundation.org"
                 className="inline-flex items-center gap-1 hover:text-foreground"
               >
-                CR Foundation <ExternalLink className="w-3 h-3" />
+                GARF-CR <ExternalLink className="w-3 h-3" />
               </a>
             </div>
           </div>
