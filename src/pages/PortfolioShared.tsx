@@ -110,8 +110,10 @@ const PortfolioShared = () => {
       return {
         id: r.artwork_id,
         title: r.title || "Untitled",
+        artistName: r.artist_name ?? null,
         year: r.year,
         medium: r.medium,
+        support: r.support ?? null,
         height: r.height,
         width: r.width,
         depth: r.depth,
