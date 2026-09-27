@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -122,21 +123,7 @@ const RegistrarsDirectory = () => {
       {/* Nav */}
       <PublicHeader />
 
-      {/* Header */}
-      <section className="pt-32 pb-12 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-6">
-            Verified Professionals
-          </p>
-          <h1 className="text-4xl md:text-5xl leading-[1.1] mb-6 text-balance">
-            Registrar Directory
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Foundation-verified registrars for catalogue raisonné, provenance research,
-            and collections documentation. Contact a registrar directly through GARF.
-          </p>
-        </div>
-      </section>
+      <PublicPageHero eyebrow="Verified Professionals" title="Registrar Directory" description="Foundation-verified registrars for catalogue raisonné, provenance research, and collections documentation. Contact a registrar directly through GARF." />
 
       {/* Search */}
       <section className="px-6 pb-8">

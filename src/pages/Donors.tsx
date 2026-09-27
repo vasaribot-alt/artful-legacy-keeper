@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -63,27 +64,12 @@ const Donors = () => {
       {/* Header */}
       <PublicHeader />
 
-      {/* Hero */}
-      <section className="pt-36 pb-20 px-6 border-b border-border">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="flex items-center justify-center mb-6">
-            <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Our Supporters</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6 text-balance">
-            The people preserving art for generations
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Our donors make it possible to build a permanent, artist-controlled archive that will outlast 
-            any single institution. Their generosity ensures that every artist's legacy is documented, 
-            authenticated, and preserved, not for years, but for centuries.
-          </p>
-        </div>
-      </section>
+      <PublicPageHero eyebrow="Our Supporters" title="The people preserving art for generations" borderBottom description="Our donors make it possible to build a permanent, artist-controlled archive that will outlast any single institution. Their generosity ensures that every artist's legacy is documented, authenticated, and preserved, not for years, but for centuries." />
 
       {/* Why support us */}
       <section className="py-16 px-6 border-b border-border bg-muted/30">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-8 text-center">Why your support matters</h2>
+          <h2 className="text-2xl mb-8 text-center">Why your support matters</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
@@ -100,7 +86,7 @@ const Donors = () => {
               },
             ].map((item) => (
               <div key={item.title}>
-                <h3 className="font-medium mb-2">{item.title}</h3>
+                <h3 className="text-lg mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
               </div>
             ))}
@@ -111,14 +97,14 @@ const Donors = () => {
       {/* Supporter tiers */}
       <section className="py-16 px-6 border-b border-border">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-3 text-center">Supporter tiers</h2>
+          <h2 className="text-2xl mb-3 text-center">Supporter tiers</h2>
           <p className="text-sm text-muted-foreground text-center max-w-2xl mx-auto mb-10">
             Larger collections are welcome to choose a recognition tier instead of counting every work.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {tierOrder.map((tier) => (
               <div key={tier} className="border border-border rounded-lg p-6">
-                <h3 className="font-medium mb-1">{tierLabels[tier].label}</h3>
+                <h3 className="text-lg mb-1">{tierLabels[tier].label}</h3>
                 <p className="text-lg mb-3">{tierLabels[tier].amount}</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {tierLabels[tier].description}
@@ -142,7 +128,7 @@ const Donors = () => {
           <div className="space-y-16">
             {groupedByTier.map((group) => (
               <section key={group.tier}>
-                <h2 className="text-xl font-medium mb-1">
+                <h2 className="text-2xl mb-1">
                   {group.label}
                   <span className="ml-3 text-base font-normal text-muted-foreground">{group.amount}</span>
                 </h2>
@@ -174,7 +160,7 @@ const Donors = () => {
 
       {/* CTA */}
       <section className="py-16 px-6 border-t border-border text-center">
-        <h2 className="text-2xl font-semibold mb-3">Become a Supporter</h2>
+        <h2 className="text-2xl mb-3">Become a Supporter</h2>
         <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
           Interested in supporting the preservation of art history?
           Donate to the foundation and join the community of people helping to safeguard artistic legacies for the next hundred years.

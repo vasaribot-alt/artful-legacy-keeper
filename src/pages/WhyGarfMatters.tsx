@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -65,17 +66,7 @@ const WhyGarfMatters = () => {
     <div className="min-h-screen bg-background">
       <PublicHeader />
 
-      {/* Hero */}
-      <header className="pt-36 pb-16 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-6">Problem & Solution</p>
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6 text-balance">
-            Art documentation is disappearing.
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            The Global Artist Registry Foundation exists to stop that. An independent Dutch
-            stichting with a 100-year preservation plan.
-          </p>
+      <PublicPageHero eyebrow="Problem & Solution" title="Art documentation is disappearing." description={<>The Global Artist Registry Foundation exists to stop that. An independent Dutch stichting with a 100-year preservation plan.</>}>
           <div className="mt-8 flex items-center justify-center gap-3 flex-wrap">
             <a href="/GARF_Why_GARF_Matters.pdf" target="_blank" rel="noopener noreferrer">
               <Button variant="outline">
@@ -90,8 +81,7 @@ const WhyGarfMatters = () => {
               </Button>
             </Link>
           </div>
-        </div>
-      </header>
+      </PublicPageHero>
 
       {/* What changed */}
       <section className="py-16 px-6 border-t border-border">

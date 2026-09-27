@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -54,18 +55,7 @@ const About = () => {
     <div className="min-h-screen bg-background">
       <PublicHeader />
 
-      {/* Hero */}
-      <header className="pt-32 pb-16 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-6">About the Foundation</p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6 text-balance">
-            Preserving the record of contemporary art
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            An independent non-profit foundation preserving the documentation of contemporary art.
-          </p>
-        </div>
-      </header>
+      <PublicPageHero eyebrow="About the Foundation" title="Preserving the record of contemporary art" description="An independent non-profit foundation preserving the documentation of contemporary art." />
 
       {/* What we do */}
       <section className="py-16 px-6 border-t border-border">

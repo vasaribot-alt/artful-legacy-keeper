@@ -1,9 +1,10 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Award, ArrowRight, Shield, Clock, Users } from "lucide-react";
+import { ArrowRight, Shield, Clock, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FoundingArtist {
@@ -120,22 +121,8 @@ const FoundingArtists = () => {
       {/* Header */}
       <PublicHeader />
 
-      {/* Hero / Mission */}
-      <section className="pt-36 pb-20 px-6 border-b border-border">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Award className="h-6 w-6 text-foreground" />
-            <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Legacy Artist Program</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-6 text-balance">
-            Building a Permanent Record for Art
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8">
-            For the first time, artists can create their own authenticated, archival-grade catalogue raisonné, 
-            a permanent record that outlasts galleries, institutions, and markets. Legacy Artists are the 
-            pioneers who believe their work deserves a record as enduring as the art itself.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+      <PublicPageHero eyebrow="Legacy Artist Program" title="Building a Permanent Record for Art" borderBottom description="For the first time, artists can create their own authenticated, archival-grade catalogue raisonné, a permanent record that outlasts galleries, institutions, and markets. Legacy Artists are the pioneers who believe their work deserves a record as enduring as the art itself.">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mt-8">
             <span className="flex items-center gap-2">
               <Shield className="w-4 h-4" /> Verified identity
             </span>
@@ -146,13 +133,12 @@ const FoundingArtists = () => {
               <Users className="w-4 h-4" /> Artist-controlled
             </span>
           </div>
-        </div>
-      </section>
+      </PublicPageHero>
 
       {/* Why it matters */}
       <section className="py-16 px-6 border-b border-border bg-muted/30">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-8 text-center">Why this matters</h2>
+          <h2 className="text-2xl mb-8 text-center">Why this matters</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
@@ -169,7 +155,7 @@ const FoundingArtists = () => {
               },
             ].map((item) => (
               <div key={item.title}>
-                <h3 className="font-medium mb-2">{item.title}</h3>
+                <h3 className="text-lg mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
               </div>
             ))}
@@ -189,7 +175,7 @@ const FoundingArtists = () => {
             {/* Two Artist Showcases */}
             {showcaseArtists.length > 0 && (
               <section className="mb-20">
-                <h2 className="text-2xl font-semibold mb-8">Featured Legacy Artists</h2>
+                <h2 className="text-2xl mb-8">Featured Legacy Artists</h2>
                 <div className="grid md:grid-cols-2 gap-8">
                   {showcaseArtists.map((artist) => {
                     const avatarSrc = getAvatarSrc(artist.profile?.avatar_url);
@@ -246,7 +232,7 @@ const FoundingArtists = () => {
               {groupedByTier.map((group) =>
                 group.artists.length > 0 ? (
                   <section key={group.tier}>
-                    <h2 className="text-xl font-medium mb-1">{group.label}</h2>
+                    <h2 className="text-2xl mb-1">{group.label}</h2>
                     <p className="text-sm text-muted-foreground mb-8">{group.description}</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                       {group.artists.map((artist) => {
@@ -289,7 +275,7 @@ const FoundingArtists = () => {
 
       {/* CTA */}
       <section className="py-16 px-6 border-t border-border text-center">
-        <h2 className="text-2xl font-semibold mb-3">Join the Legacy Artists</h2>
+        <h2 className="text-2xl mb-3">Join the Legacy Artists</h2>
         <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
           The program is invitation only. If you have received an invite code, register now. If not, you are welcome
           to apply and we will review your application.
