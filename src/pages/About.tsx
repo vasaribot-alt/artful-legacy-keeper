@@ -1,9 +1,8 @@
 import PublicHeader from "@/components/PublicHeader";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InstagramLink } from "@/components/SocialLinks";
-import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Handshake, PenLine } from "lucide-react";
+import { ArrowRight, ExternalLink, Shield, Database, Clock, Users, Handshake } from "lucide-react";
 
 const principles = [
   {
