@@ -88,7 +88,7 @@ const WhyGarfMatters = () => {
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">What changed</p>
-            <h2 className="font-serif text-2xl md:text-3xl mb-4">From paper to rented space</h2>
+            <h2 className="text-2xl mb-4">From paper to rented space</h2>
             <p className="text-muted-foreground leading-relaxed">
               In forty years, the record of art moved from paper, office servers and single
               workstations to gallery software, cloud drives, websites and inboxes. The medium
@@ -122,14 +122,14 @@ const WhyGarfMatters = () => {
       <section className="py-16 px-6 border-t border-border bg-muted/30">
         <div className="max-w-5xl mx-auto">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">Consequence</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-10 text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl mb-10 text-center max-w-2xl mx-auto">
             The cultural record of our time is rented, scattered and undocumented.
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {consequences.map((c) => (
               <div key={c.n} className="border border-border rounded-lg p-6 bg-background">
                 <p className="text-xs font-mono text-muted-foreground mb-3">{c.n}</p>
-                <h3 className="font-serif text-xl mb-2">{c.title}</h3>
+                <h3 className="text-lg mb-2">{c.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{c.description}</p>
               </div>
             ))}
@@ -141,11 +141,11 @@ const WhyGarfMatters = () => {
       <section className="py-16 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">Who carries the loss</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-10 text-center">When the record goes, four people pay for it.</h2>
+          <h2 className="text-2xl mb-10 text-center">When the record goes, four people pay for it.</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {whoPays.map((w) => (
               <div key={w.title} className="text-center">
-                <h3 className="font-serif text-lg mb-2">{w.title}</h3>
+                <h3 className="text-lg mb-2">{w.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{w.description}</p>
               </div>
             ))}
@@ -157,7 +157,7 @@ const WhyGarfMatters = () => {
       <section className="py-16 px-6 border-t border-border bg-muted/30">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">The gap</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-6">
+          <h2 className="text-2xl mb-6">
             There is no independent institution whose only job is to keep the record.
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-8">
@@ -175,14 +175,14 @@ const WhyGarfMatters = () => {
       <section className="py-16 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">The solution</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-10 text-center max-w-2xl mx-auto">
+          <h2 className="text-2xl mb-10 text-center max-w-2xl mx-auto">
             A permanent, artist-authenticated archive, held by a foundation that cannot be sold.
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {principles.map((p) => (
               <div key={p.title} className="border border-border rounded-lg p-6 text-center">
                 <p.icon className="w-6 h-6 mx-auto mb-3 text-muted-foreground" />
-                <h3 className="font-serif text-lg mb-2">{p.title}</h3>
+                <h3 className="text-lg mb-2">{p.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{p.description}</p>
               </div>
             ))}
@@ -194,12 +194,12 @@ const WhyGarfMatters = () => {
       <section className="py-16 px-6 border-t border-border bg-muted/30">
         <div className="max-w-5xl mx-auto">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">How it works</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-10 text-center">From scattered files to a permanent record.</h2>
+          <h2 className="text-2xl mb-10 text-center">From scattered files to a permanent record.</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {steps.map((s) => (
               <div key={s.n} className="border border-border rounded-lg p-6 bg-background">
                 <p className="text-xs font-mono text-muted-foreground mb-3">STEP {s.n}</p>
-                <h3 className="font-serif text-lg mb-2">{s.title}</h3>
+                <h3 className="text-lg mb-2">{s.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{s.description}</p>
               </div>
             ))}
@@ -212,7 +212,7 @@ const WhyGarfMatters = () => {
         <div className="max-w-3xl mx-auto text-center">
           <Heart className="w-6 h-6 mx-auto text-muted-foreground mb-4" />
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">After the artist</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-6">
+          <h2 className="text-2xl mb-6">
             The archive outlives the artist. The artist decides who carries it.
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-6 max-w-xl mx-auto">
@@ -234,11 +234,11 @@ const WhyGarfMatters = () => {
       <section className="py-16 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">Governance, not a company</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-10 text-center">Structured to outlast its founders.</h2>
+          <h2 className="text-2xl mb-10 text-center">Structured to outlast its founders.</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {governance.map((g) => (
               <div key={g.title} className="border border-border rounded-lg p-6">
-                <h3 className="font-serif text-lg mb-2">{g.title}</h3>
+                <h3 className="text-lg mb-2">{g.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{g.description}</p>
               </div>
             ))}
@@ -250,7 +250,7 @@ const WhyGarfMatters = () => {
       <section className="py-16 px-6 border-t border-border bg-muted/30">
         <div className="max-w-5xl mx-auto">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">In practice</p>
-          <h2 className="font-serif text-2xl md:text-3xl mb-10 text-center">One record, many uses.</h2>
+          <h2 className="text-2xl mb-10 text-center">One record, many uses.</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             {uses.map((u, i) => (
               <div key={u} className="flex items-start gap-3 border border-border rounded-lg p-4 bg-background">
@@ -266,7 +266,7 @@ const WhyGarfMatters = () => {
       <section className="py-20 px-6 border-t border-border">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4">The ask</p>
-          <h2 className="font-serif text-3xl md:text-4xl mb-6 text-balance">
+          <h2 className="text-2xl mb-6 text-balance">
             The record of this generation is still recoverable. It will not be in twenty years.
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-10 max-w-xl mx-auto">
@@ -275,15 +275,15 @@ const WhyGarfMatters = () => {
           </p>
           <div className="grid sm:grid-cols-3 gap-6 mb-12">
             <div className="border border-border rounded-lg p-6">
-              <h3 className="font-serif text-lg mb-2">Support</h3>
+              <h3 className="text-lg mb-2">Support</h3>
               <p className="text-sm text-muted-foreground">Fund the first decade and the endowment.</p>
             </div>
             <div className="border border-border rounded-lg p-6">
-              <h3 className="font-serif text-lg mb-2">Partner</h3>
+              <h3 className="text-lg mb-2">Partner</h3>
               <p className="text-sm text-muted-foreground">Museums, archives, universities, registrars, artist organisations.</p>
             </div>
             <div className="border border-border rounded-lg p-6">
-              <h3 className="font-serif text-lg mb-2">Refer</h3>
+              <h3 className="text-lg mb-2">Refer</h3>
               <p className="text-sm text-muted-foreground">Introduce the artists and estates who need this most.</p>
             </div>
           </div>
