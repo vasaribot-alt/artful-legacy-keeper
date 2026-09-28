@@ -92,6 +92,13 @@
       "when": 1790510884958,
       "tag": "0012_shared_portfolio_artist_support",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790616084811,
+      "tag": "0013_registrar_cv_access",
+      "breakpoints": true
     }
   ]
 }

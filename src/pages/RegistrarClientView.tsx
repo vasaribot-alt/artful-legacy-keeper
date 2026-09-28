@@ -15,6 +15,10 @@ import { CommitteeInbox, CommitteeSubmissionDetail } from "@/pages/CommitteeRevi
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 import { ResearchWorkspace } from "@/components/ResearchWorkspace";
 import { ClientDocuments } from "@/components/registrar/ClientDocuments";
+import CvManager from "@/components/CvManager";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 
 interface ClientArtwork {
@@ -191,38 +195,97 @@ function ProfileSection({ ownerId }: { ownerId: string }) {
     })();
   }, [ownerId]);
 
+  const [saving, setSaving] = useState(false);
+  const set = (k: string, v: any) => setProfile((p: any) => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    const by = profile.birth_year ? parseInt(String(profile.birth_year), 10) : null;
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: profile.full_name?.trim() || null,
+        city: profile.city?.trim() || null,
+        country: profile.country?.trim() || null,
+        phone_prefix: profile.phone_prefix?.trim() || null,
+        phone: profile.phone?.trim() || null,
+        birth_year: Number.isFinite(by as number) ? by : null,
+        website: profile.website?.trim() || null,
+        biography: profile.biography || null,
+      } as any)
+      .eq("user_id", ownerId);
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("Profile saved");
+  };
+
+  const field = (label: string, key: string, type = "text") => (
+    <div className="space-y-1.5">
+      <Label className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
+      <Input type={type} autoComplete="off" value={profile[key] ?? ""} onChange={(e) => set(key, e.target.value)} />
+    </div>
+  );
+
   return (
-    <RegistrarWorkspaceLayout>
+    <RegistrarWorkspaceLayout
+      headerActions={profile ? (
+        <Button size="sm" onClick={handleSave} disabled={saving} className="h-8">
+          {saving ? "Saving…" : "Save"}
+        </Button>
+      ) : undefined}
+    >
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
         {loading ? (
           <div className="h-32 bg-secondary animate-pulse rounded-sm" />
         ) : profile ? (
           <>
-            <div className="space-y-1">
-              <h2 className="text-2xl font-serif">{profile.full_name || "Untitled"}</h2>
-              <p className="text-sm text-muted-foreground">{[profile.city, profile.country].filter(Boolean).join(", ")}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {field("Full name", "full_name")}
+              {field("Birth year", "birth_year", "number")}
+              {field("City", "city")}
+              {field("Country", "country")}
+              {field("Phone prefix", "phone_prefix")}
+              {field("Phone", "phone")}
+              {field("Website", "website")}
+              <div className="space-y-1.5">
+                <Label className="text-xs uppercase tracking-wider text-muted-foreground">Email</Label>
+                <Input value={profile.email ?? ""} disabled />
+              </div>
             </div>
-            {profile.verification_status === "pending" && (
-              <div className="rounded-sm border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
-                Profile changes are pending the client's review.
-              </div>
-            )}
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Email</dt><dd>{profile.email || "—"}</dd></div>
-              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Phone</dt><dd>{profile.phone ? `${profile.phone_prefix || ""} ${profile.phone}` : "—"}</dd></div>
-              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Birth year</dt><dd>{profile.birth_year || "—"}</dd></div>
-              <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Website</dt><dd className="truncate">{profile.website || "—"}</dd></div>
-            </dl>
-            {profile.biography && (
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Biography</dt>
-                <dd className="text-sm whitespace-pre-line">{profile.biography}</dd>
-              </div>
-            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Biography</Label>
+              <Textarea rows={10} value={profile.biography ?? ""} onChange={(e) => set("biography", e.target.value)} />
+            </div>
             <p className="text-xs text-muted-foreground pt-4 border-t border-border">
-              Editing the client profile from the registrar workspace is coming soon. For now, this is a read-only view.
+              Changes are saved to the client's account. Email can only be changed by the client.
             </p>
           </>
+        ) : (
+          <p className="text-sm text-muted-foreground">No profile found.</p>
+        )}
+      </div>
+    </RegistrarWorkspaceLayout>
+  );
+}
+
+// ──────────────── CV SECTION ────────────────
+function CvSection({ ownerId }: { ownerId: string }) {
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from("profiles").select("id").eq("user_id", ownerId).maybeSingle();
+      setProfileId(data?.id ?? null);
+      setLoading(false);
+    })();
+  }, [ownerId]);
+  return (
+    <RegistrarWorkspaceLayout>
+      <div className="max-w-3xl mx-auto px-6 py-8">
+        {loading ? (
+          <div className="h-32 bg-secondary animate-pulse rounded-sm" />
+        ) : profileId ? (
+          <CvManager profileId={profileId} />
         ) : (
           <p className="text-sm text-muted-foreground">No profile found.</p>
         )}
