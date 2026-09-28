@@ -370,7 +370,7 @@ const RegistrarClientView = () => {
 
       <Route path="documents" element={<ClientDocuments ownerId={ownerId} clientRole={clientRole} />} />
       <Route path="inventory" element={<PlaceholderSection title="Inventory" message="Client-scoped inventory view is coming soon." />} />
-      <Route path="cv" element={<PlaceholderSection title="CV" message="Client-scoped CV editing is coming soon." />} />
+      <Route path="cv" element={<CvSection ownerId={ownerId!} />} />
       <Route path="provenance" element={<PlaceholderSection title="Provenance" message="Client-scoped provenance is coming soon." />} />
       <Route path="*" element={<Navigate to="artworks" replace />} />
     </Routes>
