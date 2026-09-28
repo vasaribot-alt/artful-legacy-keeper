@@ -57,8 +57,8 @@ export function RegistrarWorkspaceLayout({ children, headerActions }: Props) {
 
       {/* Sub-nav */}
       <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-20">
-        <div className="max-w-7xl mx-auto px-6 h-12 flex items-center gap-1 overflow-x-auto">
-          <nav className="flex items-center gap-1 flex-1">
+        <div className="max-w-7xl mx-auto px-6 h-12 flex items-center gap-2">
+          <nav className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto">
             {navItems.map((item) => {
               const fullPath = `${base}/${item.path}`;
               const isActive = location.pathname === fullPath
@@ -80,7 +80,7 @@ export function RegistrarWorkspaceLayout({ children, headerActions }: Props) {
               );
             })}
           </nav>
-          {headerActions && <div className="flex items-center gap-2">{headerActions}</div>}
+          {headerActions && <div className="flex items-center gap-2 shrink-0 pl-2 border-l border-border">{headerActions}</div>}
         </div>
       </header>
 
