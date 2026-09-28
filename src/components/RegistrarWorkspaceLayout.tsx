@@ -80,7 +80,7 @@ export function RegistrarWorkspaceLayout({ children, headerActions }: Props) {
               );
             })}
           </nav>
-          {headerActions && <div className="flex items-center gap-2">{headerActions}</div>}
+          {headerActions && <div className="flex items-center gap-2 shrink-0 pl-2 border-l border-border">{headerActions}</div>}
         </div>
       </header>
 
