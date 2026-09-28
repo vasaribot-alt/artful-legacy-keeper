@@ -55,9 +55,10 @@
 - [x] TAAT (The African Arts Trust) — emailed, awaiting reply. If yes, name in DOEN proposal + ask for 1–2 East African grantee sub-partners.
 - [x] DARIAH / DANS — emailed, awaiting reply. Goal: join working group as Cooperating Partner; strengthens DOEN "well embedded".
 - [x] Culture Helps Solidarity consortium — emailed all four (ECF, Insha Osvita, zusa, VETERANKA). Awaiting any reply to co-apply for displaced Ukrainian artists' archives project.
-- [x] Kastanje video call held (2026-09-28); agreed to send Mariana a formal partner invitation (tasks, budget share, GARF contribution) — draft with Jan for review.
-- [ ] Kastanje invitation REVISED: budget split left open (not agreed on the call — €10,000 figure removed; split to be agreed together once partners confirm). Awaiting Jan's approval to send.
-- [ ] Third partner: user proposed Mystetskyi Arsenal (Kyiv) — enquiry draft prepared for Jan to send (office@artarsenal.gov.ua; Dir. Gen. Olesia Ostrovska-Liuta). IZOLYATSIA still in conversation as alternative; fallback €20,000 with Kastanje + GARF.
+- [x] Kastanje video call held (2026-09-28); agreed to send Mariana a formal partner invitation (tasks, budget share, GARF contribution).
+- [x] Kastanje invitation sent by Jan 2026-09-28: budget split left open (not agreed on the call — €10,000 figure removed; split to be agreed together once partners confirm).
+- [x] Third partner enquiry sent by Jan 2026-09-28: Mystetskyi Arsenal (Kyiv; office@artarsenal.gov.ua; Dir. Gen. Olesia Ostrovska-Liuta). IZOLYATSIA still in conversation as alternative; fallback €20,000 with Kastanje + GARF.
+- [ ] Await replies from Kastanje and Mystetskyi Arsenal; confirm third partner for the €30,000 tier.
 - [ ] DOEN proposal: insert TAAT + sub-partners once confirmed; sanity-check €150k ask.
 
 ## Monitor China traffic (2026-09-23)
