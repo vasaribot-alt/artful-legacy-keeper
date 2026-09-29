@@ -88,3 +88,8 @@
 ## Public menu typography (2026-09-27)
 - [x] Match About's eyebrow, heading, description, alignment, and spacing across the nine public menu pages
 - [x] Bring secondary headings and readable text closer to About's type scale where inconsistent
+
+## Artist invitations from institution/gallery data (on hold — Jan designing the approach)
+- [ ] Invite artists found in gallery rosters / institution data to start catalogue work; Foundation reviews every invitation before sending. What the artist receives is still to be decided by Jan.
+- [ ] Lead: Audun Eckhoff (Norwegian art historian), contact details coming from the Swedish restorer.
+- [ ] Idea: explore a Lovable cooperation, since this could grow faster than GARF can finance.
