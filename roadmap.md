@@ -7,8 +7,8 @@
 - [ ] Note his boards across Europe + Museum of Montenegro as possible future doors
 
 ## Institutional Data Exchange — Gunnar's idea (2026-09-29)
-- [ ] Decide whether to draft a one-page concept note (museums/galleries contribute artist data → get verified access in return; artist consent is the hard guardrail)
-- [ ] If drafted: share with Gunnar; possible pilot via his Montenegro museum connection after he joins the board
+- [x] Drafted one-page concept note: GARF_Institutional_Data_Exchange_Concept_Note.docx (museums/galleries contribute artist data → get verified access in return; artist consent is the hard guardrail)
+- [ ] Share with Gunnar (with thank-you note or later); possible pilot via his Montenegro museum connection after he joins the board
 
 ## GARF and IAA/USA partner logos (2026-09-01)
 - [x] Create a polished GARF logo asset and downloadable logo package
