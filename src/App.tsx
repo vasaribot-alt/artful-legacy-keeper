@@ -76,6 +76,7 @@ import RegistrarProfile from "./pages/RegistrarProfile";
 import RegistrarPresentation from "./pages/RegistrarPresentation";
 import RegistrarApply from "./pages/RegistrarApply";
 import FoundationRegistrars from "./pages/FoundationRegistrars";
+import OrphanArtworks from "./pages/OrphanArtworks";
 import FoundationEstates from "./pages/FoundationEstates";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
@@ -185,6 +186,7 @@ const App = () => (
           <Route path="/registrar/apply" element={<RegistrarApply />} />
           <Route path="/registrar/presentation" element={<RegistrarPresentation />} />
           <Route path="/foundation/registrars" element={<FoundationRegistrars />} />
+          <Route path="/foundation/orphan-artworks" element={<OrphanArtworks />} />
           <Route path="/foundation/estates" element={<FoundationEstates />} />
           <Route path="/invite-friends" element={<InviteFriends />} />
           <Route path="/join/:slug" element={<PartnerJoin />} />

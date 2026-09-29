@@ -2741,6 +2741,75 @@ export type Database = {
         }
         Relationships: []
       }
+      orphan_artworks: {
+        Row: {
+          artist_name: string
+          artist_name_normalized: string | null
+          claimed_artwork_id: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          created_by: string | null
+          dimensions: string | null
+          edition_info: string | null
+          id: string
+          image_url: string | null
+          medium: string | null
+          notes: string | null
+          source_institution: string | null
+          source_reference: string | null
+          status: string
+          support: string | null
+          title: string | null
+          updated_at: string
+          year: string | null
+        }
+        Insert: {
+          artist_name: string
+          artist_name_normalized?: string | null
+          claimed_artwork_id?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          dimensions?: string | null
+          edition_info?: string | null
+          id?: string
+          image_url?: string | null
+          medium?: string | null
+          notes?: string | null
+          source_institution?: string | null
+          source_reference?: string | null
+          status?: string
+          support?: string | null
+          title?: string | null
+          updated_at?: string
+          year?: string | null
+        }
+        Update: {
+          artist_name?: string
+          artist_name_normalized?: string | null
+          claimed_artwork_id?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          dimensions?: string | null
+          edition_info?: string | null
+          id?: string
+          image_url?: string | null
+          medium?: string | null
+          notes?: string | null
+          source_institution?: string | null
+          source_reference?: string | null
+          status?: string
+          support?: string | null
+          title?: string | null
+          updated_at?: string
+          year?: string | null
+        }
+        Relationships: []
+      }
       outreach_email_templates: {
         Row: {
           body: string

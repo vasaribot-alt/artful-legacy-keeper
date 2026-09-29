@@ -14,6 +14,7 @@ import { ArtworkCard } from "@/components/ArtworkCard";
 import { ArtworkListItem } from "@/components/ArtworkListItem";
 import { AppLayout } from "@/components/AppLayout";
 import { PendingVerificationInbox } from "@/components/PendingVerificationInbox";
+import { OrphanClaimsCard } from "@/components/OrphanClaimsCard";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -506,6 +507,11 @@ const Dashboard = () => {
             userId={user.id}
             activeRole={activeRole}
             onVerified={fetchArtworks}
+          />
+          <OrphanClaimsCard
+            userId={user.id}
+            activeRole={activeRole}
+            onClaimed={fetchArtworks}
           />
         </div>
       )}
