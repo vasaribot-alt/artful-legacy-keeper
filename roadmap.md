@@ -1,3 +1,11 @@
+## Gunnar Kvaran — advisory board & Norway referrals (2026-09-29)
+- [x] Meeting held 2026-09-29; very positive — he agrees GARF is very important
+- [ ] Send warm thank-you note (draft for Jan's approval)
+- [ ] Formal advisory-board invitation (commitment first; funding and Obrist only if he raises them)
+- [ ] After commitment: ask for introduction to his contacts close to the Hoffmanns ("her sister!" — warmer route than the cold LUMA letter)
+- [ ] Use his open referral offer ("refer to me to anyone in Norway") for Norwegian patrons/institutions
+- [ ] Note his boards across Europe + Museum of Montenegro as possible future doors
+
 ## GARF and IAA/USA partner logos (2026-09-01)
 - [x] Create a polished GARF logo asset and downloadable logo package
 - [x] Place GARF and IAA/USA marks together on the public landing page
