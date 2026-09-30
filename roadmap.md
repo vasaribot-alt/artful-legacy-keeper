@@ -93,3 +93,8 @@
 - [ ] Invite artists found in gallery rosters / institution data to start catalogue work; Foundation reviews every invitation before sending. What the artist receives is still to be decided by Jan.
 - [ ] Lead: Audun Eckhoff (Norwegian art historian), contact details coming from the Swedish restorer.
 - [ ] Idea: explore a Lovable cooperation, since this could grow faster than GARF can finance.
+
+## Gunnar's museum & gallery pitch (2026-09-30)
+- Gunnar: contact museums (collection holdings) and galleries (rosters) asking for documentation on contemporary artists — very short pitch, max 3 points, understanding tone.
+- Drafts prepared (museum + gallery version), presented for Jan's approval — nothing sent.
+- Ties to Institutional Data Exchange: contribute documentation → verified access; artist consent guardrail; docs used only to identify and invite the artist (orphan artworks flow).
