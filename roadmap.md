@@ -97,7 +97,7 @@
 ## Gunnar's museum & gallery pitch (2026-09-30)
 - Gunnar: contact museums (collection holdings) and galleries (rosters) asking for documentation on contemporary artists — very short pitch, max 3 points, understanding tone.
 - [x] Both pitches drafted (museum + gallery, 3 points each, exchange + consent guardrail).
-- [ ] Reply to Gunnar's warm follow-up (gb.kvaran@gmail.com, sent 2026-09-30) asking for his feedback on the pitches — draft ready for Jan to send.
+- [x] Reply to Gunnar's warm follow-up (gb.kvaran@gmail.com, sent 2026-09-30) asking for his feedback on the pitches — sent by Jan 2026-09-30.
 - [ ] After Gunnar's feedback: start Norwegian institutions first, using Gunnar's name as referral, reviewed batches.
 - [x] Add Norwegian review batch to Alliance Outreach: 17 active commercial galleries and 19 contemporary-art museums/institutions; Golsa replaced by Eiklid/Rusten; Høyersten Contemporary (Bergen) added 2026-09-30. Nothing sent.
 - Drafts prepared (museum + gallery version), presented for Jan's approval — nothing sent.
