@@ -70,7 +70,9 @@
 - [x] Kastanje video call held (2026-09-28); agreed to send Mariana a formal partner invitation (tasks, budget share, GARF contribution).
 - [x] Kastanje invitation sent by Jan 2026-09-28: budget split left open (not agreed on the call — €10,000 figure removed; split to be agreed together once partners confirm).
 - [x] Third partner enquiry sent by Jan 2026-09-28: Mystetskyi Arsenal (Kyiv; office@artarsenal.gov.ua; Dir. Gen. Olesia Ostrovska-Liuta). IZOLYATSIA still in conversation as alternative; fallback €20,000 with Kastanje + GARF.
-- [ ] Await replies from Kastanje and Mystetskyi Arsenal; confirm third partner for the €30,000 tier.
+- [x] Mystetskyi Arsenal declined (no capacity) but copied in Dir. Gen. Olesia Ostrovska-Liuta and gave a real recommendation — send a proper thank-you.
+- [ ] UFDA (Ukrainian Fund for Digitisation of Art, 3,000+ works digitised, open calls running) — no public email; send partner enquiry via their website contact form (plain text, "Dear UFDA team", ask for the right person). IZOLYATSIA remains the backup. Nothing sent yet.
+- [ ] Await replies from Kastanje, UFDA and IZOLYATSIA; confirm third partner for the €30,000 tier.
 - [ ] DOEN proposal: insert TAAT + sub-partners once confirmed; sanity-check €150k ask.
 
 ## Monitor China traffic (2026-09-23)
