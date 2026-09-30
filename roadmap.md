@@ -96,5 +96,8 @@
 
 ## Gunnar's museum & gallery pitch (2026-09-30)
 - Gunnar: contact museums (collection holdings) and galleries (rosters) asking for documentation on contemporary artists — very short pitch, max 3 points, understanding tone.
+- [x] Both pitches drafted (museum + gallery, 3 points each, exchange + consent guardrail).
+- [ ] Reply to Gunnar's warm follow-up (gb.kvaran@gmail.com, sent 2026-09-30) asking for his feedback on the pitches — draft ready for Jan to send.
+- [ ] After Gunnar's feedback: start Norwegian institutions first, using Gunnar's name as referral, reviewed batches.
 - Drafts prepared (museum + gallery version), presented for Jan's approval — nothing sent.
 - Ties to Institutional Data Exchange: contribute documentation → verified access; artist consent guardrail; docs used only to identify and invite the artist (orphan artworks flow).
