@@ -108,3 +108,8 @@
 - [x] Added review batch `netherlands_institutions_2026` to Alliance Outreach: 10 museums/institutions + 8 contemporary galleries, all with publicly listed emails, all "to contact". Nothing sent.
 - Note: West Den Haag is a non-profit exhibition space (formerly Galerie West), listed under institutions; Rijksakademie included for alumni documentation. Mondriaan Fonds left out (funder, not a collection holder).
 - [ ] Send in small reviewed batches after Gunnar's feedback on the pitch wording; Dutch-language version of the pitch to be drafted before sending.
+
+## 2026-10-01 (sent 2026-09-30)
+- [x] Rewritten email to Gunnar (what-GARF-is-first pitch, 3 points + ask) sent 2026-09-30.
+- [ ] Await Gunnar's feedback on the pitch wording.
+- [ ] After feedback: start Norwegian institutions first (Gunnar as referral), reviewed batches; Dutch-language pitch draft before Dutch batch sends.
