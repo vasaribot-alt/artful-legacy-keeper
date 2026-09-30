@@ -105,6 +105,6 @@
 
 ## Dutch batch — same exchange pitch, smaller scale (2026-09-30)
 - Context: ANBI application in the Netherlands makes Dutch institutional visibility valuable.
-- [ ] Add ~8 Dutch museums/institutions with contemporary collections + ~8 Dutch contemporary galleries to Alliance Outreach as review batch `netherlands_institutions_2026`. Nothing sent.
-- [ ] Only publicly listed emails; flag any without one.
-- [ ] Send in small reviewed batches after Gunnar's feedback on the pitch wording.
+- [x] Added review batch `netherlands_institutions_2026` to Alliance Outreach: 10 museums/institutions + 8 contemporary galleries, all with publicly listed emails, all "to contact". Nothing sent.
+- Note: West Den Haag is a non-profit exhibition space (formerly Galerie West), listed under institutions; Rijksakademie included for alumni documentation. Mondriaan Fonds left out (funder, not a collection holder).
+- [ ] Send in small reviewed batches after Gunnar's feedback on the pitch wording; Dutch-language version of the pitch to be drafted before sending.
