@@ -73,7 +73,7 @@
 - [x] Mystetskyi Arsenal declined (no capacity) but copied in Dir. Gen. Olesia Ostrovska-Liuta and gave a real recommendation — send a proper thank-you.
 - [x] UFDA partner enquiry sent by Jan 2026-09-30 via their website contact form ("Dear UFDA team", plain text, asked to be forwarded to the right person). IZOLYATSIA remains the backup.
 - [x] UFDA replied (Yehor, Digital Original / UFDA) — positive, asked for detail before a call: scope, UFDA's role, artists, workflow, timeline, funding, outputs; also asked for a project brief. Draft reply prepared for Jan's approval covering all seven points; nothing sent.
-- [ ] Send UFDA reply (after Jan approves the 10–15 artist pilot figure); prepare 1-page Ukraine project brief if Jan wants it; arrange call next week.
+- [ ] Send UFDA reply (pilot figure approved by Jan: 15 artists; draft final, ready to send); prepare 1-page Ukraine project brief if Jan wants it; arrange call next week.
 - [ ] Await replies from Kastanje, IZOLYATSIA; confirm third partner for the €30,000 tier.
 - [ ] DOEN proposal: insert TAAT + sub-partners once confirmed; sanity-check €150k ask.
 
