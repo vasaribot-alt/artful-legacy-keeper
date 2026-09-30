@@ -102,3 +102,9 @@
 - [x] Add Norwegian review batch to Alliance Outreach: 17 active commercial galleries and 19 contemporary-art museums/institutions; Golsa replaced by Eiklid/Rusten; Høyersten Contemporary (Bergen) added 2026-09-30. Nothing sent.
 - Drafts prepared (museum + gallery version), presented for Jan's approval — nothing sent.
 - Ties to Institutional Data Exchange: contribute documentation → verified access; artist consent guardrail; docs used only to identify and invite the artist (orphan artworks flow).
+
+## Dutch batch — same exchange pitch, smaller scale (2026-09-30)
+- Context: ANBI application in the Netherlands makes Dutch institutional visibility valuable.
+- [ ] Add ~8 Dutch museums/institutions with contemporary collections + ~8 Dutch contemporary galleries to Alliance Outreach as review batch `netherlands_institutions_2026`. Nothing sent.
+- [ ] Only publicly listed emails; flag any without one.
+- [ ] Send in small reviewed batches after Gunnar's feedback on the pitch wording.
