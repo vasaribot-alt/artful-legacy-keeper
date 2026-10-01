@@ -18,7 +18,7 @@ Revised per Jan (2026-10-01), building on Gunnar Kvaran's data-exchange idea. Th
 
 **Mega-galleries (international_galleries_2026, 51 galleries):** same simplified ask as standard galleries, with a scale acknowledgment close: "We know a gallery of your scale works with many artists, and you are free to decide which artists would benefit from having a complete catalogue and share them with us." Wording approved by Jan 2026-10-01; still no archive access offered.
 
-**IACCCA collectors:** museum-style ask (names + work counts + contacts), but thank-you access is SCOPED — collector sees only archives of artists in their own collection who have registered. Collection-scoped access feature must be designed/built before any sends.
+**IACCCA collectors:** museum-style ask (names + work counts + contacts), thank-you access SCOPED — collector sees only archives of artists in their own collection who have registered. Approved closing text 2026-10-01 (see iaccca-outreach.md): "We would like to contact artists that are in important collections… You will of course have free access to the archives of the artists you have shared and who have registered with us." Collection-scoped access feature must be designed/built before any IACCCA sends.
 
 **Unchanged guardrails:** three points on what GARF is first, then the ask (Gunnar's rule); data used only to identify and invite artists; nothing published; the artist alone decides whether to join; never guess emails; reviewed batches only.
 
