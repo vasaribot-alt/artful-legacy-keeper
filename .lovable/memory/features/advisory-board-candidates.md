@@ -10,7 +10,7 @@ type: feature
 - Prior: Artistic Director Amsterdam Museum (2019–2024); long career at Stedelijk Museum Amsterdam.
 - Expertise match: new forms of collecting, archiving and co-creation in a digital context; preserving and displaying new-media artworks in perpetuity; museum acquisition policy for online visual culture.
 - Governance history: Mondriaan Fund (international funding advisor/chair 2018–2021), Jan van Eyck Academy supervisory board (2017–2023), Creative Industries Fund talent development chair.
-- Contact: m.schavemaker@uva.nl (public UvA profile; no direct email on margrietschavemaker.nl).
+- Contact: personal email margrietschavemaker@gmail.com (listed on margrietschavemaker.nl/bio); institutional mschavemaker@kunstmuseum.nl (same page); m.schavemaker@uva.nl (public UvA profile). Use the Gmail address for the personal advisory-board invitation — it is the one she publishes for personal contact; the Kunstmuseum address stays for institution-only matters.
 - **Coordination rule:** Kunstmuseum Den Haag is in the Dutch museum outreach batch (alliance_outreach_targets, id e6a185cd-36d0-494b-a596-ec6738b05bf6). That entry is on HOLD — approach her personally with an advisory-board invitation first; never send the museum pitch before she has answered personally. Never double-track her: personal board route replaces the institutional cold pitch.
 
 ## Gunnar Kvaran (see mem://project/gunnar-kvaran)
