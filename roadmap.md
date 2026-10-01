@@ -118,5 +118,7 @@
 
 ## 2026-10-01 (sent 2026-09-30)
 - [x] Rewritten email to Gunnar (what-GARF-is-first pitch, 3 points + ask) sent 2026-09-30.
-- [ ] Await Gunnar's feedback on the pitch wording.
-- [ ] After feedback: start Norwegian institutions first (Gunnar as referral), reviewed batches; Dutch-language pitch draft before Dutch batch sends.
+- [x] Gunnar's feedback received 2026-10-01: needs time; his main concern is the **legal relationship to the artists** — unsure whether artists must be enrolled before GARF contacts institutions holding their data.
+- [x] Pitches adjusted 2026-10-01: consent point now states the legal position plainly — the artist's relationship is directly with GARF; institutions never act on artists' behalf and enter no agreement with them; documentation is used only to invite the artist, who decides alone.
+- [ ] Send short reply to Gunnar showing the adjusted wording (draft ready, nothing sent).
+- [ ] After Gunnar's go-ahead: start Norwegian institutions first (Gunnar as referral), reviewed batches; Dutch-language pitch draft before Dutch batch sends.
