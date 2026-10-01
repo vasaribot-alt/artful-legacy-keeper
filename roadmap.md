@@ -128,5 +128,5 @@
 
 When Gunnar replies: his concern was the legal relationship to the artists; the answer is the orphan-works holding database (no artist-named profiles, artist claims their own archive). Expect a quick reply to Jan's 2026-10-01 explanation.
 - [x] Pitches adjusted 2026-10-01 to the two-option ask: (1) share documentation → temporary holding database → artist invited, decides alone, deleted if declined; (2) names-only list → we contact the artists. Museum (EN + NO), gallery (EN) drafts updated; Dutch-language version still to be drafted before Dutch sends.
-- [ ] Send short reply to Gunnar showing the final adjusted wording (draft ready, nothing sent).
+- [x] Short reply to Gunnar sent by Jan 2026-10-01 (simplified ask: galleries = yes/no + names/emails, no archive access; museums = names + work counts + contacts, archive access as museum thank-you). Awaiting his reply; on his go-ahead, Norwegian batch starts (Gunnar as referral, Astrup Fearnley + Audun Eckhoff first).
 - [ ] After Gunnar's go-ahead: start Norwegian institutions first (Gunnar as referral), reviewed batches; Norwegian-language pitches ready (museum version drafted); Dutch-language pitch draft before Dutch batch sends.
