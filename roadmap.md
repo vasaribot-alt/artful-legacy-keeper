@@ -107,6 +107,11 @@
 - [x] Trondheim additions added 2026-10-01: K.U.K. (Kjøpmannsgata Ung Kunst) and PoMo. Batch now 18 galleries + 20 museums.
 - [x] Jan completed all missing contact details on Norwegian and Dutch batches (2026-10-01); Cobra Museum category label aligned. Galleri Blunk intentionally has no named contact (student-run, rotating board). Still "To contact", nothing sent.
 - [x] Galleri Blunk (Trondheim) moved to "On hold" (2026-10-01): Google lists it permanently closed, site last edited 2023. Keep in batch; when approached use preservation-only pitch, sent last — or revisit via K.U.K./PoMo. Trondheim is now led by K.U.K. and PoMo.
+
+## Pitch approach revised — simpler ask (2026-10-01)
+- [x] Jan revised the approach: galleries get a yes/no question (are you positive to your artists sharing documentation by creating a free GARF account to build a complete catalogue of their production?) — if yes, gallery provides artist names + emails only; NO archive access offered to galleries. Museums are asked for contemporary artists in the collection with, per artist: name, approximate number of works, contact details — building a collected-artists list with work counts; verified archive access kept as the museum thank-you.
+- [ ] Rewrite museum + gallery drafts (EN + NO) to the new wording; refresh the short note to Gunnar (draft ready in chat).
+- [ ] Dutch-language versions of the new pitches before any Dutch sends.
 - Drafts prepared (museum + gallery version), presented for Jan's approval — nothing sent.
 - Ties to Institutional Data Exchange: contribute documentation → verified access; artist consent guardrail; docs used only to identify and invite the artist (orphan artworks flow).
 
