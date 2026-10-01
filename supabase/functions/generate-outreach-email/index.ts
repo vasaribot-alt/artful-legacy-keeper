@@ -49,6 +49,18 @@ Include a short, clearly marked section headed "What we are asking - and what we
 - We are not asking for your collection data, and nothing is published without your decision.
 - Registration is free for life for ID-verified artists, and each artist owns their own archive and can export it at any time.
 - GARF is not a marketplace, dealer, agent or sales platform. It takes no commission and does not broker works. It is an archive.`,
+  iaccca_collections:
+    `The recipient is a corporate collection, in most cases a member of IACCCA (the International Association of Corporate Collections of Contemporary Art). Emphasise that GARF is a non-commercial Dutch foundation (stichting) with a 100-year preservation plan and the archival features relevant to a holding collection: insurance-grade documentation, valuation reporting, location and loan tracking, condition history and provenance.
+Note in one short sentence that we are writing to the association's member collections because their curatorial standards match the archival standards GARF is building.
+IMPORTANT: this is the museum-model ask, NOT a donation ask. Do not request a contribution, an endorsement amount or a supporter tier, and do not mention Bronze/Silver/Gold/Platinum levels.
+The closing text of the email (before the sign-off) must keep this wording essentially verbatim:
+"We would like to contact artists that are in important collections, so our request is simple: Would you be happy to share the names of the artists in your collection and roughly how many works you hold of each. If you also have the contact details for some of the artists, it would be great if you could share it with us so we can approach them and suggest that they start their complete catalogue. If the number of artists is long, you could also just share with us the ones you think would benefit with a complete catalogue of all works.
+You will of course have free access to the archives of the artists you have shared and who have registered with us."
+Include a short, clearly marked section headed "What we are asking - and what we are not asking" with these points, kept close to this wording:
+- Your records stay where they are. Your collection management system and your files remain untouched and fully under your control.
+- What you share is used only to identify and invite the artists. It is never published, and nothing enters an artist's archive without the artist's own action.
+- Registration is free for life for ID-verified artists, and each artist owns their own archive and can export it at any time.
+- GARF is not a marketplace, dealer, agent or sales platform. It takes no commission and does not broker works. It is an archive.`,
   registrars:
     "The recipient is a registrars' association. Emphasise professional workflow features — location tracking, inventory, insurance valuation exports, condition & provenance records — and GARF's neutral, non-commercial standing.",
   organisations:
@@ -114,6 +126,7 @@ Deno.serve(async (req) => {
     // Load target: either alliance_outreach_targets or a gallery
     let category = "";
     let name = "";
+    let tag: string | null = null;
     let country: string | null = null;
     let website: string | null = null;
     let notes: string | null = null;
