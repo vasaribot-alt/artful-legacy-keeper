@@ -119,6 +119,7 @@
 ## 2026-10-01 (sent 2026-09-30)
 - [x] Rewritten email to Gunnar (what-GARF-is-first pitch, 3 points + ask) sent 2026-09-30.
 - [x] Gunnar's feedback received 2026-10-01: needs time; his main concern is the **legal relationship to the artists** — unsure whether artists must be enrolled before GARF contacts institutions holding their data.
-- [x] Pitches adjusted 2026-10-01: consent point now states the legal position plainly — the artist's relationship is directly with GARF; institutions never act on artists' behalf and enter no agreement with them; documentation is used only to invite the artist, who decides alone.
-- [ ] Send short reply to Gunnar showing the adjusted wording (draft ready, nothing sent).
-- [ ] After Gunnar's go-ahead: start Norwegian institutions first (Gunnar as referral), reviewed batches; Dutch-language pitch draft before Dutch batch sends.
+- [x] Jan replied to Gunnar 2026-10-01 with the actual mechanism: documentation is never placed in a profile under the artist's name; it goes into a temporary bulk database, then the artist is contacted and invited to build their own archive. Lighter option: names-only list so we can contact the artists directly.
+- [x] Pitches adjusted 2026-10-01 to the two-option ask: (1) share documentation → temporary holding database → artist invited, decides alone, deleted if declined; (2) names-only list → we contact the artists. Museum (EN + NO), gallery (EN) drafts updated; Dutch-language version still to be drafted before Dutch sends.
+- [ ] Send short reply to Gunnar showing the final adjusted wording (draft ready, nothing sent).
+- [ ] After Gunnar's go-ahead: start Norwegian institutions first (Gunnar as referral), reviewed batches; Norwegian-language pitches ready (museum version drafted); Dutch-language pitch draft before Dutch batch sends.
