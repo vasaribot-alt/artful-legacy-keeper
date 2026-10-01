@@ -8,6 +8,7 @@
 
 ## Margriet Schavemaker — advisory board candidate (2026-10-01)
 - [x] Invitation drafted + revised 2026-10-01 (nothing sent): personal advisory-board invite to margrietschavemaker@gmail.com — 100-year preservation framing, light commitment, no museum pitch. Final close: video call at her convenience, offer to come see her if she's interested. Opening states openly Jan is Norwegian but set up the foundation in The Hague (worked there a lot; Holland good for foundations) — the earlier "neighbours in The Hague / coffee" close was dropped as overclaiming proximity
+- [x] Added 2026-10-01: one-line background pointer to the Why GARF Matters page, framed as context ("for background, here is a short page on what the foundation does and why") — tracked link https://globalartistregistry.org/r/MSCHV41 so a page-open signals she read it; placed near the end, before the closing
 - [ ] Send the invitation (Jan's send) and log it
 - [ ] Personal outreach to Margriet Schavemaker (General Director, Kunstmuseum Den Haag since June 2024; Professor of Media and Art in Museum Practice, University of Amsterdam) with informal advisory-board invitation — personal email margrietschavemaker@gmail.com found on the bio page of margrietschavemaker.nl (2026-10-01)
 - [ ] HOLD the Kunstmuseum Den Haag museum outreach entry while the board invitation is pending — no museum pitch before she answers personally
