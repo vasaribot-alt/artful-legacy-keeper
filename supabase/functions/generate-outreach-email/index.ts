@@ -167,6 +167,7 @@ Deno.serve(async (req) => {
       }
       category = row.category;
       name = row.name;
+      tag = (row as any).tag || null;
       country = row.country;
       website = row.website;
       notes = row.notes;
