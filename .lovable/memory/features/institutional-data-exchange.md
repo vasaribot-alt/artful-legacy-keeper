@@ -6,7 +6,7 @@ type: feature
 Revised per Jan (2026-10-01), building on Gunnar Kvaran's data-exchange idea. The two-option ask (share documentation → holding DB, or names-only) is superseded by a simpler, per-audience ask:
 
 **Galleries:**
-- One yes/no question: is the gallery positive to its artists sharing documentation, if the artists create a free GARF account to build a complete catalogue of their production?
+- One yes/no question (Jan's approved Norwegian wording, 2026-10-01): "Er dere positive til å dele deres dokumentasjon med sine kunstnere når de oppretter en gratis konto hos oss for å bygge en komplett katalog over produksjonen sin?"
 - If yes: the gallery provides only artist names + email addresses. GARF contacts and invites the artists itself.
 - No archive access is offered to galleries — GARF does not need to share its archives with them.
 
