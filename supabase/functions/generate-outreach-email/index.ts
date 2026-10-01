@@ -210,7 +210,10 @@ Deno.serve(async (req) => {
     const artistCountWord = artistCount > 0
       ? (NUMBER_WORDS[artistCount] || String(artistCount))
       : "";
-    const guidance = (CATEGORY_GUIDANCE[category] || CATEGORY_GUIDANCE.other)
+    const guidanceKey = category === "corporate_collections" && tag === "IACCCA"
+      ? "iaccca_collections"
+      : category;
+    const guidance = (CATEGORY_GUIDANCE[guidanceKey] || CATEGORY_GUIDANCE.other)
       .replaceAll("{{GALLERY_NAME}}", name)
       .replaceAll(
         "{{ARTIST_COUNT}}",
