@@ -7,12 +7,12 @@
 - [ ] Note his boards across Europe + Museum of Montenegro as possible future doors
 
 ## Margriet Schavemaker — advisory board candidate (2026-10-01)
-- [x] Invitation drafted 2026-10-01 (nothing sent): personal advisory-board invite to margrietschavemaker@gmail.com — 100-year preservation framing, light commitment, coffee-in-The-Hague close, no museum pitch
+- [x] Invitation drafted + revised 2026-10-01 (nothing sent): personal advisory-board invite to margrietschavemaker@gmail.com — 100-year preservation framing, light commitment, no museum pitch. Final close: video call at her convenience, offer to come see her if she's interested. Opening states openly Jan is Norwegian but set up the foundation in The Hague (worked there a lot; Holland good for foundations) — the earlier "neighbours in The Hague / coffee" close was dropped as overclaiming proximity
 - [ ] Send the invitation (Jan's send) and log it
 - [ ] Personal outreach to Margriet Schavemaker (General Director, Kunstmuseum Den Haag since June 2024; Professor of Media and Art in Museum Practice, University of Amsterdam) with informal advisory-board invitation — personal email margrietschavemaker@gmail.com found on the bio page of margrietschavemaker.nl (2026-10-01)
 - [ ] HOLD the Kunstmuseum Den Haag museum outreach entry while the board invitation is pending — no museum pitch before she answers personally
 - [ ] Fit: expert in new forms of collecting, archiving and co-creation; preserving new-media artworks; former Mondriaan Fund advisor, Jan van Eyck Academy supervisory board; based in The Hague where GARF is registered
-- [ ] Contact: m.schavemaker@uva.nl (public UvA profile email; no direct email on margrietschavemaker.nl)
+- [ ] Contact: margrietschavemaker@gmail.com (personal, found at the bottom of her bio page on margrietschavemaker.nl) — use this for the personal board invitation; institutional fallback mschavemaker@kunstmuseum.nl
 
 
 
