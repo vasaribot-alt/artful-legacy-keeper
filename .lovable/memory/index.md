@@ -18,3 +18,4 @@
 - [Institutional Data Exchange](mem://features/institutional-data-exchange) — Gunnar's reciprocity model: institutions share artist data, get verified access; artist consent is the guardrail
 - [Netherlands Institutional Outreach](mem://features/netherlands-institutional-outreach) — Small Dutch museum/gallery batch supporting the ANBI application; tag netherlands_institutions_2026
 - [DOEN Grant Application](mem://features/doen-grant-application) — "Every Artist a Legacy" framing: participation programme, not heritage/tech (DOEN exclusions)
+- [Closed-Gallery Preservation Pitch](mem://features/closed-gallery-preservation-pitch) — Approved template for closed galleries (CLEARING, Blunk): personal tone, artist-forwarding ask, preserve their own archive free
