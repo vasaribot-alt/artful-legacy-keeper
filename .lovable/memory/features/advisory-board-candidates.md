@@ -5,7 +5,7 @@ type: feature
 ---
 # Advisory board candidates
 
-## Margriet Schavemaker (candidate, added 2026-10-01)
+## Margriet Schavemaker (candidate, added 2026-10-01; invitation SENT 2026-10-01)
 - General Director Kunstmuseum Den Haag (since June 2024; also oversees Fotomuseum Den Haag, KM21, Escher in Het Paleis); Professor of Media and Art in Museum Practice, University of Amsterdam.
 - Prior: Artistic Director Amsterdam Museum (2019–2024); long career at Stedelijk Museum Amsterdam.
 - Expertise match: new forms of collecting, archiving and co-creation in a digital context; preserving and displaying new-media artworks in perpetuity; museum acquisition policy for online visual culture.
