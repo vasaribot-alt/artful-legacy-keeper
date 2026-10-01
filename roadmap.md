@@ -104,6 +104,8 @@
 - [x] Reply to Gunnar's warm follow-up (gb.kvaran@gmail.com, sent 2026-09-30) asking for his feedback on the pitches — sent by Jan 2026-09-30.
 - [ ] After Gunnar's feedback: start Norwegian institutions first, using Gunnar's name as referral, reviewed batches.
 - [x] Add Norwegian review batch to Alliance Outreach: 17 active commercial galleries and 19 contemporary-art museums/institutions; Golsa replaced by Eiklid/Rusten; Høyersten Contemporary (Bergen) added 2026-09-30. Nothing sent.
+- [x] Trondheim additions added 2026-10-01: K.U.K. (Kjøpmannsgata Ung Kunst) and PoMo. Batch now 18 galleries + 20 museums.
+- [x] Jan completed all missing contact details on Norwegian and Dutch batches (2026-10-01); Cobra Museum category label aligned. Galleri Blunk intentionally has no named contact (student-run, rotating board). Still "To contact", nothing sent.
 - Drafts prepared (museum + gallery version), presented for Jan's approval — nothing sent.
 - Ties to Institutional Data Exchange: contribute documentation → verified access; artist consent guardrail; docs used only to identify and invite the artist (orphan artworks flow).
 
