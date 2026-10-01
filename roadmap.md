@@ -6,6 +6,14 @@
 - [ ] Use his open referral offer ("refer to me to anyone in Norway") for Norwegian patrons/institutions
 - [ ] Note his boards across Europe + Museum of Montenegro as possible future doors
 
+## Margriet Schavemaker — advisory board candidate (2026-10-01)
+- [ ] Personal outreach to Margriet Schavemaker (General Director, Kunstmuseum Den Haag since June 2024; Professor of Media and Art in Museum Practice, University of Amsterdam) with informal advisory-board invitation
+- [ ] HOLD the Kunstmuseum Den Haag museum outreach entry while the board invitation is pending — no museum pitch before she answers personally
+- [ ] Fit: expert in new forms of collecting, archiving and co-creation; preserving new-media artworks; former Mondriaan Fund advisor, Jan van Eyck Academy supervisory board; based in The Hague where GARF is registered
+- [ ] Contact: m.schavemaker@uva.nl (public UvA profile email; no direct email on margrietschavemaker.nl)
+
+
+
 ## Institutional Data Exchange — Gunnar's idea (2026-09-29)
 - [x] Drafted one-page concept note: GARF_Institutional_Data_Exchange_Concept_Note.docx (museums/galleries contribute artist data → get verified access in return; artist consent is the hard guardrail)
 - [ ] Share with Gunnar (with thank-you note or later); possible pilot via his Montenegro museum connection after he joins the board
