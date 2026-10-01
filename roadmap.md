@@ -106,6 +106,7 @@
 - [x] Add Norwegian review batch to Alliance Outreach: 17 active commercial galleries and 19 contemporary-art museums/institutions; Golsa replaced by Eiklid/Rusten; Høyersten Contemporary (Bergen) added 2026-09-30. Nothing sent.
 - [x] Trondheim additions added 2026-10-01: K.U.K. (Kjøpmannsgata Ung Kunst) and PoMo. Batch now 18 galleries + 20 museums.
 - [x] Jan completed all missing contact details on Norwegian and Dutch batches (2026-10-01); Cobra Museum category label aligned. Galleri Blunk intentionally has no named contact (student-run, rotating board). Still "To contact", nothing sent.
+- [x] Galleri Blunk (Trondheim) moved to "On hold" (2026-10-01): Google lists it permanently closed, site last edited 2023. Keep in batch; when approached use preservation-only pitch, sent last — or revisit via K.U.K./PoMo. Trondheim is now led by K.U.K. and PoMo.
 - Drafts prepared (museum + gallery version), presented for Jan's approval — nothing sent.
 - Ties to Institutional Data Exchange: contribute documentation → verified access; artist consent guardrail; docs used only to identify and invite the artist (orphan artworks flow).
 
