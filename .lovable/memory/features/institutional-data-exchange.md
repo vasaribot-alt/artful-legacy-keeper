@@ -16,6 +16,10 @@ Revised per Jan (2026-10-01), building on Gunnar Kvaran's data-exchange idea. Th
 - This builds a list of which artists GARF can collect and how many works exist.
 - Museums DO receive verified free access to GARF archives as a thank-you for cooperating.
 
+**Mega-galleries (international_galleries_2026, 51 galleries):** same simplified ask as standard galleries, with a scale acknowledgment close: "We know a gallery of your scale works with many artists, and you are free to decide which artists would benefit from having a complete catalogue and share them with us." Wording approved by Jan 2026-10-01; still no archive access offered.
+
+**IACCCA collectors:** museum-style ask (names + work counts + contacts), but thank-you access is SCOPED — collector sees only archives of artists in their own collection who have registered. Collection-scoped access feature must be designed/built before any sends.
+
 **Unchanged guardrails:** three points on what GARF is first, then the ask (Gunnar's rule); data used only to identify and invite artists; nothing published; the artist alone decides whether to join; never guess emails; reviewed batches only.
 
 **Norwegian batches:** `norway_institutions_2026` (18 galleries + 20 museums) and `netherlands_institutions_2026` (10 museums + 9 galleries) in `alliance_outreach_targets`, all "To contact" except Galleri Blunk (On hold, preservation-only pitch). First sends after Gunnar's go-ahead: Astrup Fearnley + Audun Eckhoff (Lillehammer).
