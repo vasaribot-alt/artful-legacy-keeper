@@ -548,6 +548,7 @@ const Exhibitions = () => {
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
         onImported={loadExhibitions}
+        ownerId={ownerId}
       />
 
       {/* Lightbox */}
