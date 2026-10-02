@@ -149,6 +149,6 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 
 ## Curator needs-analysis validation — first reply (2026-10-02)
 - [x] First curator reply received from **Steffen Gregersen Håndlykken**, curator at Haugar kunstmuseum (Tønsberg); also chair of Arrangørutvalget for visuell kunst 2026–27, former UKS chair and 1857 co-founder. Answers: studio visits remain the top tool, nothing substitutes them; GARF's value = building lists, clearing rights, organising transport, and a better overview of available works per artist. Artist-authored records trusted IF identity verified + institutions co-sign. Institution willing to confirm hosted exhibitions IF it is easy to do. Single biggest item: image rights clearance — most time-consuming, should be off-loadable to a system.
-- [ ] Confirm whether Håndlykken's reply may be quoted in the DOEN proposal / needs-analysis document.
+- [x] Permission to quote Håndlykken's reply in the DOEN proposal / needs-analysis: Jan is in direct contact with Steffen and will ask him by phone.
 - [ ] Map answers to feature ranks: strengthens C4 (rights-cleared images → make rights clearance a workflow, not just a filter), C3 (institutional attestations — keep the confirm flow one-click simple), C6/C8 (available-works overview per artist), R1 (co-signed due diligence).
 - [ ] Decide with Jan: send a short thank-you reply (and possibly one follow-up question about how they clear rights today).
