@@ -225,7 +225,7 @@ export const ImportCvExhibitionsDialog = ({
         {step === "parsing" && (
           <div className="text-center py-12 space-y-3">
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Parsing exhibition entries…</p>
+            <p className="text-sm text-muted-foreground">Parsing exhibition entries… a long CV can take 1–2 minutes.</p>
           </div>
         )}
 
