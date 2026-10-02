@@ -82,6 +82,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import WhyGarfMatters from "./pages/WhyGarfMatters";
+import Terms from "./pages/Terms";
 import StatementOfSupport from "./pages/StatementOfSupport";
 import StatementSignatories from "./pages/StatementSignatories";
 import Tutorials from "./pages/Tutorials";
