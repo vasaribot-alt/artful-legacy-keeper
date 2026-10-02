@@ -3,6 +3,7 @@
 - [ ] Send warm thank-you note (draft for Jan's approval)
 - [ ] Formal advisory-board invitation (commitment first; funding and Obrist only if he raises them)
 - [ ] After commitment: ask for introduction to his contacts close to the Hoffmanns ("her sister!" — warmer route than the cold LUMA letter)
+- [ ] Jan's dream (2026-10-02): tell Gunnar he dreams of working with Hans Ulrich Obrist, naive ask "do you know anyone that knows him?" — Gunnar and Obrist co-curated China Power Station, Imagine Brazil and Europe, Europe; tell Gunnar after board commitment. Obrist is Senior Advisor at LUMA Arles, so the Hoffmann route and the Obrist dream converge.
 - [ ] Use his open referral offer ("refer to me to anyone in Norway") for Norwegian patrons/institutions
 - [ ] Note his boards across Europe + Museum of Montenegro as possible future doors
 
