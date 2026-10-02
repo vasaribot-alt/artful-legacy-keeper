@@ -207,7 +207,24 @@ const Register = () => {
               </p>
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <div className="flex items-start gap-2.5">
+              <input
+                id="acceptTerms"
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-foreground"
+              />
+              <Label htmlFor="acceptTerms" className="text-xs font-normal leading-relaxed text-muted-foreground">
+                I have read and accept the{" "}
+                <Link to="/terms" target="_blank" className="text-foreground underline">
+                  User Agreement
+                </Link>
+                , including that I own my records, artist accounts are free, and my data is never used commercially.
+              </Label>
+            </div>
+
+            <Button type="submit" className="w-full" disabled={loading || !acceptedTerms}>
               {loading ? "Creating..." : "Create Account"}
             </Button>
           </form>
