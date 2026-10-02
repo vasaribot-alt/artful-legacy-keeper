@@ -30,12 +30,14 @@ interface ImportCvExhibitionsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImported: () => void;
+  ownerId?: string | null;
 }
 
 export const ImportCvExhibitionsDialog = ({
   open,
   onOpenChange,
   onImported,
+  ownerId,
 }: ImportCvExhibitionsDialogProps) => {
   const [step, setStep] = useState<"idle" | "parsing" | "preview" | "importing">("idle");
   const [exhibitions, setExhibitions] = useState<ParsedExhibition[]>([]);
@@ -44,8 +46,9 @@ export const ImportCvExhibitionsDialog = ({
   const handleParse = async () => {
     setStep("parsing");
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) throw new Error("Not authenticated");
+      const user = { id: ownerId || authUser.id };
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -146,8 +149,9 @@ export const ImportCvExhibitionsDialog = ({
 
     setStep("importing");
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) throw new Error("Not authenticated");
+      const user = { id: ownerId || authUser.id };
 
       const records = selected
         .filter((ex) => ex.title) // skip entries with null/empty titles
