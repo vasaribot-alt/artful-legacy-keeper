@@ -185,6 +185,9 @@ const About = () => {
             <div>KvK 42024490</div>
             <div>Stichting under Dutch law</div>
             <div className="mt-2">
+              <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
+            </div>
+            <div className="mt-2">
               <a
                 href="https://catalogueraisonnefoundation.org"
                 className="inline-flex items-center gap-1 hover:text-foreground"

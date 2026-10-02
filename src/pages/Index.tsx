@@ -475,6 +475,9 @@ const Index = () => {
             <div className="mt-2">
               <Link to="/why-garf-matters" className="hover:text-foreground">Why GARF matters</Link>
             </div>
+            <div className="mt-2">
+              <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
+            </div>
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
