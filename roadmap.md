@@ -149,6 +149,10 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 
 ## Research-project framing + Cultuurfonds (2026-10-02)
 - [ ] Decide with Jan: frame the museum/gallery questions as part of a research project on securing digital artists' documentation for the future (one framing line in the pitches; honest — the curator/registrar needs analysis is real research). Cultuurfonds application possible via Ingvar's overview (document not yet shared).
+- [ ] Ingvar has made an Excel overview of possible applications (Cultuurfonds among them) — not yet shared with us; ask Jan to upload it so we can map applications to projects.
+- [ ] Cultuurfonds requires a draft application **4 months before project start** — work backwards from a chosen start date once Ingvar's sheet is reviewed.
+- [ ] Jan's idea (2026-10-02): the museum/gallery outreach as now planned doubles as the research project's first step — the replies give us a lead on how to run it. Use step one to draft how we want to run the project.
+- [ ] Longer arc: if the research project lands well, it could become what the EU wants — positioning for a much larger EU-scale project later (Creative Europe consortium memory exists).
 
 ## Curator needs-analysis validation — first reply (2026-10-02)
 - [x] First curator reply received from **Steffen Gregersen Håndlykken**, curator at Haugar kunstmuseum (Tønsberg); also chair of Arrangørutvalget for visuell kunst 2026–27, former UKS chair and 1857 co-founder. Answers: studio visits remain the top tool, nothing substitutes them; GARF's value = building lists, clearing rights, organising transport, and a better overview of available works per artist. Artist-authored records trusted IF identity verified + institutions co-sign. Institution willing to confirm hosted exhibitions IF it is easy to do. Single biggest item: image rights clearance — most time-consuming, should be off-loadable to a system.
