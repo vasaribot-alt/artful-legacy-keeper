@@ -15,6 +15,7 @@
 - [China Traffic Monitoring](mem://features/china-traffic-monitoring) — Organic China visitors growing; watch weekly, consider outreach if sustained
 - [Welcome Letters](mem://features/welcome-letters) — Auto-queued welcome email per new artist with website discovery, approved and sent by the foundation
 - [Artist Site Exhibition Photos](mem://features/artist-site-exhibition-photos) — Public Exhibitions page thumbnails + lightbox; exhibition_images anon grant + published-site policy
+- [User Agreement](mem://features/user-agreement) — /terms draft v0.1 + signup checkbox; never weaken ownership/non-commercial/preservation sections
 - [Institutional Data Exchange](mem://features/institutional-data-exchange) — Gunnar's reciprocity model: institutions share artist data, get verified access; artist consent is the guardrail
 - [Netherlands Institutional Outreach](mem://features/netherlands-institutional-outreach) — Small Dutch museum/gallery batch supporting the ANBI application; tag netherlands_institutions_2026
 - [DOEN Grant Application](mem://features/doen-grant-application) — "Every Artist a Legacy" framing: participation programme, not heritage/tech (DOEN exclusions)
