@@ -82,6 +82,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import WhyGarfMatters from "./pages/WhyGarfMatters";
+import Terms from "./pages/Terms";
 import StatementOfSupport from "./pages/StatementOfSupport";
 import StatementSignatories from "./pages/StatementSignatories";
 import Tutorials from "./pages/Tutorials";
@@ -108,7 +109,8 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/why-garf-matters" element={<WhyGarfMatters />} />
+<Route path="/why-garf-matters" element={<WhyGarfMatters />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/statement-of-support" element={<StatementOfSupport />} />
           <Route path="/tutorials" element={<Tutorials />} />
           <Route path="/news" element={<News />} />

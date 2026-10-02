@@ -360,6 +360,9 @@ export default function FAQ() {
             <div className="font-medium text-foreground mb-2">Registration</div>
             <div>KvK 42024490</div>
             <div>Stichting under Dutch law</div>
+            <div className="mt-2">
+              <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
+            </div>
           </div>
         </div>
       </footer>
