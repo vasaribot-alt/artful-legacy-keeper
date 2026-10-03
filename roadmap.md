@@ -148,6 +148,10 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [ ] IACCCA collectors approach (approved 2026-10-01): museum-style ask (names + work counts + contacts), but thank-you access is SCOPED — collector sees only archives of artists in their own collection who have registered. Requires new permission model (collection-scoped collector access) to be designed/built before any IACCCA sends. Draft pitch prepared; nothing sent.
 - [x] IACCCA closing text rewritten 2026-10-01 (Jan's approved wording: names + rough work counts, contact details optional, long lists may be trimmed to artists who would benefit; scoped free access as thank-you). Saved as `iaccca_collections` guidance in generate-outreach-email — IACCCA-tagged targets now skip the donation ask. Nothing sent.
 
+## Stroom Den Haag — The Hague Artists database (2026-10-03)
+- [x] Reviewed https://www.thehagueartists.nl/information: Stroom-run database of 1,000+ professional artists living/working in The Hague; artists maintain their own portfolios + CVs; searched by curators, commissioning clients, galleries, Stroom advisory committees. Contact: hknl@stroom.nl, +31 70 365 8985.
+- [ ] Decide with Jan: add Stroom to the Dutch batch as a partnership target (city peer of GARF; artist-maintained records align with GARF consent model; list could seed Dutch artist invitations). Not yet in alliance_outreach_targets. Best held until Gunnar's go-ahead on the institutional pitch wording.
+
 ## Research-project framing + Cultuurfonds (2026-10-02)
 - [ ] Decide with Jan: frame the museum/gallery questions as part of a research project on securing digital artists' documentation for the future (one framing line in the pitches; honest — the curator/registrar needs analysis is real research). Cultuurfonds application possible via Ingvar's overview (document not yet shared).
 - [ ] Ingvar has made an Excel overview of possible applications (Cultuurfonds among them) — not yet shared with us; ask Jan to upload it so we can map applications to projects.
