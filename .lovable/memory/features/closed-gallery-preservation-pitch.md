@@ -5,7 +5,7 @@ type: feature
 ---
 # Closed-gallery preservation pitch
 
-Approved by Jan 2026-10-01 as the template for galleries that have closed down. First use: CLEARING (NY/LA, closed Aug 2025, founder Olivier Babin, pip@c-l-e-a-r-i-n-g.com). Also applies to Galleri Blunk (Trondheim). Also applies to galleries in insolvency — Peres Projects (Berlin, insolvency opened April 2025 at Amtsgericht Charlottenburg): personal letter to founder Javier Peres (jp@/javier@peresprojects.com), but the gallery-archive preservation offer must also reach administrator Christian Otto (HWW, christian.otto@hww.eu), who controls company assets.
+Approved by Jan 2026-10-01 as the template for galleries that have closed down. First use: CLEARING (NY/LA, closed Aug 2025, founder Olivier Babin, pip@c-l-e-a-r-i-n-g.com). Also applies to Galleri Blunk (Trondheim). Also applies to galleries in insolvency — Peres Projects (Berlin, insolvency opened April 2025 at Amtsgericht Charlottenburg): personal letter to founder Javier Peres (jp@/javier@peresprojects.com), but the gallery-archive preservation offer must also reach administrator Christian Otto (HWW, christian.otto@hww.eu), who controls company assets. 2026-10-03: both draft letters (Otto preservation offer + Peres personal note with forwardable artist text) saved on the Peres outreach entry, awaiting Jan review; nothing sent.
 
 ## Structure
 1. **Personal opening** — name the founder/director personally; acknowledge the closure and the years of exhibitions as a record worth preserving (name 2–3 of their artists if known).
