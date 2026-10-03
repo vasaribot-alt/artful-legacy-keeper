@@ -150,7 +150,7 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 
 ## Stroom Den Haag — The Hague Artists database (2026-10-03)
 - [x] Reviewed https://www.thehagueartists.nl/information: Stroom-run database of 1,000+ professional artists living/working in The Hague; artists maintain their own portfolios + CVs; searched by curators, commissioning clients, galleries, Stroom advisory committees. Contact: hknl@stroom.nl, +31 70 365 8985.
-- [ ] Decide with Jan: add Stroom to the Dutch batch as a partnership target (city peer of GARF; artist-maintained records align with GARF consent model; list could seed Dutch artist invitations). Not yet in alliance_outreach_targets. Best held until Gunnar's go-ahead on the institutional pitch wording.
+- [x] Added to the Dutch batch 2026-10-03 (Jan approved): Stroom Den Haag (The Hague Artists database) in `alliance_outreach_targets`, tag `netherlands_institutions_2026`, status "to contact", verified public contact hknl@stroom.nl. Dutch batch now 11 institutions + 8 galleries. Partnership pitch (not rescue): database is a discovery tool with no preservation guarantee; exchange pitch, Dutch-language version still required before sending. Nothing sent.
 
 ## Research-project framing + Cultuurfonds (2026-10-02)
 - [ ] Decide with Jan: frame the museum/gallery questions as part of a research project on securing digital artists' documentation for the future (one framing line in the pitches; honest — the curator/registrar needs analysis is real research). Cultuurfonds application possible via Ingvar's overview (document not yet shared).
