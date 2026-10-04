@@ -205,10 +205,23 @@ const COLLECTOR_EDITIONS_HEADERS = [
   "Høyde cm", "Bredde cm", "Opplag", "AP", "Pris m/ramme"
 ];
 
-function downloadTemplate(headers: string[], filename: string) {
+const PHOTO_SIZE_GROUP = ["Height", "Width", "Edition", "AP", "Price"];
+const PHOTOGRAPHER_HEADERS = [
+  "Title", "Category", "Series", "Year", "Medium", "Support",
+  "Signed", "Description", "Image ID",
+  ...PHOTO_SIZE_GROUP, ...PHOTO_SIZE_GROUP, ...PHOTO_SIZE_GROUP, ...PHOTO_SIZE_GROUP,
+];
+const PHOTOGRAPHER_EXAMPLES: (string | number)[][] = [
+  ["EXAMPLE – delete this row", "Photography", "Coastlines", 2021, "Archival pigment print", "Hahnemühle Photo Rag",
+    "Signed verso", "Three sizes", "IMG_0001", 40, 50, 10, 2, 1500, 80, 100, 5, 2, 3500, 120, 150, 3, 1, 6000],
+  ["EXAMPLE – delete this row", "Photography", "", 2019, "C-print", "Fuji Crystal Archive",
+    "", "One size only", "IMG_0002", 60, 90, 7, 2, 2800],
+];
+
+function downloadTemplate(headers: string[], filename: string, examples: (string | number)[][] = []) {
   import("xlsx-js-style").then((XLSXStyle) => {
     const wb = XLSXStyle.utils.book_new();
-    const wsData = [headers];
+    const wsData: (string | number)[][] = [headers, ...examples];
     const ws = XLSXStyle.utils.aoa_to_sheet(wsData);
 
     // Bold header row
@@ -762,6 +775,14 @@ export const BulkImportDialog = ({ open, onOpenChange, onSuccess, ownerId, userR
                     onClick={() => downloadTemplate(ARTIST_EDITIONS_HEADERS, "artist-editions-template.xlsx")}
                   >
                     <Download className="w-3 h-3" /> Artist – Editions
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-xs h-7"
+                    onClick={() => downloadTemplate(PHOTOGRAPHER_HEADERS, "photographer-sizes-editions-template.xlsx", PHOTOGRAPHER_EXAMPLES)}
+                  >
+                    <Download className="w-3 h-3" /> Photographer – sizes and editions
                   </Button>
                 </>
               )}
