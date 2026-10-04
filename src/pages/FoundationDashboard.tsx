@@ -15,6 +15,7 @@ import ArtistInviteUpload from "@/components/ArtistInviteUpload";
 import RegisteredUsersOverview from "@/components/RegisteredUsersOverview";
 import OnboardingTracker from "@/components/OnboardingTracker";
 import CvReminderSection from "@/components/CvReminderSection";
+import LinkedInReminderBanner from "@/components/LinkedInReminderBanner";
 
 import WebsiteSectionsOverview from "@/components/WebsiteSectionsOverview";
 
@@ -183,6 +184,7 @@ const FoundationDashboard = () => {
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto p-6 space-y-10">
+        <LinkedInReminderBanner />
         <div>
           <div className="flex items-center gap-3 mb-1">
             <Award className="h-6 w-6" />
