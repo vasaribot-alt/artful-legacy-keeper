@@ -44,15 +44,7 @@ const LinkedInReminderBanner = () => {
         .select("id, title, status, published_at");
       if (cancelled || !posts?.length) return;
 
-      const nextPost = posts
-        .filter((p) => p.status !== "published")
-        .sort((a, b) => {
-          const na = parseInt(a.title, 10) || 999;
-          const nb = parseInt(b.title, 10) || 999;
-          return na - nb || a.created_order_compare(a, b);
-        });
-
-      void nextPost;
+      // Next pending post, in series order ("1 —", "2 —", …)
       const pending = posts
         .filter((p) => p.status !== "published")
         .sort((a, b) => {
