@@ -85,7 +85,7 @@
 - [x] Mystetskyi Arsenal declined (no capacity) but copied in Dir. Gen. Olesia Ostrovska-Liuta and gave a real recommendation — send a proper thank-you.
 - [x] UFDA partner enquiry sent by Jan 2026-09-30 via their website contact form ("Dear UFDA team", plain text, asked to be forwarded to the right person). IZOLYATSIA remains the backup.
 - [x] UFDA replied (Anna Cherevko, Head of Operations, is now the contact — Yehor asked the same seven points earlier). Final reply prepared for Jan's approval, addressed to Anna, covering all seven points (scope, UFDA's role, 15-artist pilot, workflow, timeline, €30,000 three-partner tier, outputs/responsibilities) + 1-page project brief written.
-- [ ] Send UFDA reply to Anna Cherevko with GARF_UFDA_Project_Brief.docx attached (pilot figure approved by Jan: 15 artists); arrange call next week.
+- [ ] Send UFDA reply to Anna Cherevko with GARF_UFDA_Project_Brief.docx attached (pilot figure approved by Jan: 15 artists); reply text delivered to Jan 2026-10-07, ready to copy-send; arrange call next week.
 - [ ] Await replies from Kastanje, IZOLYATSIA; confirm third partner for the €30,000 tier.
 - [ ] DOEN proposal: insert TAAT + sub-partners once confirmed; sanity-check €150k ask.
 
