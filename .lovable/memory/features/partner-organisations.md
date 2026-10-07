@@ -12,3 +12,5 @@ Cooperation with artist member bodies (IAA-USA, IAA Europe national committees) 
 **Country level committees** — `partner_organisations.parent_id` makes an org a child of an umbrella (e.g. the 44 IAA Europe national committees under `iaa-europe`, slugs `iaa-<country>`). Each committee has its own join link and its own `dashboard_key`, so it sees only its own members. The umbrella key returns the combined totals plus `get_partner_org_breakdown(_slug, _key)`, a per country table (members, ID verified, artworks, exhibitions, last join). Attribution is always by the join link used, never by a member's stated country.
 
 Admin: Foundation → Partner Organisations (`/foundation/partners`) adds partners, sets the umbrella parent, copies both links, toggles active state, and shows joined counts.
+
+- IAA partner letter: master template from Marie (iaa-denmark) letter built 2026-10-07, NO ready + EN template in /mnt/documents/GARF_IAA_Partner_Letter_Marie_and_Template.docx; closing = free guarantee + video-call offer; fetch per-country dashboard key before sending.

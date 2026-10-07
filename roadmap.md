@@ -175,3 +175,9 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [ ] **Second input same day:** Jan will also ask his ex-wife over dinner (2026-10-02) — input pending; ask what her art-world role is so her answer is logged with the right context.
 - [ ] Map answers to feature ranks: strengthens C4 (rights-cleared images → make rights clearance a workflow, not just a filter), C3 (institutional attestations — keep the confirm flow one-click simple), C6/C8 (available-works overview per artist), R1 (co-signed due diligence).
 - [ ] Decide with Jan: send a short thank-you reply (and possibly one follow-up question about how they clear rights today).
+
+## IAA Europe partner-letter campaign (2026-10-07)
+- Master partner letter built from Jan's letter to Marie (Chair, Billedkunstnernes Forbund / IAA-Denmark): NO version ready to send + EN template with [bracketed] fields for all other organisations. Delivered as GARF_IAA_Partner_Letter_Marie_and_Template.docx.
+- All letter links verified live (join/iaa-denmark, garf-logo.png, garf-org-button.png); partner row iaa-denmark exists and is active with dashboard key.
+- Added closing section: free guarantee (free registration, artists own/control archives, handover to chosen heirs) + offer of short video call.
+- Next: send Marie's letter; then adapt the EN template per country — fetch each org's dashboard key from partner_organisations before sending.
