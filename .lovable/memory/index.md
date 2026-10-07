@@ -20,3 +20,4 @@
 - [Netherlands Institutional Outreach](mem://features/netherlands-institutional-outreach) — Small Dutch museum/gallery batch supporting the ANBI application; tag netherlands_institutions_2026
 - [DOEN Grant Application](mem://features/doen-grant-application) — "Every Artist a Legacy" framing: participation programme, not heritage/tech (DOEN exclusions)
 - [Closed-Gallery Preservation Pitch](mem://features/closed-gallery-preservation-pitch) — Approved template for closed galleries (CLEARING, Blunk): personal tone, artist-forwarding ask, preserve their own archive free
+- [Marting Gelin Contact](mem://features/marting-gelin-contact) — Journalist, art-as-soft-power book; info-only first letter, board invitation only later
