@@ -148,7 +148,7 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [x] Fredrik Værslev already on board (artist #1).
 - [ ] Jan calls Gunnar Wednesday 2026-10-07 (after IAA-Europe symposium, Malmö, 2026-10-06).
 - [x] Gunnar supplied six suggested recipients 2026-10-07: Tori Wrånes, Ida Ekblad, Matias Faldbakken, Frida Orupabo, Sandra Mujinga, and Elmgreen & Dragset; Fredrik Værslev already involved. He offered help with email addresses.
-- [ ] Draft six individual artist-first invitations for Jan's review: authenticity, documentation, long-term historical overview; free artist-controlled catalogue infrastructure, no transfer of copyright or ownership; artists request institutional extracts themselves. Norwegian for five individual artists, English for Elmgreen & Dragset. Nothing sent.
+- [x] Drafted six individual artist-first invitations for Jan's review in GARF_Gunnar_Artist_Invitation_Drafts.docx: authenticity, documentation, long-term historical overview; free artist-controlled catalogue infrastructure, no transfer of copyright or ownership; artists request institutional extracts themselves. Norwegian for five individual artists, English for Elmgreen & Dragset. Six one-page letters visually checked; document validation passed. Nothing sent; recipient addresses await Gunnar or official-source verification.
 - [ ] Complete the first group of 10–20 artists; ask Gunnar for addresses and consider Fredrik's introductions after Jan reviews the drafts.
 - [ ] Simple artist consent/authorisation letter: artist asks named institutions to share their documentation with GARF.
 - [ ] Institutional batches (NO/NL/international) paused until consents exist; re-word asks as "on behalf of artist X".
