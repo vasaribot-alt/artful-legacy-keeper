@@ -69,7 +69,7 @@ const Inventory = () => {
   const [exporting, setExporting] = useState(false);
   const [collectionDialogOpen, setCollectionDialogOpen] = useState(false);
   const [collectionScope, setCollectionScope] = useState<"selected" | "all">("all");
-  const activeRole = localStorage.getItem("activeRole") || "artist";
+  const activeRole = (["artist","collector"].includes(localStorage.getItem("activeRole") || "") ? localStorage.getItem("activeRole") : "artist") as string;
 
   useEffect(() => {
     fetchArtworks();

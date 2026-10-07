@@ -81,7 +81,7 @@ const PortfolioDetail = () => {
     if (pData) {
       setPortfolioName((pData as any).name);
       setShareToken((pData as any).share_token);
-      setPortfolioRole((pData as any).role_context || "artist");
+      setPortfolioRole(["artist","collector"].includes((pData as any).role_context) ? (pData as any).role_context : "artist");
     }
 
     const { data: paData } = await supabase
