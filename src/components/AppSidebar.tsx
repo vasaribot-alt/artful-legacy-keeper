@@ -156,7 +156,11 @@ export function AppSidebar() {
           if (saved && userRoles.includes(saved)) {
             setActiveRole(saved);
           } else {
-            setActiveRole(userRoles[0]);
+            // Stale role from another account on this browser: repair it so pages load the right works
+            const fallback = userRoles.includes("artist") ? "artist" : userRoles[0];
+            setActiveRole(fallback);
+            localStorage.setItem("activeRole", fallback);
+            window.dispatchEvent(new Event("role-changed"));
           }
         }
       }

@@ -118,7 +118,7 @@ const Dashboard = () => {
   const [imageFilter, setImageFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRole, setActiveRole] = useState<"artist" | "collector" | "registrar">(
-    (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist"
+    ((["artist","collector"].includes(localStorage.getItem("activeRole") || "") ? localStorage.getItem("activeRole") : "artist") as "artist" | "collector" | "registrar")
   );
   const [idVerified, setIdVerified] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -279,7 +279,7 @@ const Dashboard = () => {
   // Listen for role changes from sidebar
   useEffect(() => {
     const handleRoleChange = () => {
-      const newRole = (localStorage.getItem("activeRole") as "artist" | "collector" | "registrar") || "artist";
+      const newRole = ((["artist","collector"].includes(localStorage.getItem("activeRole") || "") ? localStorage.getItem("activeRole") : "artist") as "artist" | "collector" | "registrar");
       setActiveRole(newRole);
     };
     window.addEventListener("role-changed", handleRoleChange);
