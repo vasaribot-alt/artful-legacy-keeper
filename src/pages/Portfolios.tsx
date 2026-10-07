@@ -35,7 +35,7 @@ const Portfolios = () => {
 
   const fetchPortfolios = async () => {
     setLoading(true);
-    const activeRole = localStorage.getItem("activeRole") || "artist";
+    const activeRole = ["artist","collector"].includes(localStorage.getItem("activeRole") || "") ? localStorage.getItem("activeRole")! : "artist";
     const { data, error } = await supabase
       .from("portfolios")
       .select("id, name, share_token, created_at")
@@ -65,7 +65,7 @@ const Portfolios = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setAdding(false); return; }
 
-    const activeRole = localStorage.getItem("activeRole") || "artist";
+    const activeRole = ["artist","collector"].includes(localStorage.getItem("activeRole") || "") ? localStorage.getItem("activeRole")! : "artist";
     const { error } = await supabase.from("portfolios").insert({ user_id: user.id, name, role_context: activeRole } as any);
     if (error) { toast.error("Failed to create portfolio"); }
     else { toast.success("Portfolio created"); setNewName(""); fetchPortfolios(); }
