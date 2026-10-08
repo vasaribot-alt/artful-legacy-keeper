@@ -212,4 +212,6 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - Note: gallery-initiated variant of the gallery ask — the gallery itself reaches out instead of only passing names/emails to GARF. Artist consent still applies: the artist decides what to upload and whether to join.
 - [ ] Meeting date to be added; outcome recorded after the meeting.
 - [ ] Ask at the meeting how far their records actually go back and in what form (digital/physical), so we know how many former artists the offer could reach.
+- Public-site check (2026-10-08, fineart.no/arkiv/utstillinger): the visible archive lists only recent 2026 shows (Henrik Placht, David Yarrow, Zhuang Hong-yi, Christoffer Fjeldstad, Bjarne Melgaard, collective show, Albert Watson, Frans Widerberg, Julia Fullerton-Batten...). Each show article carries its own text plus ~45 photos, so installation views exist digitally per exhibition — but no public pagination or year archive, so older records can't be confirmed from the site. They also run a webshop and auction side alongside exhibitions.
+  - Use at the meeting: ask how far back the internal exhibition archive goes and in what form; the public site showing only recent shows makes the hidden archive depth the key question.
 - Notes only — no letter to the gallery until Jan asks for one.
