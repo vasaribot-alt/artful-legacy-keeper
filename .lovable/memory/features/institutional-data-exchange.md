@@ -20,6 +20,8 @@ Revised per Jan (2026-10-01), building on Gunnar Kvaran's data-exchange idea. Th
 
 **IACCCA collectors:** museum-style ask (names + work counts + contacts), thank-you access SCOPED — collector sees only archives of artists in their own collection who have registered. Approved closing text 2026-10-01 (see iaccca-outreach.md): "We would like to contact artists that are in important collections… You will of course have free access to the archives of the artists you have shared and who have registered with us." Collection-scoped access feature must be designed/built before any IACCCA sends.
 
+**Gallery-initiated variant (Oslo gallery meeting, planned week of 2026-10-13):** Jan will ask one Oslo gallery to contact all its artists itself and offer the documentation the gallery holds, telling them it can be uploaded at GARF. Gallery approaches artists directly; artist still decides what to upload and whether to join. Do not treat as the standard model until proven.
+
 **Unchanged guardrails:** three points on what GARF is first, then the ask (Gunnar's rule); data used only to identify and invite artists; nothing published; the artist alone decides whether to join; never guess emails; reviewed batches only.
 
 **Norwegian batches:** `norway_institutions_2026` (18 galleries + 20 museums) and `netherlands_institutions_2026` (10 museums + 9 galleries) in `alliance_outreach_targets`, all "To contact" except Galleri Blunk (On hold, preservation-only pitch). First sends after Gunnar's go-ahead: Astrup Fearnley + Audun Eckhoff (Lillehammer).
