@@ -11,4 +11,4 @@ type: feature
 - Her speech at the Achates Philanthropy Prize Award Ceremony (2019) may be useful background reading.
 - Email: Caroline@achates.org.uk (verified by Jan).
 - Role for GARF: **funding adviser track** — NOT a board candidate yet, and no board mention until real contact is established (same rule as Martin Gelin). Possible bridge to UK foundations and the patron-sponsor strategy.
-- Follow-up: thank-you letter drafted 2026-10-08, asking for her tips; mention GARF is a Dutch stichting and Jan is Norwegian; no heavy pitch.
+- **No letter.** Jan did not ask for one and explicitly said he does not want a letter to her. A thank-you draft was written in chat unasked on 2026-10-08 and is withdrawn — nothing is drafted, saved or sent for Caroline until Jan asks for it.
