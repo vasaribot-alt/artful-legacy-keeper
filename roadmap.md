@@ -191,6 +191,12 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - Added closing section: free guarantee (free registration, artists own/control archives, handover to chosen heirs) + offer of short video call.
 - Next: send Marie's letter; then adapt the EN template per country — fetch each org's dashboard key from partner_organisations before sending.
 
+## Caroline McCormick — UK funding adviser (2026-10-08)
+- [x] Video meeting held 2026-10-08: GARF asked about funding help, told her honestly that GARF has little money; she said she would like to help with her best tips. Caroline@achates.org.uk (verified by Jan).
+- Roles: Chair of a Foundation's Board of Trustees; Director of Achates (cultural sector consultancy); 2019 Achates Philanthropy Prize speech.
+- [ ] Draft + send thank-you letter asking for her funding tips (no board mention yet — funding-adviser track only).
+- [ ] Follow up on her tips; possible bridge to UK foundations and the patron-sponsor strategy.
+
 ## Update 2026-10-08
 - [x] UFDA reply + brief sent to Anna Cherevko — awaiting reply / call next week
 - [x] Martin Gelin letter sent
