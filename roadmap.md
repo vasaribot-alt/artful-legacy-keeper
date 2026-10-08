@@ -194,7 +194,7 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 ## Caroline McCormick — UK funding adviser (2026-10-08)
 - [x] Video meeting held 2026-10-08: GARF asked about funding help, told her honestly that GARF has little money; she said she would like to help with her best tips. Caroline@achates.org.uk (verified by Jan).
 - Roles: Chair of a Foundation's Board of Trustees; Director of Achates (cultural sector consultancy); 2019 Achates Philanthropy Prize speech.
-- [ ] Draft + send thank-you letter asking for her funding tips (no board mention yet — funding-adviser track only).
+- [ ] Do NOT draft or send any letter to Caroline — Jan did not ask for one. Wait until he says what he wants.
 - [ ] Follow up on her tips; possible bridge to UK foundations and the patron-sponsor strategy.
 
 ## Update 2026-10-08
