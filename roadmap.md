@@ -188,3 +188,9 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - All letter links verified live (join/iaa-denmark, garf-logo.png, garf-org-button.png); partner row iaa-denmark exists and is active with dashboard key.
 - Added closing section: free guarantee (free registration, artists own/control archives, handover to chosen heirs) + offer of short video call.
 - Next: send Marie's letter; then adapt the EN template per country — fetch each org's dashboard key from partner_organisations before sending.
+
+## Update 2026-10-08
+- [x] UFDA reply + brief sent to Anna Cherevko — awaiting reply / call next week
+- [x] Martin Gelin letter sent
+- [x] Jan reviewed the six Gunnar artist drafts
+- [ ] Find direct artist emails for the six (no gallery pass-on) — Jan collecting; ask Gunnar/Fredrik where missing
