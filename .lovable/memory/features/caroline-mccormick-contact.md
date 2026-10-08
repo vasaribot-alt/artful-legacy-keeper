@@ -12,3 +12,4 @@ type: feature
 - Email: Caroline@achates.org.uk (verified by Jan).
 - Role for GARF: **funding adviser track** — NOT a board candidate yet, and no board mention until real contact is established (same rule as Martin Gelin). Possible bridge to UK foundations and the patron-sponsor strategy.
 - **No letter.** Jan did not ask for one and explicitly said he does not want a letter to her. A thank-you draft was written in chat unasked on 2026-10-08 and is withdrawn — nothing is drafted, saved or sent for Caroline until Jan asks for it.
+- Her tips (2026-10-08): use artists, curators and art people as GARF's ambassadors; make sure GARF's story reaches two or three major companies with an interest in what GARF does — her number one is Bloomberg, maybe Reuters. These tips are the basis of the ambassador + media strategy.
