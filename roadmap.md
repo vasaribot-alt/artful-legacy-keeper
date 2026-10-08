@@ -193,4 +193,4 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [x] UFDA reply + brief sent to Anna Cherevko — awaiting reply / call next week
 - [x] Martin Gelin letter sent
 - [x] Jan reviewed the six Gunnar artist drafts
-- [ ] Find direct artist emails for the six (no gallery pass-on) — Jan collecting; ask Gunnar/Fredrik where missing
+- [ ] Find direct artist emails for the six (no gallery pass-on) — asked Fredrik first 2026-10-08; if he has none of them, ask Gunnar. Never a gallery address.
