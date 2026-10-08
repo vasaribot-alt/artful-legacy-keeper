@@ -195,7 +195,10 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [x] Video meeting held 2026-10-08: GARF asked about funding help, told her honestly that GARF has little money; she said she would like to help with her best tips. Caroline@achates.org.uk (verified by Jan).
 - Roles: Chair of a Foundation's Board of Trustees; Director of Achates (cultural sector consultancy); 2019 Achates Philanthropy Prize speech.
 - [ ] Do NOT draft or send any letter to Caroline — Jan did not ask for one. Wait until he says what he wants.
-- [ ] Follow up on her tips; possible bridge to UK foundations and the patron-sponsor strategy.
+- [x] Her follow-up guidance (2026-10-08): name-drop ambassadors as supporters when approaching Bloomberg; sharpen the why-this-matters message first; Jan will ask her how to run the outreach once he has enough ambassadors; she is open to frequent calls.
+- [ ] Build the ambassador base and confirm each supporter's permission to be named.
+- [ ] Sharpen the core "why this matters" message into one page.
+- [ ] Jan asks Caroline how to do the outreach when the ambassador base is strong enough.
 
 ## Update 2026-10-08
 - [x] UFDA reply + brief sent to Anna Cherevko — awaiting reply / call next week

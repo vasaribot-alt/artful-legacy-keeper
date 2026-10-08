@@ -1,6 +1,6 @@
 ---
 name: Caroline McCormick contact
-description: UK funding contact from video meeting 2026-10-08 — Chair of a Foundation's Board of Trustees, Director of Achates; offered her best funding tips
+description: UK funding contact from video meeting 2026-10-08 — Chair of a Foundation's Board of Trustees, Director of Achates; offered her best funding tips and follow-up guidance
 type: feature
 ---
 # Caroline McCormick — UK (video meeting 2026-10-08)
@@ -13,3 +13,8 @@ type: feature
 - Role for GARF: **funding adviser track** — NOT a board candidate yet, and no board mention until real contact is established (same rule as Martin Gelin). Possible bridge to UK foundations and the patron-sponsor strategy.
 - **No letter.** Jan did not ask for one and explicitly said he does not want a letter to her. A thank-you draft was written in chat unasked on 2026-10-08 and is withdrawn — nothing is drafted, saved or sent for Caroline until Jan asks for it.
 - Her tips (2026-10-08): use artists, curators and art people as GARF's ambassadors; make sure GARF's story reaches two or three major companies with an interest in what GARF does — her number one is Bloomberg, maybe Reuters. These tips are the basis of the ambassador + media strategy.
+- Her follow-up guidance (2026-10-08, later the same day):
+  - When approaching Bloomberg, the ambassadors must be **name-dropped as supporters** — named, real supporters are what makes the story credible to a major newsroom.
+  - GARF must **sharpen the message of why this is so important** before that outreach.
+  - Jan will contact Caroline **himself** to ask how to do the outreach — once he has enough ambassadors. Do not draft this approach.
+  - She is open to **frequent calls** — the relationship can be maintained with regular video meetings.
