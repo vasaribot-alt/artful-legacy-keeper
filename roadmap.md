@@ -206,8 +206,8 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [x] Jan reviewed the six Gunnar artist drafts
 - [ ] Find direct artist emails for the six (no gallery pass-on) — asked Fredrik first 2026-10-08; if he has none of them, ask Gunnar. Never a gallery address.
 
-## Oslo gallery meeting (planned, week of 2026-10-13)
-- [ ] Jan meets an Oslo gallery (name to be added). His planned ask: the gallery contacts all its artists and offers the documentation the gallery holds for them, telling the artists it can be uploaded at GARF.
+## Oslo gallery meeting — Gallery Fineart (planned, week of 2026-10-13)
+- [ ] Jan meets **Gallery Fineart** (Oslo) next week. His planned ask: the gallery contacts all its artists and offers the documentation the gallery holds for them, telling the artists it can be uploaded at GARF.
 - Note: this is a gallery-initiated variant of the gallery ask — the gallery itself reaches out to its artists instead of only passing names/emails to GARF. Artist consent still applies: the artist decides what to upload and whether to join.
-- [ ] Add gallery name and meeting date after the meeting.
+- [ ] Meeting date to be added; outcome recorded after the meeting.
 - Notes only — no letter to the gallery until Jan asks for one.
