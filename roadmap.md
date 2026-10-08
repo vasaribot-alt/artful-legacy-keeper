@@ -207,7 +207,9 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [ ] Find direct artist emails for the six (no gallery pass-on) — asked Fredrik first 2026-10-08; if he has none of them, ask Gunnar. Never a gallery address.
 
 ## Oslo gallery meeting — Gallery Fineart (planned, week of 2026-10-13)
-- [ ] Jan meets **Gallery Fineart** (Oslo) next week. His planned ask: the gallery contacts all its artists and offers the documentation the gallery holds for them, telling the artists it can be uploaded at GARF.
-- Note: this is a gallery-initiated variant of the gallery ask — the gallery itself reaches out to its artists instead of only passing names/emails to GARF. Artist consent still applies: the artist decides what to upload and whether to join.
+- [ ] Jan meets **Gallery Fineart** (Oslo) next week. His planned ask: the gallery contacts its artists and offers the documentation it holds for them, telling them it can be uploaded at GARF.
+- **Scope (Jan, 2026-10-08):** in principle the documentation they hold covers **all artists who have exhibited with them over the years** — not only the current roster. So the ask reaches former exhibiting artists too, which makes this close to the closed-gallery preservation model (a gallery reaching back across its own exhibition history).
+- Note: gallery-initiated variant of the gallery ask — the gallery itself reaches out instead of only passing names/emails to GARF. Artist consent still applies: the artist decides what to upload and whether to join.
 - [ ] Meeting date to be added; outcome recorded after the meeting.
+- [ ] Ask at the meeting how far their records actually go back and in what form (digital/physical), so we know how many former artists the offer could reach.
 - Notes only — no letter to the gallery until Jan asks for one.
