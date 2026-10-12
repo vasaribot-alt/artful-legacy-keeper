@@ -1,6 +1,6 @@
 ## Artist outreach letter correction (2026-10-12)
-- [ ] Replace the 52 unsent Norwegian-batch drafts with the approved free catalogue, website and preservation offer; no partnership or call request.
-- [ ] Correct artist generation so institutional wording cannot overwrite these drafts; verify Erle's saved letter in the CRM.
+- [x] Replaced all 52 unsent Norwegian-batch drafts with the free catalogue, website and preservation offer; database check: 52 correct, zero partnership/call requests, all remain unsent.
+- [x] Default artist generation now uses the shared artist draft builder; deployed and verified Erle's letter through Regenerate and reopening after reload in Jan's signed-in CRM.
 
 ## Gunnar Kvaran — advisory board & Norway referrals (2026-09-29)
 - [x] Meeting held 2026-09-29; very positive — he agrees GARF is very important
