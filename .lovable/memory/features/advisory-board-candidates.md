@@ -18,3 +18,8 @@ type: feature
 - **Obrist connection (verified 2026-10-02):** Gunnar and Hans Ulrich Obrist are long-term co-curators, not mere acquaintances — together with Julia Peyton-Jones they curated "China Power Station" (Serpentine 2006 / Astrup Fearnley 2007) and "Europe, Europe" (Astrup Fearnley 2014, with Thomas Boutoux); with Thierry Raspail also "Imagine Brazil" (Oslo/Lyon 2013–14). Jan's "dream" (working with Obrist; naive ask "do you know anyone that knows him?") should go to Gunnar naturally — the answer is literally himself. Obrist is also Senior Advisor at LUMA Arles (Maja Hoffmann's foundation), so the Hoffmann route and the Obrist dream converge on the same person.
 - Timing rule: share the dream only after Gunnar has given his advisory-board commitment (matches earlier "funding and Obrist only if he raises them" — Jan may now raise it himself once commitment is in).
 - Deliberate framing (Jan's choice, 2026-10-02): keep the naive "do you know anyone who knows him?" delivery even though Jan already knows about the co-curating history — let Gunnar discover and reveal the connection himself; never mention the research.
+
+## Update 2026-10-12 (Jan)
+- Jan has asked Gunnar for a talk after the Caroline meeting. Plan: ask Gunnar to be a GARF ambassador (named supporter for the Bloomberg approach).
+- Caroline told Jan that Serpentine (where Obrist is Artistic Director) is funded by Bloomberg — so the Obrist dream now links directly to the Bloomberg route.
+- Timing: raise the Obrist dream in the same call, but only after Gunnar has said yes to being ambassador/board. Keep the naive "do you know anyone who knows him?" framing.
