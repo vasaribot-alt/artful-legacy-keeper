@@ -28,6 +28,9 @@ type: feature
 ## Ambassadors (confirmed)
 - Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).
 
+## Ambassador asks outstanding (letters SENT 2026-10-12 by Jan)
+- Jessica Sjöholm Skrubbe, Mick Wilson, Sonia Boyce — all three received the v2 ambassador letter (GARF_Ambassador_Letters_v2.docx: no GARF introduction, asks whether they would support GARF as ambassadors once they have looked into the work). Replies pending; not yet confirmed ambassadors, so their names must not be used as supporters until Jan says so.
+
 ## Ambassador prospects — direct emails provided by Jan 2026-10-12
 - Olav Stubberud — contact@olavstubberud.com
 - Rolf Arebø Hoff — rolf.a.hoff@gmail.com
