@@ -23,4 +23,4 @@
 - [Martin Gelin Contact](mem://features/martin-gelin-contact) — Journalist, art-as-soft-power book; info-only first letter, board invitation only later
 - [Peter Bower](mem://features/peter-bower-contact) — Paper historian, former colleague; link to David Thomson / Reuters; possible ambassador
 - [Jessica Sjöholm Skrubbe](mem://features/jessica-sjoholm-skrubbe-contact) — Linköping professor; Agnes Cleve CR via funded postdoc idea; sabbatical from Jan 2027
-- [Mick Wilson](mem://features/mick-wilson-contact) — Akademin Valand professor, potential ambassador
+- [Mick Wilson](mem://features/mick-wilson-contact) — Akademin Valand professor; Jan's info-only Malmö letter sent; ambassador question not yet put
