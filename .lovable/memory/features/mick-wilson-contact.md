@@ -9,7 +9,8 @@ type: feature
 - Role for GARF: **potential ambassador** — Jan wants to ask him (2026-10-12), alongside Jessica Sjöholm Skrubbe, following Caroline McCormick's ambassador advice.
 - No letter unless Jan asks.
 - 2026-10-12: Jan has already been in touch with Mick Wilson (apologised he hadn't said earlier). Notes on what was said are pending — no outcome recorded yet.
-- 2026-10-12: Jan sent his own Malmö follow-up to Mick himself — information-only, same shape as Sonia's letter (below). Standing rule: Jan's own letters to these contacts are his; do not rewrite or replace them. The ambassador question has NOT been put to Mick; the unsent ambassador letter is still page 2 of GARF_Ambassador_Letters_Jessica_and_Mick.docx.
+- 2026-10-12: Jan sent his own Malmö follow-up to Mick himself — information-only, same shape as Sonia's letter (below). Standing rule: Jan's own letters to these contacts are his; do not rewrite or replace them.
+- 2026-10-12: Ambassador letter SENT to Mick by Jan (the v2 version from GARF_Ambassador_Letters_v2.docx — no GARF introduction, "after you have looked into what we are doing" framing). Reply pending; do not chase or draft a follow-up unless Jan asks.
 
 ## Jan's letter to Mick (as written by Jan, shared 2026-10-12)
 

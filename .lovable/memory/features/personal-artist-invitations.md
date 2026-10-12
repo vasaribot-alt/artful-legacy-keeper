@@ -11,7 +11,8 @@ Malmö artist follow-ups (e.g. Sonia Boyce, professors/artists met at IAA-Europe
 - No invented conversation details from the Malmö talks; base personalisation only on what Jan confirms.
 - Sonia Boyce is priority (artist and professor). English letters.
 
-- Sonia Boyce direct email: s.boyce@wimbledon.arts.ac.uk (professor at Wimbledon College of Arts, UAL). Ambassador letter added as third letter in GARF_Ambassador_Letters_Jessica_and_Mick.docx — unsent.
+- Sonia Boyce direct email: s.boyce@wimbledon.arts.ac.uk (professor at Wimbledon College of Arts, UAL).
+- 2026-10-12: Ambassador letter SENT to Sonia by Jan (v2 version from GARF_Ambassador_Letters_v2.docx — no GARF introduction, "after you have looked into what we are doing" framing). Reply pending; do not chase or draft a follow-up unless Jan asks.
 - 2026-10-12: Jan has already been in touch with both Sonia Boyce and Mick Wilson (apologised he hadn't said earlier). He wrote and sent his own letter to Sonia himself — "Dear Sonia" letter (saved below), warm personal follow-up from Malmö, information-only. Standing rule: Jan's own letters to these contacts are his; do not rewrite or replace them.
 
 ## Jan's letter to Sonia (as written by Jan, shared 2026-10-12)
