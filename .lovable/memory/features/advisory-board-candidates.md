@@ -24,3 +24,12 @@ type: feature
 - Caroline told Jan that Serpentine (where Obrist is Artistic Director) is funded by Bloomberg — so the Obrist dream now links directly to the Bloomberg route.
 - Timing: raise the Obrist dream in the same call, but only after Gunnar has said yes to being ambassador/board. Keep the naive "do you know anyone who knows him?" framing.
 - Gunnar replied 2026-10-12: happy to talk by phone, have Jan visit, or meet at a café Thursday/Friday or next week. Jan's plan for the talk: tell him about Caroline and her ambassador strategy, then ask him to be an ambassador; Obrist dream only after a yes.
+
+## Ambassadors (confirmed)
+- Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).
+
+## Ambassador prospects — direct emails provided by Jan 2026-10-12
+- Olav Stubberud — contact@olavstubberud.com
+- Rolf Arebø Hoff — rolf.a.hoff@gmail.com
+- Kathe Madrigal — kathemadrigal@me.com
+No letters drafted yet; await Jan's explicit request.
