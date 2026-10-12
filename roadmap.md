@@ -2,6 +2,13 @@
 - [x] Replaced all 52 unsent Norwegian-batch drafts with the free catalogue, website and preservation offer; database check: 52 correct, zero partnership/call requests, all remain unsent.
 - [x] Default artist generation now uses the shared artist draft builder; deployed and verified Erle's letter through Regenerate and reopening after reload in Jan's signed-in CRM.
 
+## Malmö follow-ups sent by Jan (2026-10-12)
+- [x] Jan wrote and sent his own information-only Malmö follow-up to **Mick Wilson** (mick.wilson@akademinvaland.gu.se) — full text saved in `.lovable/memory/features/mick-wilson-contact.md`. Same shape as his Sonia Boyce letter: authentication background, scattered documentation, artist ownership and heirs, free registration, Why GARF Matters PDF + /about.
+- [x] Jan also wrote and sent his own letter to **Sonia Boyce** (s.boyce@wimbledon.arts.ac.uk) — text saved in `.lovable/memory/features/personal-artist-invitations.md`.
+- [ ] The ambassador question has NOT been put to Mick or Sonia by Jan's own letters. The unsent ambassador letters remain in GARF_Ambassador_Letters_Jessica_and_Mick.docx (Jessica page 1, Mick page 2, Sonia page 3). Decide with Jan whether to still send them or drop them — Sonia's page is likely to be dropped since she has already been written to personally.
+- [ ] Bjarne Våga is the first confirmed ambassador (2026-10-12). Ambassador prospects awaiting a decision on letters: Olav Stubberud (contact@olavstubberud.com), Rolf Arebø Hoff (rolf.a.hoff@gmail.com), Kathe Madrigal (kathemadrigal@me.com).
+
+
 ## Gunnar Kvaran — advisory board & Norway referrals (2026-09-29)
 - [x] Meeting held 2026-09-29; very positive — he agrees GARF is very important
 - [ ] Send warm thank-you note (draft for Jan's approval)
