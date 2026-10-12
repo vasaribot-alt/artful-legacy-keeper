@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { artistOutreachDraft } from "../_shared/artist-outreach.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,8 @@ function makeCode(length = 7) {
 }
 
 const CATEGORY_GUIDANCE: Record<string, string> = {
+  artists:
+    "The recipient is an individual artist, NOT an organisation. Offer free registration, a complete catalogue and building and administering their own website, all free. Explain startup and upload support, artist ownership/copyright/control, artist-requested copies from galleries, closure risks without invented statistics, the 100-year preservation plan and named succession. Never ask for partnership, collaboration, a call, a meeting or a written reply. Close with the free registration link https://globalartistregistry.org/register and the Why GARF Matters and About links. Known acquaintances and former Locarto users may have warm openings only when explicitly recorded.",
   curators:
     "The recipient is a curators' association. Frame GARF as offering their members archival access to verified artist records, provenance, exhibition histories, and installation views — useful for research, exhibition planning, and scholarship. Mention that curators can invite artists to join free of charge as an Allied Curator Partner benefit.",
   art_critics:
@@ -175,6 +178,20 @@ Deno.serve(async (req) => {
       contactEmail = row.contact_email || null;
     }
 
+    // Individual artists must never fall through to institutional partnership drafting.
+    if (category === "artists" && !template_body) {
+      const draft = artistOutreachDraft({ name, tag, language, senderName: sender_name, signature });
+      const { error: saveError } = await supabase.from("alliance_outreach_targets").update({
+        email_subject: draft.subject,
+        email_body: draft.body,
+        email_generated_at: new Date().toISOString(),
+      }).eq("id", target_id);
+      if (saveError) throw new Error("Could not save artist draft");
+      return new Response(JSON.stringify({ success: true, ...draft }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // For corporate collections, create a per-recipient tracked link to the
     // "Why GARF Matters" page so we can measure who opens it. The link is
     // embedded in the generated email.
@@ -245,7 +262,7 @@ ${template_body}
 ---`
       : "";
 
-    const prompt = `Write a partnership outreach email on behalf of the Global Artist Registry Foundation (GARF) — a Dutch non-profit foundation (stichting) building a permanent 100-year archival registry to preserve artist legacies. GARF is non-commercial, independent, and museum-grade.
+    const prompt = `Write ${category === "artists" ? "an individual artist invitation to protect their documentation, never a partnership proposal" : "a partnership outreach email"} on behalf of the Global Artist Registry Foundation (GARF) — a Dutch non-profit foundation (stichting) building a permanent 100-year archival registry to preserve artist legacies. GARF is non-commercial, independent, and museum-grade.
 
 Recipient:
 - Organisation: ${name}
@@ -268,7 +285,7 @@ Instructions:
 ${whyGarfLink ? `- Include the following link exactly once, introduced naturally as the short one-page case for why this matters: ${whyGarfLink}. Use the link verbatim and do not alter or shorten it.` : ""}
 - Length: ${category === "galleries" || category === "artist_organisations" || category === "corporate_collections" ? "280-400 words in the body, so the clarity section fits in full" : "180-260 words in the body"}.
 - Tone: respectful, precise, non-salesy. No exclamation marks, no marketing superlatives.
-- Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) ${category === "artist_organisations" ? "a clear, low-commitment ask: forward the attached invitation to your members (a short reply is welcome but not required)" : "a clear, low-commitment ask (a short introductory call or written reply)"}, (5) sign-off.
+- Structure: (1) why we're writing, (2) what GARF is in one sentence, (3) 2–3 concrete points relevant to their category, (4) ${category === "artists" ? "the free registration link; NEVER request a call, meeting, partnership or reply" : category === "artist_organisations" ? "a clear, low-commitment ask: forward the attached invitation to your members (a short reply is welcome but not required)" : "a clear, low-commitment ask (a short introductory call or written reply)"}, (5) sign-off.
 - Mention UNESCO alignment only if category is artist_organisations, museums, universities, or foundations.
   - ${recipient_capacity ? `In the opening sentence, acknowledge only the recipient's professional role: "${recipient_capacity}". Write this naturally as "in your capacity as [role] at ${name}". The recipient's personal name must not appear in this sentence or anywhere after the salutation, even if it is included in the capacity text.` : `Do not invent a capacity or title for the recipient. Address them respectfully based on the salutation guidance only.`}
 - The sender writes on behalf of "the Global Artist Registry Foundation" without claiming any personal title. Never take a title from the recipient's notes or contact fields — those belong to the recipient.
