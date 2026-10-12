@@ -1,3 +1,7 @@
+## Artist outreach letter correction (2026-10-12)
+- [ ] Replace the 52 unsent Norwegian-batch drafts with the approved free catalogue, website and preservation offer; no partnership or call request.
+- [ ] Correct artist generation so institutional wording cannot overwrite these drafts; verify Erle's saved letter in the CRM.
+
 ## Gunnar Kvaran — advisory board & Norway referrals (2026-09-29)
 - [x] Meeting held 2026-09-29; very positive — he agrees GARF is very important
 - [ ] Send warm thank-you note (draft for Jan's approval)
