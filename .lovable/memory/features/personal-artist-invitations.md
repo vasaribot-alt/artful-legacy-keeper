@@ -10,3 +10,5 @@ Malmö artist follow-ups (e.g. Sonia Boyce, professors/artists met at IAA-Europe
 - A soft "happy to answer questions if you'd like to know more" is acceptable; a call/meeting ask is not.
 - No invented conversation details from the Malmö talks; base personalisation only on what Jan confirms.
 - Sonia Boyce is priority (artist and professor). English letters.
+
+- Sonia Boyce direct email: s.boyce@wimbledon.arts.ac.uk (professor at Wimbledon College of Arts, UAL). Ambassador letter added as third letter in GARF_Ambassador_Letters_Jessica_and_Mick.docx — unsent.
