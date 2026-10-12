@@ -23,3 +23,4 @@ type: feature
 - Jan has asked Gunnar for a talk after the Caroline meeting. Plan: ask Gunnar to be a GARF ambassador (named supporter for the Bloomberg approach).
 - Caroline told Jan that Serpentine (where Obrist is Artistic Director) is funded by Bloomberg — so the Obrist dream now links directly to the Bloomberg route.
 - Timing: raise the Obrist dream in the same call, but only after Gunnar has said yes to being ambassador/board. Keep the naive "do you know anyone who knows him?" framing.
+- Gunnar replied 2026-10-12: happy to talk by phone, have Jan visit, or meet at a café Thursday/Friday or next week. Jan's plan for the talk: tell him about Caroline and her ambassador strategy, then ask him to be an ambassador; Obrist dream only after a yes.
