@@ -38,7 +38,7 @@ const hostKey = (s: string) => {
 
 
 type Category =
-  | "curators" | "art_critics" | "galleries" | "museums" | "universities"
+  | "artists" | "curators" | "art_critics" | "galleries" | "museums" | "universities"
   | "foundations" | "corporate_collections" | "registrars" | "organisations" | "artist_organisations" | "other";
 
 type Status =
@@ -67,6 +67,7 @@ interface Target {
 }
 
 const CATEGORY_LABELS: Record<Category, string> = {
+  artists: "Artists",
   curators: "Curators",
   art_critics: "Art Critics",
   galleries: "Galleries",
