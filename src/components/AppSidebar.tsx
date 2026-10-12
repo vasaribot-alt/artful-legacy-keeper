@@ -35,6 +35,7 @@ const getNavItems = (role: AppRole) => {
       { title: "LinkedIn", url: "/foundation/linkedin", icon: Linkedin },
       { title: "Statement Signatories", url: "/foundation/statement-signatories", icon: ScrollText },
       { title: "Registrar Registry", url: "/foundation/registrars", icon: ShieldCheck },
+      { title: "Unclaimed Works", url: "/foundation/orphan-artworks", icon: Archive },
       { title: "Documents", url: "/foundation/documents", icon: FolderOpen },
     ];
   }

@@ -208,14 +208,14 @@ const COLLECTOR_EDITIONS_HEADERS = [
 const PHOTO_SIZE_GROUP = ["Height", "Width", "Edition", "AP", "Price"];
 const PHOTOGRAPHER_HEADERS = [
   "Title", "Category", "Series", "Year", "Medium", "Support",
-  "Signed", "Description", "Image ID",
+  "Signed", "Description", "Image ID", "Currency",
   ...PHOTO_SIZE_GROUP, ...PHOTO_SIZE_GROUP, ...PHOTO_SIZE_GROUP, ...PHOTO_SIZE_GROUP,
 ];
 const PHOTOGRAPHER_EXAMPLES: (string | number)[][] = [
   ["EXAMPLE – delete this row", "Photography", "Coastlines", 2021, "Archival pigment print", "Hahnemühle Photo Rag",
-    "Signed verso", "Three sizes", "IMG_0001.jpg", 40, 50, 10, 2, 1500, 80, 100, 5, 2, 3500, 120, 150, 3, 1, 6000],
+    "Signed verso", "Three sizes", "IMG_0001.jpg", "EUR", 40, 50, 10, 2, 1500, 80, 100, 5, 2, 3500, 120, 150, 3, 1, 6000],
   ["EXAMPLE – delete this row", "Photography", "", 2019, "C-print", "Fuji Crystal Archive",
-    "", "One size only", "IMG_0002.jpg", 60, 90, 7, 2, 2800],
+    "", "One size only", "IMG_0002.jpg", "EUR", 60, 90, 7, 2, 2800],
 ];
 
 function downloadTemplate(headers: string[], filename: string, examples: (string | number)[][] = []) {
