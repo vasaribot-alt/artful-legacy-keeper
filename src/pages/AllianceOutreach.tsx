@@ -904,6 +904,8 @@ With kind regards,
     else toast.success(`${data.saved} drafts saved in Outlook — open them from the links below.`);
   };
 
+  const [batchSentIds, setBatchSentIds] = useState<Set<string>>(new Set());
+  const batchSendLock = useRef(false);
   // Send approved letters through Brevo's marketing email API.
   const sendBatchViaBrevo = async () => {
     if (batchSendLock.current) return;
@@ -923,6 +925,7 @@ With kind regards,
 
     if (!window.confirm(`Send ${ready.length} letter${ready.length === 1 ? "" : "s"} now via Brevo from outreach@globalartistregistry.org?${attachedDocs.length ? `\n\nAttachments: ${attachedDocs.map(d => d.file_name).join(", ")}` : ""}`)) return;
     setBatchRunning(true);
+    batchSendLock.current = true;
     const { data, error } = await supabase.functions.invoke("send-outreach-brevo", {
       body: {
         fromName: "Jan S. Kindem — Global Artist Registry Foundation",
@@ -937,6 +940,7 @@ With kind regards,
       },
     });
     setBatchRunning(false);
+    batchSendLock.current = false;
     let payload = data as any;
     if (error) {
       try {
@@ -1918,10 +1922,14 @@ With kind regards,
             </Button>
             <Button
               onClick={sendBatchViaBrevo}
-              disabled={batchRunning || readyBatch.length === 0}
+              disabled={batchRunning || readyBatch.filter(r => !batchSentIds.has(r.id)).length === 0}
             >
-              {batchRunning ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Mail className="w-4 h-4 mr-1.5" />}
-              Send {readyBatch.length} letter{readyBatch.length === 1 ? "" : "s"} now
+              {(() => {
+                const left = readyBatch.filter(r => !batchSentIds.has(r.id)).length;
+                if (batchRunning) return <><Loader2 className="w-4 h-4 mr-1.5 animate-spin" />Sending…</>;
+                if (batchSentIds.size > 0 && left === 0) return <>Sent ✓</>;
+                return <><Mail className="w-4 h-4 mr-1.5" />Send {left} letter{left === 1 ? "" : "s"} now</>;
+              })()}
             </Button>
           </DialogFooter>
         </DialogContent>
