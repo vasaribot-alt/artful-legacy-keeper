@@ -906,9 +906,10 @@ With kind regards,
 
   // Send approved letters through Brevo's marketing email API.
   const sendBatchViaBrevo = async () => {
+    if (batchSendLock.current) return;
     const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
     const broken = batchResults.filter(r => r.body && r.email && !isEmail(r.email));
-    const ready = batchResults.filter(r => r.body && r.email && isEmail(r.email));
+    const ready = batchResults.filter(r => r.body && r.email && isEmail(r.email) && !batchSentIds.has(r.id));
     if (broken.length > 0) {
       toast.warning(
         `Skipping ${broken.length} contact${broken.length === 1 ? "" : "s"} with no valid email address: ${broken.map(b => b.name || b.email).join(", ")}`,
@@ -961,8 +962,10 @@ With kind regards,
 
     const sentAddresses = new Set<string>(Array.isArray(payload.recipients) ? payload.recipients : []);
     const now = new Date().toISOString();
+    const newlySent: string[] = [];
     for (const r of ready) {
       if (sentAddresses.has(r.email)) {
+        newlySent.push(r.id);
         await update(r.id, {
           status: "contacted",
           last_contacted_at: now,
@@ -971,6 +974,7 @@ With kind regards,
         });
       }
     }
+    setBatchSentIds(prev => new Set([...prev, ...newlySent]));
     if (payload.failures?.length) {
       toast.warning(`Sent ${payload.sent}; ${payload.failures.length} failed (${payload.failures.map((f: { to: string }) => f.to).join(", ")}).`, { duration: 12000 });
     } else {
