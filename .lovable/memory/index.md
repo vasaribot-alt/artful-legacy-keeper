@@ -22,3 +22,4 @@
 - [Closed-Gallery Preservation Pitch](mem://features/closed-gallery-preservation-pitch) — Approved template for closed galleries (CLEARING, Blunk): personal tone, artist-forwarding ask, preserve their own archive free
 - [Martin Gelin Contact](mem://features/martin-gelin-contact) — Journalist, art-as-soft-power book; info-only first letter, board invitation only later
 - [Peter Bower](mem://features/peter-bower-contact) — Paper historian, former colleague; link to David Thomson / Reuters; possible ambassador
+- [Jessica Sjöholm Skrubbe](mem://features/jessica-sjoholm-skrubbe-contact) — Linköping professor; Agnes Cleve CR via funded postdoc idea; sabbatical from Jan 2027
