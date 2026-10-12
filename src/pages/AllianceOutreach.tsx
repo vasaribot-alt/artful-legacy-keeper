@@ -810,7 +810,7 @@ With kind regards,
     // file, try to find the right decision maker automatically before drafting.
     // Best-effort only — anything still unknown falls back to a neutral salutation.
     const enriched = new Map<string, { contact_person?: string | null; contact_title?: string | null }>();
-    const missingNameIds = batchTargets.filter(t => !t.contact_person).map(t => t.id);
+    const missingNameIds = batchTargets.filter(t => t.category !== "artists" && !t.contact_person).map(t => t.id);
     if (missingNameIds.length > 0) {
       setResearching(`batch:${missingNameIds.length}`);
       try {
