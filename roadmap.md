@@ -5,8 +5,10 @@
 ## Malmö follow-ups sent by Jan (2026-10-12)
 - [x] Jan wrote and sent his own information-only Malmö follow-up to **Mick Wilson** (mick.wilson@akademinvaland.gu.se) — full text saved in `.lovable/memory/features/mick-wilson-contact.md`. Same shape as his Sonia Boyce letter: authentication background, scattered documentation, artist ownership and heirs, free registration, Why GARF Matters PDF + /about.
 - [x] Jan also wrote and sent his own letter to **Sonia Boyce** (s.boyce@wimbledon.arts.ac.uk) — text saved in `.lovable/memory/features/personal-artist-invitations.md`.
-- [ ] The ambassador question has NOT been put to Mick or Sonia by Jan's own letters. The unsent ambassador letters remain in GARF_Ambassador_Letters_Jessica_and_Mick.docx (Jessica page 1, Mick page 2, Sonia page 3). Decide with Jan whether to still send them or drop them — Sonia's page is likely to be dropped since she has already been written to personally.
+- [x] 2026-10-12: Rewritten as **GARF_Ambassador_Letters_v2.docx** (Jessica page 1, Mick page 2, Sonia page 3) to Jan's framing rule: **no GARF introduction at all** — no mission pitch, no links, no "let me introduce the foundation". Each letter refers to the earlier contact and asks only whether, **when they have had a chance to look into what we are doing**, they feel it is something they would support and could see themselves as an ambassador for; no workload, no obligation, just lending their name. Caroline McCormick named as the adviser behind the idea. Three one-page letters visually checked; validation passed. Nothing sent.
+- [ ] Ambassador question has NOT yet been put to Mick or Sonia by Jan's own letters (both were information-only). Decide with Jan whether the v2 asks go out now or later.
 - [ ] Bjarne Våga is the first confirmed ambassador (2026-10-12). Ambassador prospects awaiting a decision on letters: Olav Stubberud (contact@olavstubberud.com), Rolf Arebø Hoff (rolf.a.hoff@gmail.com), Kathe Madrigal (kathemadrigal@me.com).
+
 
 
 ## Gunnar Kvaran — advisory board & Norway referrals (2026-09-29)
