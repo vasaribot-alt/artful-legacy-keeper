@@ -12,7 +12,8 @@ Malmö artist follow-ups (e.g. Sonia Boyce, professors/artists met at IAA-Europe
 - Sonia Boyce is priority (artist and professor). English letters.
 
 - Sonia Boyce direct email: s.boyce@wimbledon.arts.ac.uk (professor at Wimbledon College of Arts, UAL).
-- 2026-10-12: Ambassador letter SENT to Sonia by Jan (v2 version from GARF_Ambassador_Letters_v2.docx — no GARF introduction, "after you have looked into what we are doing" framing). Reply pending; do not chase or draft a follow-up unless Jan asks.
+- 2026-10-12: Ambassador letter SENT to Sonia by Jan (v2 version from GARF_Ambassador_Letters_v2.docx — no GARF introduction, "after you have looked into what we are doing" framing).
+- 2026-10-13: Sonia replied the same day — warm, and she has already mentioned GARF to two studio colleagues (see below). She is busy with Frieze London this week and will come back next week when she has time to look properly at the project. Jan answered himself the same day (text saved below). Standing rule: Jan's own letters are his; do not rewrite or replace them.
 - 2026-10-12: Jan has already been in touch with both Sonia Boyce and Mick Wilson (apologised he hadn't said earlier). He wrote and sent his own letter to Sonia himself — "Dear Sonia" letter (saved below), warm personal follow-up from Malmö, information-only. Standing rule: Jan's own letters to these contacts are his; do not rewrite or replace them.
 
 ## Jan's letter to Sonia (as written by Jan, shared 2026-10-12)
@@ -38,3 +39,25 @@ Malmö artist follow-ups (e.g. Sonia Boyce, professors/artists met at IAA-Europe
 > Thank you again for the conversation in Malmö. I hope we can keep in touch.
 >
 > Warm regards, Jan
+
+## Sonia's reply (received 2026-10-13, as written by Sonia)
+
+> Dear Jan
+> So great to hear from you. I mentioned you and the Global Artist Registry to my studio colleagues, Niamh Sullivan (Head of Studio & Production) and Maya Bailey (Archive & Digital Lead).
+> This week is crazy busy with Frieze-London, so I hope it's okay if I get back to you next week, when I'll have time to look properly at your project.
+> Sending all best wishes
+> Sonia
+
+- New names from her reply: **Niamh Sullivan** (Head of Studio & Production) and **Maya Bailey** (Archive & Digital Lead) — Sonia introduced GARF to them herself. Do not contact either of them directly unless Jan asks; the route is through Sonia.
+- Maya Bailey's role (Archive & Digital Lead) is the closest fit to GARF's work — worth watching for her reaction when Sonia looks properly.
+- Timing: she will come back **next week (from 2026-10-19)**. Do not chase before then.
+
+## Jan's reply to Sonia (as written and sent by Jan, 2026-10-13)
+
+> Dear Sonia,
+> I wish you best of luck with Frieze!!!  It is nice to hear that you have already shared information about GARF with your studio colleagues. It would be nice to get feedback from you, Niamh and Maya of what can be improved.
+> Again best of luck for the Frieze and hear from you when you have had the time to look at our project.
+> Best Wishes
+> Jan
+
+- Jan's ask in this reply is **feedback on what can be improved** from Sonia, Niamh and Maya — not a join or ambassador ask. The ambassador question stays open until she answers after looking into the project.
