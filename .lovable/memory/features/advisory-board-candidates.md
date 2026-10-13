@@ -36,4 +36,4 @@ type: feature
 - Olav Stubberud — contact@olavstubberud.com
 - Rolf Arebø Hoff — rolf.a.hoff@gmail.com
 - Kathe Madrigal — kathemadrigal@me.com
-- Kathe Madrigal: ambassador letter DRAFTED 2026-10-13 (GARF_Ambassador_Letter_Kathe_Madrigal.docx, unsent). Jan met her in Malmö last week; she also spent time in Copenhagen, then returned to Los Angeles. Letter follows the standing no-introduction framing and names Caroline McCormick as the adviser behind the ambassador pool. Olav and Rolf still have no letters — await Jan's explicit request.
+- Kathe Madrigal: warmer ambassador letter **SENT by Jan 2026-10-13** (`GARF_Ambassador_Letter_Kathe_Madrigal_v2.docx`; first version kept unchanged). She is IAA-USA president, already a strong supporter, has an account with nothing uploaded yet, and hopes to bring IAA-USA into IAA-Europe — full notes in `mem://features/kathe-madrigal-contact`. Reply pending; not yet a confirmed ambassador. Olav and Rolf still have no letters — await Jan's explicit request.
