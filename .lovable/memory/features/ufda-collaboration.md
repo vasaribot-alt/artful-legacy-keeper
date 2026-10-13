@@ -18,6 +18,12 @@ Anna's reply 2026-10-13 — positive ("genuine potential"), but five clarificati
 
 **Jan's position on photographers (2026-10-13):** he does not agree that professional photographers need to be involved for the photo documentation — the photographer-fee cost line in UFDA's digitisation model is not accepted as a requirement. For identification of artworks it is important that artists are also able to take proper photographs themselves for this kind of documentation, if artists are going to take control of their documentation. See mem://features/artist-photo-documentation.
 
+**Jan's terms for the cooperation (2026-10-13):**
+- If UFDA needs high-resolution professional photography, UFDA must also pay that cost — it is not a GARF requirement.
+- GARF is in charge of storing the artists' archives, including the photographs. Each archive is the artist's property, including the photographs.
+- GARF's task is to make the IT solution and help artists document their artworks in a proper way.
+- UFDA may have their own agreement with the artists, but the cooperation is not possible if the artist–UFDA arrangement does not fit GARF's terms of use between GARF and the artists.
+
 **Jan's concern (2026-10-13):** point 3 is not clear enough to accept as written. Her sentence only rules out sole storage/control moving to a third-party platform — it does not say whether an artist may also place the full master set into their own GARF archive, what happens to the masters if UFDA can no longer continue, or who the artist's counterpart is for access, correction, deletion and heir handover. The brief already stated that GARF provides the archive platform and that the outputs are 15 artist-owned archives with named heirs (mem://features/ufda-collaboration open points below), so agreement wording must not quietly reduce GARF to a public layer over an archive UFDA holds.
 
 Open points before UFDA assesses the implementation model: existing artist pool, intended geography, archive volume, proposed budget share for UFDA. Jan decides how and when to reply — no draft unless he asks.
