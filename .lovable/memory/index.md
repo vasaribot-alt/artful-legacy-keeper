@@ -25,3 +25,4 @@
 - [Jessica Sjöholm Skrubbe](mem://features/jessica-sjoholm-skrubbe-contact) — Linköping professor; Agnes Cleve CR via funded postdoc idea; sabbatical from Jan 2027
 - [Mick Wilson](mem://features/mick-wilson-contact) — Akademin Valand professor; Jan's info-only Malmö letter sent; ambassador question not yet put
 - [Ambassador letter framing](mem://features/ambassador-letter-framing) — never introduce GARF in an ambassador letter; ask only "when you have looked into what we are doing"
+- [Kathe Madrigal](mem://features/kathe-madrigal-contact) — IAA-USA president, GARF fan, has account, wants IAA-Europe/World support; ambassador letter drafted
