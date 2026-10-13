@@ -8,6 +8,7 @@
 - [x] 2026-10-12: Rewritten as **GARF_Ambassador_Letters_v2.docx** (Jessica page 1, Mick page 2, Sonia page 3) to Jan's framing rule: **no GARF introduction at all** — no mission pitch, no links, no "let me introduce the foundation". Each letter refers to the earlier contact and asks only whether, **when they have had a chance to look into what we are doing**, they feel it is something they would support and could see themselves as an ambassador for; no workload, no obligation, just lending their name. Caroline McCormick named as the adviser behind the idea. Three one-page letters visually checked; validation passed. Nothing sent.
 - [ ] Ambassador question has NOT yet been put to Mick or Sonia by Jan's own letters (both were information-only). Decide with Jan whether the v2 asks go out now or later.
 - [ ] Bjarne Våga is the first confirmed ambassador (2026-10-12). Ambassador prospects awaiting a decision on letters: Olav Stubberud (contact@olavstubberud.com), Rolf Arebø Hoff (rolf.a.hoff@gmail.com), Kathe Madrigal (kathemadrigal@me.com).
+- [ ] Sonia Boyce replied 2026-10-13 and has already mentioned GARF to Niamh Sullivan (Head of Studio & Production) and Maya Bailey (Archive & Digital Lead); she will come back from 2026-10-19 after Frieze. Jan answered himself (feedback ask on what can be improved). Do not chase before then; her ambassador answer is still open.
 
 
 
