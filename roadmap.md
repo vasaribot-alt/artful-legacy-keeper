@@ -219,6 +219,7 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - [x] UFDA reply + brief sent to Anna Cherevko — awaiting reply / call next week
 - [x] UFDA replied 2026-10-13 (Anna Cherevko): positive but four clarification areas — artist pool/locations, phased digitisation logistics, UFDA keeps control of master files (no third-party sole storage), and independence from any Russian-affiliated GARF relationships. Saved in mem://features/ufda-collaboration.md.
 - [ ] Answer Anna's questions: artist pool, geography, archive volume, UFDA budget share — and confirm the Russian-organisation point. Jan decides how/when to reply (no draft unless he asks).
+- [x] Jan confirmed 2026-10-13: GARF has never had any projects with any Russian organisations — the UFDA independence condition can be answered cleanly.
 - [x] Martin Gelin letter sent
 - [x] Jan reviewed the six Gunnar artist drafts
 - [ ] Find direct artist emails for the six (no gallery pass-on) — asked Fredrik first 2026-10-08; if he has none of them, ask Gunnar. Never a gallery address.
