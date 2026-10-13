@@ -218,7 +218,8 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 ## Update 2026-10-08
 - [x] UFDA reply + brief sent to Anna Cherevko — awaiting reply / call next week
 - [x] UFDA replied 2026-10-13 (Anna Cherevko): positive but four clarification areas — artist pool/locations, phased digitisation logistics, UFDA keeps control of master files (no third-party sole storage), and independence from any Russian-affiliated GARF relationships. Saved in mem://features/ufda-collaboration.md.
-- [ ] Answer Anna's questions: artist pool, geography, archive volume, UFDA budget share — and confirm the Russian-organisation point. Jan decides how/when to reply (no draft unless he asks).
+- [x] Reply sent to Anna Cherevko 2026-10-13 (from GARF_UFDA_Reply_Anna_DRAFT.docx): good possibility to cooperate, keep it simple, cooperation must fit GARF's user terms (sent to her), plus the five custody points, the clean Russian-organisation answer, UFDA pays for any professional photography it wants, and a one-page roles/budget split. Awaiting her reply.
+- [ ] UFDA's reaction to the user terms and the five custody points — then artist pool, geography, archive volume and UFDA budget share. Do not chase unless Jan asks.
 - [x] Jan confirmed 2026-10-13: GARF has never had any projects with any Russian organisations — the UFDA independence condition can be answered cleanly.
 - [x] Jan's position 2026-10-13: professional photographers are NOT needed for photo documentation — artists must be able to take proper photographs themselves for artwork identification, otherwise they can never take control of their own documentation. UFDA's photographer-fee cost line must be revised. Saved in mem://features/artist-photo-documentation.md.
 - [x] Martin Gelin letter sent
