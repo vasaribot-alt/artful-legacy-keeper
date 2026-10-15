@@ -236,3 +236,9 @@ When Gunnar replies: his concern was the legal relationship to the artists; the 
 - Public-site check (2026-10-08, fineart.no/arkiv/utstillinger): the visible archive lists only recent 2026 shows (Henrik Placht, David Yarrow, Zhuang Hong-yi, Christoffer Fjeldstad, Bjarne Melgaard, collective show, Albert Watson, Frans Widerberg, Julia Fullerton-Batten...). Each show article carries its own text plus ~45 photos, so installation views exist digitally per exhibition — but no public pagination or year archive, so older records can't be confirmed from the site. They also run a webshop and auction side alongside exhibitions.
   - Use at the meeting: ask how far back the internal exhibition archive goes and in what form; the public site showing only recent shows makes the hidden archive depth the key question.
 - Notes only — no letter to the gallery until Jan asks for one.
+
+## Gunnar Kvaran meeting — 2026-10-15
+- [x] Jan met Gunnar today: three-hour conversation, Gunnar **VERY positive**, but **agreed to nothing yet**. Jan expects he will at one point.
+- [ ] Gunnar's answer (ambassador / board) still open — he is not a confirmed supporter, so his name is not used anywhere yet, and the Obrist dream stays unraised until there is a yes.
+- [ ] No follow-up letter to Gunnar unless Jan asks for one.
+- [x] Same day: Jan had a good meeting with **Morten Qvale**, photographer — outcome saved to `mem://features/morten-qvale-contact`; no role, no letter, nothing sent.
