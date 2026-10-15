@@ -25,6 +25,6 @@
 - [Jessica Sjöholm Skrubbe](mem://features/jessica-sjoholm-skrubbe-contact) — Linköping professor; Agnes Cleve CR via funded postdoc idea; sabbatical from Jan 2027
 - [Mick Wilson](mem://features/mick-wilson-contact) — Akademin Valand professor; Jan's info-only Malmö letter sent; ambassador question not yet put
 - [Ambassador letter framing](mem://features/ambassador-letter-framing) — never introduce GARF in an ambassador letter; ask only "when you have looked into what we are doing"
-- [Kathe Madrigal](mem://features/kathe-madrigal-contact) — IAA-USA president, GARF fan, has account, wants IAA-Europe/World support; warmer ambassador letter sent 2026-10-13
+- [Kathe Madrigal](mem://features/kathe-madrigal-contact) — IAA-USA president; ACCEPTED as GARF ambassador 2026-10-14, name may be used as a supporter
 - [UFDA collaboration](mem://features/ufda-collaboration) — Anna Cherevko's reply: artist-pool questions, phased digitisation, UFDA keeps master-file control, independence from Russian-affiliated relationships
 - [Artist photo documentation](mem://features/artist-photo-documentation) — professional photographers not required; artists must be able to photograph their own works properly for identification
