@@ -29,6 +29,12 @@ type: feature
 - Jan meets Gunnar today. Agenda: (1) tell him about the Caroline meeting and the ambassador strategy; (2) tell him GARF needs to find €500,000 seed funding, and that marketing what GARF does will be very important; (3) ask Gunnar to be an Ambassador — Jan says it would be very good for GARF if he accepts.
 - Obrist dream rule still holds: raise it only after Gunnar says yes to the ambassador ask, with the naive "do you know anyone who knows him?" framing.
 
+## Meeting 2026-10-15 (Jan) — 3 hours, very positive, NO commitment yet
+- Jan met Gunnar today and talked for three hours. Jan's report: Gunnar is **VERY positive today**, but **he did not agree to anything yet**. Jan is confident Gunnar will agree at one point.
+- So: Gunnar is still NOT a confirmed ambassador and NOT on the board — his name must not be used as a supporter, and the Obrist dream stays unraised until there is an actual yes.
+- Same day, Jan also had a good meeting with Morten Qvale, a photographer (`mem://features/morten-qvale-contact`).
+- Notes only — no follow-up letter to Gunnar unless Jan asks for one.
+
 ## Ambassadors (confirmed)
 - Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).
 - Kathe Madrigal (kathemadrigal@me.com) — ACCEPTED 2026-10-14, replying to Jan's warmer ambassador letter: "I would be honored to be an ambassador of GARF. Thank you for thinking of me." Second confirmed ambassador; name may be used as a named supporter under Caroline's strategy. She returned from Denmark the night of 2026-10-13 and said she will catch up on things including logging her art inventory with GARF — so help with her first upload is a live, welcome offer. Full notes in `mem://features/kathe-madrigal-contact`.
