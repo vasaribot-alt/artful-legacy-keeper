@@ -1,6 +1,6 @@
 ---
 name: Kathe Madrigal
-description: IAA-USA president, strong GARF supporter with her own account; warmer ambassador letter sent 2026-10-13, reply pending
+description: IAA-USA president; ACCEPTED as GARF ambassador 2026-10-14, name may be used as a supporter; logging her art inventory with GARF
 type: reference
 ---
 
