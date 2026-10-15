@@ -25,6 +25,10 @@ type: feature
 - Timing: raise the Obrist dream in the same call, but only after Gunnar has said yes to being ambassador/board. Keep the naive "do you know anyone who knows him?" framing.
 - Gunnar replied 2026-10-12: happy to talk by phone, have Jan visit, or meet at a café Thursday/Friday or next week. Jan's plan for the talk: tell him about Caroline and her ambassador strategy, then ask him to be an ambassador; Obrist dream only after a yes.
 
+## Update 2026-10-15 (Jan) — meeting with Gunnar TODAY
+- Jan meets Gunnar today. Agenda: (1) tell him about the Caroline meeting and the ambassador strategy; (2) tell him GARF needs to find €500,000 seed funding, and that marketing what GARF does will be very important; (3) ask Gunnar to be an Ambassador — Jan says it would be very good for GARF if he accepts.
+- Obrist dream rule still holds: raise it only after Gunnar says yes to the ambassador ask, with the naive "do you know anyone who knows him?" framing.
+
 ## Ambassadors (confirmed)
 - Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).
 - Kathe Madrigal (kathemadrigal@me.com) — ACCEPTED 2026-10-14, replying to Jan's warmer ambassador letter: "I would be honored to be an ambassador of GARF. Thank you for thinking of me." Second confirmed ambassador; name may be used as a named supporter under Caroline's strategy. She returned from Denmark the night of 2026-10-13 and said she will catch up on things including logging her art inventory with GARF — so help with her first upload is a live, welcome offer. Full notes in `mem://features/kathe-madrigal-contact`.
