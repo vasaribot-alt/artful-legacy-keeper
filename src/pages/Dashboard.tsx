@@ -16,6 +16,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { PendingVerificationInbox } from "@/components/PendingVerificationInbox";
 import { OrphanClaimsCard } from "@/components/OrphanClaimsCard";
 import LinkedInReminderBanner from "@/components/LinkedInReminderBanner";
+import { ArtistFirstSteps } from "@/components/ArtistFirstSteps";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -507,6 +508,9 @@ const Dashboard = () => {
       </div>
       {activeRole === "artist" && user && (
         <div className="max-w-6xl mx-auto px-6 pt-6">
+          {!loading && (
+            <ArtistFirstSteps userId={user.id} artworkCount={artworks.length} onAddArtwork={() => setDialogOpen(true)} />
+          )}
           <PendingVerificationInbox
             userId={user.id}
             activeRole={activeRole}
