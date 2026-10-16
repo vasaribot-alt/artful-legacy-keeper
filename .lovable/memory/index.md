@@ -29,3 +29,4 @@
 - [UFDA collaboration](mem://features/ufda-collaboration) — Anna Cherevko's reply: artist-pool questions, phased digitisation, UFDA keeps master-file control, independence from Russian-affiliated relationships
 - [Artist photo documentation](mem://features/artist-photo-documentation) — professional photographers not required; artists must be able to photograph their own works properly for identification
 - [GARF one-liner](mem://features/garf-one-liner) — "GARF is a charity working for protection of artists' legacy" — lead sentence for outreach and materials
+- [Gunnar referral contacts](mem://features/gunnar-referral-contacts) — Möllenhoff, Storm Bjerke, Eckhoff, Tveter, Ustvedt; "Gunnar finds GARF important" + propose a talk
