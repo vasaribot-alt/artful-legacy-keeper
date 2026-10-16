@@ -48,6 +48,10 @@ type: feature
 - Jan's focus list: Therese Möllenhoff (Kistefos), Øivind Storm Bjerke, Audun Eckhoff, Patricia Tveter and Øystein Ustvedt.
 - Jan wrote and SENT the email to Gunnar himself 2026-10-16: thanks for the conversation, David A. Ross dropped with the Independent article link, the five-name focus list, and thanks for his support. Awaiting Gunnar's reply; no follow-up letter unless Jan asks.
 
+## Hope 2026-10-16 (Jan) — Gunnar may mention GARF to Obrist
+- Jan's read: Gunnar may well bring GARF up with Hans Ulrich Obrist the next time they talk. This is Jan's hope, not a commitment from Gunnar — Gunnar has agreed to nothing, and he also said Obrist probably does not share GARF's interest in protecting documentation.
+- Treat as a possible warm door, nothing more: no outreach to Obrist or the Serpentine, no Bloomberg approach built on it, and no mention of Gunnar as a supporter. Do not raise it with Gunnar or chase it unless Jan asks.
+
 ## Ambassadors (confirmed)
 - Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).
 - Kathe Madrigal (kathemadrigal@me.com) — ACCEPTED 2026-10-14, replying to Jan's warmer ambassador letter: "I would be honored to be an ambassador of GARF. Thank you for thinking of me." Second confirmed ambassador; name may be used as a named supporter under Caroline's strategy. She returned from Denmark the night of 2026-10-13 and said she will catch up on things including logging her art inventory with GARF — so help with her first upload is a live, welcome offer. Full notes in `mem://features/kathe-madrigal-contact`.
