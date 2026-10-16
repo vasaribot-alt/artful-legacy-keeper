@@ -20,6 +20,7 @@
 - [x] 2026-10-16 (later): Gunnar suggesting specific names; Jan drops David A. Ross (Epstein-ties article in the Independent). Focus list: Therese Möllenhoff (Kistefos), Øivind Storm Bjerke, Audun Eckhoff, Patricia Tveter, Øystein Ustvedt. Jan writing the email to Gunnar himself.
 - [x] 2026-10-16: Jan's email to Gunnar SENT (takk for samtalen, David A. Ross dropped with the article link, focus list of five names, thanks for his support). Awaiting his reply; no follow-up unless Jan asks.
 - [ ] Jan's hope 2026-10-16: Gunnar may mention GARF to Obrist next time they talk. Hope only — no Obrist or Serpentine outreach, no Bloomberg build on it, no chasing unless Jan asks.
+- [ ] 2026-10-16: Gunnar said Barcelona is only 3 hours from his home in the South of France; Jan invited him and Gunnar said it is **likely to happen**. First concrete plan together — still no ambassador/board yes. Jan moves to Barcelona November 2026 (`mem://features/jan-relocating-barcelona`).
 - [ ] Send warm thank-you note (draft for Jan's approval)
 - [ ] Formal advisory-board invitation (commitment first; funding and Obrist only if he raises them)
 - [ ] After commitment: ask for introduction to his contacts close to the Hoffmanns ("her sister!" — warmer route than the cold LUMA letter)
