@@ -46,7 +46,7 @@ type: feature
 ## Update 2026-10-16 (Jan, later) — Gunnar suggesting names
 - Gunnar is now suggesting specific Norwegian names as candidates. Jan checked David A. Ross, found a troubling article about his ties to Jeffrey Epstein (Independent, b2914120), and is dropping him — do not contact David A. Ross.
 - Jan's focus list: Therese Möllenhoff (Kistefos), Øivind Storm Bjerke, Audun Eckhoff, Patricia Tveter and Øystein Ustvedt.
-- Jan is writing the email to Gunnar himself; no letter drafted for him.
+- Jan wrote and SENT the email to Gunnar himself 2026-10-16: thanks for the conversation, David A. Ross dropped with the Independent article link, the five-name focus list, and thanks for his support. Awaiting Gunnar's reply; no follow-up letter unless Jan asks.
 
 ## Ambassadors (confirmed)
 - Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).
