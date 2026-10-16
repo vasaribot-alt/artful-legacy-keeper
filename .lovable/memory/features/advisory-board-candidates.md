@@ -16,8 +16,8 @@ type: feature
 ## Gunnar Kvaran (see details above)
 - Oslo museum director, first advisory-board target; his Norway referrals open the Norwegian batch.
 - **Obrist connection (verified 2026-10-02):** Gunnar and Hans Ulrich Obrist are long-term co-curators, not mere acquaintances — together with Julia Peyton-Jones they curated "China Power Station" (Serpentine 2006 / Astrup Fearnley 2007) and "Europe, Europe" (Astrup Fearnley 2014, with Thomas Boutoux); with Thierry Raspail also "Imagine Brazil" (Oslo/Lyon 2013–14). Jan's "dream" (working with Obrist; naive ask "do you know anyone that knows him?") should go to Gunnar naturally — the answer is literally himself. Obrist is also Senior Advisor at LUMA Arles (Maja Hoffmann's foundation), so the Hoffmann route and the Obrist dream converge on the same person.
-- Timing rule: share the dream only after Gunnar has given his advisory-board commitment (matches earlier "funding and Obrist only if he raises them" — Jan may now raise it himself once commitment is in).
-- Deliberate framing (Jan's choice, 2026-10-02): keep the naive "do you know anyone who knows him?" delivery even though Jan already knows about the co-curating history — let Gunnar discover and reveal the connection himself; never mention the research.
+- Timing rule: share the dream only after Gunnar has given his advisory-board commitment (matches earlier "funding and Obrist only if he raises them" — Jan may now raise it himself once commitment is in). SUPERSEDED 2026-10-16: Jan shared the dream directly with Gunnar; see the 2026-10-16 meeting update.
+- Deliberate framing (Jan's choice, 2026-10-02): keep the naive "do you know anyone who knows him?" delivery even though Jan already knows about the co-curating history — let Gunnar discover and reveal the connection himself; never mention the research. SUPERSEDED 2026-10-16: Gunnar called Obrist his "best friend" himself and Jan told him the dream directly.
 
 ## Update 2026-10-12 (Jan)
 - Jan has asked Gunnar for a talk after the Caroline meeting. Plan: ask Gunnar to be a GARF ambassador (named supporter for the Bloomberg approach).
@@ -34,6 +34,14 @@ type: feature
 - So: Gunnar is still NOT a confirmed ambassador and NOT on the board — his name must not be used as a supporter, and the Obrist dream stays unraised until there is an actual yes.
 - Same day, Jan also had a good meeting with Morten Qvale, a photographer (`mem://features/morten-qvale-contact`).
 - Notes only — no follow-up letter to Gunnar unless Jan asks for one.
+
+## Meeting update 2026-10-16 (Jan) — still NO commitment
+- A further 3-hour meeting; Gunnar remains VERY positive and is getting clearer on GARF's importance. Jan's feeling: Gunnar is watching him and knows what he needs; he is thinking about this a lot.
+- Gunnar is 100% clear about the importance of GARF. He sees GARF as **above all museums** — connecting information about artists and their art with museums, art historians, galleries and auction houses; some for free, some as paid service, but all as an accredited service. (Paid service is Gunnar's framing — the current GARF offer to artists is free.)
+- Bloomberg track: Gunnar called it smart and a very good idea. Toward Bloomberg we must be clear we **support artists**.
+- Obrist: Gunnar himself mentioned his "best friend" Hans Ulrich Obrist, and Jan told him about the dream of working with him. Gunnar said Obrist probably does not share GARF's interest in protecting documentation; Jan is not sure he is right but did not discuss it further. Jan added that it would be good if curators like Gunnar and Obrist encouraged artists to create their own archives — Gunnar agreed.
+- Performance art: Gunnar is on the board of the Yoko Ono foundation and has had many discussions there on how to handle documentation of performance art — possible future source of expertise/partnership on this.
+- Still not a confirmed ambassador or board member; his name must not be used as a supporter until Jan says so.
 
 ## Ambassadors (confirmed)
 - Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).

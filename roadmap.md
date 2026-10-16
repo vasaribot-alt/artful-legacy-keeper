@@ -15,6 +15,8 @@
 
 ## Gunnar Kvaran — advisory board & Norway referrals (2026-09-29)
 - [x] Meeting held 2026-09-29; very positive — he agrees GARF is very important
+- [x] 2026-10-15: 3-hour meeting, VERY positive, no commitment yet.
+- [x] 2026-10-16: another 3-hour meeting; Gunnar 100% clear on GARF's importance — sees GARF above all museums, connecting artists' information with museums, art historians, galleries and auction houses (some free, some paid, all accredited). Bloomberg track "smart, a very good idea"; toward Bloomberg we must be clear we support artists. Gunnar called Obrist his "best friend"; Jan shared the dream directly (naive-framing rule superseded); Gunnar doubts Obrist shares GARF's documentation interest — Jan did not argue. Agreed: curators like Gunnar and Obrist should encourage artists to create their own archives. Gunnar sits on the Yoko Ono foundation board with long experience of performance-art documentation discussions. No commitment yet — his name must not be used as a supporter.
 - [ ] Send warm thank-you note (draft for Jan's approval)
 - [ ] Formal advisory-board invitation (commitment first; funding and Obrist only if he raises them)
 - [ ] After commitment: ask for introduction to his contacts close to the Hoffmanns ("her sister!" — warmer route than the cold LUMA letter)
