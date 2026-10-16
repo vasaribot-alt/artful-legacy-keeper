@@ -65,3 +65,8 @@ type: feature
 - Rolf Arebø Hoff — rolf.a.hoff@gmail.com
 - Kathe Madrigal — kathemadrigal@me.com
 - Kathe Madrigal: warmer ambassador letter **SENT by Jan 2026-10-13** (`GARF_Ambassador_Letter_Kathe_Madrigal_v2.docx`; first version kept unchanged). She is IAA-USA president, already a strong supporter, has an account with nothing uploaded yet, and hopes to bring IAA-USA into IAA-Europe — full notes in `mem://features/kathe-madrigal-contact`. Reply pending; not yet a confirmed ambassador. Olav and Rolf still have no letters — await Jan's explicit request.
+
+## Gunnar's stated interests + Jan's read on Obrist (2026-10-16)
+- Gunnar told Jan his **only interest is to talk to artists and to write notes and books**. That is not a rejection of GARF — it is the description of a working method, and artist conversations plus accumulated notes are exactly what an artist-authored archive feeds. Frame GARF to him as the place where those conversations and notes gain a permanent home, not as a platform task or an institutional project.
+- Jan's counter to Gunnar's doubt about Obrist: Jan has read analyses describing Obrist as someone **interested in organising information and putting it in order** — which is GARF's core function — so Gunnar's "he probably doesn't share our interest in protecting documentation" is not the whole picture. Jan holds this view privately for now; do not use it to argue with Gunnar unless Jan asks.
+- Still no commitment from Gunnar; his name is not used as a supporter.
