@@ -43,6 +43,11 @@ type: feature
 - Performance art: Gunnar is on the board of the Yoko Ono foundation and has had many discussions there on how to handle documentation of performance art — possible future source of expertise/partnership on this.
 - Still not a confirmed ambassador or board member; his name must not be used as a supporter until Jan says so.
 
+## Update 2026-10-16 (Jan, later) — Gunnar suggesting names
+- Gunnar is now suggesting specific Norwegian names as candidates. Jan checked David A. Ross, found a troubling article about his ties to Jeffrey Epstein (Independent, b2914120), and is dropping him — do not contact David A. Ross.
+- Jan's focus list: Therese Möllenhoff (Kistefos), Øivind Storm Bjerke, Audun Eckhoff, Patricia Tveter and Øystein Ustvedt.
+- Jan is writing the email to Gunnar himself; no letter drafted for him.
+
 ## Ambassadors (confirmed)
 - Bjarne Våga (vagabjarne@gmail.com) — ACCEPTED as GARF ambassador, confirmed by Jan 2026-10-12. First confirmed ambassador; name may be used as supporter (e.g. Bloomberg name-dropping per Caroline's strategy).
 - Kathe Madrigal (kathemadrigal@me.com) — ACCEPTED 2026-10-14, replying to Jan's warmer ambassador letter: "I would be honored to be an ambassador of GARF. Thank you for thinking of me." Second confirmed ambassador; name may be used as a named supporter under Caroline's strategy. She returned from Denmark the night of 2026-10-13 and said she will catch up on things including logging her art inventory with GARF — so help with her first upload is a live, welcome offer. Full notes in `mem://features/kathe-madrigal-contact`.
