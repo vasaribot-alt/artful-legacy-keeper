@@ -4120,6 +4120,14 @@ export type Database = {
       }
       find_artist_by_email: { Args: { _email: string }; Returns: string }
       find_registrar_by_email: { Args: { _email: string }; Returns: string }
+      get_artist_archive_usage: {
+        Args: never
+        Returns: {
+          archival_document_count: number
+          sketchbook_count: number
+          user_id: string
+        }[]
+      }
       get_artist_site: {
         Args: { _key: string }
         Returns: {
