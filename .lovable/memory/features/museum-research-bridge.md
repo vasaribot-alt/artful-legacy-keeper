@@ -14,3 +14,5 @@ Key points:
 - The ask is cooperation and access, not data transfer or system replacement.
 
 This framing turned the Lauder Center's modernism focus from a mismatch into a shared mission: the Center studies yesterday's art; GARF ensures today's documentation survives to become tomorrow's primary source.
+
+On 2 November 2026, Jan supplied the Lauder Center contact address: laudercenter@metmuseum.org. Treat it as user-provided contact information, not independently verified. No letter has been sent.
