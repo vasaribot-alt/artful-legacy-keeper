@@ -1,4 +1,6 @@
 import GarfLogo from "@/components/GarfLogo";
+import { PublicArchivalDocuments } from "@/components/PublicArchivalDocuments";
+import type { ArchivalDocument } from "@/components/ArchivalDocumentViewer";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -106,6 +108,7 @@ const PublicArtistProfile = () => {
   const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
   const [artworks, setArtworks] = useState<ArtworkPublic[]>([]);
   const [seriesGroups, setSeriesGroups] = useState<string[]>([]);
+  const [archivalDocuments, setArchivalDocuments] = useState<ArchivalDocument[]>([]);
 
   // Navigation state
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -155,7 +158,7 @@ const PublicArtistProfile = () => {
         contact_visibility: ((data as any).contact_visibility as any) || {},
       });
 
-      const [cvRes, foundingRes, exhibitionsRes, artworksRes, seriesRes] = await Promise.all([
+      const [cvRes, foundingRes, exhibitionsRes, artworksRes, seriesRes, archivalRes] = await Promise.all([
         supabase.from("cv_entries").select("section, year, entry_text")
           .eq("profile_id", data.id).order("display_order", { ascending: true }),
         supabase.from("founding_artists").select("tier")
@@ -166,7 +169,9 @@ const PublicArtistProfile = () => {
           .eq("owner_id", userId).order("year", { ascending: false }),
         supabase.from("series_groups").select("name")
           .eq("user_id", userId).order("name"),
+        supabase.from("archival_documents").select("*").eq("owner_id", userId).eq("role_context", "artist").eq("is_public", true).order("document_date", { ascending: false, nullsFirst: false }),
       ]);
+      setArchivalDocuments(archivalRes.data ?? []);
 
       if (cvRes.data && cvRes.data.length > 0) {
         const sectionMap = new Map<string, { year: string; entry_text: string }[]>();
@@ -325,7 +330,7 @@ const PublicArtistProfile = () => {
   const hasCv = cvSections.length > 0;
   const hasExhibitions = exhibitions.length > 0;
   const hasArtworks = artworks.length > 0;
-  const hasNavSections = hasCv || hasExhibitions || hasArtworks;
+  const hasNavSections = hasCv || hasExhibitions || hasArtworks || archivalDocuments.length > 0;
 
   const handleDownloadCv = () => {
     if (!profile || cvSections.length === 0) return;
@@ -534,7 +539,7 @@ const PublicArtistProfile = () => {
             {hasNavSections && (
               <div className="max-w-3xl mx-auto">
                 {/* Horizontal card navigation */}
-                <div className="grid grid-cols-3 gap-3 mb-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
                   {hasArtworks && (
                     <button
                       onClick={() => toggleSection("works")}
@@ -587,6 +592,8 @@ const PublicArtistProfile = () => {
                   )}
                 </div>
 
+                {archivalDocuments.length > 0 && <Button variant={openSection === "documents" ? "default" : "outline"} className="w-full mb-6" onClick={() => toggleSection("documents")}><FileText className="h-4 w-4 mr-2" />Archival Documents ({archivalDocuments.length})</Button>}
+                {openSection === "documents" && <PublicArchivalDocuments documents={archivalDocuments} />}
                 {/* Section content */}
                 {openSection === "works" && (
                   <div className="space-y-1">

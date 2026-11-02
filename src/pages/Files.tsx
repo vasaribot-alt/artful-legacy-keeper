@@ -15,7 +15,7 @@ import { FolderUploadDialog, readDroppedItems, type PickedFile } from "@/compone
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 type FileKind = "image" | "document";
-type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload" | "sketchbook";
+type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload" | "sketchbook" | "archival-document";
 
 interface FileRow {
   id: string;
@@ -53,6 +53,7 @@ const SOURCE_LABEL: Record<SourceType, string> = {
   "cv-image": "CV image",
   "unlinked-upload": "Unlinked",
   "sketchbook": "Sketchbook",
+  "archival-document": "Archival document",
 };
 
 const PUBLIC_BUCKETS = new Set([
@@ -434,6 +435,12 @@ const Files = () => {
     });
 
     if (activeRole === "artist") {
+      const { data: archival } = await supabase.from("archival_documents").select("*").eq("owner_id", user.id).eq("role_context", "artist");
+      for (const d of archival ?? []) rows.push({ id: `arc-${d.id}`, bucket: "archival-documents", storage_path: d.storage_path,
+        file_name: d.file_name, file_type: d.file_type, file_size: d.file_size, kind: d.file_type.startsWith("image/") ? "image" : "document",
+        source: "archival-document", linked_id: d.id, linked_title: `${d.reference_number} · ${d.title}`, linked_route: "/archival-documents",
+        year: d.document_date ? Number(d.document_date.slice(0,4)) : null, medium: null, series: null, artwork_type: null,
+        exhibition_type: null, exhibition_id: null, extension: extOf(d.file_name), caption: d.context, created_at: d.created_at });
       const { data: sketchbooks } = await supabase.from("sketchbooks").select("*").eq("owner_id", user.id).eq("role_context", "artist");
       for (const book of sketchbooks ?? []) {
         const sources = [{ path: book.pdf_path, name: `${book.title}.pdf`, size: book.file_size, type: "application/pdf" },
@@ -461,6 +468,12 @@ const Files = () => {
       }
     });
     setThumbs(thumbMap);
+    const archivalImages = rows.filter(r => r.source === "archival-document" && r.kind === "image");
+    if (archivalImages.length) {
+      const { data } = await supabase.storage.from("archival-documents").createSignedUrls(archivalImages.map(r => r.storage_path),60);
+      for (const [index, signed] of (data ?? []).entries()) if (signed.signedUrl) thumbMap[archivalImages[index].id] = signed.signedUrl;
+      setThumbs({ ...thumbMap });
+    }
     const sketchbookImages = rows.filter(r => r.source === "sketchbook" && r.kind === "image");
     if (sketchbookImages.length) {
       const { data } = await supabase.storage.from("sketchbooks").createSignedUrls(sketchbookImages.map(r => r.storage_path), 3600);
