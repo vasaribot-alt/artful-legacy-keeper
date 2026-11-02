@@ -1,6 +1,6 @@
 ## Sketchbook reading and downloads
-- [ ] Fit portrait and landscape pages inside the reader and verify both orientations.
-- [ ] Add owner-controlled public PDF downloads, off by default; verify persistence and public controls.
+- [x] Fit portrait and landscape pages inside the reader; both orientations verified at large and small viewports, plus Alfred's 13-page book on desktop/mobile.
+- [x] Add owner-controlled public PDF downloads, off by default; artist toggle, reload persistence, anonymous download and opt-out verified using a temporary sketchbook, then removed. Eight tests passed; no runtime errors. Existing artist settings unchanged apart from the new default-off preference.
 
 ## Artist archive usage overview
 - [x] Added foundation-only Sketchbooks and Archival Documents counts in the requested positions; existing progress scoring and private content access preserved. Two tests passed; Jan's signed-in overview and both columns verified, 24 artist usage rows returned, no runtime errors, build OK.
