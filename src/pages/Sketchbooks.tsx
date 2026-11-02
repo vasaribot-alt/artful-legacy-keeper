@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveOwner } from "@/hooks/use-active-owner";
 import { AppLayout } from "@/components/AppLayout";
@@ -33,6 +33,7 @@ export default function Sketchbooks() {
   const [mode, setMode] = useState("pdf");
   const [file, setFile] = useState<File | null>(null);
   const [photos, setPhotos] = useState<PagePhoto[]>([]);
+  const previews = useRef<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
   const [reader, setReader] = useState<{ book: Sketchbook; url: string } | null>(null);
@@ -47,14 +48,17 @@ export default function Sketchbooks() {
     setBooks(data ?? []); setLoadError(error ? error.message : ""); setLoading(false);
   };
   useEffect(() => { if (ownerId) void load(); else if (!ownerLoading) setLoading(false); }, [ownerId, ownerLoading]);
-  useEffect(() => () => { photos.forEach(p => URL.revokeObjectURL(p.preview)); }, [photos]);
+  useEffect(() => () => { previews.current.forEach(url => URL.revokeObjectURL(url)); }, []);
   const reset = (book: Sketchbook | null = null) => {
+    previews.current.forEach(url => URL.revokeObjectURL(url)); previews.current = [];
     setEditing(book); setTitle(book?.title ?? ""); setYear(book?.year?.toString() ?? ""); setNotes(book?.notes ?? ""); setFile(null); setPhotos([]); setMode("pdf"); setStatus(""); setOpen(true);
   };
   const addPhotos = (files: FileList | null) => {
     const incoming = Array.from(files ?? []);
     if (incoming.some(f => !["image/jpeg", "image/png", "image/webp"].includes(f.type))) { toast.error("Choose JPEG, PNG or WebP page photos."); return; }
-    setPhotos(current => [...current, ...incoming.map(file => ({ id: crypto.randomUUID(), file, preview: URL.createObjectURL(file), rotation: 0 }))]);
+    const added = incoming.map(file => ({ id: crypto.randomUUID(), file, preview: URL.createObjectURL(file), rotation: 0 }));
+    previews.current.push(...added.map(p => p.preview));
+    setPhotos(current => [...current, ...added]);
   };
   const save = async () => {
     if (!ownerId || !title.trim()) { toast.error("A title is required."); return; }

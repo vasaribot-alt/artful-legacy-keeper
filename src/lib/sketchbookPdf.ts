@@ -33,7 +33,7 @@ export async function photosToPdf(photos: Pick<PagePhoto, "file" | "rotation">[]
     const height = width * image.height / image.width;
     pdf.addPage([width, height]).drawImage(image, { x: 0, y: 0, width, height });
   }
-  return new File([await pdf.save()], "sketchbook.pdf", { type: "application/pdf" });
+  return new File([new Uint8Array(await pdf.save()).buffer], "sketchbook.pdf", { type: "application/pdf" });
 }
 
 export async function pdfPageCount(file: File) {
