@@ -1,3 +1,8 @@
+## Sketchbooks (2026-11-02)
+- [x] Add private artist sketchbooks with existing PDF or ordered photo uploads and a PDF reader.
+- [x] Include sketchbook files in archive storage accounting and Files.
+- [x] Verified both upload flows, reload, reader page navigation and download through Jan's appointed registrar access; originals preserved, three tests passed, PDF pages visually checked without clipping. Fixed download behavior; temporary records removed. Artist-only uploads rejected for Jan's non-artist archive as expected.
+
 ## Artist outreach letter correction (2026-10-12)
 - [x] Replaced all 52 unsent Norwegian-batch drafts with the free catalogue, website and preservation offer; database check: 52 correct, zero partnership/call requests, all remain unsent.
 - [x] Default artist generation now uses the shared artist draft builder; deployed and verified Erle's letter through Regenerate and reopening after reload in Jan's signed-in CRM.

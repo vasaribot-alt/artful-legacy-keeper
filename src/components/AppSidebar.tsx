@@ -87,6 +87,7 @@ const getNavItems = (role: AppRole) => {
     { title: "CV", url: "/cv", icon: FileText },
     { title: "Exhibitions", url: "/exhibitions", icon: Calendar },
     { title: "Catalogues", url: "/catalogues", icon: BookOpen },
+    { title: "Sketchbooks", url: "/sketchbooks", icon: BookOpen },
     { title: "Provenance", url: "/provenance", icon: ScrollText },
     { title: "Files", url: "/files", icon: FolderSearch },
     { title: "Correspondence", url: "/correspondence", icon: Mail },
