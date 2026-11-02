@@ -3653,6 +3653,7 @@ export type Database = {
           created_at: string
           file_size: number
           id: string
+          is_public: boolean
           notes: string | null
           owner_id: string
           page_count: number
@@ -3666,6 +3667,7 @@ export type Database = {
           created_at?: string
           file_size?: number
           id?: string
+          is_public?: boolean
           notes?: string | null
           owner_id: string
           page_count: number
@@ -3679,6 +3681,7 @@ export type Database = {
           created_at?: string
           file_size?: number
           id?: string
+          is_public?: boolean
           notes?: string | null
           owner_id?: string
           page_count?: number
