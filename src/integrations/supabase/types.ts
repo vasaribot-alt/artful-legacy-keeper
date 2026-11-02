@@ -3591,6 +3591,48 @@ export type Database = {
         }
         Relationships: []
       }
+      sketchbooks: {
+        Row: {
+          created_at: string
+          file_size: number
+          id: string
+          notes: string | null
+          owner_id: string
+          page_count: number
+          pages: Json
+          pdf_path: string
+          role_context: string
+          title: string
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          owner_id: string
+          page_count: number
+          pages?: Json
+          pdf_path: string
+          role_context?: string
+          title: string
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          file_size?: number
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          page_count?: number
+          pages?: Json
+          pdf_path?: string
+          role_context?: string
+          title?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
       statement_signatories: {
         Row: {
           comment: string | null
