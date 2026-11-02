@@ -1,3 +1,4 @@
+import { SketchbookReader } from "@/components/SketchbookReader";
 import { PublicArchivalDocuments } from "@/components/PublicArchivalDocuments";
 import type { ArchivalDocument } from "@/components/ArchivalDocumentViewer";
 import { useEffect, useMemo, useState } from "react";
@@ -82,9 +83,9 @@ interface Artwork {
 
 }
 
-type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news" | "documents";
+type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news" | "documents" | "sketchbooks";
 
-const SUB_PAGES = ["works", "about", "contact", "cv", "exhibitions", "publications", "news", "documents"];
+const SUB_PAGES = ["works", "about", "contact", "cv", "exhibitions", "publications", "news", "documents", "sketchbooks"];
 
 const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const params = useParams<{ slug: string; page?: string }>();
@@ -102,6 +103,8 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const [exViewer, setExViewer] = useState<{ exId: string; index: number } | null>(null);
   const [catalogues, setCatalogues] = useState<SiteCatalogue[]>([]);
   const [news, setNews] = useState<SiteNews[]>([]);
+  const [sketchbooks, setSketchbooks] = useState<{ id: string; title: string; year: number | null; notes: string | null; page_count: number; pdf_path: string }[]>([]);
+  const [openBook, setOpenBook] = useState<{ title: string; url: string } | null>(null);
   const [documents, setDocuments] = useState<ArchivalDocument[]>([]);
 
   useEffect(() => {
@@ -216,6 +219,14 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         .eq("role_context", "artist")
         .eq("is_public", true)
         .order("document_date", { ascending: false, nullsFirst: false });
+      const { data: books } = await supabase
+        .from("sketchbooks")
+        .select("id, title, year, notes, page_count, pdf_path")
+        .eq("owner_id", row.user_id)
+        .eq("role_context", "artist")
+        .eq("is_public", true)
+        .order("created_at", { ascending: false });
+      setSketchbooks((books as typeof sketchbooks) || []);
       setDocuments((docs as ArchivalDocument[]) || []);
 
       setLoading(false);
@@ -263,6 +274,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
     ...(sections.publications ? [{ key: "publications" as Page, label: "Publications", to: `${base}/publications` }] : []),
     ...(sections.cv_web || sections.cv_pdf ? [{ key: "cv" as Page, label: "CV", to: `${base}/cv` }] : []),
     ...(sections.news ? [{ key: "news" as Page, label: "News", to: `${base}/news` }] : []),
+    ...(sketchbooks.length ? [{ key: "sketchbooks" as Page, label: "Sketchbooks", to: `${base}/sketchbooks` }] : []),
     ...(documents.length ? [{ key: "documents" as Page, label: "Documents", to: `${base}/documents` }] : []),
     { key: "about", label: "About", to: `${base}/about` },
     { key: "contact", label: "Contact", to: `${base}/contact` },
@@ -666,6 +678,37 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
             )}
           </div>
         )}
+        {page === "sketchbooks" && (
+          <div className="mx-auto max-w-3xl px-6 py-16">
+            <h1 className="font-serif text-2xl">Sketchbooks</h1>
+            {sketchbooks.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">No public sketchbooks.</p>
+            ) : openBook ? (
+              <div className="mt-10">
+                <button className="mb-4 text-sm underline underline-offset-4" onClick={() => setOpenBook(null)}>All sketchbooks</button>
+                <h2 className="mb-4 font-serif text-xl">{openBook.title}</h2>
+                <SketchbookReader url={openBook.url} title={openBook.title} />
+              </div>
+            ) : (
+              <ul className="mt-10 divide-y divide-border border-t border-border">
+                {sketchbooks.map((book) => (
+                  <li key={book.id} className="flex flex-wrap items-start justify-between gap-4 py-6">
+                    <div>
+                      <h2 className="font-serif text-lg">{book.title}</h2>
+                      <p className="text-xs text-muted-foreground">{[book.year, `${book.page_count} pages`].filter(Boolean).join(" · ")}</p>
+                      {book.notes && <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{book.notes}</p>}
+                    </div>
+                    <button className="text-sm underline underline-offset-4" onClick={async () => {
+                      const { data } = await supabase.storage.from("sketchbooks").createSignedUrl(book.pdf_path, 3600);
+                      if (data) setOpenBook({ title: book.title, url: data.signedUrl });
+                    }}>Read</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
         {page === "documents" && (
           <div className="mx-auto max-w-3xl px-6 py-16">
             <h1 className="font-serif text-2xl">Archival Documents</h1>

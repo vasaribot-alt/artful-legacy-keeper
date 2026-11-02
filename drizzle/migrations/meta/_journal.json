@@ -127,6 +127,13 @@
       "when": 1793625917732,
       "tag": "0017_artist_archive_usage_overview",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1793629703651,
+      "tag": "0018_public_sketchbooks",
+      "breakpoints": true
     }
   ]
 }
