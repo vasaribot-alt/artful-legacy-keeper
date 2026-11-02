@@ -113,6 +113,13 @@
       "when": 1793622879270,
       "tag": "0015_artist_sketchbooks",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1793623658942,
+      "tag": "0016_artist_archival_documents",
+      "breakpoints": true
     }
   ]
 }

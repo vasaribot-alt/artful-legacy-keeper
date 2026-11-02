@@ -83,6 +83,63 @@ export type Database = {
         }
         Relationships: []
       }
+      archival_documents: {
+        Row: {
+          context: string | null
+          created_at: string
+          creator: string | null
+          document_date: string | null
+          document_type: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          is_public: boolean
+          owner_id: string
+          reference_number: string
+          rights_note: string | null
+          role_context: string
+          storage_path: string
+          title: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          creator?: string | null
+          document_date?: string | null
+          document_type?: string
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          is_public?: boolean
+          owner_id: string
+          reference_number?: string
+          rights_note?: string | null
+          role_context?: string
+          storage_path: string
+          title: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          creator?: string | null
+          document_date?: string | null
+          document_type?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          is_public?: boolean
+          owner_id?: string
+          reference_number?: string
+          rights_note?: string | null
+          role_context?: string
+          storage_path?: string
+          title?: string
+        }
+        Relationships: []
+      }
       artist_invites: {
         Row: {
           added_by: string
