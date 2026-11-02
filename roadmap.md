@@ -1,3 +1,7 @@
+## Sketchbook reading and downloads
+- [ ] Fit portrait and landscape pages inside the reader and verify both orientations.
+- [ ] Add owner-controlled public PDF downloads, off by default; verify persistence and public controls.
+
 ## Artist archive usage overview
 - [x] Added foundation-only Sketchbooks and Archival Documents counts in the requested positions; existing progress scoring and private content access preserved. Two tests passed; Jan's signed-in overview and both columns verified, 24 artist usage rows returned, no runtime errors, build OK.
 

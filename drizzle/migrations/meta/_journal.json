@@ -134,6 +134,13 @@
       "when": 1793629703651,
       "tag": "0018_public_sketchbooks",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793632439682,
+      "tag": "0019_sketchbook_public_download_preference",
+      "breakpoints": true
     }
   ]
 }
