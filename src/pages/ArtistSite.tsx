@@ -1,3 +1,5 @@
+import { PublicArchivalDocuments } from "@/components/PublicArchivalDocuments";
+import type { ArchivalDocument } from "@/components/ArchivalDocumentViewer";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,9 +82,9 @@ interface Artwork {
 
 }
 
-type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news";
+type Page = "home" | "works" | "about" | "contact" | "cv" | "exhibitions" | "publications" | "news" | "documents";
 
-const SUB_PAGES = ["works", "about", "contact", "cv", "exhibitions", "publications", "news"];
+const SUB_PAGES = ["works", "about", "contact", "cv", "exhibitions", "publications", "news", "documents"];
 
 const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const params = useParams<{ slug: string; page?: string }>();
@@ -100,6 +102,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const [exViewer, setExViewer] = useState<{ exId: string; index: number } | null>(null);
   const [catalogues, setCatalogues] = useState<SiteCatalogue[]>([]);
   const [news, setNews] = useState<SiteNews[]>([]);
+  const [documents, setDocuments] = useState<ArchivalDocument[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -206,6 +209,15 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         setNews((posts as SiteNews[]) || []);
       }
 
+      const { data: docs } = await supabase
+        .from("archival_documents")
+        .select("*")
+        .eq("owner_id", row.user_id)
+        .eq("role_context", "artist")
+        .eq("is_public", true)
+        .order("document_date", { ascending: false, nullsFirst: false });
+      setDocuments((docs as ArchivalDocument[]) || []);
+
       setLoading(false);
     })();
   }, [slug]);
@@ -251,6 +263,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
     ...(sections.publications ? [{ key: "publications" as Page, label: "Publications", to: `${base}/publications` }] : []),
     ...(sections.cv_web || sections.cv_pdf ? [{ key: "cv" as Page, label: "CV", to: `${base}/cv` }] : []),
     ...(sections.news ? [{ key: "news" as Page, label: "News", to: `${base}/news` }] : []),
+    ...(documents.length ? [{ key: "documents" as Page, label: "Documents", to: `${base}/documents` }] : []),
     { key: "about", label: "About", to: `${base}/about` },
     { key: "contact", label: "Contact", to: `${base}/contact` },
   ];
@@ -650,6 +663,16 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                   </li>
                 ))}
               </ul>
+            )}
+          </div>
+        )}
+        {page === "documents" && (
+          <div className="mx-auto max-w-3xl px-6 py-16">
+            <h1 className="font-serif text-2xl">Archival Documents</h1>
+            {documents.length === 0 ? (
+              <p className="mt-8 text-sm text-muted-foreground">No public documents.</p>
+            ) : (
+              <div className="mt-10"><PublicArchivalDocuments documents={documents} /></div>
             )}
           </div>
         )}
