@@ -15,7 +15,7 @@ Key points:
 
 This framing turned the Lauder Center's modernism focus from a mismatch into a shared mission: the Center studies yesterday's art; GARF ensures today's documentation survives to become tomorrow's primary source.
 
-On 2 November 2026, Jan supplied the Lauder Center contact address: laudercenter@metmuseum.org. Treat it as user-provided contact information, not independently verified. No letter has been sent.
+On 2 November 2026, Jan supplied the Lauder Center contact address: laudercenter@metmuseum.org. Treat it as user-provided contact information, not independently verified. The tailored introduction to Neil Cox was accepted for sending by Brevo on 2 November 2026; delivery is not confirmed. Do not resend without Jan's request.
 
 Jan confirmed on 2 November 2026 that Neil Cox leads the Leonard A. Lauder Research Center for Modern Art. Address the proposed letter to Neil Cox; the research report also identifies him as Head on the Center's official team page.
 
