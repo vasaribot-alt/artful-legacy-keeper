@@ -1,7 +1,7 @@
 ## Archival Documents (2026-11-02)
-- [ ] Add uploads, stable references, document types, historical dates and contextual notes.
-- [ ] Add artist-controlled publication and public reading; private by default.
-- [ ] Include in archive navigation, Files and storage accounting; verify saving and privacy.
+- [x] Add PDF/image uploads, immutable GAD references, document types, historical dates and contextual notes.
+- [x] Add artist-controlled publication and standalone public reading; private by default, with short-lived file links.
+- [x] Include in archive navigation, public profile, Files and storage accounting. Seven tests passed; artist-session PDF/image save/reload/read/publish/unpublish verified, anonymous private-file access denied, reference edits rejected. Temporary test documents removed. Public profile tested signed in; standalone public archive tested signed out.
 
 ## Sketchbooks (2026-11-02)
 - [x] Add private artist sketchbooks with existing PDF or ordered photo uploads and a PDF reader.
