@@ -4,3 +4,4 @@
 - Unclaimed works live in `orphan_artworks` (bulk DB), never in `artworks`: works move to an artist catalogue only via the artist claim flow (OrphanClaimsCard), preserving the artist-consent principle.
 - The active workspace role in localStorage is tied to the signed-in user id (activeRoleUser) and reset when a different account signs in; prevents one account role leaking into another on a shared browser.
 - Default individual-artist outreach uses the shared artist draft builder rather than the institutional AI prompt; this prevents regeneration from replacing artist offers with partnership requests.
+- Keep sketchbooks separate from artworks in a private owner- and artist-role-scoped archive; preserve original page photos alongside the generated PDF, use pdf-lib for generation and PDF.js for reading, and include both in Files and quota accounting.

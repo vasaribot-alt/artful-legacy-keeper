@@ -13,6 +13,7 @@ const navItems = [
   { label: "CV", path: "cv", icon: FileText },
   { label: "Exhibitions", path: "exhibitions", icon: Calendar },
   { label: "Catalogues", path: "catalogues", icon: BookOpen },
+  { label: "Sketchbooks", path: "sketchbooks", icon: BookOpen },
   { label: "Documents", path: "documents", icon: FolderOpen },
   { label: "Provenance", path: "provenance", icon: ScrollText },
   { label: "Research", path: "research", icon: Sparkles },
@@ -59,7 +60,7 @@ export function RegistrarWorkspaceLayout({ children, headerActions }: Props) {
       <header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur-sm z-20">
         <div className="max-w-7xl mx-auto px-6 h-12 flex items-center gap-2">
           <nav className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto">
-            {navItems.map((item) => {
+            {navItems.filter(item => item.path !== "sketchbooks" || clientRole === "artist").map((item) => {
               const fullPath = `${base}/${item.path}`;
               const isActive = location.pathname === fullPath
                 || location.pathname.startsWith(fullPath + "/")

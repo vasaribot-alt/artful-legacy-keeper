@@ -15,7 +15,7 @@ import { FolderUploadDialog, readDroppedItems, type PickedFile } from "@/compone
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 type FileKind = "image" | "document";
-type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload";
+type SourceType = "artwork-image" | "artwork-document" | "exhibition-image" | "exhibition-document" | "catalogue-cover" | "cv-image" | "unlinked-upload" | "sketchbook";
 
 interface FileRow {
   id: string;
@@ -52,6 +52,7 @@ const SOURCE_LABEL: Record<SourceType, string> = {
   "catalogue-cover": "Catalogue cover",
   "cv-image": "CV image",
   "unlinked-upload": "Unlinked",
+  "sketchbook": "Sketchbook",
 };
 
 const PUBLIC_BUCKETS = new Set([
@@ -432,6 +433,20 @@ const Files = () => {
       });
     });
 
+    if (activeRole === "artist") {
+      const { data: sketchbooks } = await supabase.from("sketchbooks").select("*").eq("owner_id", user.id).eq("role_context", "artist");
+      for (const book of sketchbooks ?? []) {
+        const sources = [{ path: book.pdf_path, name: `${book.title}.pdf`, size: book.file_size, type: "application/pdf" },
+          ...(book.pages as unknown as { path: string; name: string; size: number }[]).map(p => ({ ...p, type: `image/${p.path.split(".").pop()}` }))];
+        for (const [index, source] of sources.entries()) rows.push({
+          id: `sk-${book.id}-${index}`, bucket: "sketchbooks", storage_path: source.path, file_name: source.name,
+          file_type: source.type, file_size: source.size, kind: index === 0 ? "document" : "image", source: "sketchbook",
+          linked_id: book.id, linked_title: book.title, linked_route: "/sketchbooks", year: book.year, medium: null,
+          series: null, artwork_type: null, exhibition_type: null, exhibition_id: null, extension: extOf(source.name),
+          caption: book.notes, created_at: book.created_at,
+        });
+      }
+    }
     setFiles(rows);
 
     // Build thumbnails
@@ -446,6 +461,12 @@ const Files = () => {
       }
     });
     setThumbs(thumbMap);
+    const sketchbookImages = rows.filter(r => r.source === "sketchbook" && r.kind === "image");
+    if (sketchbookImages.length) {
+      const { data } = await supabase.storage.from("sketchbooks").createSignedUrls(sketchbookImages.map(r => r.storage_path), 3600);
+      for (const [index, signed] of (data ?? []).entries()) if (signed.signedUrl) thumbMap[sketchbookImages[index].id] = signed.signedUrl;
+      setThumbs({ ...thumbMap });
+    }
     setLoading(false);
   };
 

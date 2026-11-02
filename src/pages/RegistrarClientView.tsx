@@ -11,6 +11,7 @@ import { RegistrarWorkspaceLayout } from "@/components/RegistrarWorkspaceLayout"
 import { useActiveOwner } from "@/hooks/use-active-owner";
 import Exhibitions from "@/pages/Exhibitions";
 import Catalogues from "@/pages/Catalogues";
+import Sketchbooks from "@/pages/Sketchbooks";
 import { CommitteeInbox, CommitteeSubmissionDetail } from "@/pages/CommitteeReview";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 import { ResearchWorkspace } from "@/components/ResearchWorkspace";
@@ -321,6 +322,7 @@ const RegistrarClientView = () => {
       <Route path="profile" element={<ProfileSection ownerId={ownerId} />} />
       <Route path="exhibitions" element={<Exhibitions />} />
       <Route path="catalogues" element={<Catalogues />} />
+      <Route path="sketchbooks" element={<Sketchbooks />} />
       <Route
         path="portfolios"
         element={
