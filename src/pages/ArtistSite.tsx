@@ -1,4 +1,6 @@
 import { SketchbookReader } from "@/components/SketchbookReader";
+import { canDownloadSketchbook } from "@/lib/sketchbookReader";
+import { Button } from "@/components/ui/button";
 import { PublicArchivalDocuments } from "@/components/PublicArchivalDocuments";
 import type { ArchivalDocument } from "@/components/ArchivalDocumentViewer";
 import { useEffect, useMemo, useState } from "react";
@@ -103,8 +105,8 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   const [exViewer, setExViewer] = useState<{ exId: string; index: number } | null>(null);
   const [catalogues, setCatalogues] = useState<SiteCatalogue[]>([]);
   const [news, setNews] = useState<SiteNews[]>([]);
-  const [sketchbooks, setSketchbooks] = useState<{ id: string; title: string; year: number | null; notes: string | null; page_count: number; pdf_path: string }[]>([]);
-  const [openBook, setOpenBook] = useState<{ title: string; url: string } | null>(null);
+  const [sketchbooks, setSketchbooks] = useState<{ id: string; title: string; year: number | null; notes: string | null; page_count: number; pdf_path: string; allow_public_download: boolean }[]>([]);
+  const [openBook, setOpenBook] = useState<{ title: string; url: string; allowDownload: boolean } | null>(null);
   const [documents, setDocuments] = useState<ArchivalDocument[]>([]);
 
   useEffect(() => {
@@ -221,7 +223,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
         .order("document_date", { ascending: false, nullsFirst: false });
       const { data: books } = await supabase
         .from("sketchbooks")
-        .select("id, title, year, notes, page_count, pdf_path")
+        .select("id, title, year, notes, page_count, pdf_path, allow_public_download")
         .eq("owner_id", row.user_id)
         .eq("role_context", "artist")
         .eq("is_public", true)
@@ -685,9 +687,9 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
               <p className="mt-8 text-sm text-muted-foreground">No public sketchbooks.</p>
             ) : openBook ? (
               <div className="mt-10">
-                <button className="mb-4 text-sm underline underline-offset-4" onClick={() => setOpenBook(null)}>All sketchbooks</button>
+                <Button variant="link" className="mb-4 px-0" onClick={() => setOpenBook(null)}>All sketchbooks</Button>
                 <h2 className="mb-4 font-serif text-xl">{openBook.title}</h2>
-                <SketchbookReader url={openBook.url} title={openBook.title} />
+                <SketchbookReader url={openBook.url} title={openBook.title} allowDownload={openBook.allowDownload} />
               </div>
             ) : (
               <ul className="mt-10 divide-y divide-border border-t border-border">
@@ -698,10 +700,10 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
                       <p className="text-xs text-muted-foreground">{[book.year, `${book.page_count} pages`].filter(Boolean).join(" · ")}</p>
                       {book.notes && <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">{book.notes}</p>}
                     </div>
-                    <button className="text-sm underline underline-offset-4" onClick={async () => {
+                    <Button variant="link" onClick={async () => {
                       const { data } = await supabase.storage.from("sketchbooks").createSignedUrl(book.pdf_path, 3600);
-                      if (data) setOpenBook({ title: book.title, url: data.signedUrl });
-                    }}>Read</button>
+                      if (data) setOpenBook({ title: book.title, url: data.signedUrl, allowDownload: canDownloadSketchbook(true, book.allow_public_download) });
+                    }}>Read</Button>
                   </li>
                 ))}
               </ul>

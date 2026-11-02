@@ -7,6 +7,7 @@ import { SketchbookReader } from "@/components/SketchbookReader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -15,6 +16,7 @@ import { toast } from "sonner";
 import { assertWithinQuota, formatBytes } from "@/lib/storageQuota";
 import { movePage, photosToPdf, pdfPageCount, type PagePhoto } from "@/lib/sketchbookPdf";
 import type { Tables } from "@/integrations/supabase/types";
+import { canDownloadSketchbook } from "@/lib/sketchbookReader";
 
 type Sketchbook = Tables<"sketchbooks">;
 type SavedPage = { path: string; name: string; size: number; rotation: number };
@@ -111,6 +113,13 @@ export default function Sketchbooks() {
     toast.success(book.is_public ? "Sketchbook is now private." : "Sketchbook is now public on your website.");
     setBooks(list => list.map(b => b.id === book.id ? { ...b, is_public: !book.is_public } : b));
   };
+  const toggleDownloads = async (book: Sketchbook, checked: boolean) => {
+    if (isRegistrarContext) return;
+    const { data, error } = await supabase.from("sketchbooks").update({ allow_public_download: checked }).eq("id", book.id).eq("owner_id", ownerId).eq("role_context", "artist").select("id, allow_public_download").single();
+    if (error || !data) { toast.error("Unable to change public downloads. Only the artist can change this setting."); return; }
+    setBooks(list => list.map(b => b.id === book.id ? { ...b, allow_public_download: data.allow_public_download } : b));
+    toast.success(checked ? "Public PDF downloads allowed." : "Public PDF downloads disabled.");
+  };
   const read = async (book: Sketchbook) => {
     const { data, error } = await supabase.storage.from("sketchbooks").createSignedUrl(book.pdf_path, 3600);
     if (error || !data) { toast.error("Unable to open sketchbook."); return; }
@@ -136,8 +145,8 @@ export default function Sketchbooks() {
       {loading ? <p role="status">Loading…</p> : loadError ? <div role="alert"><p className="text-destructive">Unable to load sketchbooks.</p><Button variant="outline" onClick={load}>Retry</Button></div> : !allowed ? <p className="text-muted-foreground">Sketchbooks belong to the artist archive.</p> : !books.length ? <div className="py-16 text-center"><BookOpen className="h-10 w-10 mx-auto mb-4 text-muted-foreground" /><h2 className="font-serif text-2xl">No sketchbooks yet</h2></div> : <div className="space-y-4">
         {books.filter(b => `${b.title} ${b.year ?? ""} ${b.notes ?? ""}`.toLowerCase().includes(search.toLowerCase())).map(book => <article key={book.id} className="border border-border rounded-sm p-5 flex flex-wrap gap-4 items-start">
           <BookOpen className="h-8 w-8 text-muted-foreground shrink-0" />
-          <div className="flex-1 min-w-0"><h2 className="font-serif text-xl break-words">{book.title}</h2><p className="text-sm text-muted-foreground mt-1">{book.year ? `${book.year} · ` : ""}{book.page_count} pages · {formatBytes(book.file_size)} · {book.is_public ? "Public" : "Private"}</p>{book.notes && <p className="text-sm mt-3 whitespace-pre-wrap break-words">{book.notes}</p>}</div>
-          <div className="flex gap-1"><Button variant="outline" onClick={() => read(book)}><BookOpen className="h-4 w-4 mr-2" />Read</Button>{!isRegistrarContext && <Button variant="outline" onClick={() => togglePublic(book)}>{book.is_public ? "Make private" : "Make public"}</Button>}<Button variant="ghost" size="icon" aria-label={`Edit ${book.title}`} title="Edit details" onClick={() => reset(book)}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" aria-label={`Delete ${book.title}`} title="Delete sketchbook" onClick={() => setDeleting(book)}><Trash2 className="h-4 w-4" /></Button></div>
+          <div className="flex-1 min-w-0"><h2 className="font-serif text-xl break-words">{book.title}</h2><p className="text-sm text-muted-foreground mt-1">{book.year ? `${book.year} · ` : ""}{book.page_count} pages · {formatBytes(book.file_size)} · {book.is_public ? "Public" : "Private"}</p>{book.notes && <p className="text-sm mt-3 whitespace-pre-wrap break-words">{book.notes}</p>}{!isRegistrarContext && <div className="flex items-center gap-3 mt-4"><Switch id={`downloads-${book.id}`} checked={book.allow_public_download} onCheckedChange={checked => void toggleDownloads(book, checked)} /><Label htmlFor={`downloads-${book.id}`}>Allow public PDF downloads</Label></div>}</div>
+          <div className="flex flex-wrap gap-1"><Button variant="outline" onClick={() => read(book)}><BookOpen className="h-4 w-4 mr-2" />Read</Button>{!isRegistrarContext && <Button variant="outline" onClick={() => togglePublic(book)}>{book.is_public ? "Make private" : "Make public"}</Button>}<Button variant="ghost" size="icon" aria-label={`Edit ${book.title}`} title="Edit details" onClick={() => reset(book)}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" aria-label={`Delete ${book.title}`} title="Delete sketchbook" onClick={() => setDeleting(book)}><Trash2 className="h-4 w-4" /></Button></div>
         </article>)}
       </div>}
     </div>
@@ -156,7 +165,7 @@ export default function Sketchbooks() {
         <div className="flex justify-end gap-2"><Button type="button" variant="outline" disabled={saving} onClick={() => { setOpen(false); setPhotos([]); }}>Cancel</Button><Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save Sketchbook"}</Button></div>
       </form>
     </DialogContent></Dialog>
-    <Dialog open={!!reader} onOpenChange={value => { if (!value) setReader(null); }}><DialogContent className="max-w-5xl"><DialogHeader><DialogTitle className="break-words pr-5">{reader?.book.title}</DialogTitle></DialogHeader>{reader && <SketchbookReader key={reader.book.id} url={reader.url} title={reader.book.title} />}</DialogContent></Dialog>
+    <Dialog open={!!reader} onOpenChange={value => { if (!value) setReader(null); }}><DialogContent className="max-w-5xl max-h-[95dvh] overflow-y-auto"><DialogHeader><DialogTitle className="break-words pr-5">{reader?.book.title}</DialogTitle></DialogHeader>{reader && <SketchbookReader key={reader.book.id} url={reader.url} title={reader.book.title} allowDownload={canDownloadSketchbook(false)} />}</DialogContent></Dialog>
     <Dialog open={!!deleting} onOpenChange={value => { if (!value && !busyDelete) setDeleting(null); }}><DialogContent><DialogHeader><DialogTitle>Delete sketchbook?</DialogTitle><DialogDescription>The PDF and original page photos will be permanently removed.</DialogDescription></DialogHeader><div className="flex justify-end gap-2"><Button variant="outline" disabled={busyDelete} onClick={() => setDeleting(null)}>Cancel</Button><Button variant="destructive" disabled={busyDelete} onClick={remove}>{busyDelete ? "Deleting…" : "Delete"}</Button></div></DialogContent></Dialog>
   </>;
   return isRegistrarContext ? <RegistrarWorkspaceLayout headerActions={actions}>{content}</RegistrarWorkspaceLayout> : <AppLayout title="Sketchbooks" headerActions={actions}>{content}</AppLayout>;
