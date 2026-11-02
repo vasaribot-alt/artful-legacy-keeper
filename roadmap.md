@@ -1,7 +1,7 @@
 ## Sketchbooks (2026-11-02)
-- [ ] Add private artist sketchbooks with existing PDF or ordered photo uploads and a PDF reader.
-- [ ] Include sketchbook files in archive storage accounting and Files.
-- [ ] Verify photo-to-PDF and existing-PDF flows, privacy, and page order.
+- [x] Add private artist sketchbooks with existing PDF or ordered photo uploads and a PDF reader.
+- [x] Include sketchbook files in archive storage accounting and Files.
+- [x] Verified both upload flows, reload, reader page navigation and download through Jan's appointed registrar access; originals preserved, three tests passed, PDF pages visually checked without clipping. Fixed download behavior; temporary records removed. Artist-only uploads rejected for Jan's non-artist archive as expected.
 
 ## Artist outreach letter correction (2026-10-12)
 - [x] Replaced all 52 unsent Norwegian-batch drafts with the free catalogue, website and preservation offer; database check: 52 correct, zero partnership/call requests, all remain unsent.
