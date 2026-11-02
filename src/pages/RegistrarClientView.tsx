@@ -12,6 +12,7 @@ import { useActiveOwner } from "@/hooks/use-active-owner";
 import Exhibitions from "@/pages/Exhibitions";
 import Catalogues from "@/pages/Catalogues";
 import Sketchbooks from "@/pages/Sketchbooks";
+import ArchivalDocuments from "@/pages/ArchivalDocuments";
 import { CommitteeInbox, CommitteeSubmissionDetail } from "@/pages/CommitteeReview";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 import { ResearchWorkspace } from "@/components/ResearchWorkspace";
@@ -323,6 +324,7 @@ const RegistrarClientView = () => {
       <Route path="exhibitions" element={<Exhibitions />} />
       <Route path="catalogues" element={<Catalogues />} />
       <Route path="sketchbooks" element={<Sketchbooks />} />
+      <Route path="archival-documents" element={<ArchivalDocuments />} />
       <Route
         path="portfolios"
         element={

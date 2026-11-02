@@ -1,3 +1,8 @@
+## Archival Documents (2026-11-02)
+- [ ] Add uploads, stable references, document types, historical dates and contextual notes.
+- [ ] Add artist-controlled publication and public reading; private by default.
+- [ ] Include in archive navigation, Files and storage accounting; verify saving and privacy.
+
 ## Sketchbooks (2026-11-02)
 - [x] Add private artist sketchbooks with existing PDF or ordered photo uploads and a PDF reader.
 - [x] Include sketchbook files in archive storage accounting and Files.

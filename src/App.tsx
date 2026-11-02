@@ -29,6 +29,8 @@ import PortfolioDetail from "./pages/PortfolioDetail";
 import PortfolioShared from "./pages/PortfolioShared";
 import Catalogues from "./pages/Catalogues";
 import Sketchbooks from "./pages/Sketchbooks";
+import ArchivalDocuments from "./pages/ArchivalDocuments";
+import PublicDocumentArchive from "./pages/PublicDocumentArchive";
 import FoundingArtists from "./pages/FoundingArtists";
 import PublicArtistProfile from "./pages/PublicArtistProfile";
 import FoundationDashboard from "./pages/FoundationDashboard";
@@ -137,6 +139,8 @@ const App = () => (
           <Route path="/provenance" element={<Provenance />} />
           <Route path="/catalogues" element={<Catalogues />} />
           <Route path="/sketchbooks" element={<Sketchbooks />} />
+          <Route path="/archival-documents" element={<ArchivalDocuments />} />
+          <Route path="/artist/:id/documents" element={<PublicDocumentArchive />} />
           <Route path="/series" element={<Series />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/files" element={<Files />} />
