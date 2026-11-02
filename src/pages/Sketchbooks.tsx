@@ -105,6 +105,12 @@ export default function Sketchbooks() {
       toast.error(error instanceof Error ? error.message : "Unable to save sketchbook.");
     } finally { setSaving(false); setStatus(""); }
   };
+  const togglePublic = async (book: Sketchbook) => {
+    const { error } = await supabase.from("sketchbooks").update({ is_public: !book.is_public }).eq("id", book.id).eq("owner_id", ownerId).eq("role_context", "artist");
+    if (error) { toast.error("Only the artist can change visibility."); return; }
+    toast.success(book.is_public ? "Sketchbook is now private." : "Sketchbook is now public on your website.");
+    setBooks(list => list.map(b => b.id === book.id ? { ...b, is_public: !book.is_public } : b));
+  };
   const read = async (book: Sketchbook) => {
     const { data, error } = await supabase.storage.from("sketchbooks").createSignedUrl(book.pdf_path, 3600);
     if (error || !data) { toast.error("Unable to open sketchbook."); return; }
@@ -130,8 +136,8 @@ export default function Sketchbooks() {
       {loading ? <p role="status">Loading…</p> : loadError ? <div role="alert"><p className="text-destructive">Unable to load sketchbooks.</p><Button variant="outline" onClick={load}>Retry</Button></div> : !allowed ? <p className="text-muted-foreground">Sketchbooks belong to the artist archive.</p> : !books.length ? <div className="py-16 text-center"><BookOpen className="h-10 w-10 mx-auto mb-4 text-muted-foreground" /><h2 className="font-serif text-2xl">No sketchbooks yet</h2></div> : <div className="space-y-4">
         {books.filter(b => `${b.title} ${b.year ?? ""} ${b.notes ?? ""}`.toLowerCase().includes(search.toLowerCase())).map(book => <article key={book.id} className="border border-border rounded-sm p-5 flex flex-wrap gap-4 items-start">
           <BookOpen className="h-8 w-8 text-muted-foreground shrink-0" />
-          <div className="flex-1 min-w-0"><h2 className="font-serif text-xl break-words">{book.title}</h2><p className="text-sm text-muted-foreground mt-1">{book.year ? `${book.year} · ` : ""}{book.page_count} pages · {formatBytes(book.file_size)}</p>{book.notes && <p className="text-sm mt-3 whitespace-pre-wrap break-words">{book.notes}</p>}</div>
-          <div className="flex gap-1"><Button variant="outline" onClick={() => read(book)}><BookOpen className="h-4 w-4 mr-2" />Read</Button><Button variant="ghost" size="icon" aria-label={`Edit ${book.title}`} title="Edit details" onClick={() => reset(book)}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" aria-label={`Delete ${book.title}`} title="Delete sketchbook" onClick={() => setDeleting(book)}><Trash2 className="h-4 w-4" /></Button></div>
+          <div className="flex-1 min-w-0"><h2 className="font-serif text-xl break-words">{book.title}</h2><p className="text-sm text-muted-foreground mt-1">{book.year ? `${book.year} · ` : ""}{book.page_count} pages · {formatBytes(book.file_size)} · {book.is_public ? "Public" : "Private"}</p>{book.notes && <p className="text-sm mt-3 whitespace-pre-wrap break-words">{book.notes}</p>}</div>
+          <div className="flex gap-1"><Button variant="outline" onClick={() => read(book)}><BookOpen className="h-4 w-4 mr-2" />Read</Button>{!isRegistrarContext && <Button variant="outline" onClick={() => togglePublic(book)}>{book.is_public ? "Make private" : "Make public"}</Button>}<Button variant="ghost" size="icon" aria-label={`Edit ${book.title}`} title="Edit details" onClick={() => reset(book)}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" aria-label={`Delete ${book.title}`} title="Delete sketchbook" onClick={() => setDeleting(book)}><Trash2 className="h-4 w-4" /></Button></div>
         </article>)}
       </div>}
     </div>
