@@ -3650,6 +3650,7 @@ export type Database = {
       }
       sketchbooks: {
         Row: {
+          allow_public_download: boolean
           created_at: string
           file_size: number
           id: string
@@ -3664,6 +3665,7 @@ export type Database = {
           year: number | null
         }
         Insert: {
+          allow_public_download?: boolean
           created_at?: string
           file_size?: number
           id?: string
@@ -3678,6 +3680,7 @@ export type Database = {
           year?: number | null
         }
         Update: {
+          allow_public_download?: boolean
           created_at?: string
           file_size?: number
           id?: string
