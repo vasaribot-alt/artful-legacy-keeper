@@ -37,7 +37,7 @@ export async function photosToPdf(photos: Pick<PagePhoto, "file" | "rotation">[]
 }
 
 export async function pdfPageCount(file: File) {
-  const pdf = await PDFDocument.load(await file.arrayBuffer());
+  const pdf = await PDFDocument.load(new Uint8Array(await file.arrayBuffer()));
   if (!pdf.getPageCount()) throw new Error("The PDF has no pages.");
   return pdf.getPageCount();
 }
