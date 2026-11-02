@@ -18,3 +18,5 @@ This framing turned the Lauder Center's modernism focus from a mismatch into a s
 On 2 November 2026, Jan supplied the Lauder Center contact address: laudercenter@metmuseum.org. Treat it as user-provided contact information, not independently verified. No letter has been sent.
 
 Jan confirmed on 2 November 2026 that Neil Cox leads the Leonard A. Lauder Research Center for Modern Art. Address the proposed letter to Neil Cox; the research report also identifies him as Head on the Center's official team page.
+
+On 2 November 2026, Jan supplied Art Basel contacts maike.cruse@artbasel.com and noah.horowitz@artbasel.com; these are user-provided, not independently verified. For this scholarly/institutional campaign he approved the complete list, tailored introductory letters, suitable contact-form requests where email is unavailable, and sending from his personal GARF email. Closed institutions and unsuitable/unresolved routes must not be treated as successful sends.
