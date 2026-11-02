@@ -3,6 +3,7 @@ import { getDocument, GlobalWorkerOptions, type PDFDocumentProxy } from "pdfjs-d
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Download, ZoomIn, ZoomOut } from "lucide-react";
+import { toast } from "sonner";
 
 GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -13,6 +14,19 @@ export function SketchbookReader({ url, title }: { url: string; title: string })
   const [zoom, setZoom] = useState(1);
   const [error, setError] = useState("");
   const [rendering, setRendering] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+  const download = async () => {
+    setDownloading(true);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Download failed");
+      const localUrl = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = localUrl; link.download = `${title}.pdf`; link.click();
+      setTimeout(() => URL.revokeObjectURL(localUrl), 10000);
+    } catch { toast.error("Unable to download PDF. Please reopen the sketchbook and retry."); }
+    finally { setDownloading(false); }
+  };
   useEffect(() => {
     const task = getDocument(url);
     let cancelled = false;
@@ -47,7 +61,7 @@ export function SketchbookReader({ url, title }: { url: string; title: string })
       <div className="flex gap-1">
         <Button variant="ghost" size="icon" title="Zoom out" aria-label="Zoom out" disabled={zoom <= 1} onClick={() => setZoom(z => z - 0.25)}><ZoomOut className="h-4 w-4" /></Button>
         <Button variant="ghost" size="icon" title="Zoom in" aria-label="Zoom in" disabled={zoom >= 2} onClick={() => setZoom(z => z + 0.25)}><ZoomIn className="h-4 w-4" /></Button>
-        <Button variant="outline" asChild><a href={url} target="_blank" rel="noreferrer" download={`${title}.pdf`}><Download className="h-4 w-4 mr-2" />PDF</a></Button>
+        <Button variant="outline" disabled={downloading} onClick={download}><Download className="h-4 w-4 mr-2" />PDF</Button>
       </div>
     </div>
     {error ? <p role="alert" className="text-destructive">{error}</p> : <div className="h-[65vh] overflow-auto bg-muted border border-border p-3">

@@ -25,6 +25,7 @@ export default function Sketchbooks() {
   const [books, setBooks] = useState<Sketchbook[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [hasArtistRole, setHasArtistRole] = useState(false);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Sketchbook | null>(null);
   const [title, setTitle] = useState("");
@@ -44,6 +45,8 @@ export default function Sketchbooks() {
   const load = async () => {
     if (!ownerId) return;
     setLoading(true);
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", ownerId);
+    setHasArtistRole((roles ?? []).some(r => r.role === "artist"));
     const { data, error } = await supabase.from("sketchbooks").select("*").eq("owner_id", ownerId).eq("role_context", "artist").order("created_at", { ascending: false });
     setBooks(data ?? []); setLoadError(error ? error.message : ""); setLoading(false);
   };
@@ -119,7 +122,7 @@ export default function Sketchbooks() {
     } catch { toast.error("Unable to delete sketchbook. Please retry."); }
     finally { setBusyDelete(false); }
   };
-  const allowed = !isRegistrarContext || clientRole === "artist";
+  const allowed = hasArtistRole && (!isRegistrarContext || clientRole === "artist");
   const actions = allowed && <Button size="sm" onClick={() => reset()}><Plus className="h-4 w-4 mr-2" />Add Sketchbook</Button>;
   const content = <>
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
