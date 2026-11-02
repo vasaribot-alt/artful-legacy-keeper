@@ -10,7 +10,7 @@ describe("sketchbooks", () => {
   it("accepts an existing PDF and reads its page count", async () => {
     const pdf = await PDFDocument.create();
     pdf.addPage(); pdf.addPage();
-    const file = new NodeFile([new Uint8Array(await pdf.save()).buffer], "book.pdf", { type: "application/pdf" });
+    const file = new NodeFile([new Uint8Array(await pdf.save())], "book.pdf", { type: "application/pdf" });
     expect(await pdfPageCount(file as unknown as File)).toBe(2);
   });
   it("does not create a sketchbook without page photos", async () => {
