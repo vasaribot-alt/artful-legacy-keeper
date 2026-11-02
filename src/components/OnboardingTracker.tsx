@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Check, LifeBuoy, Minus, Send } from "lucide-react";
 import { toast } from "sonner";
+import { attachArtistArchiveUsage } from "@/lib/artistArchiveUsage";
 
 type AccountRole = "artist" | "collector" | "registrar";
 type Filter = "recent" | "stuck" | "all";
@@ -42,6 +43,8 @@ interface Row {
   registrar_available: boolean;
   registrar_has_cv: boolean;
   registrar_clients: number;
+  sketchbook_count: number;
+  archival_document_count: number;
 }
 
 interface Step {
@@ -86,6 +89,7 @@ const daysSince = (iso: string) => Math.floor((Date.now() - new Date(iso).getTim
 export default function OnboardingTracker() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usageAvailable, setUsageAvailable] = useState(false);
   const [role, setRole] = useState<AccountRole>("artist");
   const [filter, setFilter] = useState<Filter>("recent");
   const [busy, setBusy] = useState<string | null>(null);
@@ -94,9 +98,14 @@ export default function OnboardingTracker() {
   const [body, setBody] = useState("");
 
   const load = async () => {
-    const { data, error } = await supabase.rpc("get_onboarding_progress");
+    const [{ data, error }, usage] = await Promise.all([
+      supabase.rpc("get_onboarding_progress"),
+      supabase.rpc("get_artist_archive_usage"),
+    ]);
     if (error) toast.error("Could not load getting started");
-    if (data) setRows(data as unknown as Row[]);
+    setUsageAvailable(!usage.error);
+    if (usage.error) toast.error("Could not load archive usage");
+    if (data) setRows(attachArtistArchiveUsage(data as unknown as Row[], usage.data ?? []));
     setLoading(false);
   };
 
@@ -228,7 +237,16 @@ export default function OnboardingTracker() {
                 <TableHead>Name</TableHead>
                 <TableHead>Joined</TableHead>
                 <TableHead>Progress</TableHead>
-                {steps.map((step) => <TableHead key={step.label} className="text-center text-xs">{step.label}</TableHead>)}
+                {steps.map((step) => (
+                  <TableHead key={step.label} className="text-center text-xs">
+                    {step.label}
+                  </TableHead>
+                )).flatMap((heading, index) => {
+                  if (role !== "artist") return [heading];
+                  if (steps[index].label === "Biography") return [heading, <TableHead key="sketchbooks" className="text-center text-xs whitespace-nowrap">Sketchbooks</TableHead>];
+                  if (steps[index].label === "Photos") return [heading, <TableHead key="documents" className="text-center text-xs whitespace-nowrap">Archival Documents</TableHead>];
+                  return [heading];
+                })}
                 {role === "artist" && <TableHead>Artist URL</TableHead>}
                 <TableHead className="text-right">Welcome letter</TableHead>
               </TableRow>
@@ -253,7 +271,12 @@ export default function OnboardingTracker() {
                       <TableCell key={step.label} className="text-center">
                         {step.done(row) ? <Check className="h-4 w-4 mx-auto" aria-label="Done" /> : <Minus className="h-4 w-4 mx-auto text-muted-foreground/40" aria-label="Not yet" />}
                       </TableCell>
-                    ))}
+                    )).flatMap((cell, index) => {
+                      if (role !== "artist") return [cell];
+                      if (steps[index].label === "Biography") return [cell, <TableCell key="sketchbooks" className="text-center text-sm tabular-nums" title={usageAvailable ? `${row.sketchbook_count} sketchbooks` : "Usage unavailable"}>{usageAvailable ? row.sketchbook_count : "—"}</TableCell>];
+                      if (steps[index].label === "Photos") return [cell, <TableCell key="documents" className="text-center text-sm tabular-nums" title={usageAvailable ? `${row.archival_document_count} archival documents` : "Usage unavailable"}>{usageAvailable ? row.archival_document_count : "—"}</TableCell>];
+                      return [cell];
+                    })}
                     {role === "artist" && (
                       <TableCell className="text-sm max-w-40">
                         {row.discovered_website ? (

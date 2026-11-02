@@ -1,3 +1,6 @@
+## Artist archive usage overview
+- [ ] Add foundation-only Sketchbooks and Archival Documents counts to the getting-started table, preserving existing progress scoring and private content access; verify tests and signed-in display.
+
 ## Archival Documents (2026-11-02)
 - [x] Add PDF/image uploads, immutable GAD references, document types, historical dates and contextual notes.
 - [x] Add artist-controlled publication and standalone public reading; private by default, with short-lived file links.

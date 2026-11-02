@@ -6,3 +6,4 @@
 - Default individual-artist outreach uses the shared artist draft builder rather than the institutional AI prompt; this prevents regeneration from replacing artist offers with partnership requests.
 - Keep sketchbooks separate from artworks in a private owner- and artist-role-scoped archive; preserve original page photos alongside the generated PDF, use pdf-lib for generation and PDF.js for reading, and include both in Files and quota accounting.
 - Store archival documents separately with immutable database-assigned references and private storage; only the artist may publish, public rows and files require explicit visibility, and the shared viewer serves the editor and public archive.
+- Foundation archive usage is returned by a foundation-gated aggregate RPC scoped to each owner and artist role; show optional archive counts separately from onboarding progress without exposing private contents.
