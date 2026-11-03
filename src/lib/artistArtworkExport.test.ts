@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as XLSX from "xlsx";
 const mocks = vi.hoisted(() => ({ getUser: vi.fn(), from: vi.fn() }));
