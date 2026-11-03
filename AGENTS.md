@@ -8,3 +8,4 @@
 - Guard sketchbook publication and public-download preferences with an owner-only database trigger, and pass the preference explicitly to public readers; public reading is not DRM and must remain independent of the download button.
 - Store archival documents separately with immutable database-assigned references and private storage; only the artist may publish, public rows and files require explicit visibility, and the shared viewer serves the editor and public archive.
 - Foundation archive usage is returned by a foundation-gated aggregate RPC scoped to each owner and artist role; show optional archive counts separately from onboarding progress without exposing private contents.
+- Artist artwork exports fetch paginated records scoped to the authenticated owner and artist role, and prepare CSV/Excel before a separate download click to preserve mobile user activation.

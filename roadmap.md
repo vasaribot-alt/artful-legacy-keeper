@@ -1,3 +1,6 @@
+## Artist artwork exports
+- [ ] Add owner-scoped CSV and Excel artwork downloads with image filenames; test isolation and verify both downloads.
+
 ## Sketchbook reading and downloads
 - [x] Fit portrait and landscape pages inside the reader; both orientations verified at large and small viewports, plus Alfred's 13-page book on desktop/mobile.
 - [x] Add owner-controlled public PDF downloads, off by default; artist toggle, reload persistence, anonymous download and opt-out verified using a temporary sketchbook, then removed. Eight tests passed; no runtime errors. Existing artist settings unchanged apart from the new default-off preference.
