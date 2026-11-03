@@ -17,6 +17,7 @@ import { PendingVerificationInbox } from "@/components/PendingVerificationInbox"
 import { OrphanClaimsCard } from "@/components/OrphanClaimsCard";
 import LinkedInReminderBanner from "@/components/LinkedInReminderBanner";
 import { ArtistFirstSteps } from "@/components/ArtistFirstSteps";
+import { ArtistArtworkExport } from "@/components/ArtistArtworkExport";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -478,6 +479,7 @@ const Dashboard = () => {
       )}
       {backToTopButton}
       {viewToggle}
+      {activeRole === "artist" && user && <ArtistArtworkExport key={user.id} />}
       <Button variant="outline" onClick={() => setBulkImportOpen(true)} className="gap-2" size="sm">
         <Upload className="w-4 h-4" /> Import
       </Button>
@@ -492,6 +494,7 @@ const Dashboard = () => {
     <>
       {backToTopButton}
       {viewToggle}
+      {activeRole === "artist" && user && <ArtistArtworkExport key={user.id} />}
       <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
         <Pencil className="w-3.5 h-3.5" /> Edit
       </Button>
