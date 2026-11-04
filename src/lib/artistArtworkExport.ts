@@ -13,6 +13,13 @@ export function imageFilename(path: string): string {
   try { return decodeURIComponent(name); } catch { return name; }
 }
 
+// Full web address for an image: stored paths live in the artwork-images bucket,
+// while legacy rows may already hold a complete URL.
+export function imageWebAddress(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path;
+  return supabase.storage.from("artwork-images").getPublicUrl(path).data.publicUrl;
+}
+
 export function artworkExportRows(artworks: ExportArtwork[]) {
   return artworks.map(a => {
     const images = [...a.artwork_images].sort((x, y) => x.display_order - y.display_order);
@@ -48,6 +55,7 @@ export function artworkExportRows(artworks: ExportArtwork[]) {
       Provenance: a.provenance || "",
       "Exhibition history": a.exhibition_history || "",
       "Image filenames": paths.map(imageFilename).join("; "),
+      "Image web addresses": paths.map(imageWebAddress).join("; "),
       "Image storage paths": paths.join("; "),
       "Created at": a.created_at,
     };
@@ -75,7 +83,7 @@ export function createArtworkExport(artworks: ExportArtwork[], format: "csv" | "
   XLSX.utils.book_append_sheet(book, sheet, "Artworks");
   const images = artworks.flatMap(a => a.artwork_images.map(i => ({
     "Artwork ID": `GAWID-${String(a.global_artwork_id).padStart(8, "0")}`,
-    Title: a.title, "Image filename": imageFilename(i.storage_path), "Storage path": i.storage_path, "Display order": i.display_order,
+    Title: a.title, "Image filename": imageFilename(i.storage_path), "Web address": imageWebAddress(i.storage_path), "Storage path": i.storage_path, "Display order": i.display_order,
   })));
   if (images.length) XLSX.utils.book_append_sheet(book, XLSX.utils.json_to_sheet(images), "Images");
   return new Blob([XLSX.write(book, { type: "array", bookType: "xlsx" })], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
