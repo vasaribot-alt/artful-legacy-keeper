@@ -1,5 +1,6 @@
 ## Artist artwork exports
-- [ ] Add owner-scoped CSV and Excel artwork downloads with image filenames; test isolation and verify both downloads.
+- [x] Add owner-scoped CSV and Excel artwork downloads with image filenames and isolation tests.
+- [ ] Verify both downloads in an artist's signed-in account; Alfred account access was declined, and Jan's current account is a collector.
 
 ## Sketchbook reading and downloads
 - [x] Fit portrait and landscape pages inside the reader; both orientations verified at large and small viewports, plus Alfred's 13-page book on desktop/mobile.

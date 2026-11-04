@@ -1,9 +1,17 @@
-// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as XLSX from "xlsx";
 const mocks = vi.hoisted(() => ({ getUser: vi.fn(), from: vi.fn() }));
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { auth: { getUser: mocks.getUser }, from: mocks.from } }));
 import { artworkExportRows, createArtworkExport, csvCell, imageFilename, loadOwnArtistArtworks, type ExportArtwork } from "./artistArtworkExport";
+
+function readBlob(blob: Blob, asText = false): Promise<string | ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => reader.result === null ? reject(new Error("Empty file")) : resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    if (asText) reader.readAsText(blob); else reader.readAsArrayBuffer(blob);
+  });
+}
 
 const artwork = {
   id: "art-1", global_artwork_id: 100001, title: 'A, "work"', year: 1994,
@@ -26,7 +34,7 @@ describe("artist artwork exports", () => {
     expect(artworkExportRows([{ ...artwork, artwork_images: [] }])[0]["Image filenames"]).toBe("");
   });
   it("generates an Excel workbook with artwork records and image filenames", async () => {
-    const bytes = await createArtworkExport([artwork], "xlsx").arrayBuffer();
+    const bytes = await readBlob(createArtworkExport([artwork], "xlsx"));
     const book = XLSX.read(bytes, { type: "array" });
     expect(book.SheetNames).toEqual(["Artworks", "Images"]);
     const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(book.Sheets.Artworks);
@@ -34,7 +42,7 @@ describe("artist artwork exports", () => {
     expect(XLSX.utils.sheet_to_json(book.Sheets.Images)).toHaveLength(2);
   });
   it("generates UTF-8 CSV with quoted titles and filenames", async () => {
-    const csv = await createArtworkExport([artwork], "csv").text();
+    const csv = await readBlob(createArtworkExport([artwork], "csv"), true);
     expect(csv).toContain('"A, ""work"""');
     expect(csv).toContain('"first image.jpg; second.jpg"');
   });
