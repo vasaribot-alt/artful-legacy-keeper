@@ -1,8 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as XLSX from "xlsx";
-const mocks = vi.hoisted(() => ({ getUser: vi.fn(), from: vi.fn() }));
-vi.mock("@/integrations/supabase/client", () => ({ supabase: { auth: { getUser: mocks.getUser }, from: mocks.from } }));
-import { artworkExportRows, createArtworkExport, csvCell, imageFilename, loadOwnArtistArtworks, type ExportArtwork } from "./artistArtworkExport";
+const mocks = vi.hoisted(() => ({
+  getUser: vi.fn(),
+  from: vi.fn(),
+  getPublicUrl: vi.fn((p: string) => ({ data: { publicUrl: `https://cdn.test/artwork-images/${p}` } })),
+}));
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: {
+    auth: { getUser: mocks.getUser },
+    from: mocks.from,
+    storage: { from: () => ({ getPublicUrl: mocks.getPublicUrl }) },
+  },
+}));
+import { artworkExportRows, createArtworkExport, csvCell, imageFilename, imageWebAddress, loadOwnArtistArtworks, type ExportArtwork } from "./artistArtworkExport";
 
 function readBlob(blob: Blob, asText = false): Promise<string | ArrayBuffer> {
   return new Promise((resolve, reject) => {
@@ -26,6 +36,7 @@ describe("artist artwork exports", () => {
     const row = artworkExportRows([artwork])[0];
     expect(row["Artwork ID"]).toBe("GAWID-00100001");
     expect(row["Image filenames"]).toBe("first image.jpg; second.jpg");
+    expect(row["Image web addresses"]).toBe("https://cdn.test/artwork-images/owner/first%20image.jpg; https://cdn.test/artwork-images/owner/second.jpg");
     expect(row["Height (cm)"]).toBe(30);
     expect(row.Price).toBe(0);
   });
@@ -50,6 +61,10 @@ describe("artist artwork exports", () => {
     expect(csvCell("=HYPERLINK(1)")).toBe('"\'=HYPERLINK(1)"');
     expect(csvCell(-4)).toBe('"-4"');
     expect(imageFilename("https://example.org/a%20b.jpg?token=123")).toBe("a b.jpg");
+  });
+  it("keeps complete image URLs as their own web address", () => {
+    expect(imageWebAddress("https://example.org/a%20b.jpg")).toBe("https://example.org/a%20b.jpg");
+    expect(imageWebAddress("owner/x.jpg")).toBe("https://cdn.test/artwork-images/owner/x.jpg");
   });
   it("always scopes exports to the signed-in owner and artist role and paginates", async () => {
     mocks.getUser.mockResolvedValue({ data: { user: { id: "owner-1" } }, error: null });
