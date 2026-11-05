@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import ArtistFeatureOverview from "@/components/ArtistFeatureOverview";
 import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -31,18 +32,6 @@ const whoPays = [
   { title: "Scholars", description: "Catalogues raisonnés built on guesswork instead of evidence." },
 ];
 
-const uses = [
-  "Permanent identifier for every work",
-  "Catalogue with images and full metadata",
-  "Provenance and location history",
-  "Public artist page and private portfolios",
-  "Exhibition history and living CV",
-  "Archival cloud storage",
-  "Structured exports for galleries and museums",
-  "Correspondence and document archive",
-  "Approval rights over records added by others",
-];
-
 const governance = [
   { title: "Dutch stichting", description: "Registered under Dutch law in The Hague. No shareholders, no distribution of profit." },
   { title: "Independent board", description: "Art-historical, legal and archival expertise. No single party holds controlling rights." },
@@ -71,7 +60,7 @@ const WhyGarfMatters = () => {
             <a href="/GARF_Why_GARF_Matters.pdf" target="_blank" rel="noopener noreferrer">
               <Button variant="outline">
                 <Download className="w-4 h-4 mr-2" />
-                Download the one-pager (PDF)
+                Download the presentation (PDF)
               </Button>
             </a>
             <Link to="/donate">
@@ -246,21 +235,7 @@ const WhyGarfMatters = () => {
         </div>
       </section>
 
-      {/* In practice */}
-      <section className="py-16 px-6 border-t border-border bg-muted/30">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">In practice</p>
-          <h2 className="text-2xl mb-10 text-center">One record, many uses.</h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {uses.map((u, i) => (
-              <div key={u} className="flex items-start gap-3 border border-border rounded-lg p-4 bg-background">
-                <span className="text-xs font-mono text-muted-foreground mt-0.5">{String(i + 1).padStart(2, "0")}</span>
-                <p className="text-sm">{u}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ArtistFeatureOverview />
 
       {/* The ask */}
       <section className="py-20 px-6 border-t border-border">

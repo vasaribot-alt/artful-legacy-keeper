@@ -1,3 +1,6 @@
+## Artist feature overview (2026-11-05)
+- [x] Update Home, About and Why GARF with a shared 13-item artist feature overview and align the artist FAQ; desktop/mobile layout and FAQ interaction verified. Downloadable documents unchanged.
+
 ## Exhibition catalogue PDF
 - [x] Add exhibition catalogue editor with two layouts, selection/reordering, editable text and existing owner/artist-scoped GARF artwork captions; no prices or publication changes.
 - [x] Generate and preview a PDF before a separate download; verified both layouts with seven real linked works through Jan’s authorised Fredrik registrar access. All 11/8 PDF pages visually checked, four layout tests passed; fixed mobile width and guarded long cover text. No artist records changed; catalogue drafts are session-only, not saved editions.

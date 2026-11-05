@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import ArtistFeatureOverview from "@/components/ArtistFeatureOverview";
 import installVideo from "@/assets/how-to-install.mp4.asset.json";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -41,7 +42,7 @@ interface FeaturedArtist {
 }
 
 const audiencePaths = [
-  { label: "For artists", to: "/register" },
+  { label: "For artists", to: "#artist-features" },
   { label: "For collectors", to: "/collector-access" },
   { label: "For galleries", to: "/about" },
   { label: "For registrars", to: "/registrars" },
@@ -190,18 +191,20 @@ const Index = () => {
           {/* Audience paths */}
           <nav className="flex flex-wrap justify-center gap-6 pt-4">
             {audiencePaths.map((p) => (
-              <Link
+              <a
                 key={p.label}
-                to={p.to}
+                href={p.to}
                 className="text-[11px] uppercase tracking-widest font-medium text-muted-foreground hover:text-foreground border-b border-transparent hover:border-foreground transition-all pb-1"
               >
                 {p.label}
-              </Link>
+              </a>
             ))}
           </nav>
         </div>
       </section>
 
+
+      <ArtistFeatureOverview />
 
       {/* Features */}
       <section className="py-20 px-6 border-t border-border">

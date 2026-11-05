@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import ArtistFeatureOverview from "@/components/ArtistFeatureOverview";
 import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -72,6 +73,8 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      <ArtistFeatureOverview />
 
       {/* Why */}
       <section className="py-16 px-6 border-t border-border bg-surface">
