@@ -93,7 +93,7 @@ export function ExhibitionCatalogue({ exhibition, ownerId }: { exhibition: Exhib
     <Dialog open={open} onOpenChange={value => { if (!busy) { setOpen(value); if (!value) setPrepared(null); } }}>
       <DialogContent className="w-[calc(100%-1.5rem)] max-w-5xl max-h-[94dvh] overflow-y-auto">
         <DialogHeader><DialogTitle>Exhibition catalogue</DialogTitle></DialogHeader>
-        {loading ? <p role="status">Loading artworks…</p> : <div className="space-y-5">
+        {loading ? <p role="status">Loading artworks…</p> : <div className="space-y-5 min-w-0">
           <fieldset disabled={busy} className="space-y-4 min-w-0">
             <div className="grid gap-4 sm:grid-cols-2">
               <div><Label htmlFor="catalogue-title">Catalogue title</Label><Input autoComplete="off" id="catalogue-title" value={title} onChange={e => { setTitle(e.target.value); invalidate(); }} /></div>
