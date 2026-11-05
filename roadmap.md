@@ -1,6 +1,6 @@
 ## Exhibition catalogue PDF
-- [ ] Add exhibition catalogue editor with two layouts and existing GARF artwork captions.
-- [ ] Generate and preview a PDF before a separate download; verify signed-in download and PDF pages.
+- [x] Add exhibition catalogue editor with two layouts, selection/reordering, editable text and existing owner/artist-scoped GARF artwork captions; no prices or publication changes.
+- [x] Generate and preview a PDF before a separate download; verified both layouts with seven real linked works through Jan’s authorised Fredrik registrar access. All 11/8 PDF pages visually checked, four layout tests passed; fixed mobile width and guarded long cover text. No artist records changed; catalogue drafts are session-only, not saved editions.
 
 ## Artist artwork exports
 - [x] Add owner-scoped CSV and Excel artwork downloads with image filenames and isolation tests.

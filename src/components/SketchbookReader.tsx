@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { getDocument, GlobalWorkerOptions, type PDFDocumentProxy } from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { fitSketchbookPage } from "@/lib/sketchbookReader";
 
 GlobalWorkerOptions.workerSrc = workerUrl;
 
-export function SketchbookReader({ url, title, allowDownload = true }: { url: string; title: string; allowDownload?: boolean }) {
+export const SketchbookReader = forwardRef<HTMLDivElement, { url: string; title: string; allowDownload?: boolean }>(function SketchbookReader({ url, title, allowDownload = true }, ref) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const surface = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -68,7 +68,7 @@ export function SketchbookReader({ url, title, allowDownload = true }: { url: st
     }).catch(reason => { if (!cancelled && reason?.name !== "RenderingCancelledException") setError("Unable to display this page."); });
     return () => { cancelled = true; task?.cancel(); };
   }, [pdf, page, zoom, size]);
-  return <div className="space-y-3">
+  return <div ref={ref} className="space-y-3">
     <div className="flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-2">
         <Button variant="outline" size="icon" title="Previous page" aria-label="Previous page" disabled={page <= 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="h-4 w-4" /></Button>
@@ -88,4 +88,4 @@ export function SketchbookReader({ url, title, allowDownload = true }: { url: st
       <canvas ref={canvas} aria-label={`${title}, page ${page}`} className={`mx-auto ${rendering || error ? "invisible" : ""}`} />
     </div>
   </div>;
-}
+});
