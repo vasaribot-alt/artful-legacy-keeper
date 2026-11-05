@@ -106,6 +106,26 @@ const faqData: FaqSection[] = [
         answer:
           "Yes. You retain control of your content. The Foundation holds it in trust for preservation, and you decide what is public, shared or private.",
       },
+      {
+        question: "Can I preserve sketchbooks and archival documents?",
+        answer: "Yes. Sketchbooks accept existing PDFs or ordered page photographs combined into a readable PDF, with the originals retained. Archival Documents holds PDFs and images such as letters, articles, certificates and notes, each with an archival reference and context. Both are private unless you choose to publish them. Public sketchbook PDF downloads are off by default and can be enabled for each book; public reading does not prevent screenshots or other copying.",
+      },
+      {
+        question: "Can I plan an exhibition and create its catalogue?",
+        answer: "Yes. Each saved exhibition has a planner with a checklist, budget, notes and a live documentation check for its linked artworks. Catalogue PDF uses those works and exhibition details: choose one or two works per page, select and reorder works, edit text and captions, then preview the PDF before downloading. Downloadable planning and budget templates are also available on Tutorials.",
+      },
+      {
+        question: "Can I build my own website and share portfolios?",
+        answer: "Yes. My Website lets you manage an artist website using selected GARF works, biography, exhibitions and published archive material. Portfolios let you group works and share a selection through a public link. You retain control of what you publish.",
+      },
+      {
+        question: "Can I download my artwork records as CSV or Excel?",
+        answer: "Yes. In your artist dashboard, prepare an artwork export in CSV or Excel, then download it. The export includes your artwork metadata and linked image filenames and web addresses where available. It is a spreadsheet of your records, not a download of all original image files.",
+      },
+      {
+        question: "Can I name someone to take care of my archive in the future?",
+        answer: "Yes. You can record named heirs or successors in your profile. The Foundation manages the handover according to your recorded wishes; the successor needs a matching account before archive access can be activated. This transfers archive custodianship, not ownership of your artworks or copyright.",
+      },
     ],
   },
   {
