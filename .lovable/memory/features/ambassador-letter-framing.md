@@ -11,3 +11,12 @@ Ambassador asks (Jessica Sjöholm Skrubbe, Mick Wilson, Sonia Boyce and any late
 - Caroline McCormick may be named as the adviser behind the ambassador idea (Chair of a UK foundation's Board of Trustees, Director of Achates).
 - One page each, English, signed "Warm regards, Jan S Kindem" + foundation + email + website.
 - Reference the earlier contact (Malmö conversation, the letter Jan already sent) rather than explaining GARF again.
+
+## Standing wording for the GARF Ambassadors invitation one-pager (revised 2026-11-05)
+
+- Subtitle carries the no-cost point: "An invitation to support artists' legacies — at no cost and with no obligations."
+- First paragraph states the service is **free of charge to every artist**.
+- Second paragraph carries the long-term hook: support helps guarantee artists' documentation survives for the next hundred years and that artists can hand their own records to the people they choose. Replace "strengthen our credibility and attract support for our mission" with this.
+- The reassurance ("No work, meetings, time commitment, donation or fundraising is required") must appear **before** fundraising outreach is mentioned.
+- Ask softly: "If someone asks you about GARF, we hope you would feel comfortable speaking positively about it" — never "we hope you will express your support".
+- Keep: approval before any quotation is attributed, personal-capacity support, withdrawal at any time.
