@@ -1,3 +1,7 @@
+## Exhibition catalogue PDF
+- [ ] Add exhibition catalogue editor with two layouts and existing GARF artwork captions.
+- [ ] Generate and preview a PDF before a separate download; verify signed-in download and PDF pages.
+
 ## Artist artwork exports
 - [x] Add owner-scoped CSV and Excel artwork downloads with image filenames and isolation tests.
 - [ ] Verify both downloads in an artist's signed-in account; Alfred account access was declined, and Jan's current account is a collector.
