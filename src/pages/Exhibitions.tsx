@@ -30,6 +30,7 @@ import { SortableExhibitionImageGrid } from "@/components/SortableExhibitionImag
 import { ExhibitionDocuments } from "@/components/ExhibitionDocuments";
 import { CorrespondencePanel } from "@/components/CorrespondencePanel";
 import { ExhibitionPlanner } from "@/components/ExhibitionPlanner";
+import { ExhibitionCatalogue } from "@/components/ExhibitionCatalogue";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface Exhibition {
@@ -455,6 +456,7 @@ const Exhibitions = () => {
 
                   {/* Documents */}
                   <div className="space-y-2">
+                    {ownerId && <ExhibitionCatalogue exhibition={ex} ownerId={ownerId} />}
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Documents</p>
                     <ExhibitionDocuments exhibitionId={ex.id} />
                   </div>

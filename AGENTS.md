@@ -10,3 +10,4 @@
 - Foundation archive usage is returned by a foundation-gated aggregate RPC scoped to each owner and artist role; show optional archive counts separately from onboarding progress without exposing private contents.
 - Artist artwork exports fetch paginated records scoped to the authenticated owner and artist role, and prepare CSV/Excel before a separate download click to preserve mobile user activation.
 - Exhibition plans live in exhibition_plans (one per exhibition, owner/registrar RLS) with JSON tasks/budget; documentation readiness is computed live from linked artworks so it never goes stale.
+- Exhibition catalogue PDFs are generated on demand from saved exhibition links and owner/artist-scoped artworks; use embedded Unicode fonts, PDF.js preview, and a separately activated blob download to preserve mobile compatibility without publishing private records.
