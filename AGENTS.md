@@ -9,3 +9,4 @@
 - Store archival documents separately with immutable database-assigned references and private storage; only the artist may publish, public rows and files require explicit visibility, and the shared viewer serves the editor and public archive.
 - Foundation archive usage is returned by a foundation-gated aggregate RPC scoped to each owner and artist role; show optional archive counts separately from onboarding progress without exposing private contents.
 - Artist artwork exports fetch paginated records scoped to the authenticated owner and artist role, and prepare CSV/Excel before a separate download click to preserve mobile user activation.
+- Exhibition plans live in exhibition_plans (one per exhibition, owner/registrar RLS) with JSON tasks/budget; documentation readiness is computed live from linked artworks so it never goes stale.

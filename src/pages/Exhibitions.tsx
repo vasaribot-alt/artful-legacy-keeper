@@ -29,6 +29,7 @@ import { ExhibitionArtworkPicker } from "@/components/ExhibitionArtworkPicker";
 import { SortableExhibitionImageGrid } from "@/components/SortableExhibitionImageGrid";
 import { ExhibitionDocuments } from "@/components/ExhibitionDocuments";
 import { CorrespondencePanel } from "@/components/CorrespondencePanel";
+import { ExhibitionPlanner } from "@/components/ExhibitionPlanner";
 import { useScrollRestoration } from "@/hooks/use-scroll-restoration";
 
 interface Exhibition {
@@ -531,6 +532,17 @@ const Exhibitions = () => {
                 <Label>Documents</Label>
                 <ExhibitionDocuments exhibitionId={editingId} />
                 <CorrespondencePanel exhibitionId={editingId} />
+                {ownerId && (
+                  <div className="pt-3 space-y-2">
+                    <Label>Exhibition plan</Label>
+                    <ExhibitionPlanner
+                      exhibitionId={editingId}
+                      ownerId={ownerId}
+                      openingDate={openingDate || null}
+                      artworkIds={selectedArtworkIds}
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-xs text-muted-foreground">Save exhibition first to add documents.</p>
