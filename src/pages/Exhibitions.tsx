@@ -216,9 +216,17 @@ const Exhibitions = () => {
       }
     }
 
+    const wasNew = !editingId;
+
     setSaving(false);
-    setDialogOpen(false);
-    resetForm();
+    if (wasNew && exhibitionId) {
+      // Keep the dialog open in edit mode so the exhibition planner appears right away.
+      setEditingId(exhibitionId);
+      toast.success("Exhibition added — planner is now available below");
+    } else {
+      setDialogOpen(false);
+      resetForm();
+    }
     loadExhibitions();
   };
 
