@@ -74,6 +74,13 @@ export async function createExhibitionCatalogue(input: CatalogueInput) {
     return pdf.embedFont(await response.arrayBuffer(), { subset: true });
   }));
   const [body, heading] = fonts;
+  const validateText = (text: string, font: PDFFont) => {
+    const supported = new Set(font.getCharacterSet());
+    const unsupported = Array.from(new Set(Array.from(text).filter(char => !/[\s]/.test(char) && !supported.has(char.codePointAt(0) ?? 0))));
+    if (unsupported.length) throw new Error(`The catalogue font cannot display these characters: ${unsupported.join(" ")}. Please replace them before preparing the PDF.`);
+  };
+  validateText(input.title, heading);
+  validateText([input.artist, input.details, input.introduction, input.credits, ...input.works.map(work => `${work.title}\n${work.caption}`)].join("\n"), body);
   const ink = rgb(0.08, 0.08, 0.08);
   const grey = rgb(0.4, 0.4, 0.4);
   const warnings: string[] = [];
@@ -97,8 +104,9 @@ export async function createExhibitionCatalogue(input: CatalogueInput) {
   drawLines(cover, artistLines, 48, 720 - titleLines.length * 35, body, 12, 17);
   const first = images.get(input.works[0].id);
   if (first) {
-    const fitted = fitCatalogueImage(first.width, first.height, 499, 390);
-    cover.drawImage(first, { x: (595.28 - fitted.width) / 2, y: 170 + (390 - fitted.height) / 2, ...fitted });
+    const imageHeight = Math.min(390, 720 - titleLines.length * 35 - artistLines.length * 17 - 200);
+    const fitted = fitCatalogueImage(first.width, first.height, 499, imageHeight);
+    cover.drawImage(first, { x: (595.28 - fitted.width) / 2, y: 170 + (imageHeight - fitted.height) / 2, ...fitted });
   }
   const detailsLines = wrap(input.details, body, 10, 499);
   if (detailsLines.length > 6) throw new Error("Exhibition details are too long for the cover.");

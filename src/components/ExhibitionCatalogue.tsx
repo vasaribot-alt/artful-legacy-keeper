@@ -91,10 +91,10 @@ export function ExhibitionCatalogue({ exhibition, ownerId }: { exhibition: Exhib
   return <>
     <Button variant="outline" size="sm" className="gap-2" onClick={() => setOpen(true)}><BookOpen className="h-4 w-4" />Catalogue PDF</Button>
     <Dialog open={open} onOpenChange={value => { if (!busy) { setOpen(value); if (!value) setPrepared(null); } }}>
-      <DialogContent className="max-w-5xl max-h-[94dvh] overflow-y-auto">
+      <DialogContent className="w-[calc(100%-1.5rem)] max-w-5xl max-h-[94dvh] overflow-y-auto">
         <DialogHeader><DialogTitle>Exhibition catalogue</DialogTitle></DialogHeader>
         {loading ? <p role="status">Loading artworks…</p> : <div className="space-y-5">
-          <fieldset disabled={busy} className="space-y-4">
+          <fieldset disabled={busy} className="space-y-4 min-w-0">
             <div className="grid gap-4 sm:grid-cols-2">
               <div><Label htmlFor="catalogue-title">Catalogue title</Label><Input autoComplete="off" id="catalogue-title" value={title} onChange={e => { setTitle(e.target.value); invalidate(); }} /></div>
               <div><Label htmlFor="catalogue-artist">Artist</Label><Input autoComplete="off" id="catalogue-artist" value={artist} onChange={e => { setArtist(e.target.value); invalidate(); }} /></div>
@@ -109,7 +109,7 @@ export function ExhibitionCatalogue({ exhibition, ownerId }: { exhibition: Exhib
             {!works.length && <p className="text-sm text-muted-foreground">No artist artworks are linked to this exhibition.</p>}
             <div className="max-h-80 overflow-y-auto divide-y divide-border">
               {works.map((work, index) => <div key={work.id} className="flex gap-3 py-3 items-start">
-                <Checkbox aria-label={`Include ${work.title}`} checked={selected.includes(work.id)} onCheckedChange={checked => { setSelected(ids => checked ? [...ids, work.id] : ids.filter(id => id !== work.id)); invalidate(); }} />
+                <Checkbox aria-label={`Include ${work.title}`} checked={selected.includes(work.id)} onCheckedChange={checked => { setSelected(ids => checked ? Array.from(new Set([...ids, work.id])) : ids.filter(id => id !== work.id)); invalidate(); }} />
                 {work.imageUrl && <img src={work.imageUrl} alt={work.title} className="h-16 w-16 object-contain bg-muted shrink-0" />}
                 <div className="flex-1 min-w-0"><p className="text-sm font-medium break-words">{work.title}</p>
                   <Textarea autoComplete="off" aria-label={`Caption for ${work.title}`} className="mt-2 text-xs min-h-20" value={work.caption} onChange={e => { setWorks(items => items.map(item => item.id === work.id ? { ...item, caption: e.target.value } : item)); invalidate(); }} />
@@ -128,7 +128,7 @@ export function ExhibitionCatalogue({ exhibition, ownerId }: { exhibition: Exhib
           </div>
           {prepared && <>
             {!!prepared.warnings.length && <div role="alert" className="text-sm text-destructive"><p>Missing images in this PDF:</p><ul>{prepared.warnings.map(warning => <li key={warning}>{warning}</li>)}</ul></div>}
-            <SketchbookReader url={prepared.url} title={prepared.title} allowDownload={false} />
+            <div className="min-w-0"><SketchbookReader url={prepared.url} title={prepared.title} allowDownload={false} /></div>
           </>}
         </div>}
       </DialogContent>
