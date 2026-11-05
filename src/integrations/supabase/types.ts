@@ -2061,6 +2061,47 @@ export type Database = {
           },
         ]
       }
+      exhibition_plans: {
+        Row: {
+          budget: Json
+          created_at: string
+          exhibition_id: string
+          id: string
+          notes: string | null
+          owner_id: string
+          tasks: Json
+          updated_at: string
+        }
+        Insert: {
+          budget?: Json
+          created_at?: string
+          exhibition_id: string
+          id?: string
+          notes?: string | null
+          owner_id: string
+          tasks?: Json
+          updated_at?: string
+        }
+        Update: {
+          budget?: Json
+          created_at?: string
+          exhibition_id?: string
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          tasks?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exhibition_plans_exhibition_id_fkey"
+            columns: ["exhibition_id"]
+            isOneToOne: true
+            referencedRelation: "exhibitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exhibitions: {
         Row: {
           artists: string | null
