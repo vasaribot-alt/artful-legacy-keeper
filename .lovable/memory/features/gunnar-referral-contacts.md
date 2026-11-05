@@ -12,3 +12,5 @@ Suggested by Gunnar Kvaran (2026-10-16). Jan approved saying that Gunnar finds G
 - Øystein Ustvedt: Senior Curator, Collection and Exhibition, Nasjonalmuseet. oystein.ustvedt@nasjonalmuseet.no
 
 Letters drafted 2026-10-16. None sent yet.
+
+- 2026-11-05: Jan has a meeting with Patricia Tveter on Monday 9 Nov 2026. Sonia Boyce: Frieze is over, so contact is OK now.
