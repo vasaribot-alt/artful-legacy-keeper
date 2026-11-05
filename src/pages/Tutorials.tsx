@@ -56,6 +56,35 @@ const Tutorials = () => {
       </section>
 
       <section className="py-16 px-6 border-t border-border">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl mb-4">Downloads</h2>
+          <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-2xl">
+            Free practical tools for artists, yours to use, copy and share.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-10 max-w-3xl">
+            <article>
+              <h3 className="text-base font-medium mb-1">Exhibition Planner (PDF)</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                A seven-page workbook for preparing an exhibition: defining the idea, agreeing terms with the venue, timeline, budget, installation, opening — and documenting the show in your archive afterwards.
+              </p>
+              <a href="/GARF_Exhibition_Planner.pdf" download className="text-sm underline underline-offset-4 hover:text-muted-foreground transition-colors">
+                Download the planner
+              </a>
+            </article>
+            <article>
+              <h3 className="text-base font-medium mb-1">Exhibition Budget (Excel)</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                The companion spreadsheet: cost and income categories with automatic totals, a countdown timeline, and a works list with GAWID references.
+              </p>
+              <a href="/GARF_Exhibition_Budget.xlsx" download className="text-sm underline underline-offset-4 hover:text-muted-foreground transition-colors">
+                Download the spreadsheet
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-2xl mb-4">Add GARF to your home screen</h2>
