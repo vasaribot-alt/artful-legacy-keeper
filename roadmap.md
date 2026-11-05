@@ -1,5 +1,5 @@
 ## Artist feature overview (2026-11-05)
-- [ ] Update Home and About with a shared, current artist feature overview and align the artist FAQ; verify desktop and mobile.
+- [x] Update Home, About and Why GARF with a shared 13-item artist feature overview and align the artist FAQ; desktop/mobile layout and FAQ interaction verified. Downloadable documents unchanged.
 
 ## Exhibition catalogue PDF
 - [x] Add exhibition catalogue editor with two layouts, selection/reordering, editable text and existing owner/artist-scoped GARF artwork captions; no prices or publication changes.
