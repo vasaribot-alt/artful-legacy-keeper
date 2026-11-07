@@ -1,7 +1,7 @@
 ## Registered artist website assessment (2026-11-07)
 - [x] Identify all 26 registered artist accounts and artist-scoped catalogue counts; no records changed.
-- [ ] Assess artist websites and prepare a sourced extraction-opportunity workbook, with unknowns and duplicate-check limitations explicit.
-- [ ] Summarise a permission-based registrar workflow; no offers sent or uploads without artist authorisation.
+- [x] Prepare a preliminary 26-artist website assessment workbook with direct index samples, search-only leads and unknowns explicit; not an exhaustive site extraction or net-new count.
+- [x] Summarise the existing permission-based registrar/pending-review workflow from source; no offers sent or uploads made. Full preparation/import awaits artist permission, identity/image-rights confirmation and duplicate matching.
 
 ## Artist feature overview (2026-11-05)
 - [x] Update Home, About and Why GARF with a shared 13-item artist feature overview and align the artist FAQ; desktop/mobile layout and FAQ interaction verified. Downloadable documents unchanged.
