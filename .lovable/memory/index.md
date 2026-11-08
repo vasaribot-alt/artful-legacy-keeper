@@ -32,3 +32,4 @@
 - [Gunnar referral contacts](mem://features/gunnar-referral-contacts) — Möllenhoff, Storm Bjerke, Eckhoff, Tveter, Ustvedt; "Gunnar finds GARF important" + propose a talk
 - [Marie (Danish IAA)](mem://features/marie-danish-iaa-contact) — Marie Thams, marie@mariethams.com; ambassador ask as a person, separate from the IAA partner letter
 - [Georgia Michaelides Saad](mem://features/georgia-michaelides-saad-contact) — ACCEPTED as GARF ambassador 2026-11-08; solo exhibition now, register help paused until she raises it
+- [Krešimira Gojanović](mem://features/kresimira-gojanovic-contact) — Zagreb painter, HDLU Zagreb president; GARF site live with 6 works; offered to recommend GARF in Croatia; not asked as ambassador
