@@ -31,3 +31,4 @@
 - [GARF one-liner](mem://features/garf-one-liner) — "GARF is a charity working for protection of artists' legacy" — lead sentence for outreach and materials
 - [Gunnar referral contacts](mem://features/gunnar-referral-contacts) — Möllenhoff, Storm Bjerke, Eckhoff, Tveter, Ustvedt; "Gunnar finds GARF important" + propose a talk
 - [Marie (Danish IAA)](mem://features/marie-danish-iaa-contact) — Marie Thams, marie@mariethams.com; ambassador ask as a person, separate from the IAA partner letter
+- [Georgia Michaelides Saad](mem://features/georgia-michaelides-saad-contact) — ACCEPTED as GARF ambassador 2026-11-08; solo exhibition now, register help paused until she raises it
