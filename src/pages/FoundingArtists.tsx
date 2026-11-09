@@ -181,6 +181,18 @@ const FoundingArtists = () => {
       </section>
 
       <main className="max-w-5xl mx-auto px-6 py-16">
+        {!loading && artists.length > 0 && (
+          <div className="relative max-w-md mx-auto mb-14">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search artists by name, city or country…"
+              className="pl-9"
+              aria-label="Search the registry"
+            />
+          </div>
+        )}
         {loading ? (
           <div className="text-muted-foreground text-center py-12">Loading...</div>
         ) : artists.length === 0 ? (
