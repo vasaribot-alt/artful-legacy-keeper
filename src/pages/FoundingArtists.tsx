@@ -297,6 +297,11 @@ const FoundingArtists = () => {
                   </section>
                 ) : null
               )}
+              {normalizedQuery && filteredArtists.length === 0 && (
+                <p className="text-muted-foreground text-center py-8">
+                  No artists match "{query.trim()}".
+                </p>
+              )}
             </div>
           </>
         )}
