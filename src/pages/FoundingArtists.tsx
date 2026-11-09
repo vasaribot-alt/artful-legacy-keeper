@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowRight, Shield, Clock, Users } from "lucide-react";
+import { ArrowRight, Shield, Clock, Users, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface FoundingArtist {
   user_id: string;
@@ -43,6 +44,7 @@ const FoundingArtists = () => {
   const [artists, setArtists] = useState<FoundingArtist[]>([]);
   const [loading, setLoading] = useState(true);
   const [showcaseArtists, setShowcaseArtists] = useState<FoundingArtist[]>([]);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const fetchArtists = async () => {
