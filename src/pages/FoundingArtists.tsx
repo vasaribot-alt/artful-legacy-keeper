@@ -256,18 +256,6 @@ const FoundingArtists = () => {
               </section>
             )}
 
-            {/* Search the directory */}
-            <div className="relative max-w-md mx-auto mb-14">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search artists by name, city or country…"
-                className="pl-9"
-                aria-label="Search the registry"
-              />
-            </div>
-
             {/* Full Directory by Tier */}
             <div className="space-y-16">
               {groupedByTier.map((group) =>
