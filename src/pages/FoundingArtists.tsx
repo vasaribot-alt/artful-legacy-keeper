@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowRight, Shield, Clock, Users } from "lucide-react";
+import { ArrowRight, Shield, Clock, Users, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface FoundingArtist {
   user_id: string;
@@ -43,6 +44,7 @@ const FoundingArtists = () => {
   const [artists, setArtists] = useState<FoundingArtist[]>([]);
   const [loading, setLoading] = useState(true);
   const [showcaseArtists, setShowcaseArtists] = useState<FoundingArtist[]>([]);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const fetchArtists = async () => {
@@ -96,10 +98,25 @@ const FoundingArtists = () => {
     fetchArtists();
   }, []);
 
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredArtists = normalizedQuery
+    ? artists.filter((a) => {
+        const haystack = [
+          a.profile?.full_name,
+          a.profile?.city,
+          a.profile?.country,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(normalizedQuery);
+      })
+    : artists;
+
   const groupedByTier = tierOrder.map((tier) => ({
     tier,
     ...tierLabels[tier],
-    artists: artists.filter((a) => a.tier === tier),
+    artists: filteredArtists.filter((a) => a.tier === tier),
   }));
 
   const getAvatarSrc = (avatarUrl: string | null | undefined) => {
@@ -164,6 +181,18 @@ const FoundingArtists = () => {
       </section>
 
       <main className="max-w-5xl mx-auto px-6 py-16">
+        {!loading && artists.length > 0 && (
+          <div className="relative max-w-md mx-auto mb-14">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search artists by name, city or country…"
+              className="pl-9"
+              aria-label="Search the registry"
+            />
+          </div>
+        )}
         {loading ? (
           <div className="text-muted-foreground text-center py-12">Loading...</div>
         ) : artists.length === 0 ? (
@@ -267,6 +296,11 @@ const FoundingArtists = () => {
                     </div>
                   </section>
                 ) : null
+              )}
+              {normalizedQuery && filteredArtists.length === 0 && (
+                <p className="text-muted-foreground text-center py-8">
+                  No artists match "{query.trim()}".
+                </p>
               )}
             </div>
           </>
