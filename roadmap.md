@@ -1,3 +1,7 @@
+## HDLU Zagreb cooperation (2026-11-11)
+- [ ] Add HDLU Zagreb to the partner records and home-page partner list using the IAA-USA model; verify its join link.
+- [ ] Prepare and visually check English Word material for Croatian translation: article, artist invitation, social text and website links; nothing sent.
+
 ## Registered artist website assessment (2026-11-07)
 - [x] Identify all 26 registered artist accounts and artist-scoped catalogue counts; no records changed.
 - [x] Prepare a preliminary 26-artist website assessment workbook with direct index samples, search-only leads and unknowns explicit; not an exhaustive site extraction or net-new count.

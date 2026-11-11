@@ -327,7 +327,7 @@ const Index = () => {
             In cooperation with
           </p>
           <h2 className="text-3xl mb-8">Artist organisations</h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-10 sm:gap-16">
+          <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-12">
             <a
               href="/garf-logo.png"
               download="GARF_Logo.png"
@@ -355,9 +355,19 @@ const Index = () => {
                 loading="lazy"
               />
             </a>
+            <a
+              href="https://hdlu-zagreb.hr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-md p-3 transition-opacity hover:opacity-70"
+              aria-label="Visit HDLU Zagreb"
+            >
+              <span className="block text-xl font-semibold">HDLU Zagreb</span>
+              <span className="mt-1 block text-xs text-muted-foreground">Croatian Association of Visual Artists Zagreb</span>
+            </a>
           </div>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto mt-8 leading-relaxed">
-            The Global Artist Registry Foundation and IAA/USA share a commitment to supporting artists
+            The Global Artist Registry Foundation, IAA/USA and HDLU Zagreb share a commitment to supporting artists
             and preserving their records for future generations. Partner organisations can download a
             ready-to-embed promotional button to invite their members to join the registry.
           </p>
