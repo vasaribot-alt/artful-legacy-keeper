@@ -1,6 +1,8 @@
 ## HDLU Zagreb cooperation (2026-11-11)
 - [x] Add HDLU Zagreb as an independent active partner using the existing IAA-USA model and add its website link to the home-page partner list; invitation page and registration attribution link verified, mobile overflow check passed, build OK. Home-page change awaits publishing.
 - [x] Prepare English Word material for Croatian translation: cooperation outline, article, artist invitation, social text and website/logo links; all four pages visually checked and document validation passed. Nothing sent; proposed publication wording awaits both parties’ review.
+- [x] Place the HDLU Zagreb logo Krešimira supplied on 12 November in the home-page partner section and the partner record, and use the association’s own English name “Croatian Association of Fine Artists Zagreb” on the home page and join page; logo render, join-page wording, mobile overflow and build all checked. Home-page change awaits publishing.
+- [ ] Krešimira reviews the English materials in the week of 16 November and returns the Croatian version; Jan checks the facts before anything is published.
 
 ## Registered artist website assessment (2026-11-07)
 - [x] Identify all 26 registered artist accounts and artist-scoped catalogue counts; no records changed.
