@@ -148,6 +148,13 @@
       "when": 1793871490313,
       "tag": "0020_exhibition_plans",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1794480380047,
+      "tag": "0021_set_hdlu_zagreb_logo_and_official_name",
+      "breakpoints": true
     }
   ]
 }
