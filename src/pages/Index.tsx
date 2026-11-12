@@ -1,6 +1,7 @@
 import PublicHeader from "@/components/PublicHeader";
 import ArtistFeatureOverview from "@/components/ArtistFeatureOverview";
 import installVideo from "@/assets/how-to-install.mp4.asset.json";
+import hdluLogo from "@/assets/hdlu-zagreb-logo.jpg.asset.json";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -362,8 +363,13 @@ const Index = () => {
               className="block rounded-md p-3 transition-opacity hover:opacity-70"
               aria-label="Visit HDLU Zagreb"
             >
-              <span className="block text-xl font-semibold">HDLU Zagreb</span>
-              <span className="mt-1 block text-xs text-muted-foreground">Croatian Association of Visual Artists Zagreb</span>
+              <img
+                src={hdluLogo.url}
+                alt="HDLU Zagreb, Croatian Association of Fine Artists Zagreb"
+                className="h-14 w-auto max-w-[320px] object-contain mx-auto"
+                loading="lazy"
+              />
+              <span className="mt-2 block text-xs text-muted-foreground">Croatian Association of Fine Artists Zagreb</span>
             </a>
           </div>
           <p className="text-sm text-muted-foreground max-w-xl mx-auto mt-8 leading-relaxed">
