@@ -11,7 +11,7 @@ export function ArchivalDocumentViewer({ document, onClose }: { document: Archiv
   const [error, setError] = useState(false);
   useEffect(() => {
     setUrl(""); setError(false); let cancelled = false;
-    if (document) void supabase.storage.from("archival-documents").createSignedUrl(document.storage_path, 60).then(({ data, error }) => { if (!cancelled) { setUrl(data?.signedUrl ?? ""); setError(!!error); } });
+    if (document) void supabase.storage.from("archival-documents").createSignedUrl(document.storage_path, 3600).then(({ data, error }) => { if (!cancelled) { setUrl(data?.signedUrl ?? ""); setError(!!error); } });
     return () => { cancelled = true; };
   }, [document]);
   return <Dialog open={!!document} onOpenChange={open => { if (!open) onClose(); }}><DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle className="pr-6 break-words">{document?.title}</DialogTitle></DialogHeader>{document && <>
