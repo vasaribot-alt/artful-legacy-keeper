@@ -1,5 +1,6 @@
 import PublicHeader from "@/components/PublicHeader";
 import PublicPageHero from "@/components/PublicPageHero";
+import ArtistWebsiteDirectory from "@/components/ArtistWebsiteDirectory";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -151,6 +152,8 @@ const FoundingArtists = () => {
             </span>
           </div>
       </PublicPageHero>
+
+      <ArtistWebsiteDirectory />
 
       {/* Why it matters */}
       <section className="py-16 px-6 border-b border-border bg-muted/30">

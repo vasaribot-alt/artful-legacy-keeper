@@ -1,3 +1,7 @@
+## Public artist website directory (2026-11-16)
+- [x] Add a name-only alphabetical list linking to enabled GARF homepages on the public Artists page, without changing Legacy Artist eligibility or private archive permissions.
+- [x] Verified three anonymous name links, Alfred’s homepage navigation, phone layout without overflow, one passing test and build OK; the disabled website is excluded. Website list awaits publishing; metadata and sitemap improvements remain outside this change.
+
 ## HDLU Zagreb cooperation (2026-11-11)
 - [x] Add HDLU Zagreb as an independent active partner using the existing IAA-USA model and add its website link to the home-page partner list; invitation page and registration attribution link verified, mobile overflow check passed, build OK. Home-page change awaits publishing.
 - [x] Prepare English Word material for Croatian translation: cooperation outline, article, artist invitation, social text and website/logo links; all four pages visually checked and document validation passed. Nothing sent; proposed publication wording awaits both parties’ review.

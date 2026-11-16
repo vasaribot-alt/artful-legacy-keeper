@@ -162,6 +162,13 @@
       "when": 1794828151587,
       "tag": "0022_tighten_contact_message_insert",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1794830775945,
+      "tag": "0023_public_artist_website_directory",
+      "breakpoints": true
     }
   ]
 }
