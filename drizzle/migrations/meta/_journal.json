@@ -155,6 +155,13 @@
       "when": 1794480380047,
       "tag": "0021_set_hdlu_zagreb_logo_and_official_name",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1794828151587,
+      "tag": "0022_tighten_contact_message_insert",
+      "breakpoints": true
     }
   ]
 }
