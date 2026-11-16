@@ -4516,6 +4516,13 @@ export type Database = {
           website: string
         }[]
       }
+      list_public_artist_websites: {
+        Args: never
+        Returns: {
+          full_name: string
+          slug: string
+        }[]
+      }
       lookup_cr_artist: {
         Args: { _query: string }
         Returns: {
