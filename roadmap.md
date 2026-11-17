@@ -1,8 +1,8 @@
 ## Governance publication (2026-11-17)
 - [x] Apply the approved wording to About and Foundation, add shared governance footer links, stage only Documents 01/03/04 and redirect the removed overview to About.
 - [x] Verify anonymous downloads byte-for-byte against supplied originals, homepage/Foundation/direct anchors, desktop and phone screenshots with no overflow, one passing test and build OK.
-- [ ] Jan reviews the preview and actual download URLs and confirms offices/status before publication as required by section 4.
-- [ ] Request publication after Jan's review, then verify the live links; section 5 remains outside this task.
+- [x] Jan approved the preview, offices and ANBI status.
+- [x] Published; live About page and all three PDFs returned successfully. Section 5 remains outside this task.
 
 ## Public artist website directory (2026-11-16)
 - [x] Add a name-only alphabetical list linking to enabled GARF homepages on the public Artists page, without changing Legacy Artist eligibility or private archive permissions.
