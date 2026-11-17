@@ -1,6 +1,7 @@
 - Keep the nine principal public pages on the shared PublicHeader, with one ordered link list and a compact menu below wide desktop; this prevents public navigation drift without changing signed-in workspace navigation.
 - Use PublicPageHero for the nine public menu destinations; one shared About-based type scale and spacing keeps their page introductions aligned.
 - Keep the public artist feature overview shared between Home, About and Why GARF so descriptions of available artist tools stay consistent.
+- Keep public governance downloads in a single approved-document list on About, with a shared footer anchor link; this prevents internal files or inconsistent governance destinations appearing publicly.
 - Populate the name-only artist website directory through a public RPC returning only enabled site names and slugs; this preserves private website settings and keeps artist publication decisions authoritative.
 
 - Unclaimed works live in `orphan_artworks` (bulk DB), never in `artworks`: works move to an artist catalogue only via the artist claim flow (OrphanClaimsCard), preserving the artist-consent principle.
