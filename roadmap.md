@@ -1,3 +1,8 @@
+## Governance publication (2026-11-17)
+- [ ] Apply sections 1–4 of the approved publication brief to About, Foundation and public footer links; publish only the three version 1.0 public PDFs.
+- [ ] Verify anonymous downloads, direct anchors and phone layout, show Jan the actual URLs and confirm offices/status before publication as required by section 4.
+- [ ] Request publication after Jan's review, then verify the live links; section 5 remains outside this task.
+
 ## Public artist website directory (2026-11-16)
 - [x] Add a name-only alphabetical list linking to enabled GARF homepages on the public Artists page, without changing Legacy Artist eligibility or private archive permissions.
 - [x] Verified three anonymous name links, Alfred’s homepage navigation, phone layout without overflow, one passing test and build OK; the disabled website is excluded. Website list awaits publishing; metadata and sitemap improvements remain outside this change.
