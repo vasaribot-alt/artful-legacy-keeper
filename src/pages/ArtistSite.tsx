@@ -17,7 +17,7 @@ import {
 } from "@/lib/publicArtworkImages";
 
 
-import { ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Globe, Mail, MapPin, PhoneCall, X } from "lucide-react";
 
 interface SiteData {
   user_id: string;
@@ -305,7 +305,16 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border print:hidden">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-baseline justify-between gap-x-8 gap-y-2 px-6 py-6">
+        <div className="mx-auto max-w-5xl px-6 pt-4">
+          <Link
+            to="/founding-artists"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            All artists
+          </Link>
+        </div>
+        <div className="mx-auto flex max-w-5xl flex-wrap items-baseline justify-between gap-x-8 gap-y-2 px-6 pb-6 pt-3">
           <Link to={base} className="font-serif text-xl">{name}</Link>
           <nav className="flex gap-6 text-sm">
             {nav.slice(1).map((n) => (
