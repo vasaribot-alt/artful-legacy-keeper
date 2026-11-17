@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicGovernanceLink from "@/components/PublicGovernanceLink";
 import PublicPageHero from "@/components/PublicPageHero";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -383,7 +384,7 @@ export default function FAQ() {
             <div className="mt-2">
               <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
             </div>
-            <div className="mt-2"><Link to="/about#governance" className="hover:text-foreground">Governance</Link></div>
+            <div className="mt-2"><PublicGovernanceLink /></div>
           </div>
         </div>
       </footer>
