@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { prepareArtistWebsiteDirectory, type ArtistWebsiteEntry } from "@/lib/artistWebsiteDirectory";
+import { prepareArtistWebsiteDirectory, type PreparedArtistWebsiteEntry } from "@/lib/artistWebsiteDirectory";
 
 const ArtistWebsiteDirectory = () => {
-  const [artists, setArtists] = useState<ArtistWebsiteEntry[]>([]);
+  const [artists, setArtists] = useState<PreparedArtistWebsiteEntry[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [attempt, setAttempt] = useState(0);
 
