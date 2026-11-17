@@ -35,7 +35,15 @@ const ArtistWebsiteDirectory = () => {
         {status === "error" && <div className="space-y-3"><p role="alert" className="text-sm text-muted-foreground">Artist websites could not be loaded.</p><Button variant="outline" onClick={() => setAttempt((value) => value + 1)}>Try again</Button></div>}
         {status === "ready" && (artists.length === 0 ? <p className="text-sm text-muted-foreground">No artist websites have been published yet.</p> : (
           <ul className="grid grid-cols-1 gap-x-10 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-            {artists.map((artist) => <li key={artist.slug} className="min-w-0"><Link to={`/site/${encodeURIComponent(artist.slug)}`} className="inline-block max-w-full break-words text-base underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{artist.full_name}</Link></li>)}
+            {artists.map((artist) => (
+              <li key={artist.slug} className="min-w-0">
+                {artist.external ? (
+                  <a href={artist.href} target="_blank" rel="noopener noreferrer" className="inline-block max-w-full break-words text-base underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{artist.full_name}</a>
+                ) : (
+                  <Link to={artist.href} className="inline-block max-w-full break-words text-base underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{artist.full_name}</Link>
+                )}
+              </li>
+            ))}
           </ul>
         ))}
       </div>

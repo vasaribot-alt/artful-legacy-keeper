@@ -4519,6 +4519,7 @@ export type Database = {
       list_public_artist_websites: {
         Args: never
         Returns: {
+          custom_domain: string
           full_name: string
           slug: string
         }[]

@@ -169,6 +169,13 @@
       "when": 1794830775945,
       "tag": "0023_public_artist_website_directory",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1794918801585,
+      "tag": "0024_artist_website_directory_custom_domain",
+      "breakpoints": true
     }
   ]
 }
