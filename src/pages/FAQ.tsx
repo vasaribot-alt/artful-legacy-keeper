@@ -383,6 +383,7 @@ export default function FAQ() {
             <div className="mt-2">
               <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
             </div>
+            <div className="mt-2"><Link to="/about#governance" className="hover:text-foreground">Governance</Link></div>
           </div>
         </div>
       </footer>

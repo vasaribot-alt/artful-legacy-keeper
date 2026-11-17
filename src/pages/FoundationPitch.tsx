@@ -19,14 +19,14 @@ const PILLARS = [
   { icon: Archive, title: "100-year preservation", body: "An archival record of contemporary art held independently for at least one century." },
   { icon: Globe2, title: "Global, independent", body: "A Dutch stichting — no commercial ownership, no market influence, no advertising." },
   { icon: Users2, title: "Artist-first", body: "Built with and for artists, collectors, registrars and scholars. Free for verified artists." },
-  { icon: Landmark, title: "Transparent governance", body: "Annual reports, board oversight, and audited financials once active." },
+  { icon: Landmark, title: "Transparent governance", body: "Find our Board, governance documents and reporting information.", href: "/about#governance" },
 ];
 
 const GOVERNANCE = [
   { icon: Building2, title: "Dutch stichting", body: "Registered as a non-profit foundation under Dutch law, with statutes filed at the Chamber of Commerce (KvK)." },
-  { icon: Scale, title: "Independent board", body: "Multi-seat board with art-historical, legal, and technical expertise. No single party holds controlling rights." },
-  { icon: ScrollText, title: "Public statutes", body: "Articles of association are public, including the non-distribution constraint and dissolution clauses." },
-  { icon: FileText, title: "Annual reporting", body: "Annual activity and financial reports published openly once the Foundation is operationally active." },
+  { icon: Scale, title: "Statutory Board", body: "The statutory board sets policy, oversees operations and is responsible for GARF’s accounts and use of its resources." },
+  { icon: ScrollText, title: "Governance documents", body: "Read the approved public governance documents.", href: "/about#governance" },
+  { icon: FileText, title: "Annual reporting", body: "Reporting information will be added to the Governance section as reports become available.", href: "/about#governance" },
 ];
 
 const IMPACT = [
@@ -38,14 +38,15 @@ const IMPACT = [
 
 const TEAM = [
   {
-    name: "Founding board",
-    role: "Composition in progress",
-    body: "The founding board is being assembled with representatives from the artist, scholarly, and archival communities. Names will be published upon Chamber of Commerce filing.",
+    name: "Statutory Board",
+    role: "Board offices",
+    body: "Jan Sverre Kindem — Chair and Advisory Board Liaison\nIngvar Straume — Secretary and Treasurer",
   },
   {
-    name: "Advisory circle",
+    name: "Advisory Board",
     role: "Artists, registrars, scholars",
-    body: "An advisory circle of practising artists, museum registrars, and art historians informs the Foundation's archival standards and governance.",
+    body: "Terms of reference are available in the Governance section.",
+    href: "/about#governance",
   },
 ];
 
@@ -110,7 +111,7 @@ export default function FoundationPitch() {
           {PILLARS.map((p) => (
             <div key={p.title} className="bg-background p-8">
               <p.icon className="h-6 w-6 text-muted-foreground" />
-              <h3 className="mt-4 font-serif text-lg">{p.title}</h3>
+              <h3 className="mt-4 font-serif text-lg">{p.href ? <Link to={p.href} className="underline underline-offset-4">{p.title}</Link> : p.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
             </div>
           ))}
@@ -155,7 +156,7 @@ export default function FoundationPitch() {
             {GOVERNANCE.map((g) => (
               <div key={g.title} className="rounded-lg border border-border bg-background p-6">
                 <g.icon className="h-5 w-5 text-muted-foreground" />
-                <h3 className="mt-3 font-serif text-lg">{g.title}</h3>
+                <h3 className="mt-3 font-serif text-lg">{g.href ? <Link to={g.href} className="underline underline-offset-4">{g.title}</Link> : g.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{g.body}</p>
               </div>
             ))}
@@ -177,7 +178,7 @@ export default function FoundationPitch() {
               <div key={t.name} className="rounded-lg border border-border bg-background p-6">
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">{t.role}</p>
                 <h3 className="mt-2 font-serif text-xl">{t.name}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t.body}</p>
+                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{t.href ? <Link to={t.href} className="underline underline-offset-4">{t.body}</Link> : t.body}</p>
               </div>
             ))}
           </div>
