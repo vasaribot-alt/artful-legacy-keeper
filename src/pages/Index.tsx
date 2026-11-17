@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/PublicHeader";
+import PublicGovernanceLink from "@/components/PublicGovernanceLink";
 import ArtistFeatureOverview from "@/components/ArtistFeatureOverview";
 import installVideo from "@/assets/how-to-install.mp4.asset.json";
 import hdluLogo from "@/assets/hdlu-zagreb-logo.jpg.asset.json";
@@ -497,6 +498,7 @@ const Index = () => {
             <div className="mt-2">
               <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
             </div>
+            <div className="mt-2"><PublicGovernanceLink /></div>
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-8 pt-6 border-t border-border flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
