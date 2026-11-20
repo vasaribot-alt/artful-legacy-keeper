@@ -20,6 +20,7 @@ import { ArtistFirstSteps } from "@/components/ArtistFirstSteps";
 import { WebsiteReminder } from "@/components/WebsiteReminder";
 import { ArtistArtworkExport } from "@/components/ArtistArtworkExport";
 import { deleteSelectedArtworks } from "@/lib/bulkArtworkDelete";
+import { startIdVerification } from "@/lib/startIdVerification";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -68,15 +69,9 @@ function VerifyIdBanner({ onVerified }: { onVerified: () => void }) {
   const handleVerify = async () => {
     setStarting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("veriff-session");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      } else {
-        toast.error("Could not start verification session");
-      }
-    } catch {
-      toast.error("Failed to start ID verification");
+      await startIdVerification();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to start ID verification");
     } finally {
       setStarting(false);
     }

@@ -15,3 +15,4 @@
 - Exhibition plans live in exhibition_plans (one per exhibition, owner/registrar RLS) with JSON tasks/budget; documentation readiness is computed live from linked artworks so it never goes stale.
 - Exhibition catalogue PDFs are generated on demand from saved exhibition links and owner/artist-scoped artworks; use embedded Unicode fonts, PDF.js preview, and a separately activated blob download to preserve mobile compatibility without publishing private records.
 - Bulk artwork deletion uses bounded owner- and role-scoped requests with returned IDs and partial-progress handling; this avoids gateway URL limits and false success after incomplete deletion.
+- All ID verification buttons use a shared synchronous window launch before session creation, with same-tab fallback and service-error reporting; this avoids popup blocking without changing approval rules.

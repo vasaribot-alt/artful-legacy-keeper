@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Globe, Phone, Mail, MapPin, ExternalLink, Building2, ShieldCheck, Loader2,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { startIdVerification } from "@/lib/startIdVerification";
 import { toast } from "sonner";
 
 const socialIcons: Record<string, React.ReactNode> = {
@@ -89,16 +89,9 @@ export function ProfilePresentationView({ profile }: { profile: ProfileViewData 
   const handleVerifyId = async () => {
     setStartingVerification(true);
     try {
-      const { data, error } = await supabase.functions.invoke("veriff-session");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      } else {
-        toast.error("Could not start verification session");
-      }
-    } catch (err: any) {
-      console.error(err);
-      toast.error("Failed to start ID verification");
+      await startIdVerification();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to start ID verification");
     } finally {
       setStartingVerification(false);
     }

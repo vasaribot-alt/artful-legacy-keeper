@@ -23,6 +23,7 @@ import { EstateSuccessorManager } from "@/components/EstateSuccessorManager";
 import { UnitPreferenceSetting } from "@/components/UnitPreferenceSetting";
 import { RegistrarCredentialsSummary } from "@/components/RegistrarCredentialsSummary";
 import { AiProfileAssist, type ProfileDraft } from "@/components/AiProfileAssist";
+import { startIdVerification } from "@/lib/startIdVerification";
 
 
 interface SocialLink {
@@ -323,12 +324,9 @@ const ArtistProfile = () => {
 
   const startVerification = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke("veriff-session");
-      if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
-      else toast.error("Could not start verification session");
-    } catch {
-      toast.error("Failed to start ID verification");
+      await startIdVerification();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to start ID verification");
     }
   };
 

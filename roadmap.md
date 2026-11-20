@@ -1,3 +1,8 @@
+## ID verification launch (2026-11-20)
+- [x] Confirm Alfred remains unverified; no recent session/webhook logs available. Share a popup-safe launcher across all three ID buttons without changing verification status.
+- [x] Three launch tests passed and build OK; Jan's signed-in Verify ID opened the live Veriff QR/SMS start screen. No ID submitted and no verification status changed; awaits publishing.
+- [ ] Identify Alfred's exact failure; awaiting Jan's answer about what happens when Alfred presses Verify ID. Approval completion cannot be tested without his identity check.
+
 ## Bulk artwork deletion (2026-11-20)
 - [x] Reproduce the 649-ID gateway failure using read-only requests, then implement bounded owner/role-scoped deletion with accurate partial results.
 - [x] Four regression tests passed, build OK; signed-in confirmation cancelled safely, then a temporary collector artwork was deleted through the UI and its absence read back. Existing artworks unchanged; awaits publishing.
