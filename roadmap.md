@@ -1,3 +1,7 @@
+## Bulk artwork deletion (2026-11-20)
+- [x] Reproduce the 649-ID gateway failure using read-only requests, then implement bounded owner/role-scoped deletion with accurate partial results.
+- [x] Four regression tests passed, build OK; signed-in confirmation cancelled safely, then a temporary collector artwork was deleted through the UI and its absence read back. Existing artworks unchanged; awaits publishing.
+
 ## Governance publication (2026-11-17)
 - [x] Apply the approved wording to About and Foundation, add shared governance footer links, stage only Documents 01/03/04 and redirect the removed overview to About.
 - [x] Verify anonymous downloads byte-for-byte against supplied originals, homepage/Foundation/direct anchors, desktop and phone screenshots with no overflow, one passing test and build OK.

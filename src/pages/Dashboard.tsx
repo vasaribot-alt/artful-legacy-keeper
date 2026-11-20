@@ -19,6 +19,7 @@ import LinkedInReminderBanner from "@/components/LinkedInReminderBanner";
 import { ArtistFirstSteps } from "@/components/ArtistFirstSteps";
 import { WebsiteReminder } from "@/components/WebsiteReminder";
 import { ArtistArtworkExport } from "@/components/ArtistArtworkExport";
+import { deleteSelectedArtworks } from "@/lib/bulkArtworkDelete";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -115,6 +116,7 @@ const Dashboard = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [deleteProgress, setDeleteProgress] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
   const [verificationFilter, setVerificationFilter] = useState<string>("all");
@@ -370,15 +372,21 @@ const Dashboard = () => {
   };
 
   const handleBulkDelete = async () => {
+    if (!user || deleting || activeRole === "registrar" || selectedIds.size === 0) return;
     setDeleting(true);
+    setDeleteProgress(0);
     const ids = Array.from(selectedIds);
-    const { error } = await supabase.from("artworks").delete().in("id", ids);
+    const { deletedIds, error } = await deleteSelectedArtworks(ids, user.id, activeRole, setDeleteProgress);
+    const deleted = new Set(deletedIds);
+    setArtworks(previous => previous.filter(artwork => !deleted.has(artwork.id)));
+    setGalleryArtworks(previous => previous.filter(artwork => !deleted.has(artwork.id)));
+    setSelectedIds(previous => new Set([...previous].filter(id => !deleted.has(id))));
     if (error) {
-      toast.error("Failed to delete artworks");
+      toast.error(deletedIds.length > 0
+        ? `Deleted ${deletedIds.length} of ${ids.length} artworks. The remaining works are still selected. ${error}`
+        : `No artworks were deleted. ${error}`);
     } else {
-      toast.success(`Deleted ${ids.length} artwork${ids.length !== 1 ? "s" : ""}`);
-      setSelectedIds(new Set());
-      fetchArtworks();
+      toast.success(`Deleted ${deletedIds.length} artwork${deletedIds.length !== 1 ? "s" : ""}`);
     }
     setDeleting(false);
     setDeleteConfirmOpen(false);
@@ -631,6 +639,7 @@ const Dashboard = () => {
             <div>
               <div className="flex items-center gap-3 mb-2 px-3 py-2 sticky top-0 z-10 bg-background border-b border-border">
                 <Checkbox
+                  disabled={deleting}
                   checked={selectedIds.size === filteredArtworks.length && filteredArtworks.length > 0}
                   onCheckedChange={(checked) => handleSelectAll(!!checked)}
                 />
@@ -642,6 +651,7 @@ const Dashboard = () => {
                     variant="destructive"
                     size="sm"
                     className="ml-auto gap-1.5"
+                    disabled={deleting}
                     onClick={() => setDeleteConfirmOpen(true)}
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Delete ({selectedIds.size})
@@ -811,7 +821,7 @@ const Dashboard = () => {
         userRole={activeRole}
       />
 
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={(open) => { if (!deleting) setDeleteConfirmOpen(open); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete {selectedIds.size} artwork{selectedIds.size !== 1 ? "s" : ""}?</AlertDialogTitle>
@@ -821,8 +831,8 @@ const Dashboard = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBulkDelete} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {deleting ? "Deleting…" : "Delete"}
+            <AlertDialogAction onClick={(event) => { event.preventDefault(); void handleBulkDelete(); }} disabled={deleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleting ? `Deleting… ${deleteProgress}/${selectedIds.size}` : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
