@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
       },
     };
 
-    const response = await fetch("https://stationapi.veriff.com/v1/sessions", {
+    const response = await fetch("https://api-saas.veriff.com/v1/sessions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
