@@ -50,13 +50,16 @@ Deno.serve(async (req) => {
     const payload = JSON.parse(rawBody);
     console.log("Veriff webhook received:", JSON.stringify(payload));
 
+    // Supports both the classic decision webhook ({verification:{status,vendorData}})
+    // and the self-serve "fullauto" webhook ({vendorData, data:{verification:{decision}}}).
     const verification = payload.verification;
-    if (!verification) {
+    const fullauto = payload?.data?.verification;
+    const status: string | undefined = verification?.status ?? fullauto?.decision ?? fullauto?.status;
+    const vendorData: string | undefined = verification?.vendorData ?? payload?.vendorData;
+
+    if (!status) {
       return new Response("OK", { status: 200, headers: corsHeaders });
     }
-
-    const status = verification.status;
-    const vendorData = verification.vendorData; // This is the user_id we sent
 
     if (!vendorData) {
       console.error("No vendorData (user_id) in webhook");
