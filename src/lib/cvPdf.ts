@@ -62,7 +62,7 @@ export async function buildCvPdf(artistName: string, sections: CvPdfSection[]): 
     }
   }
   const bytes = await pdf.save();
-  return new Blob([bytes], { type: "application/pdf" });
+  return new Blob([bytes as BlobPart], { type: "application/pdf" });
 }
 
 export function downloadBlob(blob: Blob, filename: string) {
