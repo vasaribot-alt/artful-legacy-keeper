@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import CvManager from "@/components/CvManager";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2, Pencil, Eye } from "lucide-react";
+import { CvPdfButton } from "@/components/CvPdfButton";
 import { buildCvSections, CvSection } from "@/hooks/use-cv-with-exhibitions";
 
 const CvEdit = () => {
@@ -14,7 +15,6 @@ const CvEdit = () => {
   const [artistName, setArtistName] = useState("");
   const [cvSections, setCvSections] = useState<CvSection[]>([]);
   const [editMode, setEditMode] = useState(false);
-  const [generating, setGenerating] = useState(false);
   const [cvDirty, setCvDirty] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -43,46 +43,6 @@ const CvEdit = () => {
     loadData();
   }, [navigate]);
 
-  const handleDownloadPdf = async () => {
-    setGenerating(true);
-    try {
-      const printWindow = window.open("", "_blank");
-      if (!printWindow) throw new Error("Popup blocked");
-      const content = printRef.current?.innerHTML || "";
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>CV — ${artistName}</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'DM Sans', system-ui, sans-serif; color: #111; padding: 48px; max-width: 800px; margin: 0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            h1 { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 8px; letter-spacing: -0.01em; }
-            .subtitle { font-size: 13px; color: #666; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 0.1em; }
-            h2 { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 16px; margin-top: 32px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5; letter-spacing: -0.01em; }
-            .entry { display: flex; gap: 16px; margin-bottom: 8px; page-break-inside: avoid; }
-            .year { font-family: monospace; font-size: 13px; color: #888; width: 60px; flex-shrink: 0; padding-top: 1px; }
-            .text { font-size: 14px; color: #333; line-height: 1.5; flex: 1; }
-            .images { display: none; }
-            @media print { body { padding: 24px; } h2 { margin-top: 24px; } }
-          </style>
-        </head>
-        <body>
-          <h1>${artistName}</h1>
-          <p class="subtitle">Curriculum Vitae</p>
-          ${content}
-          <script>window.onload = function() { setTimeout(function() { window.print(); window.close(); }, 300); };</script>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-    } catch {
-      window.print();
-    } finally {
-      setGenerating(false);
-    }
-  };
 
   const handleExitEdit = () => {
     if (cvDirty) {
@@ -110,16 +70,7 @@ const CvEdit = () => {
     </Button>
   ) : (
     <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleDownloadPdf}
-        disabled={generating || cvSections.length === 0}
-        className="gap-1.5"
-      >
-        {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-        PDF
-      </Button>
+      <CvPdfButton artistName={artistName} sections={cvSections} label="PDF" />
       <Button variant="outline" size="sm" onClick={() => setEditMode(true)} className="gap-1.5">
         <Pencil className="w-3.5 h-3.5" /> Edit
       </Button>

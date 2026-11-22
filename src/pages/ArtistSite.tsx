@@ -1,4 +1,5 @@
 import { SketchbookReader } from "@/components/SketchbookReader";
+import { sortCvEntriesByYear } from "@/lib/cvOrder";
 import { canDownloadSketchbook } from "@/lib/sketchbookReader";
 import { Button } from "@/components/ui/button";
 import { PublicArchivalDocuments } from "@/components/PublicArchivalDocuments";
@@ -165,7 +166,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
             .select("id, section, entry_text, year, display_order")
             .eq("profile_id", profileRow.id)
             .order("display_order", { ascending: true });
-          setCvEntries((entries as CvEntry[]) || []);
+          setCvEntries(sortCvEntriesByYear((entries as CvEntry[]) || []));
         }
       }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { sortCvEntriesByYear } from "@/lib/cvOrder";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -130,7 +131,7 @@ const ArtistProfileView = () => {
         setCvSections(
           Array.from(sectionMap.entries()).map(([section, entries]) => ({
             section,
-            entries,
+            entries: sortCvEntriesByYear(entries),
           }))
         );
       }

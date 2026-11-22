@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { sortCvEntriesByYear } from "@/lib/cvOrder";
 
 interface CvEntry {
   id?: string;
@@ -119,7 +120,7 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
 
     const sectionList: CvSection[] = Array.from(sectionMap.entries()).map(([name, entries]) => ({
       name,
-      entries,
+      entries: sortCvEntriesByYear(entries),
       collapsed: false,
     }));
 
@@ -197,9 +198,10 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
       // Delete existing entries (cascade deletes images)
       await supabase.from("cv_entries").delete().eq("profile_id", profileId);
 
-      // Insert all entries
+      // Insert all entries, newest year first within each section
+      let order = 0;
       for (const section of sections) {
-        for (const entry of section.entries) {
+        for (const entry of sortCvEntriesByYear(section.entries)) {
           const { data: inserted, error } = await supabase
             .from("cv_entries")
             .insert({
@@ -207,7 +209,7 @@ const CvManager = ({ profileId, onDirtyChange }: CvManagerProps) => {
               section: section.name,
               entry_text: entry.entry_text,
               year: entry.year || null,
-              display_order: entry.display_order,
+              display_order: order++,
             } as any)
             .select()
             .single();
