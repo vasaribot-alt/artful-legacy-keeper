@@ -84,16 +84,20 @@ export async function buildCvSections(profileId: string, userId: string): Promis
 
   // Merge exhibition entries into sections
   // If these sections already exist from manual entries, append; otherwise create them
-  if (soloExhibitions.length > 0) {
-    const key = "Solo Exhibitions";
+  const norm = (t: string) => t.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  const mergeInto = (kind: "solo" | "group", fallback: string, items: CvEntry[]) => {
+    if (!items.length) return;
+    // Reuse the artist's own section (e.g. "Selected Solo Exhibitions and Projects") instead of adding a second one
+    const key = Array.from(sectionMap.keys()).find((k) => new RegExp(`\\b${kind}\\b`, "i").test(k)) ?? fallback;
     const existing = sectionMap.get(key) || [];
-    sectionMap.set(key, [...existing, ...soloExhibitions]);
-  }
-  if (groupExhibitions.length > 0) {
-    const key = "Group Exhibitions";
-    const existing = sectionMap.get(key) || [];
-    sectionMap.set(key, [...existing, ...groupExhibitions]);
-  }
+    const fresh = items.filter((ex) => {
+      const title = norm(ex.entry_text.split(",")[0] || "");
+      return !existing.some((m) => (!ex.year || !m.year || m.year.includes(ex.year)) && title && norm(m.entry_text).includes(title));
+    });
+    sectionMap.set(key, [...existing, ...fresh]);
+  };
+  mergeInto("solo", "Solo Exhibitions", soloExhibitions);
+  mergeInto("group", "Group Exhibitions", groupExhibitions);
 
   return Array.from(sectionMap.entries()).map(([section, entries]) => ({
     section,
