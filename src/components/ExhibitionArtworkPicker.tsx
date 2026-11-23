@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { artworkSeriesOptions, filterExhibitionArtworks } from "@/lib/exhibitionArtworkFilter";
 
 interface Artwork {
   id: string;
@@ -19,32 +21,39 @@ interface Artwork {
   medium: string | null;
   image_url: string | null;
   thumbnailUrl: string | null;
+  series: string | null;
 }
 
 interface ExhibitionArtworkPickerProps {
+  ownerId: string | null;
   selectedIds: string[];
   onSelectionChange: (ids: string[]) => void;
 }
 
-export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: ExhibitionArtworkPickerProps) => {
+export const ExhibitionArtworkPicker = ({ ownerId, selectedIds, onSelectionChange }: ExhibitionArtworkPickerProps) => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [seriesFilter, setSeriesFilter] = useState("all");
 
   useEffect(() => {
+    let cancelled = false;
+    setArtworks([]);
+    setSeriesFilter("all");
+    setSearch("");
     const load = async () => {
+      if (!ownerId) return;
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
 
       const { data } = await supabase
         .from("artworks")
-        .select("id, title, year, medium, image_url")
-        .eq("owner_id", user.id)
+        .select("id, title, year, medium, image_url, series")
+        .eq("owner_id", ownerId)
         .eq("role_context", "artist")
         .order("year", { ascending: false });
 
+      if (cancelled) return;
       if (!data) { setLoading(false); return; }
 
       // Fetch first image for each artwork in parallel
@@ -68,6 +77,7 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
         }
       }
 
+      if (cancelled) return;
       setArtworks(
         data.map((a) => ({
           ...a,
@@ -77,7 +87,8 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
       setLoading(false);
     };
     load();
-  }, []);
+    return () => { cancelled = true; };
+  }, [ownerId]);
 
   if (!loading && artworks.length === 0) return null;
 
@@ -99,9 +110,8 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
   };
 
   const selectedArtworks = artworks.filter((a) => selectedIds.includes(a.id));
-  const filtered = artworks.filter((a) =>
-    a.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const seriesOptions = artworkSeriesOptions(artworks);
+  const filtered = filterExhibitionArtworks(artworks, seriesFilter, search);
 
   const Thumb = ({ art }: { art: Artwork }) => {
     const src = art.thumbnailUrl || art.image_url;
@@ -153,17 +163,33 @@ export const ExhibitionArtworkPicker = ({ selectedIds, onSelectionChange }: Exhi
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-[420px] p-0"
+          className="w-[420px] max-w-[calc(100vw-2rem)] p-0"
           align="start"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <div className="p-2 border-b">
+          <div className="p-2 border-b space-y-2">
+            <Select value={seriesFilter} onValueChange={setSeriesFilter}>
+              <SelectTrigger className="h-8 text-sm" aria-label="Filter artworks by series">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All series ({artworks.length})</SelectItem>
+                {seriesOptions.map((series) => (
+                  <SelectItem key={series.value} value={series.value}>
+                    {series.label} ({series.count})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Input
+              aria-label="Search artworks"
+              autoComplete="off"
               placeholder="Search artworks..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-8 text-sm"
             />
+            <p className="text-xs text-muted-foreground" aria-live="polite">{filtered.length} artworks</p>
           </div>
           <div className="max-h-72 overflow-y-auto overscroll-contain p-2 space-y-0.5" onWheel={handleWheel}>
             {filtered.length === 0 && (

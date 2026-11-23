@@ -1,3 +1,7 @@
+## Exhibition artwork series filter (2026-11-23)
+- [x] Add series filtering with All series and Other Works, combined title search and selections retained across filters.
+- [x] Four tests passed and preview build OK; checked Fredrik's 440-work catalogue through Jan's authorised registrar access, narrowed to 176 Canopy works, retained trial selections across filters, checked desktop/phone, then cancelled and confirmed the original saved selection unchanged. Ready to publish.
+
 ## ID verification launch (2026-11-20)
 - [x] Confirm Alfred remains unverified; no recent session/webhook logs available. Share a popup-safe launcher across all three ID buttons without changing verification status.
 - [x] Three launch tests passed and build OK; Jan's signed-in Verify ID opened the live Veriff QR/SMS start screen. No ID submitted and no verification status changed; awaits publishing.

@@ -534,6 +534,7 @@ const Exhibitions = () => {
               />
             </div>
             <ExhibitionArtworkPicker
+              ownerId={ownerId}
               selectedIds={selectedArtworkIds}
               onSelectionChange={setSelectedArtworkIds}
             />
