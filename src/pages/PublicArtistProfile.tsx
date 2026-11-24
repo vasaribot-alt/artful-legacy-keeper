@@ -345,7 +345,7 @@ const PublicArtistProfile = () => {
           </Link>
           <div className="flex items-center gap-6">
             <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Legacy Artists
+              Artist Legacy program
             </Link>
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Sign In
@@ -362,7 +362,7 @@ const PublicArtistProfile = () => {
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <p className="text-muted-foreground">Artist not found</p>
           <Link to="/founding-artists" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-            <ArrowLeft className="w-3 h-3" /> Back to Legacy Artists
+            <ArrowLeft className="w-3 h-3" /> Back to Artist Legacy program
           </Link>
         </div>
       ) : (
@@ -770,7 +770,7 @@ const PublicArtistProfile = () => {
                 © 2026 Global Artist Registry Foundation
               </Link>
               <Link to="/founding-artists" className="hover:text-foreground transition-colors">
-                Legacy Artists
+                Artist Legacy program
               </Link>
             </div>
           </footer>

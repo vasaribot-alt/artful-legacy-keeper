@@ -24,7 +24,7 @@ const getNavItems = (role: AppRole) => {
   if (role === "foundation") {
     return [
       { title: "Foundation Dashboard", url: "/foundation/admin", icon: Award },
-      { title: "Legacy Artists", url: "/founding-artists", icon: Users },
+      { title: "Artist Legacy", url: "/founding-artists", icon: Users },
       { title: "Gallery Outreach", url: "/foundation/gallery-outreach", icon: Building2 },
       { title: "Invitation Requests", url: "/foundation/invitation-requests", icon: Mail },
       { title: "Founding Supporters", url: "/foundation/founding-supporters", icon: Award },

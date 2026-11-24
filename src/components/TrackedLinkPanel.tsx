@@ -36,7 +36,7 @@ export type TrackedLinkClick = {
 export const TRACKED_DESTINATIONS = [
   { value: "https://globalartistregistry.org/alliance/curators", label: "Alliance — Curators" },
   { value: "https://globalartistregistry.org/invitation", label: "Artist invitation (all languages)" },
-  { value: "https://globalartistregistry.org/founding-artists", label: "Legacy Artists registry" },
+  { value: "https://globalartistregistry.org/founding-artists", label: "Artist Legacy registry" },
   { value: "https://globalartistregistry.org/about", label: "About the Foundation" },
   { value: "https://globalartistregistry.org/why-garf-matters", label: "Why GARF Matters" },
   { value: "https://globalartistregistry.org/faq", label: "FAQ" },
