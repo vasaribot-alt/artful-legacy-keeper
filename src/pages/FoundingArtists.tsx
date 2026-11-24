@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowRight, Shield, Clock, Users, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface FoundingArtist {
   user_id: string;
@@ -308,6 +309,20 @@ const FoundingArtists = () => {
           </>
         )}
       </main>
+
+      {/* Invitation */}
+      <section className="py-16 px-6 border-t border-border">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl mb-4">Artist Legacy Protection</h2>
+          <p className="text-muted-foreground leading-relaxed mb-8">
+            The Artist Legacy Protection program has launched, and we invite artists from all over
+            the world to participate. The more artists who join us, the stronger GARF becomes.
+          </p>
+          <Button asChild size="lg">
+            <Link to="/register">Register here</Link>
+          </Button>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="py-10 px-6 border-t border-border">
