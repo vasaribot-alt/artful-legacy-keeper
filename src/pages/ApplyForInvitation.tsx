@@ -78,9 +78,10 @@ const ApplyForInvitation = () => {
           <>
             <h1 className="font-serif text-4xl mb-3">Apply for an invitation</h1>
             <p className="text-muted-foreground text-sm mb-10 max-w-xl">
-              The registry is invitation only. If you have not received a code, tell us about your work and we will
-              review your application. Registration is free for life for every ID verified artist, and records are
-              kept in accordance with our 100 Year Preservation Plan.
+              Accounts are free for artists and anyone can register. Use this form if you would like a personal
+              invitation instead: tell us about your work and we will review your request. Registration is free for
+              life for every ID verified artist, and records are kept in accordance with our 100 Year Preservation
+              Plan.
             </p>
 
             <form onSubmit={submit} className="space-y-6" autoComplete="off">

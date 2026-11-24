@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowRight, Shield, Clock, Users, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface FoundingArtist {
@@ -309,27 +308,6 @@ const FoundingArtists = () => {
           </>
         )}
       </main>
-
-      {/* CTA */}
-      <section className="py-16 px-6 border-t border-border text-center">
-        <h2 className="text-2xl mb-3">Join the Legacy Artists</h2>
-        <p className="text-muted-foreground text-sm mb-6 max-w-lg mx-auto">
-          The program is invitation only. If you have received an invite code, register now. If not, you are welcome
-          to apply and we will review your application.
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link to="/register">
-            <Button size="lg" className="gap-2">
-              Register with Invite Code <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
-          <Link to="/apply-for-invitation">
-            <Button size="lg" variant="outline" className="gap-2">
-              Apply for an Invitation
-            </Button>
-          </Link>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="py-10 px-6 border-t border-border">
