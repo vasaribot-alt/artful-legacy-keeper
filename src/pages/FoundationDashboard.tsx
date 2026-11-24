@@ -188,7 +188,7 @@ const FoundationDashboard = () => {
         <div>
           <div className="flex items-center gap-3 mb-1">
             <Award className="h-6 w-6" />
-            <h1 className="text-2xl font-semibold">Artist Legacy Program</h1>
+            <h1 className="text-2xl font-semibold">Artist Legacy Protection Program</h1>
           </div>
           <p className="text-sm text-muted-foreground">
             Generate and manage invite codes for founding artists. {artists.length} artist(s) enrolled.

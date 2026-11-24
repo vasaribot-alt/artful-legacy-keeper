@@ -139,7 +139,7 @@ const FoundingArtists = () => {
       {/* Header */}
       <PublicHeader />
 
-      <PublicPageHero eyebrow="Artist Legacy Program" title="Building a Permanent Record for Art" borderBottom description="For the first time, artists can create their own authenticated, archival-grade catalogue raisonné, a permanent record that outlasts galleries, institutions, and markets. Artists in the Artist Legacy program are the pioneers who believe their work deserves a record as enduring as the art itself.">
+      <PublicPageHero eyebrow="Artist Legacy Protection Program" title="Building a Permanent Record for Art" borderBottom description="For the first time, artists can create their own authenticated, archival-grade catalogue raisonné, a permanent record that outlasts galleries, institutions, and markets. Artists in the Artist Legacy Protection program are the pioneers who believe their work deserves a record as enduring as the art itself.">
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mt-8">
             <span className="flex items-center gap-2">
               <Shield className="w-4 h-4" /> Verified identity
@@ -171,7 +171,7 @@ const FoundingArtists = () => {
               },
               {
                 title: "First movers shape history",
-                text: "Artists in the Artist Legacy program are permanently recognized as the pioneers who established this new standard for art documentation.",
+                text: "Artists in the Artist Legacy Protection program are permanently recognized as the pioneers who established this new standard for art documentation.",
               },
             ].map((item) => (
               <div key={item.title}>
@@ -200,7 +200,7 @@ const FoundingArtists = () => {
           <div className="text-muted-foreground text-center py-12">Loading...</div>
         ) : artists.length === 0 ? (
           <p className="text-muted-foreground text-center py-12">
-            The Artist Legacy program is currently in progress.
+            The Artist Legacy Protection program is currently in progress.
           </p>
         ) : (
           <>
@@ -313,9 +313,9 @@ const FoundingArtists = () => {
       {/* Invitation */}
       <section className="py-16 px-6 border-t border-border">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl mb-4">Artist Legacy program</h2>
+          <h2 className="text-2xl mb-4">Artist Legacy Protection</h2>
           <p className="text-muted-foreground leading-relaxed mb-8">
-            The Artist Legacy program has launched, and we invite artists from all over
+            The Artist Legacy Protection program has launched, and we invite artists from all over
             the world to participate. The more artists who join us, the stronger GARF becomes.
           </p>
           <Button asChild size="lg">
