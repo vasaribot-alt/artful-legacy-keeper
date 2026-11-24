@@ -1,3 +1,7 @@
+## Profile ambassador invitations (2026-11-24)
+- [x] Add a launch notice to private profiles and invitations for artists at four of seven existing milestones and collectors with more than ten works (provisional threshold); preserve explicit consent and existing personal ambassador arrangements.
+- [x] Two eligibility boundary tests passed and preview build OK; Jan’s signed-in 98-work collector profile shows the invitation, terms and foundation contact link, checked on desktop and phone without overflow or runtime errors. Artist threshold tested; no artist account session used. No emails sent or automatic enrolment.
+
 ## Exhibition artwork series filter (2026-11-23)
 - [x] Add series filtering with All series and Other Works, combined title search and selections retained across filters.
 - [x] Four tests passed and preview build OK; checked Fredrik's 440-work catalogue through Jan's authorised registrar access, narrowed to 176 Canopy works, retained trial selections across filters, checked desktop/phone, then cancelled and confirmed the original saved selection unchanged. Ready to publish.

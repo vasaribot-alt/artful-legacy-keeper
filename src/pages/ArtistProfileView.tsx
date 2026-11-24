@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { ViewLayout } from "@/components/ViewLayout";
 import { FoundingArtistBadge } from "@/components/FoundingArtistBadge";
+import { AmbassadorProfileNotice } from "@/components/AmbassadorProfileNotice";
 
 interface SocialLink {
   platform: string;
@@ -67,6 +68,7 @@ const ArtistProfileView = () => {
     { section: string; entries: { year: string; entry_text: string; images: { storage_path: string; caption: string | null }[] }[] }[]
   >([]);
   const [foundingTier, setFoundingTier] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -77,6 +79,7 @@ const ArtistProfileView = () => {
         navigate("/login");
         return;
       }
+      setUserId(session.user.id);
 
       const { data, error } = await supabase
         .from("profiles")
@@ -174,6 +177,7 @@ const ArtistProfileView = () => {
 
   return (
     <ViewLayout editPath="/profile">
+      <div className="max-w-3xl mx-auto px-6 pt-8"><AmbassadorProfileNotice userId={userId} /></div>
       {/* Hero section */}
       <header className="pt-16 pb-16 px-6">
         <div className="max-w-3xl mx-auto flex flex-col items-center text-center">

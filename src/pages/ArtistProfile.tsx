@@ -24,6 +24,7 @@ import { UnitPreferenceSetting } from "@/components/UnitPreferenceSetting";
 import { RegistrarCredentialsSummary } from "@/components/RegistrarCredentialsSummary";
 import { AiProfileAssist, type ProfileDraft } from "@/components/AiProfileAssist";
 import { startIdVerification } from "@/lib/startIdVerification";
+import { AmbassadorProfileNotice } from "@/components/AmbassadorProfileNotice";
 
 
 interface SocialLink {
@@ -390,6 +391,7 @@ const ArtistProfile = () => {
         </Button>
       }>
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
+          <AmbassadorProfileNotice userId={userId} role={userRole} />
           <section className="space-y-6">
             <h2 className="text-2xl">Collector Information</h2>
             <p className="text-sm text-muted-foreground">
@@ -505,6 +507,7 @@ const ArtistProfile = () => {
         </Button>
       }>
         <div className="max-w-2xl mx-auto px-6 py-10 space-y-8">
+          <AmbassadorProfileNotice userId={userId} role={userRole} />
           <section className="space-y-6">
             <h2 className="text-2xl">Registrar Information</h2>
 
@@ -586,6 +589,7 @@ const ArtistProfile = () => {
   if (!editMode && profileViewData) {
     return (
       <AppLayout title={profileTitle} headerActions={headerActions}>
+        <div className="max-w-3xl mx-auto px-6 pt-8"><AmbassadorProfileNotice userId={userId} role={userRole} /></div>
         <ProfilePresentationView profile={profileViewData} />
       </AppLayout>
     );
@@ -636,6 +640,7 @@ const ArtistProfile = () => {
         </aside>
 
         <div className="flex-1 min-w-0 space-y-10 scroll-smooth">
+        <AmbassadorProfileNotice userId={userId} role={userRole} />
         {/* Basic Info */}
         <section id="basic-information" className="space-y-6 scroll-mt-6">
           <h2 className="text-2xl">Basic Information</h2>
