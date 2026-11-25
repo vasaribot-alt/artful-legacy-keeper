@@ -11,7 +11,7 @@ interface Props { type: string; value: TimeBasedDetails; onChange: (v: TimeBased
 export function TimeBasedMediaFields({ type, value, onChange }: Props) {
   const set = (k: keyof TimeBasedDetails, v: unknown) => onChange({ ...value, [k]: v });
   const events = value.events ?? [];
-  const setEvent = (i: number, k: keyof PerformanceEvent, v: string) =>
+  const setEvent = (i: number, k: "date" | "place" | "performers" | "commissioner" | "link", v: string) =>
     set("events", events.map((e, j) => (j === i ? { ...e, [k]: v } : e)));
   const text = (k: keyof TimeBasedDetails, label: string, placeholder = "") => (
     <div>
@@ -58,12 +58,23 @@ export function TimeBasedMediaFields({ type, value, onChange }: Props) {
           <div className="space-y-2">
             <Label>Performances</Label>
             {events.map((e, i) => (
-              <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
-                <Input autoComplete="off" placeholder="Date" value={e.date} onChange={(x) => setEvent(i, "date", x.target.value)} />
-                <Input autoComplete="off" placeholder="Place" value={e.place} onChange={(x) => setEvent(i, "place", x.target.value)} />
-                <Input autoComplete="off" placeholder="Performers" value={e.performers} onChange={(x) => setEvent(i, "performers", x.target.value)} />
-                <Button type="button" variant="ghost" size="icon" aria-label="Remove performance"
-                  onClick={() => set("events", events.filter((_, j) => j !== i))}><X className="h-4 w-4" /></Button>
+              <div key={i} className="space-y-2 rounded-md border border-border p-3">
+                <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2">
+                  <Input autoComplete="off" placeholder="Date" value={e.date} onChange={(x) => setEvent(i, "date", x.target.value)} />
+                  <Input autoComplete="off" placeholder="Place / event" value={e.place} onChange={(x) => setEvent(i, "place", x.target.value)} />
+                  <Input autoComplete="off" placeholder="Performers" value={e.performers} onChange={(x) => setEvent(i, "performers", x.target.value)} />
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remove performance"
+                    onClick={() => set("events", events.filter((_, j) => j !== i))}><X className="h-4 w-4" /></Button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input autoComplete="off" placeholder="Commissioned / co-produced by" value={e.commissioner ?? ""} onChange={(x) => setEvent(i, "commissioner", x.target.value)} />
+                  <Input autoComplete="off" type="url" placeholder="Link (press, tickets, video)" value={e.link ?? ""} onChange={(x) => setEvent(i, "link", x.target.value)} />
+                </div>
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <input type="checkbox" checked={!!e.premiere}
+                    onChange={(x) => set("events", events.map((ev, j) => (j === i ? { ...ev, premiere: x.target.checked } : ev)))} />
+                  First performance (premiere)
+                </label>
               </div>
             ))}
             <Button type="button" variant="outline" size="sm"

@@ -16,3 +16,10 @@ describe("time-based media", () => {
     expect(cleanTimeBasedDetails("Video art", { events: ev })).toBeNull();
   });
 });
+
+import { cleanTimeBasedDetails as clean2 } from "./timeBasedMedia";
+import { it as it2, expect as expect2 } from "vitest";
+it2("keeps commissioner, link and premiere on performance events", () => {
+  const r = clean2("Performance", { events: [{ date: "23.05.24", place: "Studio Bergen", performers: "", commissioner: " Carte Blanche ", link: "https://x.no", premiere: true }] });
+  expect2(r?.events?.[0]).toEqual({ date: "23.05.24", place: "Studio Bergen", performers: "", commissioner: "Carte Blanche", link: "https://x.no", premiere: true });
+});
