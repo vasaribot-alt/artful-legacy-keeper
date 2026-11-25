@@ -1,3 +1,7 @@
+## Public ambassador supporter listing (2026-11-25)
+- [x] Show confirmed ambassadors publicly as supporters without implying a donation: add a non-monetary Ambassador recognition level to the Supporters page and list Elin Bergstø there.
+- [x] Five supporter-tier tests passed and build OK; anonymous check of /donors showed Elin Bergstø under "Ambassadors" with no amount, the four gift tiers unchanged, no phone overflow and no page errors. Awaits publishing.
+
 ## Profile ambassador invitations (2026-11-24)
 - [x] Add a launch notice to private profiles and invitations for artists at four of seven existing milestones and collectors with more than ten works (provisional threshold); preserve explicit consent and existing personal ambassador arrangements.
 - [x] Two eligibility boundary tests passed and preview build OK; Jan’s signed-in 98-work collector profile shows the invitation, terms and foundation contact link, checked on desktop and phone without overflow or runtime errors. Artist threshold tested; no artist account session used. No emails sent or automatic enrolment.

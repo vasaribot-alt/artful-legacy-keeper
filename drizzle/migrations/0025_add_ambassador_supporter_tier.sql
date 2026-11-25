@@ -1,0 +1,1 @@
+ALTER TYPE public.donor_tier ADD VALUE IF NOT EXISTS 'ambassador';

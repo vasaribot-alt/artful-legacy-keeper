@@ -4581,7 +4581,7 @@ export type Database = {
         | "foundation"
         | "gallery"
         | "institution"
-      donor_tier: "platinum" | "gold" | "silver" | "bronze"
+      donor_tier: "platinum" | "gold" | "silver" | "bronze" | "ambassador"
       founding_artist_tier:
         | "internationally_established"
         | "mid_career"
@@ -4733,7 +4733,7 @@ export const Constants = {
         "gallery",
         "institution",
       ],
-      donor_tier: ["platinum", "gold", "silver", "bronze"],
+      donor_tier: ["platinum", "gold", "silver", "bronze", "ambassador"],
       founding_artist_tier: [
         "internationally_established",
         "mid_career",

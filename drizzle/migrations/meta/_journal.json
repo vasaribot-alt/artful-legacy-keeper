@@ -176,6 +176,13 @@
       "when": 1794918801585,
       "tag": "0024_artist_website_directory_custom_domain",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795605722399,
+      "tag": "0025_add_ambassador_supporter_tier",
+      "breakpoints": true
     }
   ]
 }

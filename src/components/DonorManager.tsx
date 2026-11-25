@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Plus, Trash2, Heart, Download } from "lucide-react";
+import { SUPPORTER_TIERS, SUPPORTER_TIER_ORDER, type SupporterTier } from "@/lib/supporterTiers";
 
-type DonorTier = "platinum" | "gold" | "silver" | "bronze";
+type DonorTier = SupporterTier;
 
 interface Donor {
   id: string;
@@ -21,12 +22,9 @@ interface Donor {
   created_at: string;
 }
 
-const tierLabels: Record<DonorTier, string> = {
-  platinum: "Platinum",
-  gold: "Gold",
-  silver: "Silver",
-  bronze: "Bronze",
-};
+const tierLabels = Object.fromEntries(
+  SUPPORTER_TIER_ORDER.map((tier) => [tier, SUPPORTER_TIERS[tier].label]),
+) as Record<DonorTier, string>;
 
 const DonorManager = () => {
   const [donors, setDonors] = useState<Donor[]>([]);

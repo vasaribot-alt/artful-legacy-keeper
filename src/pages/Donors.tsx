@@ -1,5 +1,6 @@
 import PublicHeader from "@/components/PublicHeader";
 import PublicPageHero from "@/components/PublicPageHero";
+import { MONETARY_TIER_ORDER, SUPPORTER_TIER_ORDER, SUPPORTER_TIERS } from "@/lib/supporterTiers";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,30 +13,8 @@ interface Donor {
   message: string | null;
 }
 
-const tierLabels: Record<string, { label: string; amount: string; description: string }> = {
-  platinum: {
-    label: "Platinum",
-    amount: "€10,000 and above",
-    description: "Visionary supporters who make the foundation's core mission possible.",
-  },
-  gold: {
-    label: "Gold",
-    amount: "€5,000",
-    description: "Major contributors driving key initiatives and programs.",
-  },
-  silver: {
-    label: "Silver",
-    amount: "€2,500",
-    description: "Valued supporters advancing art preservation and documentation.",
-  },
-  bronze: {
-    label: "Bronze",
-    amount: "€1,000",
-    description: "Friends of the foundation who believe in the mission.",
-  },
-};
-
-const tierOrder = ["platinum", "gold", "silver", "bronze"];
+const tierLabels = SUPPORTER_TIERS;
+const tierOrder = SUPPORTER_TIER_ORDER;
 
 const Donors = () => {
   const [donors, setDonors] = useState<Donor[]>([]);
@@ -102,7 +81,7 @@ const Donors = () => {
             Larger collections are welcome to choose a recognition tier instead of counting every work.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tierOrder.map((tier) => (
+            {MONETARY_TIER_ORDER.map((tier) => (
               <div key={tier} className="border border-border rounded-lg p-6">
                 <h3 className="text-lg mb-1">{tierLabels[tier].label}</h3>
                 <p className="text-lg mb-3">{tierLabels[tier].amount}</p>
@@ -130,7 +109,9 @@ const Donors = () => {
               <section key={group.tier}>
                 <h2 className="text-2xl mb-1">
                   {group.label}
-                  <span className="ml-3 text-base font-normal text-muted-foreground">{group.amount}</span>
+                  {group.amount && (
+                    <span className="ml-3 text-base font-normal text-muted-foreground">{group.amount}</span>
+                  )}
                 </h2>
                 <p className="text-sm text-muted-foreground mb-8">{group.description}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
