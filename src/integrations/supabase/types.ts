@@ -1678,6 +1678,7 @@ export type Database = {
         Row: {
           added_by: string
           created_at: string
+          descriptor: string | null
           email: string | null
           full_name: string
           id: string
@@ -1688,6 +1689,7 @@ export type Database = {
         Insert: {
           added_by: string
           created_at?: string
+          descriptor?: string | null
           email?: string | null
           full_name: string
           id?: string
@@ -1698,6 +1700,7 @@ export type Database = {
         Update: {
           added_by?: string
           created_at?: string
+          descriptor?: string | null
           email?: string | null
           full_name?: string
           id?: string
@@ -4343,6 +4346,7 @@ export type Database = {
         Args: never
         Returns: {
           created_at: string
+          descriptor: string
           full_name: string
           id: string
           message: string

@@ -183,6 +183,13 @@
       "when": 1795605722399,
       "tag": "0025_add_ambassador_supporter_tier",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1795606081530,
+      "tag": "0026_add_supporter_descriptor",
+      "breakpoints": true
     }
   ]
 }

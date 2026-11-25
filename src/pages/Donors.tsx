@@ -11,6 +11,7 @@ interface Donor {
   full_name: string;
   tier: string;
   message: string | null;
+  descriptor?: string | null;
 }
 
 const tierLabels = SUPPORTER_TIERS;
@@ -127,6 +128,9 @@ const Donors = () => {
                         </span>
                       </div>
                       <p className="font-medium text-sm">{donor.full_name}</p>
+                      {donor.descriptor && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{donor.descriptor}</p>
+                      )}
                       {donor.message && (
                         <p className="text-xs text-muted-foreground mt-1 italic">"{donor.message}"</p>
                       )}

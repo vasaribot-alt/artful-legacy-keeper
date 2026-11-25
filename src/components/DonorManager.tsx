@@ -33,6 +33,7 @@ const DonorManager = () => {
   const [newEmail, setNewEmail] = useState("");
   const [newTier, setNewTier] = useState<DonorTier>("bronze");
   const [newMessage, setNewMessage] = useState("");
+  const [newDescriptor, setNewDescriptor] = useState("");
 
   useEffect(() => {
     fetchDonors();
@@ -57,6 +58,7 @@ const DonorManager = () => {
       email: newEmail.trim() || null,
       tier: newTier,
       message: newMessage.trim() || null,
+      descriptor: newDescriptor.trim() || null,
       added_by: user.id,
     });
 
@@ -67,6 +69,7 @@ const DonorManager = () => {
       setNewName("");
       setNewEmail("");
       setNewMessage("");
+      setNewDescriptor("");
       fetchDonors();
     }
   };
@@ -164,6 +167,16 @@ const DonorManager = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div>
+            <Label>Described as (optional)</Label>
+            <Input
+              value={newDescriptor}
+              onChange={(e) => setNewDescriptor(e.target.value)}
+              placeholder="Artist, Collector, Art historian…"
+              className="mt-1.5"
+              autoComplete="off"
+            />
           </div>
           <div>
             <Label>Public Message (optional)</Label>
