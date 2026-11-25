@@ -31,7 +31,8 @@ export const SUPPORTER_TIERS: Record<SupporterTier, SupporterTierInfo> = {
   ambassador: {
     label: "Ambassadors",
     amount: null,
-    description: "Artists and collectors who support the foundation by lending their name.",
+    description:
+      "GARF Ambassadors are artists and collectors who use GARF and support the foundation by associating their names with it.",
   },
 };
 
