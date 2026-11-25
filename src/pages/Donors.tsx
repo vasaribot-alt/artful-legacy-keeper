@@ -12,6 +12,7 @@ interface Donor {
   tier: string;
   message: string | null;
   descriptor?: string | null;
+  avatar_url?: string | null;
 }
 
 const tierLabels = SUPPORTER_TIERS;
@@ -118,14 +119,23 @@ const Donors = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
                   {group.donors.map((donor) => (
                     <div key={donor.id} className="text-center">
-                      <div className="h-16 w-16 mx-auto mb-3 rounded-full bg-secondary flex items-center justify-center">
-                        <span className="text-lg font-medium text-secondary-foreground">
-                          {donor.full_name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .slice(0, 2)}
-                        </span>
+                      <div className="h-16 w-16 mx-auto mb-3 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                        {donor.avatar_url ? (
+                          <img
+                            src={donor.avatar_url}
+                            alt={donor.full_name}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span className="text-lg font-medium text-secondary-foreground">
+                            {donor.full_name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .slice(0, 2)}
+                          </span>
+                        )}
                       </div>
                       <p className="font-medium text-sm">{donor.full_name}</p>
                       {donor.descriptor && (

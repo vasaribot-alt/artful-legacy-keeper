@@ -1677,6 +1677,7 @@ export type Database = {
       donors: {
         Row: {
           added_by: string
+          avatar_url: string | null
           created_at: string
           descriptor: string | null
           email: string | null
@@ -1688,6 +1689,7 @@ export type Database = {
         }
         Insert: {
           added_by: string
+          avatar_url?: string | null
           created_at?: string
           descriptor?: string | null
           email?: string | null
@@ -1699,6 +1701,7 @@ export type Database = {
         }
         Update: {
           added_by?: string
+          avatar_url?: string | null
           created_at?: string
           descriptor?: string | null
           email?: string | null
@@ -4345,6 +4348,7 @@ export type Database = {
       get_public_donors: {
         Args: never
         Returns: {
+          avatar_url: string
           created_at: string
           descriptor: string
           full_name: string
