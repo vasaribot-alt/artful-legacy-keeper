@@ -1,3 +1,5 @@
+import { TimeBasedMediaFields } from "@/components/TimeBasedMediaFields";
+import { cleanTimeBasedDetails, isTimeBasedType, type TimeBasedDetails } from "@/lib/timeBasedMedia";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useSaveTracker, useUnsavedChangesWarning } from "@/components/StickySaveBar";
 import { useNavigate, useParams } from "react-router-dom";
@@ -62,7 +64,7 @@ const artworkStatuses = [
   { value: "considering", label: "Considering sale" },
   { value: "sold", label: "Sold" },
 ];
-const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
+const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture", "Video art", "Performance"];
 const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
 const acceptedDocTypes = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf,.odt,.csv";
@@ -103,6 +105,7 @@ const ArtworkDetail = () => {
   const [isUnique, setIsUnique] = useState(true);
   const [series, setSeries] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [timeBased, setTimeBased] = useState<TimeBasedDetails>({});
   const [support, setSupport] = useState("");
   const [signed, setSigned] = useState("");
   const [height, setHeight] = useState("");
@@ -203,7 +206,7 @@ const ArtworkDetail = () => {
     const changed =
       title !== o.title || artworkType !== o.artworkType || medium !== o.medium ||
       year !== o.year || description !== o.description || isUnique !== o.isUnique ||
-      series !== o.series || subCategory !== o.subCategory || support !== o.support ||
+      series !== o.series || subCategory !== o.subCategory || JSON.stringify(timeBased) !== o.timeBased || support !== o.support ||
       signed !== o.signed || height !== o.height || width !== o.width ||
       depth !== o.depth || weight !== o.weight || price !== o.price ||
       currency !== o.currency || artworkLocation !== o.artworkLocation ||
@@ -217,7 +220,7 @@ const ArtworkDetail = () => {
       newImages.length > 0 || deletedImageIds.length > 0 || imagesReordered ||
       newDocuments.length > 0 || deletedDocIds.length > 0;
     setHasUnsavedChanges(changed);
-  }, [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
+  }, [title, artworkType, medium, year, description, isUnique, series, subCategory, timeBased, support,
     signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
     artistProofs, exhibitionHistory, provenance, artistName, editionNumber, status, buyerName, soldDate,
     selectedExhibitionIds, selectedCatalogueIds, newImages, deletedImageIds, imagesReordered, newDocuments, deletedDocIds, loading]);
@@ -245,6 +248,7 @@ const ArtworkDetail = () => {
     setIsUnique(data.is_unique);
     setSeries(data.series || "");
     setSubCategory(data.sub_category || "");
+    setTimeBased(((data as any).time_based_details as TimeBasedDetails) || {});
     setSupport(data.support || "");
     setSigned(data.signed || "");
     setHeight(data.height ? String(data.height) : "");
@@ -314,7 +318,7 @@ const ArtworkDetail = () => {
     originalValuesRef.current = {
       title: data.title, artworkType: data.artwork_type || "", medium: data.medium || "",
       year: data.year ? String(data.year) : "", description: data.description || "",
-      isUnique: data.is_unique, series: data.series || "", subCategory: data.sub_category || "",
+      isUnique: data.is_unique, series: data.series || "", subCategory: data.sub_category || "", timeBased: JSON.stringify((data as any).time_based_details || {}),
       support: data.support || "", signed: data.signed || "",
       height: data.height ? String(data.height) : "", width: data.width ? String(data.width) : "",
       depth: data.depth ? String(data.depth) : "", weight: data.weight ? String(data.weight) : "",
@@ -404,6 +408,7 @@ const ArtworkDetail = () => {
       is_unique: isUnique,
       series: series.trim() || null,
       sub_category: subCategory || null,
+      time_based_details: cleanTimeBasedDetails(artworkType, timeBased) as any,
       support: support.trim() || null,
       signed: signed.trim() || null,
       height: height ? parseFloat(height) : null,
@@ -583,7 +588,7 @@ const ArtworkDetail = () => {
   };
 
   const { state: saveState, dirty, markSaved, resetBaseline } = useSaveTracker(
-    [title, artworkType, medium, year, description, isUnique, series, subCategory, support,
+    [title, artworkType, medium, year, description, isUnique, series, subCategory, timeBased, support,
      signed, height, width, depth, weight, price, currency, artworkLocation, editionCount,
      artistProofs, exhibitionHistory, provenance, artistName, editionNumber, status,
      buyerName, soldDate, selectedExhibitionIds, selectedCatalogueIds,
@@ -790,6 +795,10 @@ const ArtworkDetail = () => {
               </SelectContent>
             </Select>
           </div>
+        )}
+
+        {isTimeBasedType(artworkType) && (
+          <TimeBasedMediaFields type={artworkType} value={timeBased} onChange={setTimeBased} />
         )}
 
         <div className="grid grid-cols-2 gap-3">

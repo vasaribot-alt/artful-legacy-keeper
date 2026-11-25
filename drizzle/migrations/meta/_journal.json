@@ -197,6 +197,13 @@
       "when": 1795606466785,
       "tag": "0027_add_supporter_avatar",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1795614746040,
+      "tag": "0028_add_time_based_media_details",
+      "breakpoints": true
     }
   ]
 }

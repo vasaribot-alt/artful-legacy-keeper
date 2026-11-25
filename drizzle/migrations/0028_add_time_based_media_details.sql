@@ -1,0 +1,2 @@
+ALTER TABLE public.artworks ADD COLUMN IF NOT EXISTS time_based_details jsonb;
+COMMENT ON COLUMN public.artworks.time_based_details IS 'Video art / performance documentation: master file, display, migration consent, performance events, score, rights, work-vs-documentation statement.';

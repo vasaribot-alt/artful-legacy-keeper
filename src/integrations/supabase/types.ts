@@ -759,6 +759,7 @@ export type Database = {
           status: string
           sub_category: string | null
           support: string | null
+          time_based_details: Json | null
           title: string
           updated_at: string
           verification_status: string
@@ -827,6 +828,7 @@ export type Database = {
           status?: string
           sub_category?: string | null
           support?: string | null
+          time_based_details?: Json | null
           title: string
           updated_at?: string
           verification_status?: string
@@ -895,6 +897,7 @@ export type Database = {
           status?: string
           sub_category?: string | null
           support?: string | null
+          time_based_details?: Json | null
           title?: string
           updated_at?: string
           verification_status?: string

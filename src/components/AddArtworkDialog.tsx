@@ -1,3 +1,5 @@
+import { TimeBasedMediaFields } from "@/components/TimeBasedMediaFields";
+import { cleanTimeBasedDetails, isTimeBasedType, type TimeBasedDetails } from "@/lib/timeBasedMedia";
 import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
@@ -73,7 +75,7 @@ interface Props {
 }
 
 const currencies = ["EUR", "USD", "GBP", "SEK", "NOK", "DKK", "CHF"];
-const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture"];
+const artworkTypes = ["Painting", "Drawing", "Collage", "Print", "Photography", "Sculpture", "Video art", "Performance"];
 const sculptureSubCategories = ["Modelled", "Casted", "Carved", "Assembled", "3D printed"];
 
 interface ImagePreview {
@@ -98,6 +100,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
   const [isUnique, setIsUnique] = useState(true);
   const [series, setSeries] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [timeBased, setTimeBased] = useState<TimeBasedDetails>({});
   const [support, setSupport] = useState("");
   const [signed, setSigned] = useState("");
   const [height, setHeight] = useState("");
@@ -236,7 +239,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
 
   const resetForm = () => {
     setTitle(""); setArtistName(""); setExhibitionHistory(""); setProvenance(""); setArtworkType(""); setMedium(""); setYear(""); setDescription("");
-    setIsUnique(true); setSeries(""); setSubCategory(""); setSupport(""); setSelectedExhibitionIds([]);
+    setIsUnique(true); setSeries(""); setSubCategory(""); setTimeBased({}); setSupport(""); setSelectedExhibitionIds([]);
     setSigned(""); setHeight(""); setWidth(""); setDepth(""); setStatus("available"); setBuyerName(""); setSoldDate(undefined);
     setWeight(""); setPrice(""); setCurrency("EUR"); setArtworkLocation("");
     setEditionCount(""); setArtistProofs(""); setEditionNumber("");
@@ -318,6 +321,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
       is_unique: isUnique,
       series: series.trim() || null,
       sub_category: subCategory || null,
+      time_based_details: cleanTimeBasedDetails(artworkType, timeBased) as any,
       support: support.trim() || null,
       signed: signed.trim() || null,
       height: height ? parseFloat(height) : null,
@@ -509,7 +513,11 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          {isTimeBasedType(artworkType) && (
+          <TimeBasedMediaFields type={artworkType} value={timeBased} onChange={setTimeBased} />
+        )}
+
+        <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="year">Date of creation</Label>
               <Input id="year" type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="e.g. 2024" className="mt-1.5" />
