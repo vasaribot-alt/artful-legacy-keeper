@@ -3,6 +3,7 @@ export const TIME_BASED_TYPES = ["Video art", "Performance"] as const;
 export interface PerformanceEvent { date: string; place: string; performers: string; commissioner?: string; link?: string; premiere?: boolean }
 
 export interface TimeBasedDetails {
+  videoUrl?: string;
   masterFormat?: string; resolution?: string; duration?: string; sound?: string;
   masterHolder?: string; displayMode?: string; screens?: string; loop?: boolean;
   spaceRequirements?: string; migrationConsent?: string;

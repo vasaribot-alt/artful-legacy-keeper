@@ -10,6 +10,10 @@ describe("time-based media", () => {
   it("stores nothing for non time-based types", () => {
     expect(cleanTimeBasedDetails("Painting", { duration: "10 min" })).toBeNull();
   });
+  it("preserves a video link when video documentation is saved", () => {
+    expect(cleanTimeBasedDetails("Video art", { videoUrl: " https://vimeo.com/123456789 " })?.videoUrl)
+      .toBe("https://vimeo.com/123456789");
+  });
   it("keeps performance events only for performances", () => {
     const ev = [{ date: "2024", place: "Oslo", performers: "Tori" }];
     expect(cleanTimeBasedDetails("Performance", { events: ev })?.events).toEqual(ev);

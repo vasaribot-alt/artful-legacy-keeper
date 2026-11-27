@@ -18,3 +18,4 @@
 - All ID verification buttons use a shared synchronous window launch before session creation, with same-tab fallback and service-error reporting; this avoids popup blocking without changing approval rules.
 - Exhibition artwork picking uses the editor's active artist owner and a shared series/search filter; this keeps registrar selection in the client's catalogue and preserves selections across filters.
 - Profile ambassador invitations use a shared eligibility utility and authenticated owner-scoped reads; eligibility displays an invitation only, never a public designation or automatic enrolment.
+- Keep video links in the shared time-based artwork documentation editor and distinguish photo uploads from video links; this keeps add/edit forms consistent without implying video-file storage.

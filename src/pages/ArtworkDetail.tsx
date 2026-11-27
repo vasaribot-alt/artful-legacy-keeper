@@ -693,7 +693,7 @@ const ArtworkDetail = () => {
       <main className="max-w-3xl mx-auto px-6 py-8 space-y-6">
         {/* Photos */}
         <div>
-          <Label className="mb-2 block text-base font-medium">Photos</Label>
+          <Label className="mb-2 block text-base font-medium">{artworkType === "Video art" ? "Still images (optional)" : "Photos"}</Label>
           <div className="flex flex-wrap gap-2">
 
             <DndContext
@@ -742,7 +742,7 @@ const ArtworkDetail = () => {
               className="w-24 h-24 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
             >
               <ImagePlus className="w-5 h-5 mb-0.5" />
-              <span className="text-[10px]">Add</span>
+              <span className="text-[10px]">{artworkType === "Video art" ? "Add photo" : "Add"}</span>
             </button>
           </div>
           <p className="text-[11px] text-muted-foreground mt-1.5">Drag photos to reorder. The first photo is the main image.</p>
@@ -860,6 +860,8 @@ const ArtworkDetail = () => {
           </>
         )}
 
+        {artworkType !== "Video art" && (
+          <>
         <Separator />
 
         {/* Materials */}
@@ -919,6 +921,9 @@ const ArtworkDetail = () => {
 
         <Separator />
 
+          </>
+        )}
+
         {/* Status */}
         <div className="flex items-center justify-between">
           <div>
@@ -959,7 +964,7 @@ const ArtworkDetail = () => {
         )}
 
         {/* Location History */}
-        {id && (
+        {id && artworkType !== "Video art" && (
           <LocationHistoryManager
             artworkId={id}
             currentLocation={artworkLocation}

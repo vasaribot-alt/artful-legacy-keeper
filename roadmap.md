@@ -1,3 +1,7 @@
+## Video artwork form (2026-11-27)
+- [x] Add a saved video link, distinguish optional still photos, and hide the marked physical-object fields in add/edit video forms; video-file uploads remain unavailable.
+- [x] Five tests passed and build OK; Jan's temporary collector video entry saved/reloaded its link, painting fields remained available, and the temporary entry was removed. Desktop and phone form screenshots checked; the existing dashboard behind the phone dialog has overflow outside this task.
+
 ## Public ambassador supporter listing (2026-11-25)
 - [x] Show confirmed ambassadors publicly as supporters without implying a donation: add a non-monetary Ambassador recognition level to the Supporters page and list Elin Bergstø there.
 - [x] Five supporter-tier tests passed and build OK; anonymous check of /donors showed Elin Bergstø under "Ambassadors" with no amount, the four gift tiers unchanged, no phone overflow and no page errors. Awaits publishing.

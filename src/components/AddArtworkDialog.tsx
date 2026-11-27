@@ -397,10 +397,10 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
         <DialogHeader>
           <DialogTitle>{initialData ? "Duplicate Artwork" : "Add Artwork"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-5 mt-2">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5 mt-2">
           {/* Images */}
           <div>
-            <Label className="mb-1.5 block">Photos</Label>
+            <Label className="mb-1.5 block">{artworkType === "Video art" ? "Still images (optional)" : "Photos"}</Label>
             <div className="flex flex-wrap gap-2">
               {images.map((img, i) => (
                 <div key={i} className="relative w-20 h-20 rounded-sm overflow-hidden border border-border">
@@ -423,7 +423,7 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
                 className="w-20 h-20 rounded-sm border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-foreground/40 transition-colors"
               >
                 <ImagePlus className="w-5 h-5 mb-0.5" />
-                <span className="text-[10px]">Upload</span>
+                <span className="text-[10px]">{artworkType === "Video art" ? "Upload photo" : "Upload"}</span>
               </button>
               <button
                 type="button"
@@ -595,6 +595,8 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
             </p>
           )}
 
+          {artworkType !== "Video art" && (
+            <>
           <Separator />
 
           {/* Materials */}
@@ -644,6 +646,9 @@ export const AddArtworkDialog = ({ open, onOpenChange, onSuccess, userRole = "ar
           </div>
 
           <Separator />
+
+            </>
+          )}
 
           {/* Status */}
           <div className="flex items-center justify-between">

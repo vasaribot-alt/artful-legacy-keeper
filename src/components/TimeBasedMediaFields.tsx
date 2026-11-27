@@ -35,6 +35,12 @@ export function TimeBasedMediaFields({ type, value, onChange }: Props) {
 
       {isVideo ? (
         <>
+          <div>
+            <Label htmlFor="tbm-video-url">Video link</Label>
+            <Input id="tbm-video-url" type="url" autoComplete="off" className="mt-1.5"
+              placeholder="https://vimeo.com/… or https://youtube.com/…"
+              value={value.videoUrl ?? ""} onChange={(e) => set("videoUrl", e.target.value)} />
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {text("masterFormat", "Master file format", "e.g. ProRes 422, MP4")}
             {text("resolution", "Resolution", "e.g. 1920×1080")}
