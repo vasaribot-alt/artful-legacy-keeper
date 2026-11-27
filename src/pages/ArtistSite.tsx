@@ -1,4 +1,6 @@
 import { SketchbookReader } from "@/components/SketchbookReader";
+import { PublicPageHead } from "@/components/PublicPageHead";
+import { artistMetadata } from "@/lib/publicSeo";
 import { sortCvEntriesByYear } from "@/lib/cvOrder";
 import { canDownloadSketchbook } from "@/lib/sketchbookReader";
 import { Button } from "@/components/ui/button";
@@ -250,13 +252,19 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
     return supabase.storage.from("profile-photos").getPublicUrl(site.avatar_url).data.publicUrl;
   }, [site?.avatar_url]);
 
+  const head = <PublicPageHead
+    {...artistMetadata(site?.site_title || site?.full_name || "Artist website", page === "home" ? "" : page === "cv" ? "Curriculum Vitae" : page.charAt(0).toUpperCase() + page.slice(1), page === "home" ? site?.tagline : null)}
+    path={`/site/${site?.slug || slug}${page === "home" ? "" : `/${page}`}`}
+  />;
+
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">Loading…</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">{head}Loading…</div>;
   }
 
   if (!site) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-6 text-center">
+        {head}
         <h1 className="font-serif text-2xl">This website is not available</h1>
         <p className="max-w-md text-sm text-muted-foreground">
           The address may be incorrect, or the artist has not published their website yet.
@@ -305,6 +313,7 @@ const ArtistSite = ({ slugOverride }: { slugOverride?: string }) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {head}
       <header className="border-b border-border print:hidden">
         <div className="mx-auto max-w-5xl px-6 pt-4">
           <Link

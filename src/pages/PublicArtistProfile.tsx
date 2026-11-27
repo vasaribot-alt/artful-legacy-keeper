@@ -1,4 +1,6 @@
 import GarfLogo from "@/components/GarfLogo";
+import { PublicPageHead } from "@/components/PublicPageHead";
+import { artistMetadata } from "@/lib/publicSeo";
 import { sortCvEntriesByYear } from "@/lib/cvOrder";
 import { CvPdfButton } from "@/components/CvPdfButton";
 import { PublicArchivalDocuments } from "@/components/PublicArchivalDocuments";
@@ -338,6 +340,7 @@ const PublicArtistProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PublicPageHead {...artistMetadata(profile?.full_name || "Artist profile")} path={`/artist/${id || ""}`} />
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <Link to="/">

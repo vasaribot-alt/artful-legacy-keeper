@@ -1,3 +1,7 @@
+## Public search information (2026-11-27)
+- [x] Add a generated sitemap of public pages and published artist destinations; link it from crawler rules; exclude account, billing, private and authentication pages.
+- [x] Add individual public-page and artist-page search titles, descriptions and self-referencing URLs; four tests passed and anonymous Home → About → Artists → Lola’s website → Works → Home navigation verified without duplicate tags or runtime errors. No artist records changed; awaits publishing.
+
 ## Video artwork form (2026-11-27)
 - [x] Add a saved video link, distinguish optional still photos, and hide the marked physical-object fields in add/edit video forms; video-file uploads remain unavailable.
 - [x] Five tests passed and build OK; Jan's temporary collector video entry saved/reloaded its link, painting fields remained available, and the temporary entry was removed. Desktop and phone form screenshots checked; the existing dashboard behind the phone dialog has overflow outside this task.

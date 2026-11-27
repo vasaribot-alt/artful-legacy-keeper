@@ -1,4 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
+import { RoutePageHead } from "@/components/PublicPageHead";
 import { BrowserRouter, HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Capacitor } from "@capacitor/core";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -101,11 +103,13 @@ const queryClient = new QueryClient();
 const Router = Capacitor.isNativePlatform() ? HashRouter : BrowserRouter;
 
 const App = () => (
+  <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <Router>
+        <RoutePageHead />
         <CustomDomainSite />
         <Routes>
           <Route path="/" element={<Index />} />
@@ -206,6 +210,7 @@ const App = () => (
       </Router>
     </TooltipProvider>
   </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

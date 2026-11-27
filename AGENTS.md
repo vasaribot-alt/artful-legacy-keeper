@@ -19,3 +19,5 @@
 - Exhibition artwork picking uses the editor's active artist owner and a shared series/search filter; this keeps registrar selection in the client's catalogue and preserves selections across filters.
 - Profile ambassador invitations use a shared eligibility utility and authenticated owner-scoped reads; eligibility displays an invitation only, never a public designation or automatic enrolment.
 - Keep video links in the shared time-based artwork documentation editor and distinguish photo uploads from video links; this keeps add/edit forms consistent without implying video-file storage.
+- Use Helmet for public route-specific head tags and artist names, with static sitewide fallbacks and no static canonical; this avoids attributing every page to the homepage.
+- Generate the sitemap before dev/build from the public route list and anonymous directory reads, including enabled artist-site sections only and no invented lastmod; this keeps discovery aligned with publication without exposing private workspaces.
