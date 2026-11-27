@@ -1,3 +1,6 @@
+## Ambassador website links (2026-11-27)
+- [x] Link Elin, Krešimira and Alfred on Supporters to their matching published artist websites; unmatched names remain unchanged. Ten tests passed; Elin’s fully loaded destination, desktop/phone layout and no runtime errors verified; build OK. Awaits publishing.
+
 ## Public search information (2026-11-27)
 - [x] Add a generated sitemap of public pages and published artist destinations; link it from crawler rules; exclude account, billing, private and authentication pages.
 - [x] Add individual public-page and artist-page search titles, descriptions and self-referencing URLs; four tests passed and anonymous Home → About → Artists → Lola’s website → Works → Home navigation verified without duplicate tags or runtime errors. No artist records changed; awaits publishing.

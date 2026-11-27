@@ -21,3 +21,4 @@
 - Keep video links in the shared time-based artwork documentation editor and distinguish photo uploads from video links; this keeps add/edit forms consistent without implying video-file storage.
 - Use Helmet for public route-specific head tags and artist names, with static sitewide fallbacks and no static canonical; this avoids attributing every page to the homepage.
 - Generate the sitemap before dev/build from the public route list and anonymous directory reads, including enabled artist-site sections only and no invented lastmod; this keeps discovery aligned with publication without exposing private workspaces.
+- Resolve ambassador website links from the public website directory using unique exact-name matches only; this avoids exposing private settings or guessing a person's website.

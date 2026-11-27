@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { ambassadorWebsiteLinks } from "@/lib/ambassadorWebsiteLinks";
+import type { ArtistWebsiteEntry } from "@/lib/artistWebsiteDirectory";
 
 interface Donor {
   id: string;
@@ -21,16 +23,23 @@ const tierOrder = SUPPORTER_TIER_ORDER;
 const Donors = () => {
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [websites, setWebsites] = useState<ArtistWebsiteEntry[]>([]);
 
   useEffect(() => {
     const fetchDonors = async () => {
-      const { data } = await supabase.rpc("get_public_donors");
+      const [{ data }, websiteResult] = await Promise.all([
+        supabase.rpc("get_public_donors"),
+        supabase.rpc("list_public_artist_websites"),
+      ]);
 
       if (data) setDonors(data);
+      if (websiteResult.data) setWebsites(websiteResult.data);
       setLoading(false);
     };
     fetchDonors();
   }, []);
+
+  const findWebsite = ambassadorWebsiteLinks(websites);
 
   const groupedByTier = tierOrder
     .map((tier) => ({
@@ -117,7 +126,9 @@ const Donors = () => {
                 </h2>
                 <p className="text-sm text-muted-foreground mb-8">{group.description}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                  {group.donors.map((donor) => (
+                  {group.donors.map((donor) => {
+                    const website = group.tier === "ambassador" ? findWebsite(donor.full_name) : null;
+                    return (
                     <div key={donor.id} className="text-center">
                       <div className="h-16 w-16 mx-auto mb-3 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
                         {donor.avatar_url ? (
@@ -137,7 +148,13 @@ const Donors = () => {
                           </span>
                         )}
                       </div>
-                      <p className="font-medium text-sm">{donor.full_name}</p>
+                      <p className="font-medium text-sm">
+                        {website ? (website.external ? (
+                          <a href={website.href} target="_blank" rel="noopener noreferrer" aria-label={`${donor.full_name} — public website`} className="underline underline-offset-4 decoration-border hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{donor.full_name}</a>
+                        ) : (
+                          <Link to={website.href} aria-label={`${donor.full_name} — public website`} className="underline underline-offset-4 decoration-border hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{donor.full_name}</Link>
+                        )) : donor.full_name}
+                      </p>
                       {donor.descriptor && (
                         <p className="text-xs text-muted-foreground mt-0.5">{donor.descriptor}</p>
                       )}
@@ -145,7 +162,8 @@ const Donors = () => {
                         <p className="text-xs text-muted-foreground mt-1 italic">"{donor.message}"</p>
                       )}
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             ))}
